@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<project name="DictCreator" default="all" basedir=".">
+
+    <fileset dir="." id="server-jars-fileset">
+        <include name="server/lib/**/*.jar" />
+        <include name="common/lib/**/*.jar" />
+    </fileset>
+    <pathconvert pathsep=" " property="server-jars-path" refid="server-jars-fileset">
+        <chainedmapper>
+            <flattenmapper />
+            <globmapper from="*" to="*" />
+        </chainedmapper>
+    </pathconvert>
+    <fileset dir="." id="client-jars-fileset">
+        <include name="client/lib/**/*.jar" />
+        <include name="common/lib/**/*.jar" />
+    </fileset>
+
+    <target name="client" depends="clean">
+        <mkdir dir="client/build" />
+        <javac srcdir="client/src:common/src" includes="**" encoding="utf-8" destdir="client/build"  debug="true" debuglevel="lines,vars,source">
+            <classpath>
+                <fileset refid="client-jars-fileset"/>
+            </classpath>
+        </javac>
+        <copy todir="client/build">
+            <fileset dir="client/src" />
+            <fileset dir="common/src" />
+        </copy>
+
+        <mkdir dir="dist" />
+        <jar destfile="dist/client.jar">
+            <fileset dir="client/build" />
+            <zipgroupfileset refid="client-jars-fileset" />
+            <manifest>
+                <attribute name="Main-Class" value="org.im.dc.client.ui.ClientStartup" />
+            </manifest>
+        </jar>
+    </target>
+
+    <target name="server" depends="clean,xjc">
+        <mkdir dir="server/build" />
+        <javac srcdir="server/src:server/src-gen:common/src" includes="**" encoding="utf-8" destdir="server/build"  debug="true" debuglevel="lines,vars,source">
+            <classpath>
+                <fileset refid="server-jars-fileset"/>
+            </classpath>
+        </javac>
+        <copy todir="server/build">
+            <fileset dir="server/src" />
+            <fileset dir="common/src" />
+        </copy>
+
+        <mkdir dir="dist/server" />
+        <jar destfile="dist/server/server.jar">
+            <fileset dir="server/build" />
+            <manifest>
+                <attribute name="Main-Class" value="org.im.dc.server.startup.Server" />
+                <attribute name="Class-Path" value="${server-jars-path}" />
+            </manifest>
+        </jar>
+        <copy todir="dist/server/" flatten="true">
+            <fileset refid="server-jars-fileset"/>
+        </copy>
+    </target>
+
+    <target name="all" depends="client, server" />
+
+    <target name="clean">
+        <delete dir="dist" failonerror="false" />
+        <delete dir="client/build" failonerror="false" />
+        <delete dir="server/build" failonerror="false" />
+    </target>
+
+    <target name="xjc">
+        <exec executable="xjc">
+            <arg value="-no-header"/>
+            <arg value="-d"/>
+            <arg value="server/src-gen/"/>
+            <arg value="-p"/>
+            <arg value="org.im.dc.gen.config"/>
+            <arg value="server/src/org/im/dc/xsd/config.xsd"/>
+        </exec>
+    </target>
+</project>

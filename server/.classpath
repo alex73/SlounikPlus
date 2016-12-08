@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="src-gen"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/DictCreator-common"/>
+	<classpathentry kind="lib" path="lib/mybatis/mybatis-3.4.1.jar"/>
+	<classpathentry kind="lib" path="lib/mybatis/mariadb-java-client-1.5.5.jar"/>
+	<classpathentry kind="lib" path="lib/logging/log4j-api-2.7.jar"/>
+	<classpathentry kind="lib" path="lib/logging/log4j-core-2.7.jar"/>
+	<classpathentry kind="lib" path="lib/logging/log4j-slf4j-impl-2.7.jar"/>
+	<classpathentry kind="lib" path="lib/logging/slf4j-api-1.7.21.jar"/>
+	<classpathentry kind="output" path="classes"/>
+</classpath>
