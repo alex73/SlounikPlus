@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:element name="root">
+		<xs:annotation>
+			<xs:appinfo>Артыкул/#FFFFFF</xs:appinfo>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="zah" maxOccurs="1" minOccurs="1" />
+				<xs:element ref="tlum" maxOccurs="unbounded" minOccurs="1" />
+				<xs:element name="ustterm" type="xs:string" maxOccurs="unbounded" minOccurs="0">
+					<xs:annotation>
+						<xs:appinfo>Тэрміналагічнае словазлучэнне</xs:appinfo>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="ustfraz" type="xs:string" maxOccurs="unbounded" minOccurs="0">
+					<xs:annotation>
+						<xs:appinfo>Фразеалагізм</xs:appinfo>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="ustetym" type="xs:string" maxOccurs="unbounded" minOccurs="0">
+					<xs:annotation>
+						<xs:appinfo>Этымалогія</xs:appinfo>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="zah">
+		<xs:annotation>
+			<xs:appinfo>Паметы загалоўных слоў/#b7dde8</xs:appinfo>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="gram" type="xs:string" maxOccurs="unbounded" minOccurs="1">
+					<xs:annotation>
+						<xs:appinfo>Граматыка і паметы загалоўнага слова</xs:appinfo>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="tlum">
+		<xs:annotation>
+			<xs:appinfo>Тлумачэнне/#fbd7bb</xs:appinfo>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="sem" type="xs:string" maxOccurs="1" minOccurs="0">
+					<xs:annotation>
+						<xs:appinfo>Семантычныя паметы</xs:appinfo>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="grpam" type="xs:string" maxOccurs="1" minOccurs="0">
+					<xs:annotation>
+						<xs:appinfo>Граматычныя паметы</xs:appinfo>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="styl" type="xs:string" maxOccurs="1" minOccurs="0">
+					<xs:annotation>
+						<xs:appinfo>Стылістычныя паметы</xs:appinfo>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="zaha" type="xs:string" maxOccurs="1" minOccurs="0">
+					<xs:annotation>
+						<xs:appinfo>Загалоўнае слова ў артыкуле</xs:appinfo>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="desc" type="xs:string" maxOccurs="1" minOccurs="1">
+					<xs:annotation>
+						<xs:appinfo>Тэкст тлумачэння</xs:appinfo>
+					</xs:annotation>
+				</xs:element>
+				<xs:element ref="ex" maxOccurs="unbounded" minOccurs="0" />
+				<xs:element ref="adc" maxOccurs="unbounded" minOccurs="0" />
+				<xs:element ref="usd" maxOccurs="unbounded" minOccurs="0" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="adc">
+		<xs:annotation>
+			<xs:appinfo>///#fcebdd</xs:appinfo>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="grpam" type="xs:string" maxOccurs="1" minOccurs="0">
+					<xs:annotation>
+						<xs:appinfo>Граматычныя паметы</xs:appinfo>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="zaha" type="xs:string" maxOccurs="1" minOccurs="0">
+					<xs:annotation>
+						<xs:appinfo>Загалоўнае слова ў артыкуле</xs:appinfo>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="desc" type="xs:string" maxOccurs="1" minOccurs="1">
+					<xs:annotation>
+						<xs:appinfo>Тэкст тлумачэння</xs:appinfo>
+					</xs:annotation>
+				</xs:element>
+				<xs:element ref="ex" maxOccurs="unbounded" minOccurs="0" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="usd">
+		<xs:annotation>
+			<xs:appinfo>//#fcebdd</xs:appinfo>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="grpam" type="xs:string" maxOccurs="1" minOccurs="0">
+					<xs:annotation>
+						<xs:appinfo>Граматычныя паметы</xs:appinfo>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="zaha" type="xs:string" maxOccurs="1" minOccurs="0">
+					<xs:annotation>
+						<xs:appinfo>Загалоўнае слова ў артыкуле</xs:appinfo>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="desc" type="xs:string" maxOccurs="1" minOccurs="1">
+					<xs:annotation>
+						<xs:appinfo>Тэкст тлумачэння</xs:appinfo>
+					</xs:annotation>
+				</xs:element>
+				<xs:element ref="ex" maxOccurs="unbounded" minOccurs="0" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="ex">
+		<xs:annotation>
+			<xs:appinfo>Прыклад/#fcebdd</xs:appinfo>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="text" type="xs:string" maxOccurs="1" minOccurs="1">
+					<xs:annotation>
+						<xs:appinfo>Ілюстрацыя</xs:appinfo>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="author" type="xs:string" maxOccurs="1" minOccurs="1">
+					<xs:annotation>
+						<xs:appinfo>Аўтар</xs:appinfo>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>
