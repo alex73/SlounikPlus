@@ -36,6 +36,13 @@
                 <attribute name="Main-Class" value="org.im.dc.client.ui.ClientStartup" />
             </manifest>
         </jar>
+        <jar destfile="dist/uitest.jar">
+            <fileset dir="client/build" />
+            <zipgroupfileset refid="client-jars-fileset" />
+            <manifest>
+                <attribute name="Main-Class" value="org.im.dc.client.ui.xmlstructure.XmlUiTest" />
+            </manifest>
+        </jar>
     </target>
 
     <target name="server" depends="clean,xjc">
