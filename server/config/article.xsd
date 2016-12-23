@@ -83,9 +83,19 @@
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
+				<xs:element name="sem" type="xs:string" maxOccurs="1" minOccurs="0">
+					<xs:annotation>
+						<xs:appinfo>Семантычныя паметы</xs:appinfo>
+					</xs:annotation>
+				</xs:element>
 				<xs:element name="grpam" type="xs:string" maxOccurs="1" minOccurs="0">
 					<xs:annotation>
 						<xs:appinfo>Граматычныя паметы</xs:appinfo>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="styl" type="xs:string" maxOccurs="1" minOccurs="0">
+					<xs:annotation>
+						<xs:appinfo>Стылістычныя паметы</xs:appinfo>
 					</xs:annotation>
 				</xs:element>
 				<xs:element name="zaha" type="xs:string" maxOccurs="1" minOccurs="0">
@@ -108,9 +118,19 @@
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
+				<xs:element name="sem" type="xs:string" maxOccurs="1" minOccurs="0">
+					<xs:annotation>
+						<xs:appinfo>Семантычныя паметы</xs:appinfo>
+					</xs:annotation>
+				</xs:element>
 				<xs:element name="grpam" type="xs:string" maxOccurs="1" minOccurs="0">
 					<xs:annotation>
 						<xs:appinfo>Граматычныя паметы</xs:appinfo>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="styl" type="xs:string" maxOccurs="1" minOccurs="0">
+					<xs:annotation>
+						<xs:appinfo>Стылістычныя паметы</xs:appinfo>
 					</xs:annotation>
 				</xs:element>
 				<xs:element name="zaha" type="xs:string" maxOccurs="1" minOccurs="0">
