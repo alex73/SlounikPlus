@@ -87,4 +87,8 @@ public class XmlSimple extends JPanel implements IXmlElement {
         wr.writeCharacters(field.getText());
         wr.writeEndElement();
     }
+
+    @Override
+    public void setIndex(Integer index) {
+    }
 }

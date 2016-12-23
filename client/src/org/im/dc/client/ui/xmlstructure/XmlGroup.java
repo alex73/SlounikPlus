@@ -29,6 +29,8 @@ public class XmlGroup extends JPanel implements IXmlElement {
     private GridBagConstraints gbc = new GridBagConstraints();
     private JPanel gr;
     private JButton closable;
+    private TitledBorder border;
+    private String borderTitle;
 
     public XmlGroup(XSElementDeclaration root, AnnotationInfo ann) {
 
@@ -36,7 +38,9 @@ public class XmlGroup extends JPanel implements IXmlElement {
         setOpaque(false);
 
         gr = new JPanel();
-        TitledBorder border = BorderFactory.createTitledBorder(ann.text);
+
+        borderTitle = ann.text;
+        border = BorderFactory.createTitledBorder(borderTitle);
         border.setTitleFont(new Font(border.getTitleFont().getName(), Font.BOLD, border.getTitleFont().getSize() + 2));
         gr.setBorder(border);
         gr.setLayout(new GridBagLayout());
@@ -139,5 +143,17 @@ public class XmlGroup extends JPanel implements IXmlElement {
             many.extractData(wr);
         }
         wr.writeEndElement();
+    }
+
+    @Override
+    public void setIndex(Integer index) {
+        if (borderTitle == null) {
+            return;
+        }
+        if (index != null) {
+            border.setTitle(borderTitle + " - " + index);
+        } else {
+            border.setTitle(borderTitle);
+        }
     }
 }

@@ -10,4 +10,6 @@ public interface IXmlElement {
     void insertData(XMLStreamReader rd) throws XMLStreamException;
 
     void extractData(String tag, XMLStreamWriter wr) throws XMLStreamException;
+
+    void setIndex(Integer index);
 }

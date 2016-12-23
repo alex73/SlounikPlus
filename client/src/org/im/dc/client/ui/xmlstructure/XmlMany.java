@@ -78,6 +78,10 @@ public class XmlMany extends JPanel {
             IXmlElement e = (IXmlElement) c;
             e.setClosableVisible(canCloseSomeone);
         }
+        for (int i = 0; i < getComponentCount() - 1; i++) {
+            IXmlElement e = (IXmlElement) getComponent(i);
+            e.setIndex(getComponentCount() > 2 ? i + 1 : null);
+        }
 
         super.revalidate();
     }
