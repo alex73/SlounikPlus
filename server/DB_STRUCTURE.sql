@@ -52,7 +52,7 @@ CREATE TABLE Comments (
 	articleId INTEGER NOT NULL,
 	created TIMESTAMP WITHOUT TIME ZONE NOT NULL,
 	author VARCHAR(50) NOT NULL,
-	comment NOT NULL TEXT
+	comment TEXT NOT NULL
 );
 
 CREATE TABLE Issues (
