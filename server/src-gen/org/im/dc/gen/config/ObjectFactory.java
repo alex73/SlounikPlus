@@ -30,6 +30,54 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link Role }
+     * 
+     */
+    public Role createRole() {
+        return new Role();
+    }
+
+    /**
+     * Create an instance of {@link Permissions }
+     * 
+     */
+    public Permissions createPermissions() {
+        return new Permissions();
+    }
+
+    /**
+     * Create an instance of {@link ExternalLinks }
+     * 
+     */
+    public ExternalLinks createExternalLinks() {
+        return new ExternalLinks();
+    }
+
+    /**
+     * Create an instance of {@link Link }
+     * 
+     */
+    public Link createLink() {
+        return new Link();
+    }
+
+    /**
+     * Create an instance of {@link Roles }
+     * 
+     */
+    public Roles createRoles() {
+        return new Roles();
+    }
+
+    /**
+     * Create an instance of {@link Change }
+     * 
+     */
+    public Change createChange() {
+        return new Change();
+    }
+
+    /**
      * Create an instance of {@link State }
      * 
      */

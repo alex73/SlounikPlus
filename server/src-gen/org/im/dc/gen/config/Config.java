@@ -19,7 +19,10 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
  *         &lt;element ref="{}users"/>
+ *         &lt;element ref="{}roles"/>
+ *         &lt;element ref="{}permissions"/>
  *         &lt;element ref="{}states"/>
+ *         &lt;element ref="{}external_links"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -31,7 +34,10 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
     "users",
-    "states"
+    "roles",
+    "permissions",
+    "states",
+    "externalLinks"
 })
 @XmlRootElement(name = "config")
 public class Config {
@@ -39,7 +45,13 @@ public class Config {
     @XmlElement(required = true)
     protected Users users;
     @XmlElement(required = true)
+    protected Roles roles;
+    @XmlElement(required = true)
+    protected Permissions permissions;
+    @XmlElement(required = true)
     protected States states;
+    @XmlElement(name = "external_links", required = true)
+    protected ExternalLinks externalLinks;
 
     /**
      * Gets the value of the users property.
@@ -66,6 +78,54 @@ public class Config {
     }
 
     /**
+     * Gets the value of the roles property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Roles }
+     *     
+     */
+    public Roles getRoles() {
+        return roles;
+    }
+
+    /**
+     * Sets the value of the roles property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Roles }
+     *     
+     */
+    public void setRoles(Roles value) {
+        this.roles = value;
+    }
+
+    /**
+     * Gets the value of the permissions property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Permissions }
+     *     
+     */
+    public Permissions getPermissions() {
+        return permissions;
+    }
+
+    /**
+     * Sets the value of the permissions property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Permissions }
+     *     
+     */
+    public void setPermissions(Permissions value) {
+        this.permissions = value;
+    }
+
+    /**
      * Gets the value of the states property.
      * 
      * @return
@@ -87,6 +147,30 @@ public class Config {
      */
     public void setStates(States value) {
         this.states = value;
+    }
+
+    /**
+     * Gets the value of the externalLinks property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link ExternalLinks }
+     *     
+     */
+    public ExternalLinks getExternalLinks() {
+        return externalLinks;
+    }
+
+    /**
+     * Sets the value of the externalLinks property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link ExternalLinks }
+     *     
+     */
+    public void setExternalLinks(ExternalLinks value) {
+        this.externalLinks = value;
     }
 
 }

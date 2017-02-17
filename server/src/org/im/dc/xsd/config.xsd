@@ -5,7 +5,10 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="users" />
+				<xs:element ref="roles" />
+				<xs:element ref="permissions" />
 				<xs:element ref="states" />
+				<xs:element ref="external_links" />
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -22,6 +25,30 @@
 			<xs:attribute name="pass" type="xs:string" use="required" />
 		</xs:complexType>
 	</xs:element>
+	<xs:element name="roles">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="role" maxOccurs="unbounded" minOccurs="0" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="role">
+		<xs:complexType>
+			<xs:attribute name="id" type="xs:string" use="required" />
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="permissions">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="edit_header" type="xs:string" />
+				<xs:element name="statistics" type="xs:string" />
+				<xs:element name="view_output" type="xs:string" />
+				<xs:element name="full_validation" type="xs:string" />
+				<xs:element name="add_words" type="xs:string" />
+				<xs:element name="reassign" type="xs:string" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
 	<xs:element name="states">
 		<xs:complexType>
 			<xs:sequence>
@@ -31,8 +58,32 @@
 	</xs:element>
 	<xs:element name="state">
 		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="change" maxOccurs="unbounded" minOccurs="0" />
+			</xs:sequence>
 			<xs:attribute name="id" type="xs:string" use="required" />
 			<xs:attribute name="edit_perm" type="xs:string" use="optional" />
 		</xs:complexType>
 	</xs:element>
+	<xs:element name="change">
+		<xs:complexType>
+			<xs:attribute name="to" type="xs:string" use="required" />
+			<xs:attribute name="perm" type="xs:string" use="required" />
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="external_links">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="link" type="link" maxOccurs="unbounded"
+					minOccurs="0" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:complexType name="link">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="name" type="xs:string" use="required" />
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
 </xs:schema>

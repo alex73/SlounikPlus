@@ -11,6 +11,7 @@ import javax.xml.validation.Validator;
 
 import org.im.dc.gen.article.Root;
 import org.im.dc.gen.config.State;
+import org.im.dc.gen.config.User;
 import org.im.dc.server.Config;
 import org.im.dc.server.Db;
 import org.im.dc.server.db.RecArticle;
@@ -39,6 +40,12 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
         result.articleSchema = Config.articleSchemaSource;
         for (State st : Config.getConfig().getStates().getState()) {
             result.states.add(st.getId());
+        }
+        for (User u : Config.getConfig().getUsers().getUser()) {
+            InitialData.User uo = new InitialData.User();
+            uo.user = u.getName();
+            uo.role = u.getRole();
+            result.users.add(uo);
         }
         return result;
     }

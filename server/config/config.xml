@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config>
 	<users>
-		<user name=”user1” pass=”123” role=”укладальнік” />
-		<user name=”user2” pass=”456” role=”рэдактар” />
+		<user name="user1" pass="123" role="укладальнік" />
+		<user name="user2" pass="456" role="рэдактар" />
 	</users>
 	<roles>
-		<role id=”admin” />
-		<role id=”укладальнік” />
-		<role id=”рэдактар” />
+		<role id="admin" />
+		<role id="укладальнік" />
+		<role id="рэдактар" />
 	</roles>
 	<permissions>
 		<edit_header>рэдактар,галоўны_рэдактар</edit_header>
@@ -18,20 +18,20 @@
 		<reassign>рэдактар,галоўны_рэдактар</reassign>
 	</permissions>
 	<states>
-		<state id=”Неапрацаванае”>
-			<change to=”У працы ” perm=”укладальнік,admin” />
+		<state id="Неапрацаванае">
+			<change to="У працы " perm="укладальнік,admin" />
 		</state>
-		<state id=”У працы ” edit_perm=”укладальнік,рэдактар”>
-			<change to=”Падрыхтаванае” perm=”укладальнік,admin” />
-			<change to=”На выдаленне ” perm=”укладальнік,admin” />
+		<state id="У працы " edit_perm="укладальнік,рэдактар">
+			<change to="Падрыхтаванае" perm="укладальнік,admin" />
+			<change to="На выдаленне " perm="укладальнік,admin" />
 		</state>
-		<state id=”Падрыхтаванае” edit_perm=”рэдактар”>
-			<change to=”Зацверджанае” perm=”рэдактар,admin” />
-			<change to=”На дапрацоўку ” perm=”рэдактар,admin” />
+		<state id="Падрыхтаванае" edit_perm="рэдактар">
+			<change to="Зацверджанае" perm="рэдактар,admin" />
+			<change to="На дапрацоўку " perm="рэдактар,admin" />
 		</state>
 	</states>
 	<external_links>
-		<link name=”slounik.org”>http://slounik.org/search?search={}</link>
-		<link name=”bnkorpus.info”>http://bnkorpus.info/#w0.word={}</link>
+		<link name="slounik.org">http://slounik.org/search?search={}</link>
+		<link name="bnkorpus.info">http://bnkorpus.info/#w0.word={}</link>
 	</external_links>
 </config>
