@@ -9,7 +9,10 @@ import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.apache.ibatis.session.TransactionIsolationLevel;
-import org.im.dc.server.db.Selector;
+import org.im.dc.server.db.DoArticle;
+import org.im.dc.server.db.DoArticleHistory;
+import org.im.dc.server.db.DoComment;
+import org.im.dc.server.db.DoIssue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +40,7 @@ public class Db {
     /**
      * Execute DB operations inside transaction.
      */
-    public static <T> T exec(DbExecutor<T> exec) {
+    public static <T> T execAndReturn(DbExecutorResult<T> exec) {
         T result;
         LOG.debug("Start transaction");
         try (SqlSession s = sqlSessionFactory.openSession(ExecutorType.REUSE,
@@ -55,6 +58,22 @@ public class Db {
         return result;
     }
 
+    public static void exec(DbExecutor exec) {
+        LOG.debug("Start transaction");
+        try (SqlSession s = sqlSessionFactory.openSession(ExecutorType.REUSE,
+                TransactionIsolationLevel.READ_COMMITTED)) {
+            try {
+                exec.run(new Api(s));
+                s.commit();
+                LOG.debug("Commit transaction");
+            } catch (Throwable ex) {
+                LOG.warn("Error in transaction", ex);
+                s.rollback();
+                throw ex;
+            }
+        }
+    }
+
     public static class Api {
         private final SqlSession s;
 
@@ -62,8 +81,20 @@ public class Db {
             this.s = s;
         }
 
-        public Selector getSelector() {
-            return s.getMapper(Selector.class);
+        public DoArticle getArticleMapper() {
+            return s.getMapper(DoArticle.class);
+        }
+
+        public DoArticleHistory getArticleHistoryMapper() {
+            return s.getMapper(DoArticleHistory.class);
+        }
+
+        public DoComment getCommentMapper() {
+            return s.getMapper(DoComment.class);
+        }
+
+        public DoIssue getIssueMapper() {
+            return s.getMapper(DoIssue.class);
         }
     }
 }

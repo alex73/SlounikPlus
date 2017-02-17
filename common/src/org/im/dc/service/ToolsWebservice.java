@@ -1,15 +1,21 @@
 package org.im.dc.service;
 
-public class ToolsWebservice {
-    public void validateAll() {
+import javax.jws.WebService;
 
-    }
+import org.im.dc.service.dto.Header;
+import org.im.dc.service.dto.InitialData;
 
-    public void statistics() {
+@WebService
+public interface ToolsWebservice {
+    InitialData getInitialData(Header header);
 
-    }
+    void getStatistics();
 
-    public void getXsd() {
+    void validateAll();
 
-    }
+    void reassignUsers();
+
+    void addWords();
+
+    String printPreview(Header header, int articleId) throws Exception;
 }

@@ -4,6 +4,9 @@
 	<settings>
 		<setting name="cacheEnabled" value="false" />
 	</settings>
+	<typeAliases>
+		<package name="org.im.dc.server.handlers" />
+	</typeAliases>
 	<environments default="development">
 		<environment id="development">
 			<transactionManager type="JDBC" />
@@ -20,6 +23,9 @@
 		</environment>
 	</environments>
 	<mappers>
-		<mapper class="org.im.dc.server.db.Selector" />
+		<mapper class="org.im.dc.server.db.DoArticle" />
+		<mapper class="org.im.dc.server.db.DoArticleHistory" />
+		<mapper class="org.im.dc.server.db.DoComment" />
+		<mapper class="org.im.dc.server.db.DoIssue" />
 	</mappers>
 </configuration>

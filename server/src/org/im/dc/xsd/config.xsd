@@ -5,6 +5,7 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="users" />
+				<xs:element ref="states" />
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -19,6 +20,19 @@
 		<xs:complexType>
 			<xs:attribute name="name" type="xs:string" use="required" />
 			<xs:attribute name="pass" type="xs:string" use="required" />
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="states">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="state" maxOccurs="unbounded" minOccurs="0" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="state">
+		<xs:complexType>
+			<xs:attribute name="id" type="xs:string" use="required" />
+			<xs:attribute name="edit_perm" type="xs:string" use="optional" />
 		</xs:complexType>
 	</xs:element>
 </xs:schema>

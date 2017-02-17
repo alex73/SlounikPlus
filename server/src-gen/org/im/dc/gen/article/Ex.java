@@ -1,5 +1,5 @@
 
-package org.im.dc.gen.config;
+package org.im.dc.gen.article;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -18,8 +18,8 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element ref="{}users"/>
- *         &lt;element ref="{}states"/>
+ *         &lt;element name="text" type="{http://www.w3.org/2001/XMLSchema}string"/>
+ *         &lt;element name="author" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -30,63 +30,63 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "users",
-    "states"
+    "text",
+    "author"
 })
-@XmlRootElement(name = "config")
-public class Config {
+@XmlRootElement(name = "ex")
+public class Ex {
 
     @XmlElement(required = true)
-    protected Users users;
+    protected String text;
     @XmlElement(required = true)
-    protected States states;
+    protected String author;
 
     /**
-     * Gets the value of the users property.
+     * Gets the value of the text property.
      * 
      * @return
      *     possible object is
-     *     {@link Users }
+     *     {@link String }
      *     
      */
-    public Users getUsers() {
-        return users;
+    public String getText() {
+        return text;
     }
 
     /**
-     * Sets the value of the users property.
+     * Sets the value of the text property.
      * 
      * @param value
      *     allowed object is
-     *     {@link Users }
+     *     {@link String }
      *     
      */
-    public void setUsers(Users value) {
-        this.users = value;
+    public void setText(String value) {
+        this.text = value;
     }
 
     /**
-     * Gets the value of the states property.
+     * Gets the value of the author property.
      * 
      * @return
      *     possible object is
-     *     {@link States }
+     *     {@link String }
      *     
      */
-    public States getStates() {
-        return states;
+    public String getAuthor() {
+        return author;
     }
 
     /**
-     * Sets the value of the states property.
+     * Sets the value of the author property.
      * 
      * @param value
      *     allowed object is
-     *     {@link States }
+     *     {@link String }
      *     
      */
-    public void setStates(States value) {
-        this.states = value;
+    public void setAuthor(String value) {
+        this.author = value;
     }
 
 }

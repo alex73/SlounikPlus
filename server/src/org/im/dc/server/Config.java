@@ -1,6 +1,8 @@
 package org.im.dc.server;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.nio.file.Files;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
@@ -14,8 +16,12 @@ import org.im.dc.gen.config.User;
 
 public class Config {
     static final File CONFIG_FILE = new File("config/config.xml");
+    static final File ARTICLE_SCHEMA_FILE = new File("config/article.xsd");
 
     static private org.im.dc.gen.config.Config config;
+
+    static public byte[] articleSchemaSource;
+    static public Schema articleSchema;
 
     public static void load() throws Exception {
         SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
@@ -25,6 +31,10 @@ public class Config {
 
         Unmarshaller unm = JAXBContext.newInstance(org.im.dc.gen.config.Config.class).createUnmarshaller();
         config = (org.im.dc.gen.config.Config) unm.unmarshal(CONFIG_FILE);
+
+        schemaFactory.newSchema(ARTICLE_SCHEMA_FILE);
+        articleSchemaSource = Files.readAllBytes(ARTICLE_SCHEMA_FILE.toPath());
+        articleSchema = schemaFactory.newSchema(new StreamSource(new ByteArrayInputStream(articleSchemaSource)));
     }
 
     public static boolean checkUser(String user, String pass) {
@@ -34,5 +44,9 @@ public class Config {
             }
         }
         return false;
+    }
+
+    public static org.im.dc.gen.config.Config getConfig() {
+        return config;
     }
 }

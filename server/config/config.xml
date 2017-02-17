@@ -1,6 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config>
 	<users>
-		<user name="u" pass="p" />
+		<user name=”user1” pass=”123” role=”укладальнік” />
+		<user name=”user2” pass=”456” role=”рэдактар” />
 	</users>
+	<roles>
+		<role id=”admin” />
+		<role id=”укладальнік” />
+		<role id=”рэдактар” />
+	</roles>
+	<permissions>
+		<edit_header>рэдактар,галоўны_рэдактар</edit_header>
+		<statistics>рэдактар,галоўны_рэдактар</statistics>
+		<view_output>рэдактар,галоўны_рэдактар</view_output>
+		<full_validation>рэдактар,галоўны_рэдактар</full_validation>
+		<add_words>рэдактар,галоўны_рэдактар</add_words>
+		<reassign>рэдактар,галоўны_рэдактар</reassign>
+	</permissions>
+	<states>
+		<state id=”Неапрацаванае”>
+			<change to=”У працы ” perm=”укладальнік,admin” />
+		</state>
+		<state id=”У працы ” edit_perm=”укладальнік,рэдактар”>
+			<change to=”Падрыхтаванае” perm=”укладальнік,admin” />
+			<change to=”На выдаленне ” perm=”укладальнік,admin” />
+		</state>
+		<state id=”Падрыхтаванае” edit_perm=”рэдактар”>
+			<change to=”Зацверджанае” perm=”рэдактар,admin” />
+			<change to=”На дапрацоўку ” perm=”рэдактар,admin” />
+		</state>
+	</states>
+	<external_links>
+		<link name=”slounik.org”>http://slounik.org/search?search={}</link>
+		<link name=”bnkorpus.info”>http://bnkorpus.info/#w0.word={}</link>
+	</external_links>
 </config>

@@ -30,6 +30,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link State }
+     * 
+     */
+    public State createState() {
+        return new State();
+    }
+
+    /**
      * Create an instance of {@link Config }
      * 
      */
@@ -51,6 +59,14 @@ public class ObjectFactory {
      */
     public User createUser() {
         return new User();
+    }
+
+    /**
+     * Create an instance of {@link States }
+     * 
+     */
+    public States createStates() {
+        return new States();
     }
 
 }

@@ -3,7 +3,7 @@ package org.im.dc.gen.config;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
@@ -17,10 +17,8 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;complexType>
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;sequence>
- *         &lt;element ref="{}users"/>
- *         &lt;element ref="{}states"/>
- *       &lt;/sequence>
+ *       &lt;attribute name="id" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="edit_perm" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -29,64 +27,61 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
-    "users",
-    "states"
-})
-@XmlRootElement(name = "config")
-public class Config {
+@XmlType(name = "")
+@XmlRootElement(name = "state")
+public class State {
 
-    @XmlElement(required = true)
-    protected Users users;
-    @XmlElement(required = true)
-    protected States states;
+    @XmlAttribute(name = "id", required = true)
+    protected String id;
+    @XmlAttribute(name = "edit_perm")
+    protected String editPerm;
 
     /**
-     * Gets the value of the users property.
+     * Gets the value of the id property.
      * 
      * @return
      *     possible object is
-     *     {@link Users }
+     *     {@link String }
      *     
      */
-    public Users getUsers() {
-        return users;
+    public String getId() {
+        return id;
     }
 
     /**
-     * Sets the value of the users property.
+     * Sets the value of the id property.
      * 
      * @param value
      *     allowed object is
-     *     {@link Users }
+     *     {@link String }
      *     
      */
-    public void setUsers(Users value) {
-        this.users = value;
+    public void setId(String value) {
+        this.id = value;
     }
 
     /**
-     * Gets the value of the states property.
+     * Gets the value of the editPerm property.
      * 
      * @return
      *     possible object is
-     *     {@link States }
+     *     {@link String }
      *     
      */
-    public States getStates() {
-        return states;
+    public String getEditPerm() {
+        return editPerm;
     }
 
     /**
-     * Sets the value of the states property.
+     * Sets the value of the editPerm property.
      * 
      * @param value
      *     allowed object is
-     *     {@link States }
+     *     {@link String }
      *     
      */
-    public void setStates(States value) {
-        this.states = value;
+    public void setEditPerm(String value) {
+        this.editPerm = value;
     }
 
 }
