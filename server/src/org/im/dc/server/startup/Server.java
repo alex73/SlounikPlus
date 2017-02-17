@@ -7,6 +7,7 @@ import javax.xml.ws.Endpoint;
 import org.im.dc.server.Config;
 import org.im.dc.server.Db;
 import org.im.dc.service.impl.ArticleWebserviceImpl;
+import org.im.dc.service.impl.ToolsWebserviceImpl;
 
 /**
  * Server startup and initialization class.
@@ -18,6 +19,7 @@ public class Server {
         Db.init();
 
         Endpoint.publish("http://localhost:9080/myapp/articles", new ArticleWebserviceImpl());
+        Endpoint.publish("http://localhost:9080/myapp/tools", new ToolsWebserviceImpl());
         System.out.println("Server started");
     }
 }

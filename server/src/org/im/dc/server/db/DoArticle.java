@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Result;
 import org.apache.ibatis.annotations.Results;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.SelectProvider;
 import org.apache.ibatis.annotations.Update;
 import org.im.dc.server.handlers.StringArrayTypeHandler;
 
@@ -37,7 +38,7 @@ public interface DoArticle {
             + " WHERE articleId = #{0.articleId} AND lastUpdated = #{1}")
     int updateArticle(RecArticle rec, Date prevLastUpdated);
 
-    @Select("SELECT articleId, words, state FROM Articles WHERE state = #{state}")
+    @SelectProvider(type = DoArticleDynamic.class, method = "list")
     @Results({ @Result(property = "words", column = "words", typeHandler = StringArrayTypeHandler.class) })
     List<RecArticle> list(String state);
 }
