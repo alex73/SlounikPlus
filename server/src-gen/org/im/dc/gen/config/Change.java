@@ -18,7 +18,7 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;attribute name="to" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="perm" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="roles" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -33,8 +33,8 @@ public class Change {
 
     @XmlAttribute(name = "to", required = true)
     protected String to;
-    @XmlAttribute(name = "perm", required = true)
-    protected String perm;
+    @XmlAttribute(name = "roles", required = true)
+    protected String roles;
 
     /**
      * Gets the value of the to property.
@@ -61,27 +61,27 @@ public class Change {
     }
 
     /**
-     * Gets the value of the perm property.
+     * Gets the value of the roles property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getPerm() {
-        return perm;
+    public String getRoles() {
+        return roles;
     }
 
     /**
-     * Sets the value of the perm property.
+     * Sets the value of the roles property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setPerm(String value) {
-        this.perm = value;
+    public void setRoles(String value) {
+        this.roles = value;
     }
 
 }

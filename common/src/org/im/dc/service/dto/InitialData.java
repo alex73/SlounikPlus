@@ -1,15 +1,11 @@
 package org.im.dc.service.dto;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class InitialData {
     public byte[] articleSchema;
-    public List<String> states = new ArrayList<>();
-    public List<User> users = new ArrayList<>();
-
-    public static class User {
-        public String user;
-        public String role;
-    }
+    public List<String> states;
+    public List<String> allUsers;
+    public Set<String> currentUserPermissions;
 }

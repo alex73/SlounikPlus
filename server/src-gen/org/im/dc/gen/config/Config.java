@@ -20,7 +20,6 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;sequence>
  *         &lt;element ref="{}users"/>
  *         &lt;element ref="{}roles"/>
- *         &lt;element ref="{}permissions"/>
  *         &lt;element ref="{}states"/>
  *         &lt;element ref="{}external_links"/>
  *       &lt;/sequence>
@@ -35,7 +34,6 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "", propOrder = {
     "users",
     "roles",
-    "permissions",
     "states",
     "externalLinks"
 })
@@ -46,8 +44,6 @@ public class Config {
     protected Users users;
     @XmlElement(required = true)
     protected Roles roles;
-    @XmlElement(required = true)
-    protected Permissions permissions;
     @XmlElement(required = true)
     protected States states;
     @XmlElement(name = "external_links", required = true)
@@ -99,30 +95,6 @@ public class Config {
      */
     public void setRoles(Roles value) {
         this.roles = value;
-    }
-
-    /**
-     * Gets the value of the permissions property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Permissions }
-     *     
-     */
-    public Permissions getPermissions() {
-        return permissions;
-    }
-
-    /**
-     * Sets the value of the permissions property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Permissions }
-     *     
-     */
-    public void setPermissions(Permissions value) {
-        this.permissions = value;
     }
 
     /**

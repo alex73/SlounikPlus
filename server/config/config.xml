@@ -5,29 +5,37 @@
 		<user name="user2" pass="456" role="рэдактар" />
 	</users>
 	<roles>
-		<role id="admin" />
-		<role id="укладальнік" />
-		<role id="рэдактар" />
+		<role id="укладальнік">
+			<permission>view_output</permission>
+		</role>
+		<role id="рэдактар">
+			<permission>edit_header</permission>
+			<permission>statistics</permission>
+			<permission>view_output</permission>
+			<permission>full_validation</permission>
+			<permission>add_words</permission>
+			<permission>reassign</permission>
+		</role>
+		<role id="галоўны_рэдактар">
+			<permission>edit_header</permission>
+			<permission>statistics</permission>
+			<permission>view_output</permission>
+			<permission>full_validation</permission>
+			<permission>add_words</permission>
+			<permission>reassign</permission>
+		</role>
 	</roles>
-	<permissions>
-		<edit_header>рэдактар,галоўны_рэдактар</edit_header>
-		<statistics>рэдактар,галоўны_рэдактар</statistics>
-		<view_output>рэдактар,галоўны_рэдактар</view_output>
-		<full_validation>рэдактар,галоўны_рэдактар</full_validation>
-		<add_words>рэдактар,галоўны_рэдактар</add_words>
-		<reassign>рэдактар,галоўны_рэдактар</reassign>
-	</permissions>
 	<states>
 		<state id="Неапрацаванае">
-			<change to="У працы " perm="укладальнік,admin" />
+			<change to="У працы " roles="укладальнік,admin" />
 		</state>
-		<state id="У працы " edit_perm="укладальнік,рэдактар">
-			<change to="Падрыхтаванае" perm="укладальнік,admin" />
-			<change to="На выдаленне " perm="укладальнік,admin" />
+		<state id="У працы " edit_roles="укладальнік,рэдактар">
+			<change to="Падрыхтаванае" roles="укладальнік,admin" />
+			<change to="На выдаленне " roles="укладальнік,admin" />
 		</state>
-		<state id="Падрыхтаванае" edit_perm="рэдактар">
-			<change to="Зацверджанае" perm="рэдактар,admin" />
-			<change to="На дапрацоўку " perm="рэдактар,admin" />
+		<state id="Падрыхтаванае" edit_roles="рэдактар">
+			<change to="Зацверджанае" roles="рэдактар,admin" />
+			<change to="На дапрацоўку " roles="рэдактар,admin" />
 		</state>
 	</states>
 	<external_links>

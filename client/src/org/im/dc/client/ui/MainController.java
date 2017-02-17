@@ -6,12 +6,14 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.Collections;
 
 import javax.swing.JComponent;
 import javax.swing.KeyStroke;
 
 import org.im.dc.client.SchemaLoader;
 import org.im.dc.client.WS;
+import org.im.dc.gen.config.Permission;
 import org.im.dc.service.dto.ArticleShort;
 import org.im.dc.service.dto.InitialData;
 
@@ -71,13 +73,16 @@ public class MainController extends BaseController<MainFrame> {
     /**
      * Login to server and retrieve initial info.
      */
-    void login(String user, String pass) {
+    void login(String username, String pass) {
         new LongProcess() {
             @Override
             protected void exec() throws Exception {
-                WS.init("http://localhost:9080/myapp", user, pass);
+                WS.init("http://localhost:9080/myapp", username, pass);
                 initialData = WS.getToolsWebservice().getInitialData(WS.header);
-                window.setTitle(window.getTitle() + " : " + user);
+                if (initialData.currentUserPermissions == null) {
+                    initialData.currentUserPermissions = Collections.emptySet();
+                }
+                window.setTitle(window.getTitle() + " : " + username);
 
                 SchemaLoader.init(initialData.articleSchema);
             }
@@ -99,6 +104,11 @@ public class MainController extends BaseController<MainFrame> {
                 new ArticleController(window, a.id);
             }
         });
+
+        window.btnAddWords.setVisible(initialData.currentUserPermissions.contains(Permission.ADD_WORDS.name()));
+        window.btnStat.setVisible(initialData.currentUserPermissions.contains(Permission.STATISTICS.name()));
+        window.btnValidateFull
+                .setVisible(initialData.currentUserPermissions.contains(Permission.FULL_VALIDATION.name()));
     }
 
     /**

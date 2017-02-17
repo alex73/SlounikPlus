@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-	elementFormDefault="qualified" attributeFormDefault="unqualified">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
 	<xs:element name="config">
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="users" />
 				<xs:element ref="roles" />
-				<xs:element ref="permissions" />
 				<xs:element ref="states" />
 				<xs:element ref="external_links" />
 			</xs:sequence>
@@ -35,21 +33,22 @@
 	</xs:element>
 	<xs:element name="role">
 		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="permission" type="permission" maxOccurs="unbounded" minOccurs="0" />
+			</xs:sequence>
 			<xs:attribute name="id" type="xs:string" use="required" />
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="permissions">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element name="edit_header" type="xs:string" />
-				<xs:element name="statistics" type="xs:string" />
-				<xs:element name="view_output" type="xs:string" />
-				<xs:element name="full_validation" type="xs:string" />
-				<xs:element name="add_words" type="xs:string" />
-				<xs:element name="reassign" type="xs:string" />
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
+	<xs:simpleType name="permission">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="edit_header" />
+			<xs:enumeration value="statistics" />
+			<xs:enumeration value="view_output" />
+			<xs:enumeration value="full_validation" />
+			<xs:enumeration value="add_words" />
+			<xs:enumeration value="reassign" />
+		</xs:restriction>
+	</xs:simpleType>
 	<xs:element name="states">
 		<xs:complexType>
 			<xs:sequence>
@@ -63,20 +62,19 @@
 				<xs:element ref="change" maxOccurs="unbounded" minOccurs="0" />
 			</xs:sequence>
 			<xs:attribute name="id" type="xs:string" use="required" />
-			<xs:attribute name="edit_perm" type="xs:string" use="optional" />
+			<xs:attribute name="edit_roles" type="xs:string" use="optional" />
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="change">
 		<xs:complexType>
 			<xs:attribute name="to" type="xs:string" use="required" />
-			<xs:attribute name="perm" type="xs:string" use="required" />
+			<xs:attribute name="roles" type="xs:string" use="required" />
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="external_links">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="link" type="link" maxOccurs="unbounded"
-					minOccurs="0" />
+				<xs:element name="link" type="link" maxOccurs="unbounded" minOccurs="0" />
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>

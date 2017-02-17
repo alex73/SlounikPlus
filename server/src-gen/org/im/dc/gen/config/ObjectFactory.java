@@ -38,14 +38,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Permissions }
-     * 
-     */
-    public Permissions createPermissions() {
-        return new Permissions();
-    }
-
-    /**
      * Create an instance of {@link ExternalLinks }
      * 
      */

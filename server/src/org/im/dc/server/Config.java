@@ -3,6 +3,8 @@ package org.im.dc.server;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.nio.file.Files;
+import java.util.Set;
+import java.util.TreeSet;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
@@ -12,6 +14,8 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
+import org.im.dc.gen.config.Permission;
+import org.im.dc.gen.config.Role;
 import org.im.dc.gen.config.User;
 
 public class Config {
@@ -44,6 +48,43 @@ public class Config {
             }
         }
         return false;
+    }
+
+    public static boolean checkPerm(String user, Permission perm) {
+        String userRole = null;
+        for (User u : config.getUsers().getUser()) {
+            if (u.getName().equals(user)) {
+                userRole = u.getRole();
+            }
+        }
+        for (Role r : config.getRoles().getRole()) {
+            if (r.getId().equals(userRole)) {
+                for (Permission p : r.getPermission()) {
+                    if (perm.equals(p)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    public static Set<String> getUserPermissions(String user) {
+        String userRole = null;
+        for (User u : config.getUsers().getUser()) {
+            if (u.getName().equals(user)) {
+                userRole = u.getRole();
+            }
+        }
+        Set<String> result = new TreeSet<>();
+        for (Role r : config.getRoles().getRole()) {
+            if (r.getId().equals(userRole)) {
+                for (Permission p : r.getPermission()) {
+                    result.add(p.name());
+                }
+            }
+        }
+        return result;
     }
 
     public static org.im.dc.gen.config.Config getConfig() {

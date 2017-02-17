@@ -23,7 +23,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element ref="{}change" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *       &lt;attribute name="id" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="edit_perm" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="edit_roles" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -41,8 +41,8 @@ public class State {
     protected List<Change> change;
     @XmlAttribute(name = "id", required = true)
     protected String id;
-    @XmlAttribute(name = "edit_perm")
-    protected String editPerm;
+    @XmlAttribute(name = "edit_roles")
+    protected String editRoles;
 
     /**
      * Gets the value of the change property.
@@ -98,27 +98,27 @@ public class State {
     }
 
     /**
-     * Gets the value of the editPerm property.
+     * Gets the value of the editRoles property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getEditPerm() {
-        return editPerm;
+    public String getEditRoles() {
+        return editRoles;
     }
 
     /**
-     * Sets the value of the editPerm property.
+     * Sets the value of the editRoles property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setEditPerm(String value) {
-        this.editPerm = value;
+    public void setEditRoles(String value) {
+        this.editRoles = value;
     }
 
 }

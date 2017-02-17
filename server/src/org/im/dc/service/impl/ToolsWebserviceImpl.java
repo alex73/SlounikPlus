@@ -1,6 +1,7 @@
 package org.im.dc.service.impl;
 
 import java.io.ByteArrayInputStream;
+import java.util.ArrayList;
 
 import javax.jws.WebService;
 import javax.script.ScriptContext;
@@ -8,6 +9,7 @@ import javax.script.SimpleScriptContext;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Validator;
 
+import org.im.dc.gen.config.Permission;
 import org.im.dc.gen.config.State;
 import org.im.dc.gen.config.User;
 import org.im.dc.server.Config;
@@ -22,12 +24,17 @@ import org.im.dc.service.dto.InitialData;
 
 @WebService(endpointInterface = "org.im.dc.service.ToolsWebservice")
 public class ToolsWebserviceImpl implements ToolsWebservice {
-    private void check(Header header) {
+    private void check(Header header, Permission... perms) {
         if (header.appVersion != AppConst.APP_VERSION) {
             throw new RuntimeException("Wrong app version");
         }
         if (!Config.checkUser(header.user, header.pass)) {
             throw new RuntimeException("Unknown user");
+        }
+        for (Permission p : perms) {
+            if (!Config.checkPerm(header.user, p)) {
+                throw new RuntimeException("No permission for this operation");
+            }
         }
     }
 
@@ -37,15 +44,15 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
 
         InitialData result = new InitialData();
         result.articleSchema = Config.articleSchemaSource;
+        result.states = new ArrayList<>();
         for (State st : Config.getConfig().getStates().getState()) {
             result.states.add(st.getId());
         }
+        result.allUsers = new ArrayList<>();
         for (User u : Config.getConfig().getUsers().getUser()) {
-            InitialData.User uo = new InitialData.User();
-            uo.user = u.getName();
-            uo.role = u.getRole();
-            result.users.add(uo);
+            result.allUsers.add(u.getName());
         }
+        result.currentUserPermissions = Config.getUserPermissions(header.user);
         return result;
     }
 
