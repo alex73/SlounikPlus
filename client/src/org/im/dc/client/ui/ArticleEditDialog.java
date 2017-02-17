@@ -53,18 +53,12 @@ public class ArticleEditDialog extends javax.swing.JDialog {
         jPanel5.setLayout(new java.awt.BorderLayout());
 
         txtWords.setEditable(false);
-        txtWords.setColumns(2);
-        txtWords.setText(bundle.getString("ArticleEditDialog.txtWords.text")); // NOI18N
         jPanel6.add(txtWords);
 
         txtState.setEditable(false);
-        txtState.setColumns(2);
-        txtState.setText(bundle.getString("ArticleEditDialog.txtState.text")); // NOI18N
         jPanel6.add(txtState);
 
         txtUsers.setEditable(false);
-        txtUsers.setColumns(2);
-        txtUsers.setText(bundle.getString("ArticleEditDialog.txtUsers.text")); // NOI18N
         jPanel6.add(txtUsers);
 
         jPanel5.add(jPanel6, java.awt.BorderLayout.WEST);
@@ -85,6 +79,7 @@ public class ArticleEditDialog extends javax.swing.JDialog {
 
         getContentPane().add(jPanel5, java.awt.BorderLayout.NORTH);
 
+        jSplitPane1.setDividerLocation(400);
         jSplitPane1.setResizeWeight(0.5);
         jSplitPane1.setToolTipText(bundle.getString("ArticleEditDialog.jSplitPane1.toolTipText")); // NOI18N
 
