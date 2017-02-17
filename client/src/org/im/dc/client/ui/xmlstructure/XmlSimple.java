@@ -8,9 +8,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
+import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -21,7 +21,7 @@ import com.sun.org.apache.xerces.internal.xs.XSSimpleTypeDefinition;
 @SuppressWarnings("serial")
 public class XmlSimple extends JPanel implements IXmlElement {
     private GridBagConstraints gbc = new GridBagConstraints();
-    private JTextField field;
+    private JEditorPane field;
     private JButton closable;
 
     public XmlSimple(XSSimpleTypeDefinition type, AnnotationInfo ann) {
@@ -40,13 +40,13 @@ public class XmlSimple extends JPanel implements IXmlElement {
 
         gbc.weightx = 1;
         gbc.gridx = 1;
-        field = new JTextField();
+        field = new JEditorPane();
         add(field, gbc);
 
         gbc.weightx = 0;
         gbc.gridx = 2;
         gbc.anchor = GridBagConstraints.NORTH;
-        closable = new JButton("\u274C");
+        closable = new JButton("×");
         closable.setBorder(null);
         closable.setContentAreaFilled(false);
         add(closable, gbc);

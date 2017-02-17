@@ -63,7 +63,7 @@ public class XmlGroup extends JPanel implements IXmlElement {
         gbc.fill = GridBagConstraints.NONE;
         gbc.anchor = GridBagConstraints.NORTH;
         gbc.weightx = 0;
-        closable = new JButton("\u274C");
+        closable = new JButton("×");
         closable.setBorder(null);
         closable.setContentAreaFilled(false);
         closable.setVisible(false);
