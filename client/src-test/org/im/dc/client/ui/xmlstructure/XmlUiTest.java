@@ -2,14 +2,11 @@ package org.im.dc.client.ui.xmlstructure;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.FileInputStream;
 import java.io.StringWriter;
 
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
-import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
 import com.sun.org.apache.xerces.internal.impl.xs.XMLSchemaLoader;

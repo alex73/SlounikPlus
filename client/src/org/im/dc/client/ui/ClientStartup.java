@@ -26,22 +26,4 @@ public class ClientStartup {
             JOptionPane.showMessageDialog(null, "Error start client: " + ex.getMessage());
         }
     }
-
-    static void ordered() {
-        for (int i = 0; i < 100; i++) {
-            Article a = WS.getArticleService().getArticle(WS.header, 1);
-            // System.out.println(a.words);
-        }
-    }
-
-    static void parallel() throws Exception {
-        ExecutorService EXEC = Executors.newFixedThreadPool(10);
-        for (int i = 0; i < 100; i++) {
-            EXEC.execute(() -> {
-                Article a = WS.getArticleService().getArticle(WS.header, 1);
-            });
-        }
-        EXEC.shutdown();
-        EXEC.awaitTermination(10, TimeUnit.MINUTES);
-    }
 }

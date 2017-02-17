@@ -63,6 +63,12 @@ public class DbTestArticle {
         check2(rec2);
     }
 
+    @Test
+    public void testList() {
+        Db.exec((api) -> api.getArticleMapper().list(null));
+        Db.exec((api) -> api.getArticleMapper().list("state"));
+    }
+
     void check1(RecArticle rec) {
         assertTrue(rec.getArticleId() > 0);
         assertArrayEquals(new String[] { "C", "D" }, rec.getAssignedUsers());

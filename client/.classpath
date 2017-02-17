@@ -4,5 +4,7 @@
 	<classpathentry kind="src" path="src-test"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/DictCreator-common"/>
+	<classpathentry kind="lib" path="/DictCreator-common/lib-test/hamcrest-core-1.3.jar"/>
+	<classpathentry kind="lib" path="/DictCreator-common/lib-test/junit-4.12.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
