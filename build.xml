@@ -87,13 +87,5 @@
             <arg value="org.im.dc.gen.config"/>
             <arg value="server/src/org/im/dc/xsd/config.xsd"/>
         </exec>
-        <exec executable="xjc">
-            <arg value="-no-header"/>
-            <arg value="-d"/>
-            <arg value="server/src-gen/"/>
-            <arg value="-p"/>
-            <arg value="org.im.dc.gen.article"/>
-            <arg value="server/config/article.xsd"/>
-        </exec>
     </target>
 </project>

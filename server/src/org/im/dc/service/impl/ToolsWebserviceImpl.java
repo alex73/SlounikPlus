@@ -5,16 +5,15 @@ import java.io.ByteArrayInputStream;
 import javax.jws.WebService;
 import javax.script.ScriptContext;
 import javax.script.SimpleScriptContext;
-import javax.xml.bind.JAXBContext;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Validator;
 
-import org.im.dc.gen.article.Root;
 import org.im.dc.gen.config.State;
 import org.im.dc.gen.config.User;
 import org.im.dc.server.Config;
 import org.im.dc.server.Db;
 import org.im.dc.server.db.RecArticle;
+import org.im.dc.server.js.JsDomWrapper;
 import org.im.dc.server.js.JsProcessing;
 import org.im.dc.service.AppConst;
 import org.im.dc.service.ToolsWebservice;
@@ -66,16 +65,6 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
     public void addWords() {
     }
 
-    static final JAXBContext XML_CONTEXT;
-
-    static {
-        try {
-            XML_CONTEXT = JAXBContext.newInstance(Root.class);
-        } catch (Exception ex) {
-            throw new ExceptionInInitializerError(ex);
-        }
-    }
-
     @Override
     public String printPreview(Header header, int articleId) throws Exception {
         check(header);
@@ -87,11 +76,10 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
 
         Validator validator = Config.articleSchema.newValidator();
         validator.validate(new StreamSource(new ByteArrayInputStream(rec.getXml())));
-        Root art = (Root) XML_CONTEXT.createUnmarshaller().unmarshal(new ByteArrayInputStream(rec.getXml()));
 
         SimpleScriptContext context = new SimpleScriptContext();
         context.setAttribute("words", rec.getWords(), ScriptContext.ENGINE_SCOPE);
-        context.setAttribute("article", art, ScriptContext.ENGINE_SCOPE);
+        context.setAttribute("article", new JsDomWrapper(rec.getXml()), ScriptContext.ENGINE_SCOPE);
         JsProcessing.exec("config/output.js", context);
 
         return (String) context.getAttribute("out", ScriptContext.ENGINE_SCOPE);
