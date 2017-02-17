@@ -7,7 +7,9 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Collections;
+import java.util.Vector;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComponent;
 import javax.swing.KeyStroke;
 
@@ -95,6 +97,7 @@ public class MainController extends BaseController<MainFrame> {
     }
 
     private void init() {
+        window.cbUser.setModel(new DefaultComboBoxModel<>(new Vector<>(initialData.allUsers)));
         window.btnSearch.addActionListener((e) -> search());
         window.tableArticles.addMouseListener(new MouseAdapter() {
             @Override
@@ -104,6 +107,7 @@ public class MainController extends BaseController<MainFrame> {
                 new ArticleController(window, a.id);
             }
         });
+        window.btnAddWords.addActionListener((e) -> new AddWordsController(window));
 
         window.btnAddWords.setVisible(initialData.currentUserPermissions.contains(Permission.ADD_WORDS.name()));
         window.btnStat.setVisible(initialData.currentUserPermissions.contains(Permission.STATISTICS.name()));
