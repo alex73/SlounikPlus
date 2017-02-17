@@ -23,12 +23,11 @@ public class VerticalListLayout implements LayoutManager {
 
     @Override
     public Dimension preferredLayoutSize(Container parent) {
-        Dimension dim = new Dimension(0, 0);
+        Dimension dim = new Dimension(100, 0);
         synchronized (parent.getTreeLock()) {
             for (Component c : parent.getComponents()) {
                 if (c.isVisible()) {
                     Dimension d = c.getPreferredSize();
-                    dim.width = Math.max(dim.width, d.width + insets.left + insets.right);
                     dim.height += d.height + insets.top + insets.bottom;
                 }
             }

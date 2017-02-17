@@ -30,13 +30,13 @@ public class ArticleEditDialog extends javax.swing.JDialog {
         lblWatched = new javax.swing.JLabel();
         lblPreview = new javax.swing.JLabel();
         jSplitPane1 = new javax.swing.JSplitPane();
-        jPanel1 = new javax.swing.JPanel();
+        panelEditor = new javax.swing.JPanel();
         jPanel8 = new javax.swing.JPanel();
         jSplitPane2 = new javax.swing.JSplitPane();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
+        txtNotes = new javax.swing.JTextArea();
         jPanel9 = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
@@ -88,18 +88,8 @@ public class ArticleEditDialog extends javax.swing.JDialog {
         jSplitPane1.setResizeWeight(0.5);
         jSplitPane1.setToolTipText(bundle.getString("ArticleEditDialog.jSplitPane1.toolTipText")); // NOI18N
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 100, Short.MAX_VALUE)
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 341, Short.MAX_VALUE)
-        );
-
-        jSplitPane1.setLeftComponent(jPanel1);
+        panelEditor.setLayout(new java.awt.BorderLayout());
+        jSplitPane1.setLeftComponent(panelEditor);
 
         jPanel8.setLayout(new java.awt.BorderLayout());
 
@@ -122,9 +112,9 @@ public class ArticleEditDialog extends javax.swing.JDialog {
 
         jSplitPane2.setBottomComponent(jScrollPane1);
 
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jScrollPane2.setViewportView(jTextArea1);
+        txtNotes.setColumns(20);
+        txtNotes.setRows(5);
+        jScrollPane2.setViewportView(txtNotes);
 
         jSplitPane2.setLeftComponent(jScrollPane2);
 
@@ -210,7 +200,6 @@ public class ArticleEditDialog extends javax.swing.JDialog {
     public javax.swing.JButton jButton2;
     public javax.swing.JButton jButton3;
     public javax.swing.JLabel jLabel5;
-    public javax.swing.JPanel jPanel1;
     public javax.swing.JPanel jPanel2;
     public javax.swing.JPanel jPanel3;
     public javax.swing.JPanel jPanel4;
@@ -224,11 +213,12 @@ public class ArticleEditDialog extends javax.swing.JDialog {
     public javax.swing.JSplitPane jSplitPane1;
     public javax.swing.JSplitPane jSplitPane2;
     public javax.swing.JTable jTable1;
-    public javax.swing.JTextArea jTextArea1;
     public javax.swing.JLabel lblAddComment;
     public javax.swing.JLabel lblHasProposedChanges;
     public javax.swing.JLabel lblPreview;
     public javax.swing.JLabel lblWatched;
+    public javax.swing.JPanel panelEditor;
+    public javax.swing.JTextArea txtNotes;
     public javax.swing.JTextField txtState;
     public javax.swing.JTextField txtUsers;
     public javax.swing.JTextField txtWords;
