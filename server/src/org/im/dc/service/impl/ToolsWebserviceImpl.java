@@ -2,6 +2,8 @@ package org.im.dc.service.impl;
 
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import javax.jws.WebService;
 import javax.script.ScriptContext;
@@ -69,7 +71,36 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
     }
 
     @Override
-    public void addWords() {
+    public void addWords(Header header, String[] users, String[] words, String initialState) throws Exception {
+        check(header, Permission.ADD_WORDS);
+
+        Date lastUpdated = new Date();
+        List<RecArticle> list = new ArrayList<>();
+        for (String w : words) {
+            w = w.trim();
+            if (w.isEmpty()) {
+                continue;
+            }
+            String[] wa = w.split(",");
+            for (int i = 0; i < wa.length; i++) {
+                wa[i] = wa[i].trim();
+                if (wa[i].isEmpty()) {
+                    throw new Exception("Wrong words: " + w);
+                }
+            }
+            RecArticle r = new RecArticle();
+            r.setAssignedUsers(users);
+            r.setWords(wa);
+            r.setState(initialState);
+            r.setMarkers(new String[0]);
+            r.setWatchers(new String[0]);
+            r.setLinkedTo(new String[0]);
+            r.setLastUpdated(lastUpdated);
+            list.add(r);
+        }
+
+        // TODO ці ўжо некаторыя артыкулы існуюць ?
+        Db.exec((api) -> api.getSession().insert("insertArticles", list));
     }
 
     @Override

@@ -6,6 +6,8 @@
 	</settings>
 	<typeAliases>
 		<package name="org.im.dc.server.handlers" />
+		<package name="org.im.dc.server.db" />
+		<package name="org.im.dc.service.dto" />
 	</typeAliases>
 	<environments default="development">
 		<environment id="development">
@@ -24,6 +26,7 @@
 	</environments>
 	<mappers>
 		<mapper class="org.im.dc.server.db.DoArticle" />
+		<mapper resource="org/im/dc/server/db/Article.xml" />
 		<mapper class="org.im.dc.server.db.DoArticleHistory" />
 		<mapper class="org.im.dc.server.db.DoComment" />
 		<mapper class="org.im.dc.server.db.DoIssue" />

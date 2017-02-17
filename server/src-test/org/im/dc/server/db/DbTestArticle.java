@@ -5,9 +5,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.im.dc.server.Db;
+import org.im.dc.service.dto.ArticlesFilter;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -17,6 +20,30 @@ public class DbTestArticle {
     public void prepare() throws Exception {
         System.setProperty("log4j.configurationFile", new File("config/log4j.xml").getAbsolutePath());
         Db.init();
+    }
+
+    @Test
+    public void testInsertMany() {
+        List<RecArticle> list = new ArrayList<>();
+        RecArticle r1 = new RecArticle();
+        r1.setAssignedUsers(new String[] { "u1", "u2" });
+        r1.setWords(new String[] { "word1" });
+        r1.setState("Неапрацаванае");
+        r1.setMarkers(new String[0]);
+        r1.setWatchers(new String[0]);
+        r1.setLinkedTo(new String[0]);
+        r1.setLastUpdated(new Date());
+        list.add(r1);
+        RecArticle r2 = new RecArticle();
+        r2.setAssignedUsers(new String[] { "u1", "u2" });
+        r2.setWords(new String[] { "word2" });
+        r2.setState("Неапрацаванае");
+        r2.setMarkers(new String[0]);
+        r2.setWatchers(new String[0]);
+        r2.setLinkedTo(new String[0]);
+        r2.setLastUpdated(new Date());
+        list.add(r2);
+        Db.exec((api) -> api.getSession().insert("insertArticles", list));
     }
 
     @Test
@@ -65,8 +92,10 @@ public class DbTestArticle {
 
     @Test
     public void testList() {
-        Db.exec((api) -> api.getArticleMapper().list(null));
-        Db.exec((api) -> api.getArticleMapper().list("state"));
+        ArticlesFilter filter = new ArticlesFilter();
+        List<RecArticle> list = Db.execAndReturn((api) -> api.getSession().selectList("listArticles", filter));
+        filter.state = "state";
+        Db.exec((api) -> api.getSession().selectList("listArticles", filter));
     }
 
     void check1(RecArticle rec) {

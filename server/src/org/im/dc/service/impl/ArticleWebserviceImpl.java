@@ -16,6 +16,7 @@ import org.im.dc.service.dto.ArticleFull;
 import org.im.dc.service.dto.ArticleFullInfo;
 import org.im.dc.service.dto.ArticleHistoryShort;
 import org.im.dc.service.dto.ArticleShort;
+import org.im.dc.service.dto.ArticlesFilter;
 import org.im.dc.service.dto.Header;
 
 @WebService(endpointInterface = "org.im.dc.service.ArticleWebservice")
@@ -121,11 +122,11 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
     }
 
     @Override
-    public List<ArticleShort> listArticles(Header header, String state) {
+    public List<ArticleShort> listArticles(Header header, ArticlesFilter filter) {
         check(header);
 
         List<ArticleShort> result = new ArrayList<>();
-        List<RecArticle> list = Db.execAndReturn((api) -> api.getArticleMapper().list(state));
+        List<RecArticle> list = Db.execAndReturn((api) -> api.getSession().selectList("listArticles", filter));
         for (RecArticle r : list) {
             ArticleShort o = new ArticleShort();
             o.id = r.getArticleId();

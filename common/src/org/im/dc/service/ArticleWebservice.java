@@ -9,6 +9,7 @@ import org.im.dc.service.dto.ArticleFull;
 import org.im.dc.service.dto.ArticleFullInfo;
 import org.im.dc.service.dto.ArticleHistoryShort;
 import org.im.dc.service.dto.ArticleShort;
+import org.im.dc.service.dto.ArticlesFilter;
 import org.im.dc.service.dto.Header;
 
 @WebService
@@ -27,7 +28,7 @@ public interface ArticleWebservice {
 
     void setWatch(Header header, int articleId, boolean watch);
 
-    List<ArticleShort> listArticles(Header header, String state);
+    List<ArticleShort> listArticles(Header header, ArticlesFilter filter);
 
     List<ArticleHistoryShort> listTodo(Header header);
 

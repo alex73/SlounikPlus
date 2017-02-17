@@ -15,7 +15,7 @@ public interface ToolsWebservice {
 
     void reassignUsers();
 
-    void addWords();
+    void addWords(Header header, String[] users, String[] words, String initialState) throws Exception;
 
     String printPreview(Header header, int articleId) throws Exception;
 }

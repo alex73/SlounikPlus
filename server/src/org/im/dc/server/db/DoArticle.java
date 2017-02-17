@@ -1,14 +1,12 @@
 package org.im.dc.server.db;
 
 import java.util.Date;
-import java.util.List;
 
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Result;
 import org.apache.ibatis.annotations.Results;
 import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.SelectProvider;
 import org.apache.ibatis.annotations.Update;
 import org.im.dc.server.handlers.StringArrayTypeHandler;
 
@@ -37,8 +35,4 @@ public interface DoArticle {
             + " notes = #{0.notes}, textForSearch = #{0.textForSearch}, lettersCount = #{0.lettersCount}, lastUpdated = #{0.lastUpdated} "
             + " WHERE articleId = #{0.articleId} AND lastUpdated = #{1}")
     int updateArticle(RecArticle rec, Date prevLastUpdated);
-
-    @SelectProvider(type = DoArticleDynamic.class, method = "list")
-    @Results({ @Result(property = "words", column = "words", typeHandler = StringArrayTypeHandler.class) })
-    List<RecArticle> list(String state);
 }
