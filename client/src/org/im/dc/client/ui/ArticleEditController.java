@@ -90,6 +90,8 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
                     JOptionPane.ERROR_MESSAGE);
         }
         window.panelEditor.setViewportView(editorUI);
+
+        window.tableHistory.setModel(new ArticleEditHistoryModel(article.history));
     }
 
     /**

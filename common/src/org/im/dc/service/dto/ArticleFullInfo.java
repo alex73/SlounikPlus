@@ -1,5 +1,7 @@
 package org.im.dc.service.dto;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -14,7 +16,7 @@ public class ArticleFullInfo {
     // гэты карыстальнік можа зьмяняць стан артыкула на вызначаныя тут
     public Set<String> youCanChangeStateTo = new TreeSet<>();
     // гісторыя зменаў артыкула
-    public List<ArticleHistory> history;
+    public List<ArticleHistory> history = new ArrayList<>();
     // спасылаюцца на гэты артыкул
     public List<LinkFrom> links;
     // спасылкі на зьмешнія рэсурсы
@@ -27,5 +29,10 @@ public class ArticleFullInfo {
 
     public static class ArticleHistory {
         public int historyId;
+        // калі быў зменены
+        public Date changed;
+        // хто змяніў
+        public String changer;
+        public String what;
     }
 }

@@ -74,6 +74,20 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
                 break;
             }
         }
+        // гісторыя
+        for (RecArticleHistory rh : Db
+                .execAndReturn((api) -> api.getArticleHistoryMapper().retrieveHistory(articleId))) {
+            ArticleFullInfo.ArticleHistory h = new ArticleFullInfo.ArticleHistory();
+            h.historyId = rh.getHistoryId();
+            h.changed = rh.getChanged();
+            h.changer = rh.getChanger();
+            if (rh.getOldState() != null && rh.getNewState() != null) {
+                h.what = rh.getOldState() + " -> " + rh.getNewState();
+            } else if (rh.getNewXml() != null) {
+                h.what = "Тэкст артыкула";
+            }
+            a.history.add(h);
+        }
 
         return a;
     }
