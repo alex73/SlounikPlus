@@ -54,6 +54,7 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
         for (User u : Config.getConfig().getUsers().getUser()) {
             result.allUsers.add(u.getName());
         }
+        result.currentUserRole = Config.getUserRole(header.user);
         result.currentUserPermissions = Config.getUserPermissions(header.user);
         return result;
     }

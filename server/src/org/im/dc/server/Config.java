@@ -51,12 +51,7 @@ public class Config {
     }
 
     public static boolean checkPerm(String user, Permission perm) {
-        String userRole = null;
-        for (User u : config.getUsers().getUser()) {
-            if (u.getName().equals(user)) {
-                userRole = u.getRole();
-            }
-        }
+        String userRole = getUserRole(user);
         for (Role r : config.getRoles().getRole()) {
             if (r.getId().equals(userRole)) {
                 for (Permission p : r.getPermission()) {
@@ -69,13 +64,17 @@ public class Config {
         return false;
     }
 
-    public static Set<String> getUserPermissions(String user) {
-        String userRole = null;
+    public static String getUserRole(String user) {
         for (User u : config.getUsers().getUser()) {
             if (u.getName().equals(user)) {
-                userRole = u.getRole();
+                return u.getRole();
             }
         }
+        return null;
+    }
+
+    public static Set<String> getUserPermissions(String user) {
+        String userRole = getUserRole(user);
         Set<String> result = new TreeSet<>();
         for (Role r : config.getRoles().getRole()) {
             if (r.getId().equals(userRole)) {
