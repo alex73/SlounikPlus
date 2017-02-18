@@ -16,6 +16,7 @@ import javax.xml.validation.Validator;
 
 import org.im.dc.gen.config.Permission;
 import org.im.dc.gen.config.Role;
+import org.im.dc.gen.config.State;
 import org.im.dc.gen.config.User;
 
 public class Config {
@@ -35,6 +36,7 @@ public class Config {
 
         Unmarshaller unm = JAXBContext.newInstance(org.im.dc.gen.config.Config.class).createUnmarshaller();
         config = (org.im.dc.gen.config.Config) unm.unmarshal(CONFIG_FILE);
+        //TODO check role names
 
         schemaFactory.newSchema(ARTICLE_SCHEMA_FILE);
         articleSchemaSource = Files.readAllBytes(ARTICLE_SCHEMA_FILE.toPath());
@@ -84,6 +86,27 @@ public class Config {
             }
         }
         return result;
+    }
+
+    public static State getStateByName(String state) {
+        for (State s : config.getStates().getState()) {
+            if (s.getId().equals(state)) {
+                return s;
+            }
+        }
+        return null;
+    }
+
+    public static boolean roleInRolesList(String role, String rolesList) {
+        if (rolesList == null) {
+            return false;
+        }
+        for (String r : rolesList.split(",")) {
+            if (r.trim().equals(role)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static org.im.dc.gen.config.Config getConfig() {

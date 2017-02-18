@@ -14,13 +14,13 @@ import org.im.dc.service.dto.Header;
 
 @WebService
 public interface ArticleWebservice {
-    ArticleFullInfo getArticleFullInfo(Header header, int articleId);
+    ArticleFullInfo getArticleFullInfo(Header header, int articleId) throws Exception;
 
-    ArticleFullInfo saveArticle(Header header, ArticleFull article);
+    ArticleFullInfo saveArticle(Header header, ArticleFull article) throws Exception;
 
-    ArticleFullInfo changeState(Header header, int articleId, String newState, Date lastUpdated);
+    ArticleFullInfo changeState(Header header, int articleId, String newState, Date lastUpdated) throws Exception;
 
-    void addComment(Header header, int articleId, String comment);
+    void addComment(Header header, int articleId, String comment) throws Exception;
 
     void addIssue(Header header, int articleId, String issueText, byte[] currentXml, byte[] proposedXml);
 
@@ -28,7 +28,7 @@ public interface ArticleWebservice {
 
     void setWatch(Header header, int articleId, boolean watch);
 
-    List<ArticleShort> listArticles(Header header, ArticlesFilter filter);
+    List<ArticleShort> listArticles(Header header, ArticlesFilter filter) throws Exception;
 
     List<ArticleHistoryShort> listTodo(Header header);
 

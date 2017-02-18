@@ -5,12 +5,19 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.Window;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.util.concurrent.ExecutionException;
 
 import javax.swing.ImageIcon;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.KeyStroke;
 import javax.swing.RootPaneContainer;
 import javax.swing.SwingWorker;
 import javax.xml.ws.soap.SOAPFaultException;
@@ -53,6 +60,18 @@ public abstract class BaseController<T extends Window> {
         window.setVisible(true);
     }
 
+    /**
+     * Зачыняць вакно па націсканьні ESC.
+     */
+    protected void setupCloseOnEscape() {
+        ActionListener cancelListener = (e) -> {
+            window.dispose();
+        };
+        ((RootPaneContainer) window).getRootPane().registerKeyboardAction(cancelListener,
+                KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
+
+    }
+
     /** Show glass pane. */
     protected void showProgress() {
         ((RootPaneContainer) window).getGlassPane().setVisible(true);
@@ -83,16 +102,25 @@ public abstract class BaseController<T extends Window> {
             try {
                 get();
                 ok();
-            } catch (SOAPFaultException ex) {
+            } catch (InterruptedException ex) {
                 ex.printStackTrace();
-                JOptionPane.showMessageDialog(window, "Remote error: " + ex.getFault().getFaultString(), "Памылка",
+                JOptionPane.showMessageDialog(window, "Interrupted: " + ex.getMessage(), "Памылка",
                         JOptionPane.ERROR_MESSAGE);
                 error();
-            } catch (Throwable ex) {
-                ex.printStackTrace();
-                JOptionPane.showMessageDialog(window, "Error connect: " + ex.getMessage(), "Памылка",
-                        JOptionPane.ERROR_MESSAGE);
-                error();
+            } catch (ExecutionException e) {
+                Throwable ex = e.getCause();
+                if (ex instanceof SOAPFaultException) {
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(window,
+                            "Remote error: " + ((SOAPFaultException) ex).getFault().getFaultString(), "Памылка",
+                            JOptionPane.ERROR_MESSAGE);
+                    error();
+                } else {
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(window, "Error: " + ex.getMessage(), "Памылка",
+                            JOptionPane.ERROR_MESSAGE);
+                    error();
+                }
             }
             hideProgress();
         }

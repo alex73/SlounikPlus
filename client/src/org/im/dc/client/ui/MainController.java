@@ -6,7 +6,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.Collections;
 import java.util.Vector;
 
 import javax.swing.DefaultComboBoxModel;
@@ -81,16 +80,13 @@ public class MainController extends BaseController<MainFrame> {
             protected void exec() throws Exception {
                 WS.init("http://localhost:9080/myapp", username, pass);
                 initialData = WS.getToolsWebservice().getInitialData(WS.header);
-                if (initialData.currentUserPermissions == null) {
-                    initialData.currentUserPermissions = Collections.emptySet();
-                }
-                window.setTitle(window.getTitle() + " : " + username);
 
                 SchemaLoader.init(initialData.articleSchema);
             }
 
             @Override
             protected void ok() {
+                window.setTitle(window.getTitle() + " : " + username);
                 init();
             }
         };
@@ -104,7 +100,7 @@ public class MainController extends BaseController<MainFrame> {
             public void mouseClicked(MouseEvent e) {
                 ArticleShort a = ((MainFrameArticlesModel) window.tableArticles.getModel()).articles
                         .get(window.tableArticles.getSelectedRow());
-                new ArticleController(window, a.id);
+                new ArticleEditController(window, a.id);
             }
         });
         window.btnAddWords.addActionListener((e) -> new AddWordsController(window));

@@ -5,9 +5,7 @@
 		<user name="user2" pass="456" role="рэдактар" />
 	</users>
 	<roles>
-		<role id="укладальнік">
-			<permission>view_output</permission>
-		</role>
+		<role id="укладальнік" />
 		<role id="рэдактар">
 			<permission>edit_header</permission>
 			<permission>statistics</permission>
@@ -27,7 +25,7 @@
 	</roles>
 	<states>
 		<state id="Неапрацаванае">
-			<change to="У працы " roles="укладальнік,admin" />
+			<change to="У працы " roles="укладальнік,рэдактар" />
 		</state>
 		<state id="У працы " edit_roles="укладальнік,рэдактар">
 			<change to="Падрыхтаванае" roles="укладальнік,admin" />

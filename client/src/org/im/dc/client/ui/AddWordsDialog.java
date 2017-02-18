@@ -29,11 +29,12 @@ public class AddWordsDialog extends javax.swing.JDialog {
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
-        panelUsers = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
+        jPanel1 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
         cbInitialState = new javax.swing.JComboBox<>();
+        jLabel1 = new javax.swing.JLabel();
+        panelUsers = new javax.swing.JPanel();
+        jLabel2 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         words = new javax.swing.JTextArea();
         jPanel2 = new javax.swing.JPanel();
@@ -42,24 +43,9 @@ public class AddWordsDialog extends javax.swing.JDialog {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("org/im/dc/client/ui/Bundle"); // NOI18N
         setTitle(bundle.getString("AddWordsDialog.title")); // NOI18N
+        setPreferredSize(new java.awt.Dimension(700, 700));
 
-        panelUsers.setLayout(new java.awt.GridBagLayout());
-
-        jLabel1.setText(bundle.getString("AddWordsDialog.jLabel1.text")); // NOI18N
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 10;
-        gridBagConstraints.gridwidth = 2;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        panelUsers.add(jLabel1, gridBagConstraints);
-
-        jLabel2.setText(bundle.getString("AddWordsDialog.jLabel2.text")); // NOI18N
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridwidth = 2;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        panelUsers.add(jLabel2, gridBagConstraints);
+        jPanel1.setLayout(new java.awt.GridBagLayout());
 
         jLabel3.setText(bundle.getString("AddWordsDialog.jLabel3.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -67,7 +53,7 @@ public class AddWordsDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 0;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        panelUsers.add(jLabel3, gridBagConstraints);
+        jPanel1.add(jLabel3, gridBagConstraints);
 
         cbInitialState.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -75,9 +61,35 @@ public class AddWordsDialog extends javax.swing.JDialog {
         gridBagConstraints.gridy = 0;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        panelUsers.add(cbInitialState, gridBagConstraints);
+        jPanel1.add(cbInitialState, gridBagConstraints);
 
-        getContentPane().add(panelUsers, java.awt.BorderLayout.NORTH);
+        jLabel1.setText(bundle.getString("AddWordsDialog.jLabel1.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        jPanel1.add(jLabel1, gridBagConstraints);
+
+        panelUsers.setLayout(new javax.swing.BoxLayout(panelUsers, javax.swing.BoxLayout.Y_AXIS));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 55, 5, 5);
+        jPanel1.add(panelUsers, gridBagConstraints);
+
+        jLabel2.setText(bundle.getString("AddWordsDialog.jLabel2.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        jPanel1.add(jLabel2, gridBagConstraints);
+
+        getContentPane().add(jPanel1, java.awt.BorderLayout.NORTH);
 
         words.setColumns(20);
         words.setRows(5);
@@ -143,6 +155,7 @@ public class AddWordsDialog extends javax.swing.JDialog {
     public javax.swing.JLabel jLabel1;
     public javax.swing.JLabel jLabel2;
     public javax.swing.JLabel jLabel3;
+    public javax.swing.JPanel jPanel1;
     public javax.swing.JPanel jPanel2;
     public javax.swing.JScrollPane jScrollPane1;
     public javax.swing.JPanel panelUsers;

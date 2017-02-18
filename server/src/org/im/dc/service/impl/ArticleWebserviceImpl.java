@@ -6,6 +6,8 @@ import java.util.List;
 
 import javax.jws.WebService;
 
+import org.im.dc.gen.config.Change;
+import org.im.dc.gen.config.State;
 import org.im.dc.server.Config;
 import org.im.dc.server.Db;
 import org.im.dc.server.db.RecArticle;
@@ -22,7 +24,7 @@ import org.im.dc.service.dto.Header;
 @WebService(endpointInterface = "org.im.dc.service.ArticleWebservice")
 public class ArticleWebserviceImpl implements ArticleWebservice {
 
-    private void check(Header header) {
+    private void check(Header header) throws Exception {
         if (header.appVersion != AppConst.APP_VERSION) {
             throw new RuntimeException("Wrong app version");
         }
@@ -32,12 +34,12 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
     }
 
     @Override
-    public ArticleFullInfo getArticleFullInfo(Header header, int articleId) {
+    public ArticleFullInfo getArticleFullInfo(Header header, int articleId) throws Exception {
         check(header);
 
         RecArticle rec = Db.execAndReturn((api) -> api.getArticleMapper().selectArticle(articleId));
         if (rec == null) {
-            return null;
+            throw new Exception("Няма вызначанага артыкула");
         }
 
         ArticleFullInfo a = new ArticleFullInfo();
@@ -51,11 +53,31 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
         a.article.notes = rec.getNotes();
         a.article.lastUpdated = rec.getLastUpdated();
 
+        String userRole = Config.getUserRole(header.user);
+        State state = Config.getStateByName(rec.getState());
+        if (state == null) {
+            a.youCanEdit = false;
+        } else {
+            a.youCanEdit = Config.roleInRolesList(userRole, state.getEditRoles());
+            for (Change ch : state.getChange()) {
+                if (Config.roleInRolesList(userRole, ch.getRoles())) {
+                    a.youCanChangeStateTo.add(ch.getTo());
+                }
+            }
+        }
+        a.youWatched = false;
+        for (String w : rec.getWatchers()) {
+            if (header.user.equals(w)) {
+                a.youWatched = true;
+                break;
+            }
+        }
+
         return a;
     }
 
     @Override
-    public ArticleFullInfo saveArticle(Header header, ArticleFull article) {
+    public ArticleFullInfo saveArticle(Header header, ArticleFull article) throws Exception {
         check(header);
 
         Db.exec((api) -> {
@@ -76,7 +98,8 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
     }
 
     @Override
-    public ArticleFullInfo changeState(Header header, int articleId, String newState, Date lastUpdated) {
+    public ArticleFullInfo changeState(Header header, int articleId, String newState, Date lastUpdated)
+            throws Exception {
         check(header);
 
         Db.exec((api) -> {
@@ -96,7 +119,7 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
     }
 
     @Override
-    public void addComment(Header header, int articleId, String comment) {
+    public void addComment(Header header, int articleId, String comment) throws Exception {
         check(header);
 
         Db.exec((api) -> {
@@ -122,7 +145,7 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
     }
 
     @Override
-    public List<ArticleShort> listArticles(Header header, ArticlesFilter filter) {
+    public List<ArticleShort> listArticles(Header header, ArticlesFilter filter) throws Exception {
         check(header);
 
         List<ArticleShort> result = new ArrayList<>();

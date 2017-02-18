@@ -30,25 +30,26 @@ public class ArticleEditDialog extends javax.swing.JDialog {
         lblWatched = new javax.swing.JLabel();
         lblPreview = new javax.swing.JLabel();
         jSplitPane1 = new javax.swing.JSplitPane();
-        panelEditor = new javax.swing.JPanel();
         jPanel8 = new javax.swing.JPanel();
         jSplitPane2 = new javax.swing.JSplitPane();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        tableHistory = new javax.swing.JTable();
         jScrollPane2 = new javax.swing.JScrollPane();
         txtNotes = new javax.swing.JTextArea();
         jPanel9 = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
+        panelEditor = new javax.swing.JScrollPane();
         jPanel2 = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
+        btnChangeState = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
+        btnProposeSave = new javax.swing.JButton();
+        btnSave = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("org/im/dc/client/ui/Bundle"); // NOI18N
         setTitle(bundle.getString("ArticleEditDialog.title")); // NOI18N
+        setPreferredSize(new java.awt.Dimension(800, 600));
 
         jPanel5.setLayout(new java.awt.BorderLayout());
 
@@ -83,16 +84,13 @@ public class ArticleEditDialog extends javax.swing.JDialog {
         jSplitPane1.setResizeWeight(0.5);
         jSplitPane1.setToolTipText(bundle.getString("ArticleEditDialog.jSplitPane1.toolTipText")); // NOI18N
 
-        panelEditor.setLayout(new java.awt.BorderLayout());
-        jSplitPane1.setLeftComponent(panelEditor);
-
         jPanel8.setLayout(new java.awt.BorderLayout());
 
         jSplitPane2.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
         jSplitPane2.setResizeWeight(0.5);
         jSplitPane2.setToolTipText(bundle.getString("ArticleEditDialog.jSplitPane2.toolTipText")); // NOI18N
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tableHistory.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -103,7 +101,7 @@ public class ArticleEditDialog extends javax.swing.JDialog {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        jScrollPane1.setViewportView(jTable1);
+        jScrollPane1.setViewportView(tableHistory);
 
         jSplitPane2.setBottomComponent(jScrollPane1);
 
@@ -125,21 +123,22 @@ public class ArticleEditDialog extends javax.swing.JDialog {
         jPanel8.add(jPanel9, java.awt.BorderLayout.SOUTH);
 
         jSplitPane1.setRightComponent(jPanel8);
+        jSplitPane1.setLeftComponent(panelEditor);
 
         getContentPane().add(jSplitPane1, java.awt.BorderLayout.CENTER);
 
         jPanel2.setLayout(new java.awt.BorderLayout());
 
-        jButton1.setText(bundle.getString("ArticleEditDialog.jButton1.text")); // NOI18N
-        jPanel4.add(jButton1);
+        btnChangeState.setText(bundle.getString("ArticleEditDialog.btnChangeState.text")); // NOI18N
+        jPanel4.add(btnChangeState);
 
         jPanel2.add(jPanel4, java.awt.BorderLayout.WEST);
 
-        jButton2.setText(bundle.getString("ArticleEditDialog.jButton2.text")); // NOI18N
-        jPanel3.add(jButton2);
+        btnProposeSave.setText(bundle.getString("ArticleEditDialog.btnProposeSave.text")); // NOI18N
+        jPanel3.add(btnProposeSave);
 
-        jButton3.setText(bundle.getString("ArticleEditDialog.jButton3.text")); // NOI18N
-        jPanel3.add(jButton3);
+        btnSave.setText(bundle.getString("ArticleEditDialog.btnSave.text")); // NOI18N
+        jPanel3.add(btnSave);
 
         jPanel2.add(jPanel3, java.awt.BorderLayout.EAST);
 
@@ -191,9 +190,9 @@ public class ArticleEditDialog extends javax.swing.JDialog {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    public javax.swing.JButton jButton1;
-    public javax.swing.JButton jButton2;
-    public javax.swing.JButton jButton3;
+    public javax.swing.JButton btnChangeState;
+    public javax.swing.JButton btnProposeSave;
+    public javax.swing.JButton btnSave;
     public javax.swing.JLabel jLabel5;
     public javax.swing.JPanel jPanel2;
     public javax.swing.JPanel jPanel3;
@@ -207,12 +206,12 @@ public class ArticleEditDialog extends javax.swing.JDialog {
     public javax.swing.JScrollPane jScrollPane2;
     public javax.swing.JSplitPane jSplitPane1;
     public javax.swing.JSplitPane jSplitPane2;
-    public javax.swing.JTable jTable1;
     public javax.swing.JLabel lblAddComment;
     public javax.swing.JLabel lblHasProposedChanges;
     public javax.swing.JLabel lblPreview;
     public javax.swing.JLabel lblWatched;
-    public javax.swing.JPanel panelEditor;
+    public javax.swing.JScrollPane panelEditor;
+    public javax.swing.JTable tableHistory;
     public javax.swing.JTextArea txtNotes;
     public javax.swing.JTextField txtState;
     public javax.swing.JTextField txtUsers;
