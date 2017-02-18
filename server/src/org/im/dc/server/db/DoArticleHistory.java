@@ -13,6 +13,6 @@ public interface DoArticleHistory {
     @Options(useGeneratedKeys = true, keyProperty = "historyId")
     void insertArticleHistory(RecArticleHistory hist);
 
-    @Select("SELECT * FROM ArticlesHistory WHERE articleId = #{articleId} ORDER BY changed DESC")
+    @Select("SELECT * FROM ArticlesHistory WHERE articleId = #{articleId}")
     List<RecArticleHistory> retrieveHistory(int articleId);
 }

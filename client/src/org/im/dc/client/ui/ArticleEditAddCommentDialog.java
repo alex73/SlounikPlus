@@ -1,11 +1,11 @@
 package org.im.dc.client.ui;
 
-public class ArticleEditNewStateDialog extends javax.swing.JDialog {
+public class ArticleEditAddCommentDialog extends javax.swing.JDialog {
 
     /**
-     * Creates new form ArticleEditNewStateDialog
+     * Creates new form ArticleEditAddCommentDIalog
      */
-    public ArticleEditNewStateDialog(java.awt.Frame parent, boolean modal) {
+    public ArticleEditAddCommentDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
     }
@@ -18,41 +18,32 @@ public class ArticleEditNewStateDialog extends javax.swing.JDialog {
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
-        java.awt.GridBagConstraints gridBagConstraints;
 
-        statesGroup = new javax.swing.ButtonGroup();
-        panelStates = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        txtComment = new javax.swing.JTextArea();
         jPanel1 = new javax.swing.JPanel();
-        btnChange = new javax.swing.JButton();
+        btnAdd = new javax.swing.JButton();
         btnCancel = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("org/im/dc/client/ui/Bundle"); // NOI18N
-        setTitle(bundle.getString("ArticleEditNewStateDialog.title")); // NOI18N
-        getContentPane().setLayout(new java.awt.GridBagLayout());
+        setTitle(bundle.getString("ArticleEditAddCommentDialog.title")); // NOI18N
 
-        panelStates.setLayout(new javax.swing.BoxLayout(panelStates, javax.swing.BoxLayout.Y_AXIS));
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        getContentPane().add(panelStates, gridBagConstraints);
+        txtComment.setColumns(20);
+        txtComment.setRows(5);
+        jScrollPane1.setViewportView(txtComment);
+
+        getContentPane().add(jScrollPane1, java.awt.BorderLayout.CENTER);
 
         jPanel1.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
-        btnChange.setText(bundle.getString("ArticleEditNewStateDialog.btnChange.text")); // NOI18N
-        jPanel1.add(btnChange);
+        btnAdd.setText(bundle.getString("ArticleEditAddCommentDialog.btnAdd.text")); // NOI18N
+        jPanel1.add(btnAdd);
 
-        btnCancel.setText(bundle.getString("ArticleEditNewStateDialog.btnCancel.text")); // NOI18N
+        btnCancel.setText(bundle.getString("ArticleEditAddCommentDialog.btnCancel.text")); // NOI18N
         jPanel1.add(btnCancel);
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        getContentPane().add(jPanel1, gridBagConstraints);
+        getContentPane().add(jPanel1, java.awt.BorderLayout.SOUTH);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -74,20 +65,21 @@ public class ArticleEditNewStateDialog extends javax.swing.JDialog {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(ArticleEditNewStateDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ArticleEditAddCommentDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(ArticleEditNewStateDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ArticleEditAddCommentDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(ArticleEditNewStateDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ArticleEditAddCommentDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(ArticleEditNewStateDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ArticleEditAddCommentDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the dialog */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                ArticleEditNewStateDialog dialog = new ArticleEditNewStateDialog(new javax.swing.JFrame(), true);
+                ArticleEditAddCommentDialog dialog = new ArticleEditAddCommentDialog(new javax.swing.JFrame(), true);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     @Override
                     public void windowClosing(java.awt.event.WindowEvent e) {
@@ -100,10 +92,10 @@ public class ArticleEditNewStateDialog extends javax.swing.JDialog {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    public javax.swing.JButton btnAdd;
     public javax.swing.JButton btnCancel;
-    public javax.swing.JButton btnChange;
     public javax.swing.JPanel jPanel1;
-    public javax.swing.JPanel panelStates;
-    public javax.swing.ButtonGroup statesGroup;
+    public javax.swing.JScrollPane jScrollPane1;
+    public javax.swing.JTextArea txtComment;
     // End of variables declaration//GEN-END:variables
 }

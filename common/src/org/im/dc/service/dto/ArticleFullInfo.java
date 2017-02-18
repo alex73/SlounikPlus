@@ -16,7 +16,7 @@ public class ArticleFullInfo {
     // гэты карыстальнік можа зьмяняць стан артыкула на вызначаныя тут
     public Set<String> youCanChangeStateTo = new TreeSet<>();
     // гісторыя зменаў артыкула
-    public List<ArticleHistory> history = new ArrayList<>();
+    public List<Related> related = new ArrayList<>();
     // спасылаюцца на гэты артыкул
     public List<LinkFrom> links;
     // спасылкі на зьмешнія рэсурсы
@@ -27,12 +27,15 @@ public class ArticleFullInfo {
         public String[] words;
     }
 
-    public static class ArticleHistory {
-        public int historyId;
+    public static class Related {
+        public Integer historyId;
+        public Integer commentId;
+        public Integer issueId;
+
         // калі быў зменены
-        public Date changed;
+        public Date when;
         // хто змяніў
-        public String changer;
+        public String who;
         public String what;
     }
 }

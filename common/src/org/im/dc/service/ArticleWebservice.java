@@ -20,9 +20,10 @@ public interface ArticleWebservice {
 
     ArticleFullInfo changeState(Header header, int articleId, String newState, Date lastUpdated) throws Exception;
 
-    void addComment(Header header, int articleId, String comment) throws Exception;
+    ArticleFullInfo addComment(Header header, int articleId, String comment) throws Exception;
 
-    void addIssue(Header header, int articleId, String issueText, byte[] currentXml, byte[] proposedXml);
+    ArticleFullInfo addIssue(Header header, int articleId, String issueText, byte[] proposedXml, Date lastUpdated)
+            throws Exception;
 
     void fixIssue(Header header, int articleId, int issueId, boolean accepted);
 

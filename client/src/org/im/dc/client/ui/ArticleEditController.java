@@ -2,9 +2,13 @@ package org.im.dc.client.ui;
 
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.ByteArrayInputStream;
 import java.io.StringWriter;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -59,6 +63,13 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
     private void init() {
         window.btnSave.addActionListener((e) -> save());
         window.btnChangeState.addActionListener((e) -> changeStateAsk());
+        window.btnProposeSave.addActionListener((e) -> proposeChanges());
+        window.lblAddComment.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                addComment();
+            }
+        });
     }
 
     private void show() {
@@ -91,7 +102,21 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
         }
         window.panelEditor.setViewportView(editorUI);
 
-        window.tableHistory.setModel(new ArticleEditHistoryModel(article.history));
+        Collections.sort(article.related, new Comparator<ArticleFullInfo.Related>() {
+            @Override
+            public int compare(ArticleFullInfo.Related r1, ArticleFullInfo.Related r2) {
+                return r2.when.compareTo(r1.when);
+            }
+        });
+        window.tableHistory.setModel(new ArticleEditHistoryModel(article.related));
+    }
+
+    private byte[] extractXml() throws Exception {
+        StringWriter w = new StringWriter();
+        XMLStreamWriter wr = XMLOutputFactory.newInstance().createXMLStreamWriter(w);
+        editorUI.extractData("root", wr);
+        wr.flush();
+        return w.toString().getBytes("UTF-8");
     }
 
     /**
@@ -102,11 +127,7 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
         new LongProcess() {
             @Override
             protected void exec() throws Exception {
-                StringWriter w = new StringWriter();
-                XMLStreamWriter wr = XMLOutputFactory.newInstance().createXMLStreamWriter(w);
-                editorUI.extractData("root", wr);
-                wr.flush();
-                article.article.xml = w.toString().getBytes("UTF-8");
+                article.article.xml = extractXml();
 
                 article = WS.getArticleService().saveArticle(WS.header, article.article);
             }
@@ -123,6 +144,39 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
             @Override
             protected void exec() throws Exception {
                 article = WS.getArticleService().changeState(WS.header, article.article.id, newState,
+                        article.article.lastUpdated);
+            }
+
+            @Override
+            protected void ok() {
+                ok.run();
+                show();
+            }
+        };
+    }
+
+    private void saveComment(String comment, Runnable ok) {
+        new LongProcess() {
+            @Override
+            protected void exec() throws Exception {
+                article = WS.getArticleService().addComment(WS.header, article.article.id, comment);
+            }
+
+            @Override
+            protected void ok() {
+                ok.run();
+                show();
+            }
+        };
+    }
+
+    private void saveProposal(String comment, Runnable ok) {
+        new LongProcess() {
+            @Override
+            protected void exec() throws Exception {
+                byte[] proposedXml = extractXml();
+
+                article = WS.getArticleService().addIssue(WS.header, article.article.id, comment, proposedXml,
                         article.article.lastUpdated);
             }
 
@@ -169,5 +223,50 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
         askState.pack();
         askState.setLocationRelativeTo(window);
         askState.setVisible(true);
+    }
+
+    private void addComment() {
+        ArticleEditAddCommentDialog askComment = new ArticleEditAddCommentDialog(MainController.mainWindow, true);
+
+        askComment.btnAdd.addActionListener((e) -> {
+            saveComment(askComment.txtComment.getText(), () -> {
+                askComment.dispose();
+                window.requestFocus();
+            });
+        });
+
+        // setup cancel button
+        ActionListener cancelListener = (e) -> {
+            askComment.dispose();
+        };
+        askComment.btnCancel.addActionListener(cancelListener);
+        askComment.getRootPane().registerKeyboardAction(cancelListener, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
+                JComponent.WHEN_IN_FOCUSED_WINDOW);
+
+        askComment.setLocationRelativeTo(window);
+        askComment.setVisible(true);
+    }
+
+    private void proposeChanges() {
+        ArticleEditProposeChangesDialog askProposeComment = new ArticleEditProposeChangesDialog(
+                MainController.mainWindow, true);
+
+        askProposeComment.btnOk.addActionListener((e) -> {
+            saveProposal(askProposeComment.txtComment.getText(), () -> {
+                askProposeComment.dispose();
+                window.requestFocus();
+            });
+        });
+
+        // setup cancel button
+        ActionListener cancelListener = (e) -> {
+            askProposeComment.dispose();
+        };
+        askProposeComment.btnCancel.addActionListener(cancelListener);
+        askProposeComment.getRootPane().registerKeyboardAction(cancelListener,
+                KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
+
+        askProposeComment.setLocationRelativeTo(window);
+        askProposeComment.setVisible(true);
     }
 }

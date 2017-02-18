@@ -14,6 +14,7 @@ import org.im.dc.server.PermissionChecker;
 import org.im.dc.server.db.RecArticle;
 import org.im.dc.server.db.RecArticleHistory;
 import org.im.dc.server.db.RecComment;
+import org.im.dc.server.db.RecIssue;
 import org.im.dc.service.AppConst;
 import org.im.dc.service.ArticleWebservice;
 import org.im.dc.service.dto.ArticleFull;
@@ -77,16 +78,34 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
         // гісторыя
         for (RecArticleHistory rh : Db
                 .execAndReturn((api) -> api.getArticleHistoryMapper().retrieveHistory(articleId))) {
-            ArticleFullInfo.ArticleHistory h = new ArticleFullInfo.ArticleHistory();
+            ArticleFullInfo.Related h = new ArticleFullInfo.Related();
             h.historyId = rh.getHistoryId();
-            h.changed = rh.getChanged();
-            h.changer = rh.getChanger();
+            h.when = rh.getChanged();
+            h.who = rh.getChanger();
             if (rh.getOldState() != null && rh.getNewState() != null) {
                 h.what = rh.getOldState() + " -> " + rh.getNewState();
             } else if (rh.getNewXml() != null) {
                 h.what = "Тэкст артыкула";
             }
-            a.history.add(h);
+            a.related.add(h);
+        }
+        // камэнтары
+        for (RecComment rc : Db.execAndReturn((api) -> api.getCommentMapper().retrieveComments(articleId))) {
+            ArticleFullInfo.Related h = new ArticleFullInfo.Related();
+            h.commentId = rc.getCommentId();
+            h.when = rc.getCreated();
+            h.who = rc.getAuthor();
+            h.what = rc.getComment();
+            a.related.add(h);
+        }
+        // заўвагі
+        for (RecIssue rc : Db.execAndReturn((api) -> api.getIssueMapper().retrieveIssues(articleId))) {
+            ArticleFullInfo.Related h = new ArticleFullInfo.Related();
+            h.issueId = rc.getIssueId();
+            h.when = rc.getCreated();
+            h.who = rc.getAuthor();
+            h.what = (rc.isAccepted() ? "done:" : "open:") + rc.getComment();
+            a.related.add(h);
         }
 
         return a;
@@ -130,6 +149,34 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
     }
 
     @Override
+    public ArticleFullInfo addIssue(Header header, int articleId, String issueText, byte[] proposedXml,
+            Date lastUpdated) throws Exception {
+        check(header);
+
+        Db.exec((api) -> {
+            RecArticle rec = api.getArticleMapper().selectArticle(articleId);
+            if (rec == null) {
+                throw new RuntimeException("No record in db");
+            }
+            if (!rec.getLastUpdated().equals(lastUpdated)) {
+                throw new RuntimeException("Possible somebody other updated");
+            }
+
+            RecIssue issue = new RecIssue();
+            issue.setArticleId(rec.getArticleId());
+            issue.setCreated(new Date());
+            issue.setAuthor(header.user);
+            issue.setComment(issueText);
+            issue.setOldXml(rec.getXml());
+            issue.setNewXml(proposedXml);
+
+            api.getIssueMapper().insertIssue(issue);
+        });
+
+        return getArticleFullInfo(header, articleId);
+    }
+
+    @Override
     public ArticleFullInfo changeState(Header header, int articleId, String newState, Date lastUpdated)
             throws Exception {
         check(header);
@@ -167,7 +214,7 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
     }
 
     @Override
-    public void addComment(Header header, int articleId, String comment) throws Exception {
+    public ArticleFullInfo addComment(Header header, int articleId, String comment) throws Exception {
         check(header);
 
         Db.exec((api) -> {
@@ -178,10 +225,8 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
             rec.setComment(comment);
             api.getCommentMapper().insertComment(rec);
         });
-    }
 
-    @Override
-    public void addIssue(Header header, int articleId, String issueText, byte[] currentXml, byte[] proposedXml) {
+        return getArticleFullInfo(header, articleId);
     }
 
     @Override

@@ -5,15 +5,15 @@ import java.util.List;
 
 import javax.swing.table.DefaultTableModel;
 
-import org.im.dc.service.dto.ArticleFullInfo.ArticleHistory;
+import org.im.dc.service.dto.ArticleFullInfo;
 
 public class ArticleEditHistoryModel extends DefaultTableModel {
-    protected final List<ArticleHistory> history;
+    protected final List<ArticleFullInfo.Related> related;
 
     private SimpleDateFormat TIME_FMT = new SimpleDateFormat("dd MMM HH:mm");
 
-    public ArticleEditHistoryModel(List<ArticleHistory> history) {
-        this.history = history;
+    public ArticleEditHistoryModel(List<ArticleFullInfo.Related> related) {
+        this.related = related;
     }
 
     @Override
@@ -42,17 +42,17 @@ public class ArticleEditHistoryModel extends DefaultTableModel {
 
     @Override
     public int getRowCount() {
-        return history != null ? history.size() : 0;
+        return related != null ? related.size() : 0;
     }
 
     @Override
     public Object getValueAt(int row, int column) {
-        ArticleHistory a = history.get(row);
+        ArticleFullInfo.Related a = related.get(row);
         switch (column) {
         case 0:
-            return a.changer;
+            return a.who;
         case 1:
-            return TIME_FMT.format(a.changed);
+            return TIME_FMT.format(a.when);
         case 2:
             return a.what;
         default:
