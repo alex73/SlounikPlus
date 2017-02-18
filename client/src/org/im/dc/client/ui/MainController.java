@@ -10,6 +10,7 @@ import java.util.Vector;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComponent;
+import javax.swing.JFrame;
 import javax.swing.KeyStroke;
 
 import org.im.dc.client.SchemaLoader;
@@ -23,9 +24,11 @@ import org.im.dc.service.dto.InitialData;
  */
 public class MainController extends BaseController<MainFrame> {
     static InitialData initialData;
+    static JFrame mainWindow;
 
     public MainController() {
         super(new MainFrame());
+        mainWindow = window;
     }
 
     public void start() throws Exception {
@@ -33,6 +36,12 @@ public class MainController extends BaseController<MainFrame> {
 
         showProgress();
         askPassword();
+    }
+
+    public void startWithUser(String username, String pass) throws Exception {
+        window.setVisible(true);
+
+        login(username, pass);
     }
 
     /**

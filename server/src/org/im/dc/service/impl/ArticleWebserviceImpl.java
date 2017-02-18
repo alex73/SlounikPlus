@@ -10,7 +10,9 @@ import org.im.dc.gen.config.Change;
 import org.im.dc.gen.config.State;
 import org.im.dc.server.Config;
 import org.im.dc.server.Db;
+import org.im.dc.server.PermissionChecker;
 import org.im.dc.server.db.RecArticle;
+import org.im.dc.server.db.RecArticleHistory;
 import org.im.dc.server.db.RecComment;
 import org.im.dc.service.AppConst;
 import org.im.dc.service.ArticleWebservice;
@@ -81,17 +83,33 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
         check(header);
 
         Db.exec((api) -> {
+            Date currentDate = new Date();
+            RecArticleHistory history = new RecArticleHistory();
+
             RecArticle rec = api.getArticleMapper().selectArticle(article.id);
             if (rec == null) {
                 throw new RuntimeException("No record in db");
             }
+            if (!rec.getLastUpdated().equals(article.lastUpdated)) {
+                throw new RuntimeException("Possible somebody other updated");
+            }
+            PermissionChecker.canUserEditArticle(header.user, rec.getState());
+
+            history.setArticleId(rec.getArticleId());
+            history.setOldXml(rec.getXml());
+
             rec.setXml(article.xml);
             rec.setNotes(article.notes);
-            rec.setLastUpdated(new Date());
+            rec.setLastUpdated(currentDate);
             int u = api.getArticleMapper().updateArticle(rec, article.lastUpdated);
             if (u != 1) {
-                throw new RuntimeException("No updated. Possible somebody other");
+                throw new RuntimeException("No updated. Possible somebody other updated");
             }
+
+            history.setNewXml(rec.getXml());
+            history.setChanged(currentDate);
+            history.setChanger(header.user);
+            api.getArticleHistoryMapper().insertArticleHistory(history);
         });
 
         return getArticleFullInfo(header, article.id);
@@ -103,16 +121,32 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
         check(header);
 
         Db.exec((api) -> {
+            Date currentDate = new Date();
+            RecArticleHistory history = new RecArticleHistory();
+
             RecArticle rec = api.getArticleMapper().selectArticle(articleId);
             if (rec == null) {
                 throw new RuntimeException("No record in db");
             }
+            if (!rec.getLastUpdated().equals(lastUpdated)) {
+                throw new RuntimeException("Possible somebody other updated");
+            }
+            PermissionChecker.canUserChangeArticleState(header.user, rec.getState(), newState);
+
+            history.setArticleId(rec.getArticleId());
+            history.setOldState(rec.getState());
+
             rec.setState(newState);
             rec.setLastUpdated(new Date());
-            int u = api.getArticleMapper().updateArticle(rec, lastUpdated);
+            int u = api.getArticleMapper().updateArticleState(rec, lastUpdated);
             if (u != 1) {
                 throw new RuntimeException("No updated. Possible somebody other");
             }
+
+            history.setNewState(rec.getState());
+            history.setChanged(currentDate);
+            history.setChanger(header.user);
+            api.getArticleHistoryMapper().insertArticleHistory(history);
         });
 
         return getArticleFullInfo(header, articleId);

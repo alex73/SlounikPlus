@@ -28,12 +28,16 @@
 			<change to="У працы " roles="укладальнік,рэдактар" />
 		</state>
 		<state id="У працы " edit_roles="укладальнік,рэдактар">
-			<change to="Падрыхтаванае" roles="укладальнік,admin" />
-			<change to="На выдаленне " roles="укладальнік,admin" />
+			<change to="Падрыхтаванае" roles="укладальнік,рэдактар" />
+			<change to="На выдаленне " roles="укладальнік,рэдактар" />
 		</state>
+		<state id="На дапрацоўку " edit_roles="укладальнік,рэдактар">
+            <change to="Падрыхтаванае" roles="укладальнік,рэдактар" />
+            <change to="На выдаленне " roles="укладальнік,рэдактар" />
+        </state>
 		<state id="Падрыхтаванае" edit_roles="рэдактар">
-			<change to="Зацверджанае" roles="рэдактар,admin" />
-			<change to="На дапрацоўку " roles="рэдактар,admin" />
+			<change to="Зацверджанае" roles="укладальнік,рэдактар" />
+			<change to="На дапрацоўку " roles="укладальнік,рэдактар" />
 		</state>
 	</states>
 	<external_links>

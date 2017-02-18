@@ -35,4 +35,8 @@ public interface DoArticle {
             + " notes = #{0.notes}, textForSearch = #{0.textForSearch}, lettersCount = #{0.lettersCount}, lastUpdated = #{0.lastUpdated} "
             + " WHERE articleId = #{0.articleId} AND lastUpdated = #{1}")
     int updateArticle(RecArticle rec, Date prevLastUpdated);
+
+    @Update("UPDATE Articles SET  state = #{0.state}, lastUpdated = #{0.lastUpdated} "
+            + " WHERE articleId = #{0.articleId} AND lastUpdated = #{1}")
+    int updateArticleState(RecArticle rec, Date prevLastUpdated);
 }
