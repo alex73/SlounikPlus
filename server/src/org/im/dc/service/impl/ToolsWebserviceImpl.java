@@ -16,6 +16,7 @@ import org.im.dc.gen.config.State;
 import org.im.dc.gen.config.User;
 import org.im.dc.server.Config;
 import org.im.dc.server.Db;
+import org.im.dc.server.PermissionChecker;
 import org.im.dc.server.db.RecArticle;
 import org.im.dc.server.js.JsDomWrapper;
 import org.im.dc.server.js.JsProcessing;
@@ -26,17 +27,12 @@ import org.im.dc.service.dto.InitialData;
 
 @WebService(endpointInterface = "org.im.dc.service.ToolsWebservice")
 public class ToolsWebserviceImpl implements ToolsWebservice {
-    private void check(Header header, Permission... perms) {
+    private void check(Header header) {
         if (header.appVersion != AppConst.APP_VERSION) {
             throw new RuntimeException("Wrong app version");
         }
-        if (!Config.checkUser(header.user, header.pass)) {
+        if (!PermissionChecker.checkUser(header.user, header.pass)) {
             throw new RuntimeException("Unknown user");
-        }
-        for (Permission p : perms) {
-            if (!Config.checkPerm(header.user, p)) {
-                throw new RuntimeException("No permission for this operation");
-            }
         }
     }
 
@@ -54,8 +50,8 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
         for (User u : Config.getConfig().getUsers().getUser()) {
             result.allUsers.add(u.getName());
         }
-        result.currentUserRole = Config.getUserRole(header.user);
-        result.currentUserPermissions = Config.getUserPermissions(header.user);
+        result.currentUserRole = PermissionChecker.getUserRole(header.user);
+        result.currentUserPermissions = PermissionChecker.getUserPermissions(header.user);
         return result;
     }
 
@@ -73,7 +69,8 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
 
     @Override
     public void addWords(Header header, String[] users, String[] words, String initialState) throws Exception {
-        check(header, Permission.ADD_WORDS);
+        check(header);
+        PermissionChecker.userRequiresPermission(header.user, Permission.ADD_WORDS);
 
         Date lastUpdated = new Date();
         List<RecArticle> list = new ArrayList<>();

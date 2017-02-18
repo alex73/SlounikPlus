@@ -31,7 +31,7 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
         if (header.appVersion != AppConst.APP_VERSION) {
             throw new RuntimeException("Wrong app version");
         }
-        if (!Config.checkUser(header.user, header.pass)) {
+        if (!PermissionChecker.checkUser(header.user, header.pass)) {
             throw new RuntimeException("Unknown user");
         }
     }
@@ -56,14 +56,14 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
         a.article.notes = rec.getNotes();
         a.article.lastUpdated = rec.getLastUpdated();
 
-        String userRole = Config.getUserRole(header.user);
+        String userRole = PermissionChecker.getUserRole(header.user);
         State state = Config.getStateByName(rec.getState());
         if (state == null) {
             a.youCanEdit = false;
         } else {
-            a.youCanEdit = Config.roleInRolesList(userRole, state.getEditRoles());
+            a.youCanEdit = PermissionChecker.roleInRolesList(userRole, state.getEditRoles());
             for (Change ch : state.getChange()) {
-                if (Config.roleInRolesList(userRole, ch.getRoles())) {
+                if (PermissionChecker.roleInRolesList(userRole, ch.getRoles())) {
                     a.youCanChangeStateTo.add(ch.getTo());
                 }
             }
