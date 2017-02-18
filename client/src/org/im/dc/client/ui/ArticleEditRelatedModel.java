@@ -7,12 +7,12 @@ import javax.swing.table.DefaultTableModel;
 
 import org.im.dc.service.dto.ArticleFullInfo;
 
-public class ArticleEditHistoryModel extends DefaultTableModel {
+public class ArticleEditRelatedModel extends DefaultTableModel {
     protected final List<ArticleFullInfo.Related> related;
 
     private SimpleDateFormat TIME_FMT = new SimpleDateFormat("dd MMM HH:mm");
 
-    public ArticleEditHistoryModel(List<ArticleFullInfo.Related> related) {
+    public ArticleEditRelatedModel(List<ArticleFullInfo.Related> related) {
         this.related = related;
     }
 
@@ -50,9 +50,9 @@ public class ArticleEditHistoryModel extends DefaultTableModel {
         ArticleFullInfo.Related a = related.get(row);
         switch (column) {
         case 0:
-            return a.who;
-        case 1:
             return TIME_FMT.format(a.when);
+        case 1:
+            return a.who;
         case 2:
             return a.what;
         default:

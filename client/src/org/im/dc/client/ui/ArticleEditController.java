@@ -108,7 +108,7 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
                 return r2.when.compareTo(r1.when);
             }
         });
-        window.tableHistory.setModel(new ArticleEditHistoryModel(article.related));
+        window.tableHistory.setModel(new ArticleEditRelatedModel(article.related));
     }
 
     private byte[] extractXml() throws Exception {
