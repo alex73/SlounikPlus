@@ -29,6 +29,11 @@ import javax.xml.bind.annotation.XmlType;
 @XmlEnum
 public enum Permission {
 
+
+    /**
+     * Ці можа карыстальнік мяняць загалоўныя словы
+     * 
+     */
     @XmlEnumValue("edit_header")
     EDIT_HEADER("edit_header"),
     @XmlEnumValue("statistics")
