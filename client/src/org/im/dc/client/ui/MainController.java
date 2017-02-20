@@ -10,7 +10,6 @@ import java.util.Vector;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComponent;
-import javax.swing.JFrame;
 import javax.swing.KeyStroke;
 
 import org.im.dc.client.SchemaLoader;
@@ -24,11 +23,12 @@ import org.im.dc.service.dto.InitialData;
  */
 public class MainController extends BaseController<MainFrame> {
     static InitialData initialData;
-    static JFrame mainWindow;
+    static MainController instance;
+    int fontSize;
 
     public MainController() {
         super(new MainFrame());
-        mainWindow = window;
+        instance = this;
     }
 
     public void start() throws Exception {
@@ -122,7 +122,7 @@ public class MainController extends BaseController<MainFrame> {
         window.btnValidateFull
                 .setVisible(initialData.currentUserPermissions.contains(Permission.FULL_VALIDATION.name()));
 
-        window.btnSettings.addActionListener((e) -> todo("Тут будуць налады памера шрыфта для ўсіх вакон"));
+        window.btnSettings.addActionListener((e) -> new SettingsController(window));
 
         window.btnUsers.addActionListener(
                 (e) -> todo("Тут будзе пераназначэнне карыстальнікаў, з фільтрам па карыстальнікам і станах"));
@@ -144,7 +144,9 @@ public class MainController extends BaseController<MainFrame> {
 
             @Override
             protected void ok() {
+                SettingsController.savePlacesForWindow(window);
                 window.tableArticles.setModel(model);
+                SettingsController.loadPlacesForWindow(window);
             }
         };
     }

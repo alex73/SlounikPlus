@@ -27,8 +27,6 @@ import org.im.dc.service.dto.ArticleFullInfo;
 
 /**
  * Controls article editor.
- * 
- * TODO захоўваць стан шырыні слупкоў, splitter
  */
 public class ArticleEditController extends BaseController<ArticleEditDialog> {
     private XmlGroup editorUI;
@@ -138,7 +136,10 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
                 return r2.when.compareTo(r1.when);
             }
         });
+
+        SettingsController.savePlacesForWindow(window);
         window.tableHistory.setModel(new ArticleEditRelatedModel(article.related));
+        SettingsController.loadPlacesForWindow(window);
     }
 
     private void displayWatch() {
@@ -238,7 +239,7 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
     }
 
     private void changeStateAsk() {
-        ArticleEditNewStateDialog askState = new ArticleEditNewStateDialog(MainController.mainWindow, true);
+        ArticleEditNewStateDialog askState = new ArticleEditNewStateDialog(MainController.instance.window, true);
 
         for (String state : article.youCanChangeStateTo) {
             JRadioButton rb = new JRadioButton(state);
@@ -275,7 +276,7 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
     }
 
     private void addComment() {
-        ArticleEditAddCommentDialog askComment = new ArticleEditAddCommentDialog(MainController.mainWindow, true);
+        ArticleEditAddCommentDialog askComment = new ArticleEditAddCommentDialog(MainController.instance.window, true);
 
         askComment.btnAdd.addActionListener((e) -> {
             saveComment(askComment.txtComment.getText(), () -> {
@@ -298,7 +299,7 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
 
     private void proposeChanges() {
         ArticleEditProposeChangesDialog askProposeComment = new ArticleEditProposeChangesDialog(
-                MainController.mainWindow, true);
+                MainController.instance.window, true);
 
         askProposeComment.btnOk.addActionListener((e) -> {
             saveProposal(askProposeComment.txtComment.getText(), () -> {

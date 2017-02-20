@@ -7,6 +7,7 @@ import javax.swing.table.DefaultTableModel;
 
 import org.im.dc.service.dto.ArticleFullInfo;
 
+@SuppressWarnings("serial")
 public class ArticleEditRelatedModel extends DefaultTableModel {
     protected final List<ArticleFullInfo.Related> related;
 

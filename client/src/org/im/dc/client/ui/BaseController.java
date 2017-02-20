@@ -7,6 +7,8 @@ import java.awt.Rectangle;
 import java.awt.Window;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.concurrent.ExecutionException;
 
 import javax.swing.ImageIcon;
@@ -32,7 +34,17 @@ public abstract class BaseController<T extends Window> {
      */
     public BaseController(T window) {
         this.window = window;
+        SettingsController.setupFontForWindow(window);
+        SettingsController.loadPlacesForWindow(window);
 
+        window.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                SettingsController.savePlacesForWindow(window);
+            }
+        });
+
+        @SuppressWarnings("serial")
         JPanel glass = new JPanel(new BorderLayout()) {
             @Override
             protected void paintComponent(Graphics g) {

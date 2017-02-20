@@ -49,7 +49,7 @@ public class MainFrame extends javax.swing.JFrame {
         setTitle(bundle.getString("MainFrame.title")); // NOI18N
 
         jSplitPane1.setResizeWeight(0.5);
-        jSplitPane1.setToolTipText(bundle.getString("MainFrame.jSplitPane1.toolTipText")); // NOI18N
+        jSplitPane1.setName("hor"); // NOI18N
 
         jPanel2.setLayout(new java.awt.BorderLayout());
 
@@ -145,10 +145,11 @@ public class MainFrame extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
+        tableArticles.setName("list"); // NOI18N
         jScrollPane1.setViewportView(tableArticles);
         if (tableArticles.getColumnModel().getColumnCount() > 0) {
-            tableArticles.getColumnModel().getColumn(0).setHeaderValue(bundle.getString("MainFrame.tableArticles.columnModel.title0")); // NOI18N
-            tableArticles.getColumnModel().getColumn(1).setHeaderValue(bundle.getString("MainFrame.tableArticles.columnModel.title1")); // NOI18N
+            tableArticles.getColumnModel().getColumn(0).setHeaderValue(bundle.getString("MainFrame.list.columnModel.title0")); // NOI18N
+            tableArticles.getColumnModel().getColumn(1).setHeaderValue(bundle.getString("MainFrame.list.columnModel.title1")); // NOI18N
         }
 
         jPanel2.add(jScrollPane1, java.awt.BorderLayout.CENTER);
@@ -157,7 +158,7 @@ public class MainFrame extends javax.swing.JFrame {
 
         jSplitPane2.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
         jSplitPane2.setResizeWeight(0.5);
-        jSplitPane2.setToolTipText(bundle.getString("MainFrame.jSplitPane2.toolTipText")); // NOI18N
+        jSplitPane2.setName("ver"); // NOI18N
 
         jTable2.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -167,9 +168,10 @@ public class MainFrame extends javax.swing.JFrame {
                 "Title 1"
             }
         ));
+        jTable2.setName("issues"); // NOI18N
         jScrollPane2.setViewportView(jTable2);
         if (jTable2.getColumnModel().getColumnCount() > 0) {
-            jTable2.getColumnModel().getColumn(0).setHeaderValue(bundle.getString("MainFrame.jTable2.columnModel.title0")); // NOI18N
+            jTable2.getColumnModel().getColumn(0).setHeaderValue(bundle.getString("MainFrame.issues.columnModel.title0")); // NOI18N
         }
 
         jSplitPane2.setTopComponent(jScrollPane2);
@@ -182,9 +184,10 @@ public class MainFrame extends javax.swing.JFrame {
                 "Title 1"
             }
         ));
+        jTable3.setName("news"); // NOI18N
         jScrollPane3.setViewportView(jTable3);
         if (jTable3.getColumnModel().getColumnCount() > 0) {
-            jTable3.getColumnModel().getColumn(0).setHeaderValue(bundle.getString("MainFrame.jTable3.columnModel.title0")); // NOI18N
+            jTable3.getColumnModel().getColumn(0).setHeaderValue(bundle.getString("MainFrame.news.columnModel.title0")); // NOI18N
         }
 
         jSplitPane2.setRightComponent(jScrollPane3);

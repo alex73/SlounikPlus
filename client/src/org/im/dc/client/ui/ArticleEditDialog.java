@@ -82,25 +82,25 @@ public class ArticleEditDialog extends javax.swing.JDialog {
 
         jSplitPane1.setDividerLocation(400);
         jSplitPane1.setResizeWeight(0.5);
-        jSplitPane1.setToolTipText(bundle.getString("ArticleEditDialog.jSplitPane1.toolTipText")); // NOI18N
+        jSplitPane1.setName("hor"); // NOI18N
 
         jPanel8.setLayout(new java.awt.BorderLayout());
 
         jSplitPane2.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
         jSplitPane2.setResizeWeight(0.5);
-        jSplitPane2.setToolTipText(bundle.getString("ArticleEditDialog.jSplitPane2.toolTipText")); // NOI18N
 
         tableHistory.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {},
+                {},
+                {},
+                {}
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+
             }
         ));
+        tableHistory.setName("history"); // NOI18N
         jScrollPane1.setViewportView(tableHistory);
 
         jSplitPane2.setBottomComponent(jScrollPane1);
