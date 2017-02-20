@@ -23,10 +23,10 @@ import org.im.dc.service.AppConst;
 import org.im.dc.service.ArticleWebservice;
 import org.im.dc.service.dto.ArticleFull;
 import org.im.dc.service.dto.ArticleFullInfo;
-import org.im.dc.service.dto.ArticleHistoryShort;
 import org.im.dc.service.dto.ArticleShort;
 import org.im.dc.service.dto.ArticlesFilter;
 import org.im.dc.service.dto.Header;
+import org.im.dc.service.dto.RelatedOne;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -104,8 +104,9 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
         // гісторыя
         for (RecArticleHistory rh : Db
                 .execAndReturn((api) -> api.getArticleHistoryMapper().retrieveHistory(rec.getArticleId()))) {
-            ArticleFullInfo.Related h = new ArticleFullInfo.Related();
-            h.historyId = rh.getHistoryId();
+            RelatedOne h = new RelatedOne();
+            h.type = RelatedOne.RelatedType.HISTORY;
+            h.id = rh.getHistoryId();
             h.when = rh.getChanged();
             h.who = rh.getChanger();
             if (rh.getOldState() != null && rh.getNewState() != null) {
@@ -117,8 +118,9 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
         }
         // камэнтары
         for (RecComment rc : Db.execAndReturn((api) -> api.getCommentMapper().retrieveComments(rec.getArticleId()))) {
-            ArticleFullInfo.Related h = new ArticleFullInfo.Related();
-            h.commentId = rc.getCommentId();
+            RelatedOne h = new RelatedOne();
+            h.type = RelatedOne.RelatedType.COMMENT;
+            h.id = rc.getCommentId();
             h.when = rc.getCreated();
             h.who = rc.getAuthor();
             h.what = rc.getComment();
@@ -126,8 +128,9 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
         }
         // заўвагі
         for (RecIssue rc : Db.execAndReturn((api) -> api.getIssueMapper().retrieveIssues(rec.getArticleId()))) {
-            ArticleFullInfo.Related h = new ArticleFullInfo.Related();
-            h.issueId = rc.getIssueId();
+            RelatedOne h = new RelatedOne();
+            h.type = RelatedOne.RelatedType.ISSUE;
+            h.id = rc.getIssueId();
             h.when = rc.getCreated();
             h.who = rc.getAuthor();
             h.what = (rc.isAccepted() ? "done:" : "open:") + rc.getComment();
@@ -323,17 +326,5 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
 
         LOG.info("<< listArticles");
         return result;
-    }
-
-    @Override
-    public List<ArticleHistoryShort> listTodo(Header header) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public List<Object> listNews(Header header) {
-        // TODO Auto-generated method stub
-        return null;
     }
 }

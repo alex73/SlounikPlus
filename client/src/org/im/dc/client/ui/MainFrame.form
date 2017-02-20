@@ -239,25 +239,13 @@
 
               <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
               <SubComponents>
-                <Component class="javax.swing.JTable" name="jTable2">
+                <Component class="javax.swing.JTable" name="tableIssues">
                   <Properties>
                     <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-                      <Table columnCount="1" rowCount="1">
-                        <Column editable="true" title="Title 1" type="java.lang.Object">
-                          <Data value="TODO: &#x43d;&#x435;&#x437;&#x430;&#x43a;&#x440;&#x44b;&#x442;&#x44b;&#x44f; &#x437;&#x430;&#x45e;&#x432;&#x430;&#x433;&#x456; &#x434;&#x43b;&#x44f; &#x201c;&#x441;&#x432;&#x430;&#x456;&#x445; &#x430;&#x440;&#x442;&#x44b;&#x43a;&#x443;&#x43b;&#x430;&#x45e;&#x201d;, &#x43d;&#x435;&#x437;&#x430;&#x43a;&#x440;&#x44b;&#x442;&#x44b;&#x44f; &#x43f;&#x440;&#x430;&#x43f;&#x430;&#x43d;&#x430;&#x432;&#x430;&#x43d;&#x44b;&#x44f; &#x437;&#x43c;&#x435;&#x43d;&#x44b; &#x201c;&#x441;&#x432;&#x430;&#x456;&#x445; &#x430;&#x440;&#x442;&#x44b;&#x43a;&#x443;&#x43b;&#x430;&#x45e;&#x201d;"/>
-                        </Column>
-                      </Table>
+                      <Table columnCount="0" rowCount="1"/>
                     </Property>
                     <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
-                      <TableColumnModel selectionModel="0">
-                        <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
-                          <Title editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                            <ResourceString bundle="org/im/dc/client/ui/Bundle.properties" key="MainFrame.issues.columnModel.title0" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
-                          </Title>
-                          <Editor/>
-                          <Renderer/>
-                        </Column>
-                      </TableColumnModel>
+                      <TableColumnModel selectionModel="0"/>
                     </Property>
                     <Property name="name" type="java.lang.String" value="issues" noResource="true"/>
                     <Property name="tableHeader" type="javax.swing.table.JTableHeader" editor="org.netbeans.modules.form.editors2.JTableHeaderEditor">
@@ -279,7 +267,7 @@
 
               <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
               <SubComponents>
-                <Component class="javax.swing.JTable" name="jTable3">
+                <Component class="javax.swing.JTable" name="tableNews">
                   <Properties>
                     <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
                       <Table columnCount="1" rowCount="1">

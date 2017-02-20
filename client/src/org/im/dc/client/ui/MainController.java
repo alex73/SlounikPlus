@@ -26,6 +26,8 @@ public class MainController extends BaseController<MainFrame> {
     static MainController instance;
     int fontSize;
 
+    private MainFrameIssuesModel issuesModel;
+
     public MainController() {
         super(new MainFrame());
         instance = this;
@@ -91,6 +93,9 @@ public class MainController extends BaseController<MainFrame> {
                 initialData = WS.getToolsWebservice().getInitialData(WS.header);
 
                 SchemaLoader.init(initialData.articleSchema);
+
+                issuesModel = new MainFrameIssuesModel(WS.getToolsWebservice().listTodo(WS.header));
+                //TODO open article on table click
             }
 
             @Override
@@ -128,6 +133,10 @@ public class MainController extends BaseController<MainFrame> {
                 (e) -> todo("Тут будзе пераназначэнне карыстальнікаў, з фільтрам па карыстальнікам і станах"));
 
         window.btnValidateFull.addActionListener((e) -> todo("Тут будзе праверка ўсяго слоўніка"));
+
+        SettingsController.savePlacesForWindow(window);
+        window.tableIssues.setModel(issuesModel);
+        SettingsController.loadPlacesForWindow(window);
     }
 
     /**

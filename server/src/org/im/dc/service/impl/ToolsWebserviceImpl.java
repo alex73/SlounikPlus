@@ -18,12 +18,15 @@ import org.im.dc.server.Config;
 import org.im.dc.server.Db;
 import org.im.dc.server.PermissionChecker;
 import org.im.dc.server.db.RecArticle;
+import org.im.dc.server.db.RecIssue;
 import org.im.dc.server.js.JsDomWrapper;
 import org.im.dc.server.js.JsProcessing;
 import org.im.dc.service.AppConst;
 import org.im.dc.service.ToolsWebservice;
 import org.im.dc.service.dto.Header;
 import org.im.dc.service.dto.InitialData;
+import org.im.dc.service.dto.RelatedMany;
+import org.im.dc.service.dto.RelatedOne;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -136,5 +139,30 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
 
         LOG.info("<< printPreview");
         return (String) context.getAttribute("out", ScriptContext.ENGINE_SCOPE);
+    }
+
+    @Override
+    public List<RelatedMany> listTodo(Header header) throws Exception {
+        List<RelatedMany> related = new ArrayList<>();
+        // заўвагі
+        List<RecIssue> list = Db.execAndReturn((api) -> api.getSession().selectList("retrieveUserIssues", header.user));
+        for (RecIssue rc : list) {
+            RelatedMany h = new RelatedMany();
+            h.articleId = rc.getArticleId();
+            h.words = rc.getWords();
+            h.type = RelatedOne.RelatedType.ISSUE;
+            h.id = rc.getIssueId();
+            h.when = rc.getCreated();
+            h.who = rc.getAuthor();
+            h.what = (rc.isAccepted() ? "done:" : "open:") + rc.getComment();
+            related.add(h);
+        }
+        return related;
+    }
+
+    @Override
+    public List<RelatedMany> listNews(Header header) throws Exception {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

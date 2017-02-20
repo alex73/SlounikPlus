@@ -1,20 +1,21 @@
 package org.im.dc.client.ui;
 
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.table.DefaultTableModel;
 
-import org.im.dc.service.dto.RelatedOne;
+import org.im.dc.service.dto.RelatedMany;
 
 @SuppressWarnings("serial")
-public class ArticleEditRelatedModel extends DefaultTableModel {
+public class MainFrameIssuesModel extends DefaultTableModel {
     private SimpleDateFormat TIME_FMT = new SimpleDateFormat("dd MMM HH:mm");
 
-    protected final List<RelatedOne> related;
+    protected final List<RelatedMany> issues;
 
-    public ArticleEditRelatedModel(List<RelatedOne> related) {
-        this.related = related;
+    public MainFrameIssuesModel(List<RelatedMany> issues) {
+        this.issues = issues;
     }
 
     @Override
@@ -24,7 +25,7 @@ public class ArticleEditRelatedModel extends DefaultTableModel {
 
     @Override
     public int getColumnCount() {
-        return 3;
+        return 4;
     }
 
     @Override
@@ -36,6 +37,8 @@ public class ArticleEditRelatedModel extends DefaultTableModel {
             return "Хто";
         case 2:
             return "Сутнасць";
+        case 3:
+            return "Артыкул";
         default:
             return null;
         }
@@ -43,12 +46,12 @@ public class ArticleEditRelatedModel extends DefaultTableModel {
 
     @Override
     public int getRowCount() {
-        return related != null ? related.size() : 0;
+        return issues != null ? issues.size() : 0;
     }
 
     @Override
     public Object getValueAt(int row, int column) {
-        RelatedOne a = related.get(row);
+        RelatedMany a = issues.get(row);
         switch (column) {
         case 0:
             return TIME_FMT.format(a.when);
@@ -56,6 +59,8 @@ public class ArticleEditRelatedModel extends DefaultTableModel {
             return a.who;
         case 2:
             return a.what;
+        case 3:
+            return Arrays.toString(a.words);
         default:
             return null;
         }

@@ -7,8 +7,6 @@ import java.awt.event.MouseEvent;
 import java.io.ByteArrayInputStream;
 import java.io.StringWriter;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -24,6 +22,7 @@ import org.im.dc.client.SchemaLoader;
 import org.im.dc.client.WS;
 import org.im.dc.client.ui.xmlstructure.XmlGroup;
 import org.im.dc.service.dto.ArticleFullInfo;
+import org.im.dc.service.dto.RelatedOne;
 
 /**
  * Controls article editor.
@@ -130,12 +129,7 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
         }
         window.panelEditor.setViewportView(editorUI);
 
-        Collections.sort(article.related, new Comparator<ArticleFullInfo.Related>() {
-            @Override
-            public int compare(ArticleFullInfo.Related r1, ArticleFullInfo.Related r2) {
-                return r2.when.compareTo(r1.when);
-            }
-        });
+        RelatedOne.sortByTimeDesc(article.related);
 
         SettingsController.savePlacesForWindow(window);
         window.tableHistory.setModel(new ArticleEditRelatedModel(article.related));

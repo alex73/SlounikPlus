@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Issue">
+	<select id="retrieveUserIssues" resultType="RecIssue" resultMap="RecIssueMap">
+		SELECT Issues.*, Articles.words
+		FROM Issues, Articles
+		WHERE
+		Issues.articleId = Articles.articleId
+		AND (Articles.assignedUsers @>
+		ARRAY[#{user}]::varchar[][] OR
+		Articles.watchers @>
+		ARRAY[#{user}]::varchar[][])
+		AND fixed IS NULL
+	</select>
+	<resultMap id="RecIssueMap" type="RecIssue">
+		<id property="issueId" column="issueId" />
+		<result property="words" column="words" typeHandler="StringArrayTypeHandler" />
+	</resultMap>
+</mapper>

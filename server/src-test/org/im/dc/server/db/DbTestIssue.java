@@ -35,6 +35,11 @@ public class DbTestIssue {
         check(rec1);
     }
 
+    @Test
+    public void testRetrieveUserIssues() throws Exception {
+        Db.exec((api) -> api.getSession().selectList("retrieveUserIssues", "user"));
+    }
+
     void check(RecIssue rec) {
         assertTrue(rec.getIssueId() > 0);
         assertEquals(1, rec.getArticleId());
