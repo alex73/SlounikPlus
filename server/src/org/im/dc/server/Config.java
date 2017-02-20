@@ -3,6 +3,8 @@ package org.im.dc.server;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.nio.file.Files;
+import java.util.Set;
+import java.util.TreeSet;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
@@ -12,7 +14,10 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
+import org.im.dc.gen.config.Change;
+import org.im.dc.gen.config.Role;
 import org.im.dc.gen.config.State;
+import org.im.dc.gen.config.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +41,12 @@ public class Config {
 
         Unmarshaller unm = JAXBContext.newInstance(org.im.dc.gen.config.Config.class).createUnmarshaller();
         config = (org.im.dc.gen.config.Config) unm.unmarshal(CONFIG_FILE);
-        // TODO check role names
+        try {
+            checkConfig();
+        } catch (Throwable ex) {
+            LOG.error(ex.getMessage());
+            throw ex;
+        }
 
         schemaFactory.newSchema(ARTICLE_SCHEMA_FILE);
         articleSchemaSource = Files.readAllBytes(ARTICLE_SCHEMA_FILE.toPath());
@@ -55,5 +65,49 @@ public class Config {
 
     public static org.im.dc.gen.config.Config getConfig() {
         return config;
+    }
+
+    private static void checkConfig() {
+        Set<String> roles = new TreeSet<>();
+        for (Role r : config.getRoles().getRole()) {
+            if (!roles.add(r.getId())) {
+                throw new RuntimeException("Duplicate role in config: " + r.getId());
+            }
+        }
+        for (User u : config.getUsers().getUser()) {
+            if (!roles.contains(u.getRole())) {
+                throw new RuntimeException("There is no specified role:: " + u.getRole());
+            }
+        }
+        for (State st : config.getStates().getState()) {
+            if (st.getEditRoles() != null) {
+                for (String r : st.getEditRoles().split(",")) {
+                    if (!roles.contains(r)) {
+                        throw new RuntimeException("There is no specified role:: " + r);
+                    }
+                }
+            }
+            for (Change ch : st.getChange()) {
+                for (String r : ch.getRoles().split(",")) {
+                    if (!roles.contains(r)) {
+                        throw new RuntimeException("There is no specified role:: " + r);
+                    }
+                }
+            }
+        }
+
+        Set<String> states = new TreeSet<>();
+        for (State st : config.getStates().getState()) {
+            if (!states.add(st.getId())) {
+                throw new RuntimeException("Duplicate state in config: " + st.getId());
+            }
+        }
+        for (State st : config.getStates().getState()) {
+            for (Change ch : st.getChange()) {
+                if (!states.contains(ch.getTo())) {
+                    throw new RuntimeException("There is no specified state:: " + ch.getTo());
+                }
+            }
+        }
     }
 }
