@@ -24,20 +24,28 @@ import org.im.dc.service.AppConst;
 import org.im.dc.service.ToolsWebservice;
 import org.im.dc.service.dto.Header;
 import org.im.dc.service.dto.InitialData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @WebService(endpointInterface = "org.im.dc.service.ToolsWebservice")
 public class ToolsWebserviceImpl implements ToolsWebservice {
+    private static final Logger LOG = LoggerFactory.getLogger(ToolsWebserviceImpl.class);
+
     private void check(Header header) {
         if (header.appVersion != AppConst.APP_VERSION) {
+            LOG.warn("<< getInitialData: version required " + AppConst.APP_VERSION + " but requested "
+                    + header.appVersion);
             throw new RuntimeException("Wrong app version");
         }
         if (!PermissionChecker.checkUser(header.user, header.pass)) {
+            LOG.warn("<< getInitialData: wrong user/pass");
             throw new RuntimeException("Unknown user");
         }
     }
 
     @Override
     public InitialData getInitialData(Header header) {
+        LOG.info(">> getInitialData");
         check(header);
 
         InitialData result = new InitialData();
@@ -52,6 +60,8 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
         }
         result.currentUserRole = PermissionChecker.getUserRole(header.user);
         result.currentUserPermissions = PermissionChecker.getUserPermissions(header.user);
+
+        LOG.info("<< getInitialData");
         return result;
     }
 
@@ -69,6 +79,7 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
 
     @Override
     public void addWords(Header header, String[] users, String[] words, String initialState) throws Exception {
+        LOG.info(">> addWords");
         check(header);
         PermissionChecker.userRequiresPermission(header.user, Permission.ADD_WORDS);
 
@@ -83,6 +94,7 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
             for (int i = 0; i < wa.length; i++) {
                 wa[i] = wa[i].trim();
                 if (wa[i].isEmpty()) {
+                    LOG.warn("<< addWords: wrong words: " + w);
                     throw new Exception("Wrong words: " + w);
                 }
             }
@@ -99,14 +111,18 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
 
         // TODO ці ўжо некаторыя артыкулы існуюць ?
         Db.exec((api) -> api.getSession().insert("insertArticles", list));
+
+        LOG.info("<< addWords");
     }
 
     @Override
     public String printPreview(Header header, int articleId) throws Exception {
+        LOG.info(">> printPreview");
         check(header);
 
         RecArticle rec = Db.execAndReturn((api) -> api.getArticleMapper().selectArticle(articleId));
         if (rec == null) {
+            LOG.warn("<< printPreview: article not found");
             return null;
         }
 
@@ -118,6 +134,7 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
         context.setAttribute("article", new JsDomWrapper(rec.getXml()), ScriptContext.ENGINE_SCOPE);
         JsProcessing.exec("config/output.js", context);
 
+        LOG.info("<< printPreview");
         return (String) context.getAttribute("out", ScriptContext.ENGINE_SCOPE);
     }
 }

@@ -62,7 +62,8 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
     }
 
     private void init() {
-        // TODO калі зьмененыя нататкі - паказваць кнопку "захаваць нататкі", калі зьменыны XML - паказваць "захаваць
+        // TODO калі зьмененыя нататкі - паказваць кнопку "захаваць нататкі",
+        // калі зьменыны XML - паказваць "захаваць
         // артыкул" ці "прапанаваць зьмены"
         window.btnSave.addActionListener((e) -> save());
         window.btnChangeState.addActionListener((e) -> changeStateAsk());
@@ -109,7 +110,8 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
         window.txtState.setText(article.article.state);
         window.txtUsers.setText(Arrays.toString(article.article.assignedUsers));
         if (article.article.notes != null) {
-            // TODO фарматаваньне ў нататніку: тоўсты, курсіў, падкрэслены, закрэслены, колер тэкста і фона
+            // TODO фарматаваньне ў нататніку: тоўсты, курсіў, падкрэслены,
+            // закрэслены, колер тэкста і фона
             window.txtNotes.setText(article.article.notes);
         }
 

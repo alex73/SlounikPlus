@@ -23,27 +23,36 @@ import org.im.dc.service.dto.ArticleHistoryShort;
 import org.im.dc.service.dto.ArticleShort;
 import org.im.dc.service.dto.ArticlesFilter;
 import org.im.dc.service.dto.Header;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @WebService(endpointInterface = "org.im.dc.service.ArticleWebservice")
 public class ArticleWebserviceImpl implements ArticleWebservice {
-    // TODO логі
+    private static final Logger LOG = LoggerFactory.getLogger(ArticleWebserviceImpl.class);
+
     private void check(Header header) throws Exception {
         if (header.appVersion != AppConst.APP_VERSION) {
+            LOG.warn("<< getInitialData: version required " + AppConst.APP_VERSION + " but requested "
+                    + header.appVersion);
             throw new RuntimeException("Wrong app version");
         }
         if (!PermissionChecker.checkUser(header.user, header.pass)) {
+            LOG.warn("<< getInitialData: wrong user/pass");
             throw new RuntimeException("Unknown user");
         }
     }
 
     @Override
     public ArticleFullInfo getArticleFullInfo(Header header, int articleId) throws Exception {
+        LOG.info(">> getArticleFullInfo: " + articleId);
         check(header);
 
         RecArticle rec = Db.execAndReturn((api) -> api.getArticleMapper().selectArticle(articleId));
         if (rec == null) {
+            LOG.warn("<< getArticleFullInfo: there is no specified article");
             throw new Exception("Няма вызначанага артыкула");
         }
+        // TODO : праверка XML
 
         ArticleFullInfo a = new ArticleFullInfo();
         a.article = new ArticleFull();
@@ -108,11 +117,13 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
             a.related.add(h);
         }
 
+        LOG.info("<< getArticleFullInfo: " + articleId);
         return a;
     }
 
     @Override
     public ArticleFullInfo saveArticle(Header header, ArticleFull article) throws Exception {
+        LOG.info(">> saveArticle");
         check(header);
 
         Db.exec((api) -> {
@@ -121,9 +132,11 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
 
             RecArticle rec = api.getArticleMapper().selectArticle(article.id);
             if (rec == null) {
+                LOG.warn("<< saveArticle: no record in db");
                 throw new RuntimeException("No record in db");
             }
             if (!rec.getLastUpdated().equals(article.lastUpdated)) {
+                LOG.info("<< saveArticle: lastUpdated was changed");
                 throw new RuntimeException("Possible somebody other updated");
             }
             PermissionChecker.canUserEditArticle(header.user, rec.getState());
@@ -137,6 +150,7 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
             rec.setLastUpdated(currentDate);
             int u = api.getArticleMapper().updateArticle(rec, article.lastUpdated);
             if (u != 1) {
+                LOG.info("<< saveArticle: db was not updated");
                 throw new RuntimeException("No updated. Possible somebody other updated");
             }
 
@@ -146,20 +160,24 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
             api.getArticleHistoryMapper().insertArticleHistory(history);
         });
 
+        LOG.info("<< saveArticle");
         return getArticleFullInfo(header, article.id);
     }
 
     @Override
     public ArticleFullInfo addIssue(Header header, int articleId, String issueText, byte[] proposedXml,
             Date lastUpdated) throws Exception {
+        LOG.info(">> addIssue");
         check(header);
 
         Db.exec((api) -> {
             RecArticle rec = api.getArticleMapper().selectArticle(articleId);
             if (rec == null) {
+                LOG.warn("<< addIssue: no record in db");
                 throw new RuntimeException("No record in db");
             }
             if (!rec.getLastUpdated().equals(lastUpdated)) {
+                LOG.info("<< addIssue: lastUpdated was changed");
                 throw new RuntimeException("Possible somebody other updated");
             }
 
@@ -174,12 +192,14 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
             api.getIssueMapper().insertIssue(issue);
         });
 
+        LOG.info("<< addIssue");
         return getArticleFullInfo(header, articleId);
     }
 
     @Override
     public ArticleFullInfo changeState(Header header, int articleId, String newState, Date lastUpdated)
             throws Exception {
+        LOG.info(">> changeState");
         check(header);
 
         Db.exec((api) -> {
@@ -188,9 +208,11 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
 
             RecArticle rec = api.getArticleMapper().selectArticle(articleId);
             if (rec == null) {
+                LOG.warn("<< changeState: no record in db");
                 throw new RuntimeException("No record in db");
             }
             if (!rec.getLastUpdated().equals(lastUpdated)) {
+                LOG.info("<< changeState: lastUpdated was changed");
                 throw new RuntimeException("Possible somebody other updated");
             }
             PermissionChecker.canUserChangeArticleState(header.user, rec.getState(), newState);
@@ -202,6 +224,7 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
             rec.setLastUpdated(new Date());
             int u = api.getArticleMapper().updateArticleState(rec, lastUpdated);
             if (u != 1) {
+                LOG.info("<< changeState: db was not updated");
                 throw new RuntimeException("No updated. Possible somebody other");
             }
 
@@ -211,11 +234,13 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
             api.getArticleHistoryMapper().insertArticleHistory(history);
         });
 
+        LOG.info("<< changeState");
         return getArticleFullInfo(header, articleId);
     }
 
     @Override
     public ArticleFullInfo addComment(Header header, int articleId, String comment) throws Exception {
+        LOG.info(">> addComment");
         check(header);
 
         Db.exec((api) -> {
@@ -227,6 +252,7 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
             api.getCommentMapper().insertComment(rec);
         });
 
+        LOG.info("<< addComment");
         return getArticleFullInfo(header, articleId);
     }
 
@@ -240,6 +266,7 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
 
     @Override
     public List<ArticleShort> listArticles(Header header, ArticlesFilter filter) throws Exception {
+        LOG.info(">> listArticles");
         check(header);
 
         List<ArticleShort> result = new ArrayList<>();
@@ -252,6 +279,7 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
             result.add(o);
         }
 
+        LOG.info("<< listArticles");
         return result;
     }
 

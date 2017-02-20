@@ -13,8 +13,12 @@ import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
 import org.im.dc.gen.config.State;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Config {
+    private static final Logger LOG = LoggerFactory.getLogger(Config.class);
+
     static final File CONFIG_FILE = new File("config/config.xml");
     static final File ARTICLE_SCHEMA_FILE = new File("config/article.xsd");
 
@@ -24,6 +28,7 @@ public class Config {
     static public Schema articleSchema;
 
     public static void load() throws Exception {
+        LOG.info("Config loading start");
         SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
         Schema schema = schemaFactory.newSchema(Config.class.getResource("/org/im/dc/xsd/config.xsd"));
         Validator validator = schema.newValidator();
@@ -36,6 +41,7 @@ public class Config {
         schemaFactory.newSchema(ARTICLE_SCHEMA_FILE);
         articleSchemaSource = Files.readAllBytes(ARTICLE_SCHEMA_FILE.toPath());
         articleSchema = schemaFactory.newSchema(new StreamSource(new ByteArrayInputStream(articleSchemaSource)));
+        LOG.info("Config loading finished");
     }
 
     public static State getStateByName(String state) {
