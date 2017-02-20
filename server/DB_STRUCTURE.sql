@@ -10,6 +10,8 @@
  * 4. CREATE DATABASE <dbname> ENCODING 'UTF8' TEMPLATE template0 LC_COLLATE 'be_BY.UTF-8'; - create database
  * 
  * 5. psql -h localhost -U postgres -W <dbname> -f DB_STRUCTURE.sql
+ *
+ * TODO : індэксы
  */
 DROP TABLE IF EXISTS Issues;
 DROP TABLE IF EXISTS Comments;

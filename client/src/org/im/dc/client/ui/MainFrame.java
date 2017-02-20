@@ -29,6 +29,7 @@ public class MainFrame extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         txtText = new javax.swing.JTextField();
         btnSearch = new javax.swing.JButton();
+        jLabel4 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tableArticles = new javax.swing.JTable();
         jSplitPane2 = new javax.swing.JSplitPane();
@@ -112,6 +113,13 @@ public class MainFrame extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         jPanel3.add(btnSearch, gridBagConstraints);
 
+        jLabel4.setText(bundle.getString("MainFrame.jLabel4.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.gridwidth = 3;
+        jPanel3.add(jLabel4, gridBagConstraints);
+
         jPanel2.add(jPanel3, java.awt.BorderLayout.NORTH);
 
         tableArticles.setModel(new javax.swing.table.DefaultTableModel(
@@ -153,31 +161,31 @@ public class MainFrame extends javax.swing.JFrame {
 
         jTable2.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {"TODO: незакрытыя заўвагі для “сваіх артыкулаў”, незакрытыя прапанаваныя змены “сваіх артыкулаў”"}
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "Title 1"
             }
         ));
         jScrollPane2.setViewportView(jTable2);
+        if (jTable2.getColumnModel().getColumnCount() > 0) {
+            jTable2.getColumnModel().getColumn(0).setHeaderValue(bundle.getString("MainFrame.jTable2.columnModel.title0")); // NOI18N
+        }
 
         jSplitPane2.setTopComponent(jScrollPane2);
 
         jTable3.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {"TODO: Навіны"}
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "Title 1"
             }
         ));
         jScrollPane3.setViewportView(jTable3);
+        if (jTable3.getColumnModel().getColumnCount() > 0) {
+            jTable3.getColumnModel().getColumn(0).setHeaderValue(bundle.getString("MainFrame.jTable3.columnModel.title0")); // NOI18N
+        }
 
         jSplitPane2.setRightComponent(jScrollPane3);
 
@@ -262,6 +270,7 @@ public class MainFrame extends javax.swing.JFrame {
     public javax.swing.JLabel jLabel1;
     public javax.swing.JLabel jLabel2;
     public javax.swing.JLabel jLabel3;
+    public javax.swing.JLabel jLabel4;
     public javax.swing.JPanel jPanel1;
     public javax.swing.JPanel jPanel2;
     public javax.swing.JPanel jPanel3;

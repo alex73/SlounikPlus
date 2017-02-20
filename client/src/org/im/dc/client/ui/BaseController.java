@@ -7,8 +7,6 @@ import java.awt.Rectangle;
 import java.awt.Window;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.util.concurrent.ExecutionException;
 
 import javax.swing.ImageIcon;
@@ -132,5 +130,9 @@ public abstract class BaseController<T extends Window> {
 
         protected void error() {
         }
+    }
+
+    protected void todo(String todo) {
+        JOptionPane.showMessageDialog(window, "TODO: " + todo, "Яшчэ не зроблена", JOptionPane.WARNING_MESSAGE);
     }
 }

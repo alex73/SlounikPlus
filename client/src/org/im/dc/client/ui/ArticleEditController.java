@@ -19,7 +19,6 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
-import javax.xml.ws.soap.SOAPFaultException;
 
 import org.im.dc.client.SchemaLoader;
 import org.im.dc.client.WS;
@@ -28,6 +27,8 @@ import org.im.dc.service.dto.ArticleFullInfo;
 
 /**
  * Controls article editor.
+ * 
+ * TODO захоўваць стан шырыні слупкоў, splitter
  */
 public class ArticleEditController extends BaseController<ArticleEditDialog> {
     private XmlGroup editorUI;
@@ -61,6 +62,8 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
     }
 
     private void init() {
+        // TODO калі зьмененыя нататкі - паказваць кнопку "захаваць нататкі", калі зьменыны XML - паказваць "захаваць
+        // артыкул" ці "прапанаваць зьмены"
         window.btnSave.addActionListener((e) -> save());
         window.btnChangeState.addActionListener((e) -> changeStateAsk());
         window.btnProposeSave.addActionListener((e) -> proposeChanges());
@@ -68,6 +71,30 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
             @Override
             public void mouseClicked(MouseEvent e) {
                 addComment();
+            }
+        });
+        window.lblHasProposedChanges.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                todo("будзе паказваць ці ёсць прапанаваныя змены, і адчыняць дыялог параўнання");
+            }
+        });
+        window.lblWatched.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                todo("будзе паказваць ці гэты карыстальнік сочыць за артыкулам, і пераключаць сачэнне");
+            }
+        });
+        window.lblPreview.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                todo("прагляд папяровага варыянта калі карыстальнік мае дазвол");
+            }
+        });
+        window.txtWords.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                todo("дыялог змены слоў артыкула, калі карыстальнік мае дазвол");
             }
         });
     }
@@ -82,6 +109,7 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
         window.txtState.setText(article.article.state);
         window.txtUsers.setText(Arrays.toString(article.article.assignedUsers));
         if (article.article.notes != null) {
+            // TODO фарматаваньне ў нататніку: тоўсты, курсіў, падкрэслены, закрэслены, колер тэкста і фона
             window.txtNotes.setText(article.article.notes);
         }
 
@@ -96,8 +124,7 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
         } catch (Throwable ex) {
             editorUI = null;
             ex.printStackTrace();
-            JOptionPane.showMessageDialog(window,
-                    "Памылка чытання XML: " + ((SOAPFaultException) ex).getFault().getFaultString(), "Памылка",
+            JOptionPane.showMessageDialog(window, "Памылка чытання XML артыкула: " + ex.getMessage(), "Памылка",
                     JOptionPane.ERROR_MESSAGE);
         }
         window.panelEditor.setViewportView(editorUI);

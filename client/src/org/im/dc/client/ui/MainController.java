@@ -112,12 +112,22 @@ public class MainController extends BaseController<MainFrame> {
                 new ArticleEditController(window, a.id);
             }
         });
-        window.btnAddWords.addActionListener((e) -> new AddWordsController(window));
 
+        window.btnAddWords.addActionListener((e) -> new AddWordsController(window));
         window.btnAddWords.setVisible(initialData.currentUserPermissions.contains(Permission.ADD_WORDS.name()));
+
+        window.btnStat.addActionListener((e) -> todo("Тут будзе статыстыка для тых хто мае дазвол"));
         window.btnStat.setVisible(initialData.currentUserPermissions.contains(Permission.STATISTICS.name()));
+
         window.btnValidateFull
                 .setVisible(initialData.currentUserPermissions.contains(Permission.FULL_VALIDATION.name()));
+
+        window.btnSettings.addActionListener((e) -> todo("Тут будуць налады памера шрыфта для ўсіх вакон"));
+
+        window.btnUsers.addActionListener(
+                (e) -> todo("Тут будзе пераназначэнне карыстальнікаў, з фільтрам па карыстальнікам і станах"));
+
+        window.btnValidateFull.addActionListener((e) -> todo("Тут будзе праверка ўсяго слоўніка"));
     }
 
     /**

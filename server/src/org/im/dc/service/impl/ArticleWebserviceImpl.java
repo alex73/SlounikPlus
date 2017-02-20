@@ -26,7 +26,7 @@ import org.im.dc.service.dto.Header;
 
 @WebService(endpointInterface = "org.im.dc.service.ArticleWebservice")
 public class ArticleWebserviceImpl implements ArticleWebservice {
-
+    // TODO логі
     private void check(Header header) throws Exception {
         if (header.appVersion != AppConst.APP_VERSION) {
             throw new RuntimeException("Wrong app version");
@@ -127,10 +127,11 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
                 throw new RuntimeException("Possible somebody other updated");
             }
             PermissionChecker.canUserEditArticle(header.user, rec.getState());
-
+            // TODO запіс у гісторыю - толькі калі зьмяніўся XML, а не нататкі
             history.setArticleId(rec.getArticleId());
             history.setOldXml(rec.getXml());
 
+            // TODO скрыпт для артыкула, і словы зь яго для пошуку і іншыя
             rec.setXml(article.xml);
             rec.setNotes(article.notes);
             rec.setLastUpdated(currentDate);

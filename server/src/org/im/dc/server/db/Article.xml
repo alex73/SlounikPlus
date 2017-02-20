@@ -21,7 +21,8 @@
 	</insert>
 
 	<select id="listArticles" parameterType="ArticlesFilter" resultType="RecArticle" resultMap="RecArticleMap">
-		SELECT articleId, words, state FROM Articles
+		SELECT articleId, words, state
+		FROM Articles
 		<if test="state != null">
 			WHERE state=#{state}
 		</if>
@@ -31,4 +32,13 @@
 		<result property="words" column="words" typeHandler="StringArrayTypeHandler" />
 		<result property="state" column="state" />
 	</resultMap>
+
+	<select id="hasArticlesWithWords" parameterType="java.util.List">
+		SELECT 1
+		FROM Articles
+		WHERE
+		<foreach collection="list" item="item" index="index" separator="OR">
+			#{item} = ANY(words)
+		</foreach>
+	</select>
 </mapper>
