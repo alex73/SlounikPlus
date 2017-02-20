@@ -36,7 +36,13 @@ public interface DoArticle {
             + " WHERE articleId = #{0.articleId} AND lastUpdated = #{1}")
     int updateArticle(RecArticle rec, Date prevLastUpdated);
 
-    @Update("UPDATE Articles SET  state = #{0.state}, lastUpdated = #{0.lastUpdated} "
+    @Update("UPDATE Articles SET state = #{0.state}, lastUpdated = #{0.lastUpdated} "
             + " WHERE articleId = #{0.articleId} AND lastUpdated = #{1}")
     int updateArticleState(RecArticle rec, Date prevLastUpdated);
+
+    @Update("UPDATE Articles SET watchers = array_append(watchers, #{1}) WHERE articleId = #{0} AND NOT (watchers @> ARRAY[#{1}]::varchar[][])")
+    void addWatch(int articleId, String user);
+
+    @Update("UPDATE Articles SET watchers = array_remove(watchers, #{1}) WHERE articleId = #{0} AND (watchers @> ARRAY[#{1}]::varchar[][])")
+    void removeWatch(int articleId, String user);
 }

@@ -261,7 +261,19 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
     }
 
     @Override
-    public void setWatch(Header header, int articleId, boolean watch) {
+    public void setWatch(Header header, int articleId, boolean watch) throws Exception {
+        LOG.info(">> setWatch");
+        check(header);
+
+        Db.exec((api) -> {
+            if (watch) {
+                api.getArticleMapper().addWatch(articleId, header.user);
+            } else {
+                api.getArticleMapper().removeWatch(articleId, header.user);
+            }
+        });
+
+        LOG.info("<< setWatch");
     }
 
     @Override

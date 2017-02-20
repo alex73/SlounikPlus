@@ -27,7 +27,7 @@ public interface ArticleWebservice {
 
     void fixIssue(Header header, int articleId, int issueId, boolean accepted);
 
-    void setWatch(Header header, int articleId, boolean watch);
+    void setWatch(Header header, int articleId, boolean watch) throws Exception;
 
     List<ArticleShort> listArticles(Header header, ArticlesFilter filter) throws Exception;
 

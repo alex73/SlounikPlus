@@ -83,7 +83,7 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
         window.lblWatched.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                todo("будзе паказваць ці гэты карыстальнік сочыць за артыкулам, і пераключаць сачэнне");
+                changeWatch();
             }
         });
         window.lblPreview.addMouseListener(new MouseAdapter() {
@@ -104,6 +104,7 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
         window.btnSave.setVisible(article.youCanEdit);
         window.btnProposeSave.setVisible(!article.youCanEdit);
         window.btnChangeState.setVisible(!article.youCanChangeStateTo.isEmpty());
+        displayWatch();
 
         window.setTitle(window.getTitle().replaceAll("\\[.*\\]", Arrays.toString(article.article.words)));
         window.txtWords.setText(Arrays.toString(article.article.words));
@@ -138,6 +139,10 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
             }
         });
         window.tableHistory.setModel(new ArticleEditRelatedModel(article.related));
+    }
+
+    private void displayWatch() {
+        window.lblWatched.setText(article.youWatched ? "*" : "-");
     }
 
     private byte[] extractXml() throws Exception {
@@ -213,6 +218,21 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
             protected void ok() {
                 ok.run();
                 show();
+            }
+        };
+    }
+
+    private void changeWatch() {
+        new LongProcess() {
+            @Override
+            protected void exec() throws Exception {
+                WS.getArticleService().setWatch(WS.header, article.article.id, !article.youWatched);
+                article.youWatched = !article.youWatched;
+            }
+
+            @Override
+            protected void ok() {
+                displayWatch();
             }
         };
     }
