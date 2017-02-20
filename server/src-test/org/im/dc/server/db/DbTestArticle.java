@@ -23,7 +23,7 @@ public class DbTestArticle {
     }
 
     @Test
-    public void testInsertMany() {
+    public void testInsertMany() throws Exception {
         List<RecArticle> list = new ArrayList<>();
         RecArticle r1 = new RecArticle();
         r1.setAssignedUsers(new String[] { "u1", "u2" });
@@ -47,7 +47,7 @@ public class DbTestArticle {
     }
 
     @Test
-    public void testArticle() {
+    public void testArticle() throws Exception {
         RecArticle recSource = new RecArticle();
         recSource.setAssignedUsers(new String[] { "C", "D" });
         recSource.setLettersCount(3);
@@ -91,7 +91,7 @@ public class DbTestArticle {
     }
 
     @Test
-    public void testList() {
+    public void testList() throws Exception {
         ArticlesFilter filter = new ArticlesFilter();
         List<RecArticle> list = Db.execAndReturn((api) -> api.getSession().selectList("listArticles", filter));
         filter.state = "state";

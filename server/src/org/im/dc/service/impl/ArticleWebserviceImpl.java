@@ -1,10 +1,14 @@
 package org.im.dc.service.impl;
 
+import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
 import javax.jws.WebService;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Validator;
 
 import org.im.dc.gen.config.Change;
 import org.im.dc.gen.config.State;
@@ -52,8 +56,21 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
             LOG.warn("<< getArticleFullInfo: there is no specified article");
             throw new Exception("Няма вызначанага артыкула");
         }
-        // TODO : праверка XML
+        preprocessArticle(null, rec);
 
+        ArticleFullInfo a = getAdditionalArticleInfo(header, rec);
+        LOG.info("<< getArticleFullInfo: " + articleId);
+        return a;
+    }
+
+    private void preprocessArticle(Db.Api api, RecArticle rec) throws Exception {
+        Validator validator = Config.articleSchema.newValidator();
+        validator.validate(new StreamSource(new ByteArrayInputStream(rec.getXml())));
+
+        // TODO call script for check article
+    }
+
+    private ArticleFullInfo getAdditionalArticleInfo(Header header, RecArticle rec) throws Exception {
         ArticleFullInfo a = new ArticleFullInfo();
         a.article = new ArticleFull();
         a.article.id = rec.getArticleId();
@@ -86,7 +103,7 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
         }
         // гісторыя
         for (RecArticleHistory rh : Db
-                .execAndReturn((api) -> api.getArticleHistoryMapper().retrieveHistory(articleId))) {
+                .execAndReturn((api) -> api.getArticleHistoryMapper().retrieveHistory(rec.getArticleId()))) {
             ArticleFullInfo.Related h = new ArticleFullInfo.Related();
             h.historyId = rh.getHistoryId();
             h.when = rh.getChanged();
@@ -99,7 +116,7 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
             a.related.add(h);
         }
         // камэнтары
-        for (RecComment rc : Db.execAndReturn((api) -> api.getCommentMapper().retrieveComments(articleId))) {
+        for (RecComment rc : Db.execAndReturn((api) -> api.getCommentMapper().retrieveComments(rec.getArticleId()))) {
             ArticleFullInfo.Related h = new ArticleFullInfo.Related();
             h.commentId = rc.getCommentId();
             h.when = rc.getCreated();
@@ -108,7 +125,7 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
             a.related.add(h);
         }
         // заўвагі
-        for (RecIssue rc : Db.execAndReturn((api) -> api.getIssueMapper().retrieveIssues(articleId))) {
+        for (RecIssue rc : Db.execAndReturn((api) -> api.getIssueMapper().retrieveIssues(rec.getArticleId()))) {
             ArticleFullInfo.Related h = new ArticleFullInfo.Related();
             h.issueId = rc.getIssueId();
             h.when = rc.getCreated();
@@ -117,7 +134,6 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
             a.related.add(h);
         }
 
-        LOG.info("<< getArticleFullInfo: " + articleId);
         return a;
     }
 
@@ -126,7 +142,7 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
         LOG.info(">> saveArticle");
         check(header);
 
-        Db.exec((api) -> {
+        RecArticle art = Db.execAndReturn((api) -> {
             Date currentDate = new Date();
             RecArticleHistory history = new RecArticleHistory();
 
@@ -140,14 +156,16 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
                 throw new RuntimeException("Possible somebody other updated");
             }
             PermissionChecker.canUserEditArticle(header.user, rec.getState());
-            // TODO запіс у гісторыю - толькі калі зьмяніўся XML, а не нататкі
+
             history.setArticleId(rec.getArticleId());
             history.setOldXml(rec.getXml());
 
-            // TODO скрыпт для артыкула, і словы зь яго для пошуку і іншыя
             rec.setXml(article.xml);
             rec.setNotes(article.notes);
             rec.setLastUpdated(currentDate);
+
+            preprocessArticle(api, rec);
+
             int u = api.getArticleMapper().updateArticle(rec, article.lastUpdated);
             if (u != 1) {
                 LOG.info("<< saveArticle: db was not updated");
@@ -157,11 +175,17 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
             history.setNewXml(rec.getXml());
             history.setChanged(currentDate);
             history.setChanger(header.user);
-            api.getArticleHistoryMapper().insertArticleHistory(history);
+            if (!Arrays.equals(history.getOldXml(), history.getNewXml())) {
+                // запіс у гісторыю - толькі калі зьмяніўся XML, а не нататкі
+                api.getArticleHistoryMapper().insertArticleHistory(history);
+            }
+
+            return rec;
         });
 
+        ArticleFullInfo a = getAdditionalArticleInfo(header, art);
         LOG.info("<< saveArticle");
-        return getArticleFullInfo(header, article.id);
+        return a;
     }
 
     @Override
@@ -170,7 +194,7 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
         LOG.info(">> addIssue");
         check(header);
 
-        Db.exec((api) -> {
+        RecArticle art = Db.execAndReturn((api) -> {
             RecArticle rec = api.getArticleMapper().selectArticle(articleId);
             if (rec == null) {
                 LOG.warn("<< addIssue: no record in db");
@@ -190,10 +214,13 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
             issue.setNewXml(proposedXml);
 
             api.getIssueMapper().insertIssue(issue);
+
+            return rec;
         });
 
+        ArticleFullInfo a = getAdditionalArticleInfo(header, art);
         LOG.info("<< addIssue");
-        return getArticleFullInfo(header, articleId);
+        return a;
     }
 
     @Override
@@ -202,7 +229,7 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
         LOG.info(">> changeState");
         check(header);
 
-        Db.exec((api) -> {
+        RecArticle art = Db.execAndReturn((api) -> {
             Date currentDate = new Date();
             RecArticleHistory history = new RecArticleHistory();
 
@@ -232,10 +259,13 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
             history.setChanged(currentDate);
             history.setChanger(header.user);
             api.getArticleHistoryMapper().insertArticleHistory(history);
+
+            return rec;
         });
 
+        ArticleFullInfo a = getAdditionalArticleInfo(header, art);
         LOG.info("<< changeState");
-        return getArticleFullInfo(header, articleId);
+        return a;
     }
 
     @Override

@@ -40,7 +40,7 @@ public class Db {
     /**
      * Execute DB operations inside transaction.
      */
-    public static <T> T execAndReturn(DbExecutorResult<T> exec) {
+    public static <T> T execAndReturn(DbExecutorResult<T> exec) throws Exception {
         T result;
         LOG.debug("Start transaction");
         try (SqlSession s = sqlSessionFactory.openSession(ExecutorType.REUSE,
@@ -58,7 +58,7 @@ public class Db {
         return result;
     }
 
-    public static void exec(DbExecutor exec) {
+    public static void exec(DbExecutor exec) throws Exception {
         LOG.debug("Start transaction");
         try (SqlSession s = sqlSessionFactory.openSession(ExecutorType.REUSE,
                 TransactionIsolationLevel.READ_COMMITTED)) {

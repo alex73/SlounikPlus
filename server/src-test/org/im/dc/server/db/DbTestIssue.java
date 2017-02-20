@@ -19,7 +19,7 @@ public class DbTestIssue {
     }
 
     @Test
-    public void testInsert() {
+    public void testInsert() throws Exception {
         RecIssue rec1 = new RecIssue();
         rec1.setArticleId(1);
         rec1.setCreated(new Date(123));

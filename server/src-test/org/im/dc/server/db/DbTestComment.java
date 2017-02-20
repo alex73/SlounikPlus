@@ -18,7 +18,7 @@ public class DbTestComment {
     }
 
     @Test
-    public void testInsert() {
+    public void testInsert() throws Exception {
         RecComment rec1 = new RecComment();
         rec1.setArticleId(1);
         rec1.setCreated(new Date(123));

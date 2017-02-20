@@ -19,7 +19,7 @@ public class DbTestArticleHistory {
     }
 
     @Test
-    public void testInsert() {
+    public void testInsert() throws Exception {
         RecArticleHistory rec1 = new RecArticleHistory();
         rec1.setArticleId(1);
         rec1.setChanged(new Date(123));
