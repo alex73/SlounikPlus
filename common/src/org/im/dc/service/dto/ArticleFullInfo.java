@@ -15,7 +15,7 @@ public class ArticleFullInfo {
     // гэты карыстальнік можа зьмяняць стан артыкула на вызначаныя тут
     public Set<String> youCanChangeStateTo = new TreeSet<>();
     // гісторыя зменаў артыкула
-    public List<RelatedOne> related = new ArrayList<>();
+    public List<Related> related = new ArrayList<>();
     // спасылаюцца на гэты артыкул
     public List<LinkFrom> links;
     // спасылкі на зьмешнія рэсурсы

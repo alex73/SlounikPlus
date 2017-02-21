@@ -26,7 +26,7 @@ import org.im.dc.service.dto.ArticleFullInfo;
 import org.im.dc.service.dto.ArticleShort;
 import org.im.dc.service.dto.ArticlesFilter;
 import org.im.dc.service.dto.Header;
-import org.im.dc.service.dto.RelatedOne;
+import org.im.dc.service.dto.Related;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,9 +64,10 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
     }
 
     private void preprocessArticle(Db.Api api, RecArticle rec) throws Exception {
-        Validator validator = Config.articleSchema.newValidator();
-        validator.validate(new StreamSource(new ByteArrayInputStream(rec.getXml())));
-
+        if (rec.getXml() != null) {
+            Validator validator = Config.articleSchema.newValidator();
+            validator.validate(new StreamSource(new ByteArrayInputStream(rec.getXml())));
+        }
         // TODO call script for check article
     }
 
@@ -104,38 +105,17 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
         // гісторыя
         for (RecArticleHistory rh : Db
                 .execAndReturn((api) -> api.getArticleHistoryMapper().retrieveHistory(rec.getArticleId()))) {
-            RelatedOne h = new RelatedOne();
-            h.type = RelatedOne.RelatedType.HISTORY;
-            h.id = rh.getHistoryId();
-            h.when = rh.getChanged();
-            h.who = rh.getChanger();
-            if (rh.getOldState() != null && rh.getNewState() != null) {
-                h.what = rh.getOldState() + " -> " + rh.getNewState();
-            } else if (rh.getNewXml() != null) {
-                h.what = "Тэкст артыкула";
-            }
-            a.related.add(h);
+            a.related.add(rh.getRelated());
         }
         // камэнтары
         for (RecComment rc : Db.execAndReturn((api) -> api.getCommentMapper().retrieveComments(rec.getArticleId()))) {
-            RelatedOne h = new RelatedOne();
-            h.type = RelatedOne.RelatedType.COMMENT;
-            h.id = rc.getCommentId();
-            h.when = rc.getCreated();
-            h.who = rc.getAuthor();
-            h.what = rc.getComment();
-            a.related.add(h);
+            a.related.add(rc.getRelated());
         }
         // заўвагі
         for (RecIssue rc : Db.execAndReturn((api) -> api.getIssueMapper().retrieveIssues(rec.getArticleId()))) {
-            RelatedOne h = new RelatedOne();
-            h.type = RelatedOne.RelatedType.ISSUE;
-            h.id = rc.getIssueId();
-            h.when = rc.getCreated();
-            h.who = rc.getAuthor();
-            h.what = (rc.isAccepted() ? "done:" : "open:") + rc.getComment();
-            a.related.add(h);
+            a.related.add(rc.getRelated());
         }
+        Related.sortByTimeDesc(a.related);
 
         return a;
     }

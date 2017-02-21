@@ -2,10 +2,14 @@ package org.im.dc.server.db;
 
 import java.util.Date;
 
+import org.im.dc.service.dto.Related;
+
 public class RecComment {
     private int commentId;
     // артыкул
     private int articleId;
+    // словы з артыкула
+    private String[] words;
     // калі быў створаны каментар
     private Date created;
     // хто стварыў каментар
@@ -27,6 +31,14 @@ public class RecComment {
 
     public void setArticleId(int articleId) {
         this.articleId = articleId;
+    }
+
+    public String[] getWords() {
+        return words;
+    }
+
+    public void setWords(String[] words) {
+        this.words = words;
     }
 
     public Date getCreated() {
@@ -51,5 +63,18 @@ public class RecComment {
 
     public void setComment(String comment) {
         this.comment = comment;
+    }
+
+    public Related getRelated() {
+        Related r = new Related();
+        r.type = Related.RelatedType.COMMENT;
+        r.articleId = articleId;
+        r.words = words;
+        r.id = commentId;
+        r.articleId = articleId;
+        r.when = created;
+        r.who = author;
+        r.what = comment;
+        return r;
     }
 }

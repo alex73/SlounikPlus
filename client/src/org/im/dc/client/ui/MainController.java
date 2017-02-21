@@ -17,6 +17,7 @@ import org.im.dc.client.WS;
 import org.im.dc.gen.config.Permission;
 import org.im.dc.service.dto.ArticleShort;
 import org.im.dc.service.dto.InitialData;
+import org.im.dc.service.dto.Related;
 
 /**
  * Controls main window.
@@ -27,6 +28,7 @@ public class MainController extends BaseController<MainFrame> {
     int fontSize;
 
     private MainFrameIssuesModel issuesModel;
+    private MainFrameNewsModel newsModel;
 
     public MainController() {
         super(new MainFrame());
@@ -94,8 +96,8 @@ public class MainController extends BaseController<MainFrame> {
 
                 SchemaLoader.init(initialData.articleSchema);
 
-                issuesModel = new MainFrameIssuesModel(WS.getToolsWebservice().listTodo(WS.header));
-                //TODO open article on table click
+                issuesModel = new MainFrameIssuesModel(WS.getToolsWebservice().listIssues(WS.header));
+                newsModel = new MainFrameNewsModel(WS.getToolsWebservice().listNews(WS.header));
             }
 
             @Override
@@ -117,6 +119,22 @@ public class MainController extends BaseController<MainFrame> {
                 new ArticleEditController(window, a.id);
             }
         });
+        window.tableIssues.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                Related a = ((MainFrameIssuesModel) window.tableIssues.getModel()).issues
+                        .get(window.tableIssues.getSelectedRow());
+                new ArticleEditController(window, a.articleId);
+            }
+        });
+        window.tableNews.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                Related a = ((MainFrameNewsModel) window.tableNews.getModel()).news
+                        .get(window.tableNews.getSelectedRow());
+                new ArticleEditController(window, a.articleId);
+            }
+        });
 
         window.btnAddWords.addActionListener((e) -> new AddWordsController(window));
         window.btnAddWords.setVisible(initialData.currentUserPermissions.contains(Permission.ADD_WORDS.name()));
@@ -136,6 +154,7 @@ public class MainController extends BaseController<MainFrame> {
 
         SettingsController.savePlacesForWindow(window);
         window.tableIssues.setModel(issuesModel);
+        window.tableNews.setModel(newsModel);
         SettingsController.loadPlacesForWindow(window);
     }
 

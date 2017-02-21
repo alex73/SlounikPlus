@@ -175,17 +175,14 @@ public class MainFrame extends javax.swing.JFrame {
 
         tableNews.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {"TODO: Навіны"}
+                {}
             },
             new String [] {
-                "Title 1"
+
             }
         ));
         tableNews.setName("news"); // NOI18N
         jScrollPane3.setViewportView(tableNews);
-        if (tableNews.getColumnModel().getColumnCount() > 0) {
-            tableNews.getColumnModel().getColumn(0).setHeaderValue(bundle.getString("MainFrame.news.columnModel.title0")); // NOI18N
-        }
 
         jSplitPane2.setRightComponent(jScrollPane3);
 

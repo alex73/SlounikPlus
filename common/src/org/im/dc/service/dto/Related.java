@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * Рэчы што датычацца артыкулаў.
  */
-public class RelatedOne {
+public class Related {
     public enum RelatedType {
         HISTORY, COMMENT, ISSUE
     };
@@ -17,16 +17,22 @@ public class RelatedOne {
 
     public int id;
 
+    // спасылаецца на артыкул
+    public int articleId;
+    // загалоўныя словы артыкула (не заўсёды вызначаныя)
+    public String[] words;
+
     // калі быў зменены
     public Date when;
     // хто змяніў
     public String who;
+    // падрабязнасьці
     public String what;
 
-    public static void sortByTimeDesc(List<RelatedOne> list) {
-        Collections.sort(list, new Comparator<RelatedOne>() {
+    public static void sortByTimeDesc(List<Related> list) {
+        Collections.sort(list, new Comparator<Related>() {
             @Override
-            public int compare(RelatedOne r1, RelatedOne r2) {
+            public int compare(Related r1, Related r2) {
                 return r2.when.compareTo(r1.when);
             }
         });

@@ -22,7 +22,7 @@ import org.im.dc.client.SchemaLoader;
 import org.im.dc.client.WS;
 import org.im.dc.client.ui.xmlstructure.XmlGroup;
 import org.im.dc.service.dto.ArticleFullInfo;
-import org.im.dc.service.dto.RelatedOne;
+import org.im.dc.service.dto.Related;
 
 /**
  * Controls article editor.
@@ -129,7 +129,7 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
         }
         window.panelEditor.setViewportView(editorUI);
 
-        RelatedOne.sortByTimeDesc(article.related);
+        Related.sortByTimeDesc(article.related);
 
         SettingsController.savePlacesForWindow(window);
         window.tableHistory.setModel(new ArticleEditRelatedModel(article.related));

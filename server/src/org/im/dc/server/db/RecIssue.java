@@ -2,6 +2,8 @@ package org.im.dc.server.db;
 
 import java.util.Date;
 
+import org.im.dc.service.dto.Related;
+
 public class RecIssue {
     private int issueId;
     // артыкул
@@ -111,5 +113,23 @@ public class RecIssue {
 
     public void setAccepted(boolean accepted) {
         this.accepted = accepted;
+    }
+
+    public Related getRelated() {
+        Related r = new Related();
+        r.type = Related.RelatedType.ISSUE;
+        r.articleId = articleId;
+        r.words = words;
+        r.id = issueId;
+        r.articleId = articleId;
+        if (fixed != null) {
+            r.when = fixed;
+            r.who = fixer;
+        } else {
+            r.when = created;
+            r.who = author;
+        }
+        r.what = (accepted ? "done:" : "open:") + comment;
+        return r;
     }
 }

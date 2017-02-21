@@ -9,13 +9,13 @@ import javax.swing.table.DefaultTableModel;
 import org.im.dc.service.dto.Related;
 
 @SuppressWarnings("serial")
-public class MainFrameIssuesModel extends DefaultTableModel {
+public class MainFrameNewsModel extends DefaultTableModel {
     private SimpleDateFormat TIME_FMT = new SimpleDateFormat("dd MMM HH:mm");
 
-    protected final List<Related> issues;
+    protected final List<Related> news;
 
-    public MainFrameIssuesModel(List<Related> issues) {
-        this.issues = issues;
+    public MainFrameNewsModel(List<Related> news) {
+        this.news = news;
     }
 
     @Override
@@ -46,12 +46,12 @@ public class MainFrameIssuesModel extends DefaultTableModel {
 
     @Override
     public int getRowCount() {
-        return issues != null ? issues.size() : 0;
+        return news != null ? news.size() : 0;
     }
 
     @Override
     public Object getValueAt(int row, int column) {
-        Related a = issues.get(row);
+        Related a = news.get(row);
         switch (column) {
         case 0:
             return TIME_FMT.format(a.when);

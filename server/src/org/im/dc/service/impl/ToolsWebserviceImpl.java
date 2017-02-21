@@ -18,6 +18,8 @@ import org.im.dc.server.Config;
 import org.im.dc.server.Db;
 import org.im.dc.server.PermissionChecker;
 import org.im.dc.server.db.RecArticle;
+import org.im.dc.server.db.RecArticleHistory;
+import org.im.dc.server.db.RecComment;
 import org.im.dc.server.db.RecIssue;
 import org.im.dc.server.js.JsDomWrapper;
 import org.im.dc.server.js.JsProcessing;
@@ -25,8 +27,7 @@ import org.im.dc.service.AppConst;
 import org.im.dc.service.ToolsWebservice;
 import org.im.dc.service.dto.Header;
 import org.im.dc.service.dto.InitialData;
-import org.im.dc.service.dto.RelatedMany;
-import org.im.dc.service.dto.RelatedOne;
+import org.im.dc.service.dto.Related;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -142,27 +143,51 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
     }
 
     @Override
-    public List<RelatedMany> listTodo(Header header) throws Exception {
-        List<RelatedMany> related = new ArrayList<>();
+    public List<Related> listIssues(Header header) throws Exception {
+        LOG.info(">> listIssues");
+        List<Related> related = new ArrayList<>();
         // заўвагі
-        List<RecIssue> list = Db.execAndReturn((api) -> api.getSession().selectList("retrieveUserIssues", header.user));
+        List<RecIssue> list = Db
+                .execAndReturn((api) -> api.getSession().selectList("retrieveUserOpenIssues", header.user));
         for (RecIssue rc : list) {
-            RelatedMany h = new RelatedMany();
-            h.articleId = rc.getArticleId();
-            h.words = rc.getWords();
-            h.type = RelatedOne.RelatedType.ISSUE;
-            h.id = rc.getIssueId();
-            h.when = rc.getCreated();
-            h.who = rc.getAuthor();
-            h.what = (rc.isAccepted() ? "done:" : "open:") + rc.getComment();
-            related.add(h);
+            related.add(rc.getRelated());
         }
+        Related.sortByTimeDesc(related);
+
+        LOG.info("<< listIssues");
         return related;
     }
 
     @Override
-    public List<RelatedMany> listNews(Header header) throws Exception {
-        // TODO Auto-generated method stub
-        return null;
+    public List<Related> listNews(Header header) throws Exception {
+        LOG.info(">> listNews");
+        List<Related> related = new ArrayList<>();
+        // заўвагі карыстальніка
+        List<RecIssue> list = Db
+                .execAndReturn((api) -> api.getSession().selectList("retrieveAuthorIssues", header.user));
+        for (RecIssue rc : list) {
+            related.add(rc.getRelated());
+        }
+        // заўвагі для артыкулаў за якімі сочыць карыстальнік
+        list = Db.execAndReturn((api) -> api.getSession().selectList("retrieveUserIssues", header.user));
+        for (RecIssue rc : list) {
+            related.add(rc.getRelated());
+        }
+        // камэнтары
+        List<RecComment> listComments = Db
+                .execAndReturn((api) -> api.getSession().selectList("retrieveUserComment", header.user));
+        for (RecComment rc : listComments) {
+            related.add(rc.getRelated());
+        }
+        // гісторыя
+        List<RecArticleHistory> listHistory = Db
+                .execAndReturn((api) -> api.getSession().selectList("retrieveUserHistory", header.user));
+        for (RecArticleHistory rh : listHistory) {
+            related.add(rh.getRelated());
+        }
+        Related.sortByTimeDesc(related);
+
+        LOG.info("<< listNews");
+        return related;
     }
 }

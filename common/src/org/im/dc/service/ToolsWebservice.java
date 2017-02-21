@@ -6,7 +6,7 @@ import javax.jws.WebService;
 
 import org.im.dc.service.dto.Header;
 import org.im.dc.service.dto.InitialData;
-import org.im.dc.service.dto.RelatedMany;
+import org.im.dc.service.dto.Related;
 
 @WebService
 public interface ToolsWebservice {
@@ -22,7 +22,7 @@ public interface ToolsWebservice {
 
     String printPreview(Header header, int articleId) throws Exception;
 
-    List<RelatedMany> listTodo(Header header) throws Exception;
+    List<Related> listIssues(Header header) throws Exception;
 
-    List<RelatedMany> listNews(Header header) throws Exception;
+    List<Related> listNews(Header header) throws Exception;
 }

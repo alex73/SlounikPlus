@@ -2,10 +2,14 @@ package org.im.dc.server.db;
 
 import java.util.Date;
 
+import org.im.dc.service.dto.Related;
+
 public class RecArticleHistory {
     private int historyId;
     // артыкул
     private int articleId;
+    // словы з артыкула
+    private String[] words;
     // калі быў зменены
     private Date changed;
     // хто змяніў
@@ -41,6 +45,14 @@ public class RecArticleHistory {
 
     public void setArticleId(int articleId) {
         this.articleId = articleId;
+    }
+
+    public String[] getWords() {
+        return words;
+    }
+
+    public void setWords(String[] words) {
+        this.words = words;
     }
 
     public Date getChanged() {
@@ -121,5 +133,22 @@ public class RecArticleHistory {
 
     public void setNewXml(byte[] newXml) {
         this.newXml = newXml;
+    }
+
+    public Related getRelated() {
+        Related r = new Related();
+        r.type = Related.RelatedType.HISTORY;
+        r.articleId = articleId;
+        r.words = words;
+        r.id = historyId;
+        r.articleId = articleId;
+        r.when = changed;
+        r.who = changer;
+        if (oldState != null && newState != null) {
+            r.what = oldState + " -> " + newState;
+        } else if (newXml != null) {
+            r.what = "Тэкст артыкула";
+        }
+        return r;
     }
 }

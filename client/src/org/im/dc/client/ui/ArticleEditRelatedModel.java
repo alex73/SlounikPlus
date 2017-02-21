@@ -5,15 +5,15 @@ import java.util.List;
 
 import javax.swing.table.DefaultTableModel;
 
-import org.im.dc.service.dto.RelatedOne;
+import org.im.dc.service.dto.Related;
 
 @SuppressWarnings("serial")
 public class ArticleEditRelatedModel extends DefaultTableModel {
     private SimpleDateFormat TIME_FMT = new SimpleDateFormat("dd MMM HH:mm");
 
-    protected final List<RelatedOne> related;
+    protected final List<Related> related;
 
-    public ArticleEditRelatedModel(List<RelatedOne> related) {
+    public ArticleEditRelatedModel(List<Related> related) {
         this.related = related;
     }
 
@@ -48,7 +48,7 @@ public class ArticleEditRelatedModel extends DefaultTableModel {
 
     @Override
     public Object getValueAt(int row, int column) {
-        RelatedOne a = related.get(row);
+        Related a = related.get(row);
         switch (column) {
         case 0:
             return TIME_FMT.format(a.when);
