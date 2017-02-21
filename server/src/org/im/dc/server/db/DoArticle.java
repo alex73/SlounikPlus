@@ -1,6 +1,7 @@
 package org.im.dc.server.db;
 
 import java.util.Date;
+import java.util.List;
 
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Options;
@@ -21,6 +22,10 @@ public interface DoArticle {
             @Result(property = "watchers", column = "watchers", typeHandler = StringArrayTypeHandler.class),
             @Result(property = "linkedTo", column = "linkedTo", typeHandler = StringArrayTypeHandler.class) })
     RecArticle selectArticle(int id);
+
+    @Select("SELECT articleId, words FROM Articles WHERE linkedTo && ARRAY[#{array,typeHandler=StringArrayTypeHandler}]::varchar[][]")
+    @Results({ @Result(property = "words", column = "words", typeHandler = StringArrayTypeHandler.class) })
+    List<RecArticle> selectLinkedTo(String[] words);
 
     @Insert("INSERT INTO Articles (words,xml,assignedUsers,state,notes,markers,watchers,linkedTo,textForSearch,lettersCount,lastUpdated) "
             + "VALUES(#{words,typeHandler=StringArrayTypeHandler},#{xml},#{assignedUsers,typeHandler=StringArrayTypeHandler},#{state},#{notes},#{markers,typeHandler=StringArrayTypeHandler},#{watchers,typeHandler=StringArrayTypeHandler},#{linkedTo,typeHandler=StringArrayTypeHandler},#{textForSearch},#{lettersCount},#{lastUpdated})")

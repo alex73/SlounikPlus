@@ -98,6 +98,11 @@ public class DbTestArticle {
         Db.exec((api) -> api.getSession().selectList("listArticles", filter));
     }
 
+    @Test
+    public void testLinkedTo() throws Exception {
+        Db.execAndReturn((api) -> api.getArticleMapper().selectLinkedTo(new String[] { "A", "L" }));
+    }
+
     void check1(RecArticle rec) {
         assertTrue(rec.getArticleId() > 0);
         assertArrayEquals(new String[] { "C", "D" }, rec.getAssignedUsers());

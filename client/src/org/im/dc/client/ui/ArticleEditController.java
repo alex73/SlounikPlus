@@ -1,15 +1,22 @@
 package org.im.dc.client.ui;
 
+import java.awt.Color;
+import java.awt.Desktop;
+import java.awt.Font;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.font.TextAttribute;
 import java.io.ByteArrayInputStream;
 import java.io.StringWriter;
+import java.net.URI;
 import java.util.Arrays;
+import java.util.Map;
 
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JRadioButton;
 import javax.swing.KeyStroke;
@@ -134,6 +141,53 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
         SettingsController.savePlacesForWindow(window);
         window.tableHistory.setModel(new ArticleEditRelatedModel(article.related));
         SettingsController.loadPlacesForWindow(window);
+
+        if (article.linksFrom.isEmpty()) {
+            window.panelLinkedFrom.setVisible(false);
+        } else {
+            window.panelLinkedFrom.setVisible(true);
+            window.panelLinkedFrom.removeAll();
+            window.panelLinkedFrom.add(new JLabel("На гэты артыкул спасылаюцца:"));
+            for (ArticleFullInfo.LinkFrom lf : article.linksFrom) {
+                JLabel lbl = new JLabel(Arrays.toString(lf.words));
+                lbl.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        new ArticleEditController(MainController.instance.window, lf.articleId);
+                    }
+                });
+                asLink(lbl);
+                window.panelLinkedFrom.add(lbl);
+            }
+        }
+        if (article.linksExternal.isEmpty()) {
+            window.panelLinkedExternal.setVisible(false);
+        } else {
+            window.panelLinkedExternal.setVisible(true);
+            window.panelLinkedExternal.removeAll();
+            for (ArticleFullInfo.LinkExternal le : article.linksExternal) {
+                JLabel lbl = new JLabel(le.name);
+                lbl.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        try {
+                            Desktop.getDesktop().browse(new URI(le.url));
+                        } catch (Exception ex) {
+                        }
+                    }
+                });
+                asLink(lbl);
+                window.panelLinkedExternal.add(lbl);
+            }
+        }
+    }
+
+    private void asLink(JLabel label) {
+        Font font = label.getFont();
+        Map<TextAttribute, ?> attributes = font.getAttributes();
+        ((Map) attributes).put(TextAttribute.FOREGROUND, Color.BLUE);
+        ((Map) attributes).put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
+        label.setFont(font.deriveFont(attributes));
     }
 
     private void displayWatch() {

@@ -17,12 +17,17 @@ public class ArticleFullInfo {
     // гісторыя зменаў артыкула
     public List<Related> related = new ArrayList<>();
     // спасылаюцца на гэты артыкул
-    public List<LinkFrom> links;
+    public List<LinkFrom> linksFrom = new ArrayList<>();
     // спасылкі на зьмешнія рэсурсы
-    public List<String> externalLinks;
+    public List<LinkExternal> linksExternal = new ArrayList<>();
 
     public static class LinkFrom {
         public int articleId;
         public String[] words;
+    }
+
+    public static class LinkExternal {
+        public String name;
+        public String url;
     }
 }

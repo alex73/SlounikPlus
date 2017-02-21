@@ -37,7 +37,8 @@ public class ArticleEditDialog extends javax.swing.JDialog {
         jScrollPane2 = new javax.swing.JScrollPane();
         txtNotes = new javax.swing.JTextArea();
         jPanel9 = new javax.swing.JPanel();
-        jLabel5 = new javax.swing.JLabel();
+        panelLinkedFrom = new javax.swing.JPanel();
+        panelLinkedExternal = new javax.swing.JPanel();
         panelEditor = new javax.swing.JScrollPane();
         jPanel2 = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
@@ -113,12 +114,13 @@ public class ArticleEditDialog extends javax.swing.JDialog {
 
         jPanel8.add(jSplitPane2, java.awt.BorderLayout.CENTER);
 
-        java.awt.FlowLayout flowLayout1 = new java.awt.FlowLayout(java.awt.FlowLayout.LEFT);
-        flowLayout1.setAlignOnBaseline(true);
-        jPanel9.setLayout(flowLayout1);
+        jPanel9.setLayout(new javax.swing.BoxLayout(jPanel9, javax.swing.BoxLayout.Y_AXIS));
 
-        jLabel5.setText(bundle.getString("ArticleEditDialog.jLabel5.text")); // NOI18N
-        jPanel9.add(jLabel5);
+        panelLinkedFrom.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+        jPanel9.add(panelLinkedFrom);
+
+        panelLinkedExternal.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+        jPanel9.add(panelLinkedExternal);
 
         jPanel8.add(jPanel9, java.awt.BorderLayout.SOUTH);
 
@@ -193,7 +195,6 @@ public class ArticleEditDialog extends javax.swing.JDialog {
     public javax.swing.JButton btnChangeState;
     public javax.swing.JButton btnProposeSave;
     public javax.swing.JButton btnSave;
-    public javax.swing.JLabel jLabel5;
     public javax.swing.JPanel jPanel2;
     public javax.swing.JPanel jPanel3;
     public javax.swing.JPanel jPanel4;
@@ -211,6 +212,8 @@ public class ArticleEditDialog extends javax.swing.JDialog {
     public javax.swing.JLabel lblPreview;
     public javax.swing.JLabel lblWatched;
     public javax.swing.JScrollPane panelEditor;
+    public javax.swing.JPanel panelLinkedExternal;
+    public javax.swing.JPanel panelLinkedFrom;
     public javax.swing.JTable tableHistory;
     public javax.swing.JTextArea txtNotes;
     public javax.swing.JTextField txtState;

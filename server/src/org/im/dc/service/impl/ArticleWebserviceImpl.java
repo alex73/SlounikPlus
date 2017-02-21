@@ -11,6 +11,7 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Validator;
 
 import org.im.dc.gen.config.Change;
+import org.im.dc.gen.config.Link;
 import org.im.dc.gen.config.State;
 import org.im.dc.server.Config;
 import org.im.dc.server.Db;
@@ -116,6 +117,22 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
             a.related.add(rc.getRelated());
         }
         Related.sortByTimeDesc(a.related);
+
+        for (RecArticle linked : Db.execAndReturn((api) -> api.getArticleMapper().selectLinkedTo(a.article.words))) {
+            ArticleFullInfo.LinkFrom lf = new ArticleFullInfo.LinkFrom();
+            lf.articleId = linked.getArticleId();
+            lf.words = linked.getWords();
+            a.linksFrom.add(lf);
+        }
+
+        if (a.article.words.length > 0) {
+            for (Link link : Config.getConfig().getExternalLinks().getLink()) {
+                ArticleFullInfo.LinkExternal ef = new ArticleFullInfo.LinkExternal();
+                ef.name = link.getName();
+                ef.url = link.getValue().replace("{}", a.article.words[0]);
+                a.linksExternal.add(ef);
+            }
+        }
 
         return a;
     }
