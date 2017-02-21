@@ -26,7 +26,6 @@ public class StringArrayTypeHandler implements TypeHandler<String[]> {
 
     @Override
     public String[] getResult(CallableStatement cs, int columnIndex) throws SQLException {
-        // TODO Auto-generated method stub
         return null;
     }
 

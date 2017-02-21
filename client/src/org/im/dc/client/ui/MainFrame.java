@@ -193,11 +193,6 @@ public class MainFrame extends javax.swing.JFrame {
         jPanel1.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
         btnSettings.setText(bundle.getString("MainFrame.btnSettings.text")); // NOI18N
-        btnSettings.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnSettingsActionPerformed(evt);
-            }
-        });
         jPanel1.add(btnSettings);
 
         btnStat.setText(bundle.getString("MainFrame.btnStat.text")); // NOI18N
@@ -216,10 +211,6 @@ public class MainFrame extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void btnSettingsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSettingsActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnSettingsActionPerformed
 
     /**
      * @param args the command line arguments

@@ -115,8 +115,6 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
         window.txtState.setText(article.article.state);
         window.txtUsers.setText(Arrays.toString(article.article.assignedUsers));
         if (article.article.notes != null) {
-            // TODO фарматаваньне ў нататніку: тоўсты, курсіў, падкрэслены,
-            // закрэслены, колер тэкста і фона
             window.txtNotes.setText(article.article.notes);
         }
 
