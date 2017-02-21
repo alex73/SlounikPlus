@@ -30,6 +30,7 @@ public class AddWordsDialog extends javax.swing.JDialog {
         words = new javax.swing.JTextArea();
         jPanel2 = new javax.swing.JPanel();
         btnOk = new javax.swing.JButton();
+        btnCancel = new javax.swing.JToggleButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("org/im/dc/client/ui/Bundle"); // NOI18N
@@ -93,6 +94,9 @@ public class AddWordsDialog extends javax.swing.JDialog {
         btnOk.setText(bundle.getString("AddWordsDialog.btnOk.text")); // NOI18N
         jPanel2.add(btnOk);
 
+        btnCancel.setText(bundle.getString("AddWordsDialog.btnCancel.text")); // NOI18N
+        jPanel2.add(btnCancel);
+
         getContentPane().add(jPanel2, java.awt.BorderLayout.SOUTH);
 
         pack();
@@ -141,6 +145,7 @@ public class AddWordsDialog extends javax.swing.JDialog {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    public javax.swing.JToggleButton btnCancel;
     public javax.swing.JButton btnOk;
     public javax.swing.JComboBox<String> cbInitialState;
     public javax.swing.JLabel jLabel1;

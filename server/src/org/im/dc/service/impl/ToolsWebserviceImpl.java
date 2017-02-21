@@ -2,6 +2,7 @@ package org.im.dc.service.impl;
 
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -89,6 +90,7 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
 
         Date lastUpdated = new Date();
         List<RecArticle> list = new ArrayList<>();
+        List<String> checkWords = new ArrayList<>();
         for (String w : words) {
             w = w.trim();
             if (w.isEmpty()) {
@@ -101,6 +103,7 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
                     LOG.warn("<< addWords: wrong words: " + w);
                     throw new Exception("Wrong words: " + w);
                 }
+                checkWords.add(wa[i]);
             }
             RecArticle r = new RecArticle();
             r.setAssignedUsers(users);
@@ -113,8 +116,14 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
             list.add(r);
         }
 
-        // TODO ці ўжо некаторыя артыкулы існуюць ?
-        Db.exec((api) -> api.getSession().insert("insertArticles", list));
+        Db.exec((api) -> {
+            List<RecArticle> existArticles = api.getSession().selectList("hasArticlesWithWords", checkWords);
+            if (!existArticles.isEmpty()) {
+                LOG.warn("<< addWords: already exist " + Arrays.toString(existArticles.get(0).getWords()));
+                throw new RuntimeException("Словы ўжо ёсьць: " + Arrays.toString(existArticles.get(0).getWords()));
+            }
+            api.getSession().insert("insertArticles", list);
+        });
 
         LOG.info("<< addWords");
     }

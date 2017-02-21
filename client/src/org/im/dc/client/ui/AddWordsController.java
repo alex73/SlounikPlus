@@ -19,6 +19,7 @@ public class AddWordsController extends BaseController<AddWordsDialog> {
         setupCloseOnEscape();
 
         window.btnOk.addActionListener(ok);
+        window.btnCancel.addActionListener((e) -> window.dispose());
 
         window.cbInitialState.setModel(new DefaultComboBoxModel<>(new Vector<>(MainController.initialData.states)));
         for (String user : MainController.initialData.allUsers) {

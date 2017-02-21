@@ -3,9 +3,11 @@
 
 <mapper namespace="Article">
 	<insert id="insertArticles" parameterType="java.util.List">
-		INSERT INTO Articles (words,xml,assignedUsers,state,notes,markers,watchers,linkedTo,textForSearch,lettersCount,lastUpdated)
+		INSERT INTO Articles
+		(words,xml,assignedUsers,state,notes,markers,watchers,linkedTo,textForSearch,lettersCount,lastUpdated)
 		VALUES
-		<foreach collection="list" item="item" index="index" separator=",">
+		<foreach collection="list" item="item" index="index"
+			separator=",">
 			(#{item.words,typeHandler=StringArrayTypeHandler},
 			#{item.xml},
 			#{item.assignedUsers,typeHandler=StringArrayTypeHandler},
@@ -20,7 +22,8 @@
 		</foreach>
 	</insert>
 
-	<select id="listArticles" parameterType="ArticlesFilter" resultType="RecArticle" resultMap="RecArticleMap">
+	<select id="listArticles" parameterType="ArticlesFilter"
+		resultType="RecArticle" resultMap="RecArticleMap">
 		SELECT articleId, words, state
 		FROM Articles
 		<if test="state != null">
@@ -33,11 +36,13 @@
 		<result property="state" column="state" />
 	</resultMap>
 
-	<select id="hasArticlesWithWords" parameterType="java.util.List">
-		SELECT 1
+	<select id="hasArticlesWithWords" parameterType="java.util.List"
+		resultType="RecArticle" resultMap="RecArticleMap">
+		SELECT *
 		FROM Articles
 		WHERE
-		<foreach collection="list" item="item" index="index" separator="OR">
+		<foreach collection="list" item="item" index="index"
+			separator="OR">
 			#{item} = ANY(words)
 		</foreach>
 	</select>
