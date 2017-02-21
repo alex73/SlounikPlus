@@ -20,6 +20,8 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JRadioButton;
 import javax.swing.KeyStroke;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamReader;
@@ -66,9 +68,6 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
     }
 
     private void init() {
-        // TODO калі зьмененыя нататкі - паказваць кнопку "захаваць нататкі",
-        // калі зьменыны XML - паказваць "захаваць
-        // артыкул" ці "прапанаваць зьмены"
         window.btnSave.addActionListener((e) -> save());
         window.btnChangeState.addActionListener((e) -> changeStateAsk());
         window.btnProposeSave.addActionListener((e) -> proposeChanges());
@@ -102,11 +101,34 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
                 todo("дыялог змены слоў артыкула, калі карыстальнік мае дазвол");
             }
         });
+        window.txtNotes.getDocument().addDocumentListener(new DocumentListener() {
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                window.btnSave.setEnabled(true);
+                window.btnProposeSave.setEnabled(true);
+            }
+
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                window.btnSave.setEnabled(true);
+                window.btnProposeSave.setEnabled(true);
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                window.btnSave.setEnabled(true);
+                window.btnProposeSave.setEnabled(true);
+            }
+        });
     }
 
     private void show() {
         window.btnSave.setVisible(article.youCanEdit);
+        window.btnSave.setEnabled(false);
         window.btnProposeSave.setVisible(!article.youCanEdit);
+        window.btnProposeSave.setEnabled(false);
+        window.txtNotes.setEditable(article.youCanEdit);
         window.btnChangeState.setVisible(!article.youCanChangeStateTo.isEmpty());
         displayWatch();
 
@@ -126,6 +148,10 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
                 rd.nextTag();
                 editorUI.insertData(rd);
             }
+            editorUI.addChangeListener((e) -> {
+                window.btnSave.setEnabled(true);
+                window.btnProposeSave.setEnabled(true);
+            });
         } catch (Throwable ex) {
             editorUI = null;
             ex.printStackTrace();

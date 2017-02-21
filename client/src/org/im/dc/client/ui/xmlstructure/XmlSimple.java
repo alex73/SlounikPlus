@@ -8,9 +8,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
-import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -20,11 +22,13 @@ import com.sun.org.apache.xerces.internal.xs.XSSimpleTypeDefinition;
 
 @SuppressWarnings("serial")
 public class XmlSimple extends JPanel implements IXmlElement {
+    private final XmlGroup rootPanel;
     private GridBagConstraints gbc = new GridBagConstraints();
-    private JEditorPane field;
+    private JTextField field;
     private JButton closable;
 
-    public XmlSimple(XSSimpleTypeDefinition type, AnnotationInfo ann) {
+    public XmlSimple(XmlGroup rootPanel, XSSimpleTypeDefinition type, AnnotationInfo ann) {
+        this.rootPanel = rootPanel;
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -40,7 +44,7 @@ public class XmlSimple extends JPanel implements IXmlElement {
 
         gbc.weightx = 1;
         gbc.gridx = 1;
-        field = new JEditorPane();
+        field = new JTextField();
         add(field, gbc);
 
         gbc.weightx = 0;
@@ -56,6 +60,23 @@ public class XmlSimple extends JPanel implements IXmlElement {
                 Container parent = XmlSimple.this.getParent();
                 parent.remove(XmlSimple.this);
                 parent.revalidate();
+                rootPanel.fireChanged();
+            }
+        });
+        field.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                rootPanel.fireChanged();
+            }
+
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                rootPanel.fireChanged();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                rootPanel.fireChanged();
             }
         });
     }

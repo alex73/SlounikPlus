@@ -25,7 +25,7 @@ public class XmlUiTest {
         XSModel model = schemaLoader.loadURI("article.xsd");
         XSElementDeclaration root = model.getElementDeclaration(ROOT, null);
 
-        XmlGroup rootGroup = new XmlGroup(root, new AnnotationInfo(root.getAnnotation()));
+        XmlGroup rootGroup = new XmlGroup(null, root, new AnnotationInfo(root.getAnnotation()));
         f.getContentPane().add(new JScrollPane(rootGroup));
 
         f.setBounds(100, 100, 600, 700);

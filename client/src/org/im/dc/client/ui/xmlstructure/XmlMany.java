@@ -18,6 +18,7 @@ import com.sun.org.apache.xerces.internal.xs.XSTypeDefinition;
 public class XmlMany extends JPanel {
     private static final Insets INSETS = new Insets(3, 3, 3, 3);
 
+    private final XmlGroup rootPanel;
     protected final String tag;
     private XSElementDeclaration obj;
     private AnnotationInfo ann;
@@ -25,7 +26,8 @@ public class XmlMany extends JPanel {
 
     private XmlAdd add;
 
-    public XmlMany(XSElementDeclaration obj, int minOccurs, int maxOccurs) {
+    public XmlMany(XmlGroup rootPanel, XSElementDeclaration obj, int minOccurs, int maxOccurs) {
+        this.rootPanel = rootPanel;
         this.tag = obj.getName();
         this.obj = obj;
         this.ann = new AnnotationInfo(obj.getAnnotation());
@@ -41,6 +43,7 @@ public class XmlMany extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 addElement();
+                rootPanel.fireChanged();
             }
         });
         add(add);
@@ -54,9 +57,9 @@ public class XmlMany extends JPanel {
         JPanel p;
 
         if (obj.getTypeDefinition().getTypeCategory() == XSTypeDefinition.COMPLEX_TYPE) {
-            p = new XmlGroup(obj, ann);
+            p = new XmlGroup(rootPanel, obj, ann);
         } else {
-            p = new XmlSimple((XSSimpleTypeDefinition) obj.getTypeDefinition(), ann);
+            p = new XmlSimple(rootPanel, (XSSimpleTypeDefinition) obj.getTypeDefinition(), ann);
         }
 
         add(p, getComponentCount() - 1);

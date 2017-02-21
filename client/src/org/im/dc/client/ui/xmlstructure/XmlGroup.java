@@ -12,6 +12,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.border.TitledBorder;
+import javax.swing.event.ChangeListener;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -26,14 +27,15 @@ import com.sun.org.apache.xerces.internal.xs.XSTypeDefinition;
 
 @SuppressWarnings("serial")
 public class XmlGroup extends JPanel implements IXmlElement {
+    private final XmlGroup rootPanel;
     private GridBagConstraints gbc = new GridBagConstraints();
     private JPanel gr;
     private JButton closable;
     private TitledBorder border;
     private String borderTitle;
 
-    public XmlGroup(XSElementDeclaration root, AnnotationInfo ann) {
-
+    public XmlGroup(XmlGroup rootPanel, XSElementDeclaration root, AnnotationInfo ann) {
+        this.rootPanel = rootPanel != null ? rootPanel : this;
         setLayout(new GridBagLayout());
         setOpaque(false);
 
@@ -74,6 +76,7 @@ public class XmlGroup extends JPanel implements IXmlElement {
                 Container parent = XmlGroup.this.getParent();
                 parent.remove(XmlGroup.this);
                 parent.revalidate();
+                rootPanel.fireChanged();
             }
         });
     }
@@ -90,7 +93,7 @@ public class XmlGroup extends JPanel implements IXmlElement {
         for (int i = 0; i < list.getLength(); i++) {
             XSParticle o = (XSParticle) list.item(i);
             XSElementDeclaration grElem = (XSElementDeclaration) o.getTerm();
-            gr.add(new XmlMany(grElem, o.getMinOccurs(), o.getMaxOccurs()), gbc);
+            gr.add(new XmlMany(rootPanel, grElem, o.getMinOccurs(), o.getMaxOccurs()), gbc);
             gbc.gridy++;
         }
     }
@@ -154,6 +157,19 @@ public class XmlGroup extends JPanel implements IXmlElement {
             border.setTitle(borderTitle + " - " + index);
         } else {
             border.setTitle(borderTitle);
+        }
+    }
+
+    /**
+     * Сочыць за зменамі.
+     */
+    public void addChangeListener(ChangeListener l) {
+        listenerList.add(ChangeListener.class, l);
+    }
+
+    protected void fireChanged() {
+        for (ChangeListener cl : listenerList.getListeners(ChangeListener.class)) {
+            cl.stateChanged(null);
         }
     }
 }
