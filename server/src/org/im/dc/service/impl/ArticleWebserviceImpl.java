@@ -12,6 +12,7 @@ import javax.xml.validation.Validator;
 
 import org.im.dc.gen.config.Change;
 import org.im.dc.gen.config.Link;
+import org.im.dc.gen.config.Permission;
 import org.im.dc.gen.config.State;
 import org.im.dc.server.Config;
 import org.im.dc.server.Db;
@@ -185,6 +186,74 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
 
         ArticleFullInfo a = getAdditionalArticleInfo(header, art);
         LOG.info("<< saveArticle");
+        return a;
+    }
+
+    @Override
+    public ArticleFullInfo changeWords(Header header, int articleId, String newWords, Date lastUpdated)
+            throws Exception {
+        LOG.info(">> changeWords");
+        check(header);
+
+        List<String> ws = new ArrayList<>();
+        for (String w : newWords.split(",")) {
+            w = w.trim();
+            if (!w.isEmpty()) {
+                ws.add(w);
+            }
+        }
+
+        if (ws.isEmpty()) {
+            throw new RuntimeException("Пустыя словы");
+        }
+
+        PermissionChecker.userRequiresPermission(header.user, Permission.ADD_WORDS);
+
+        RecArticle art = Db.execAndReturn((api) -> {
+            List<RecArticle> existArticles = api.getSession().selectList("hasArticlesWithWords", ws);
+            for (RecArticle e : existArticles) {
+                if (e.getArticleId() != articleId) {
+                    // the same article
+                    LOG.warn("<< changeWords: already exist " + Arrays.toString(e.getWords()));
+                    throw new RuntimeException("Словы ўжо ёсьць: " + Arrays.toString(e.getWords()));
+                }
+            }
+
+            Date currentDate = new Date();
+            RecArticleHistory history = new RecArticleHistory();
+
+            RecArticle rec = api.getArticleMapper().selectArticle(articleId);
+            if (rec == null) {
+                LOG.warn("<< changeWords: no record in db");
+                throw new RuntimeException("No record in db");
+            }
+            if (!rec.getLastUpdated().equals(lastUpdated)) {
+                LOG.info("<< changeWords: lastUpdated was changed");
+                throw new RuntimeException("Possible somebody other updated");
+            }
+
+            history.setArticleId(rec.getArticleId());
+            history.setOldWords(rec.getWords());
+
+            rec.setWords(ws.toArray(new String[ws.size()]));
+            rec.setLastUpdated(currentDate);
+
+            int u = api.getArticleMapper().updateWords(rec, lastUpdated);
+            if (u != 1) {
+                LOG.info("<< changeWords: db was not updated");
+                throw new RuntimeException("No updated. Possible somebody other updated");
+            }
+
+            history.setNewWords(rec.getWords());
+            history.setChanged(currentDate);
+            history.setChanger(header.user);
+            api.getArticleHistoryMapper().insertArticleHistory(history);
+
+            return rec;
+        });
+
+        ArticleFullInfo a = getAdditionalArticleInfo(header, art);
+        LOG.info("<< changeWords");
         return a;
     }
 

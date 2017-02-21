@@ -98,7 +98,7 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
         window.txtWords.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                todo("дыялог змены слоў артыкула, калі карыстальнік мае дазвол");
+                askWords();
             }
         });
         window.txtNotes.getDocument().addDocumentListener(new DocumentListener() {
@@ -277,6 +277,22 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
         };
     }
 
+    private void saveWords(String words, Runnable ok) {
+        new LongProcess() {
+            @Override
+            protected void exec() throws Exception {
+                article = WS.getArticleService().changeWords(WS.header, article.article.id, words,
+                        article.article.lastUpdated);
+            }
+
+            @Override
+            protected void ok() {
+                ok.run();
+                show();
+            }
+        };
+    }
+
     private void saveProposal(String comment, Runnable ok) {
         new LongProcess() {
             @Override
@@ -367,6 +383,29 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
 
         askComment.setLocationRelativeTo(window);
         askComment.setVisible(true);
+    }
+
+    private void askWords() {
+        ArticleEditChangeWordsDialog askWords = new ArticleEditChangeWordsDialog(MainController.instance.window, true);
+        askWords.txtWords.setText(Arrays.toString(article.article.words).replace("[", "").replace("]", ""));
+
+        askWords.btnChange.addActionListener((e) -> {
+            saveWords(askWords.txtWords.getText(), () -> {
+                askWords.dispose();
+                window.requestFocus();
+            });
+        });
+
+        // setup cancel button
+        ActionListener cancelListener = (e) -> {
+            askWords.dispose();
+        };
+        askWords.btnCancel.addActionListener(cancelListener);
+        askWords.getRootPane().registerKeyboardAction(cancelListener, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
+                JComponent.WHEN_IN_FOCUSED_WINDOW);
+
+        askWords.setLocationRelativeTo(window);
+        askWords.setVisible(true);
     }
 
     private void proposeChanges() {

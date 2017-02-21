@@ -41,6 +41,10 @@ public interface DoArticle {
             + " WHERE articleId = #{0.articleId} AND lastUpdated = #{1}")
     int updateArticle(RecArticle rec, Date prevLastUpdated);
 
+    @Update("UPDATE Articles SET words = #{0.words,typeHandler=StringArrayTypeHandler}, lastUpdated = #{0.lastUpdated} "
+            + " WHERE articleId = #{0.articleId} AND lastUpdated = #{1}")
+    int updateWords(RecArticle rec, Date prevLastUpdated);
+
     @Update("UPDATE Articles SET state = #{0.state}, lastUpdated = #{0.lastUpdated} "
             + " WHERE articleId = #{0.articleId} AND lastUpdated = #{1}")
     int updateArticleState(RecArticle rec, Date prevLastUpdated);

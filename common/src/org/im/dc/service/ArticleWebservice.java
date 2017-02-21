@@ -19,6 +19,8 @@ public interface ArticleWebservice {
 
     ArticleFullInfo changeState(Header header, int articleId, String newState, Date lastUpdated) throws Exception;
 
+    ArticleFullInfo changeWords(Header header, int articleId, String newWords, Date lastUpdated) throws Exception;
+
     ArticleFullInfo addComment(Header header, int articleId, String comment) throws Exception;
 
     ArticleFullInfo addIssue(Header header, int articleId, String issueText, byte[] proposedXml, Date lastUpdated)
