@@ -36,14 +36,39 @@ public enum Permission {
      */
     @XmlEnumValue("edit_header")
     EDIT_HEADER("edit_header"),
+
+    /**
+     * Ці можа карыстальнік глядзець статыстыку
+     * 
+     */
     @XmlEnumValue("statistics")
     STATISTICS("statistics"),
+
+    /**
+     * Ці можа карыстальнік глядзець як будзе выглядае артыкул на паперы
+     * 
+     */
     @XmlEnumValue("view_output")
     VIEW_OUTPUT("view_output"),
+
+    /**
+     * Ці можа карыстальнік правяраць ўвесь слоўнік
+     * 
+     */
     @XmlEnumValue("full_validation")
     FULL_VALIDATION("full_validation"),
+
+    /**
+     * Ці можа карыстальнік дадаваць новыя словы
+     * 
+     */
     @XmlEnumValue("add_words")
     ADD_WORDS("add_words"),
+
+    /**
+     * Ці можа карыстальнік пераназначаць словы
+     * 
+     */
     @XmlEnumValue("reassign")
     REASSIGN("reassign");
     private final String value;

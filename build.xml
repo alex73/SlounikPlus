@@ -16,9 +16,9 @@
         <include name="common/lib/**/*.jar" />
     </fileset>
 
-    <target name="client" depends="clean">
+    <target name="client" depends="clean,xjc">
         <mkdir dir="client/build" />
-        <javac srcdir="client/src:common/src" includes="**" encoding="utf-8" destdir="client/build"  debug="true" debuglevel="lines,vars,source">
+        <javac srcdir="client/src:client/src-gen:common/src" includes="**" encoding="utf-8" destdir="client/build"  debug="true" debuglevel="lines,vars,source">
             <classpath>
                 <fileset refid="client-jars-fileset"/>
             </classpath>
