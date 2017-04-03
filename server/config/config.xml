@@ -45,7 +45,7 @@
 		</state>
 	</states>
 	<external_links>
-		<link name="slounik.org">http://slounik.org/search?search={}</link>
-		<link name="bnkorpus.info">http://bnkorpus.info/#w0.word={}</link>
+		<link name="slounik.org">http://slounik.org/search?search={-}</link>
+		<link name="bnkorpus.info">http://bnkorpus.info/korpus.html#search&amp;corpusType=MAIN&amp;wordsOrder=PRESET&amp;w0.word={}</link>
 	</external_links>
 </config>

@@ -1,6 +1,7 @@
 package org.im.dc.service.impl;
 
 import java.io.ByteArrayInputStream;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -136,7 +137,9 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
             for (Link link : Config.getConfig().getExternalLinks().getLink()) {
                 ArticleFullInfo.LinkExternal ef = new ArticleFullInfo.LinkExternal();
                 ef.name = link.getName();
-                ef.url = link.getValue().replace("{}", a.article.words[0]);
+                ef.url = link.getValue();
+                ef.url = ef.url.replace("{}", URLEncoder.encode(a.article.words[0], "UTF-8"));
+                ef.url = ef.url.replace("{-}", URLEncoder.encode(a.article.words[0].replace("+", ""), "UTF-8"));
                 a.linksExternal.add(ef);
             }
         }
