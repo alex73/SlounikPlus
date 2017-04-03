@@ -8,5 +8,6 @@
 </listAttribute>
 <booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_START_ON_FIRST_THREAD" value="true"/>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.im.dc.server.startup.Server"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="http://localhost:9081/myapp"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="DictCreator-server"/>
 </launchConfiguration>

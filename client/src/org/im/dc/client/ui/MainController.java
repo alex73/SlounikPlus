@@ -27,11 +27,13 @@ public class MainController extends BaseController<MainFrame> {
     static MainController instance;
     int fontSize;
 
+    private final String addr;
     private MainFrameIssuesModel issuesModel;
     private MainFrameNewsModel newsModel;
 
-    public MainController() {
+    public MainController(String addr) {
         super(new MainFrame());
+        this.addr = addr;
         instance = this;
     }
 
@@ -91,7 +93,7 @@ public class MainController extends BaseController<MainFrame> {
         new LongProcess() {
             @Override
             protected void exec() throws Exception {
-                WS.init("http://localhost:9080/myapp", username, pass);
+                WS.init(addr, username, pass);
                 initialData = WS.getToolsWebservice().getInitialData(WS.header);
 
                 SchemaLoader.init(initialData.articleSchema);

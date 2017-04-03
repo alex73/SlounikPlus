@@ -14,12 +14,17 @@ import org.im.dc.service.impl.ToolsWebserviceImpl;
  */
 public class Server {
     public static void main(String[] args) throws Exception {
+        if (args.length != 1) {
+            System.err.println("Server <addr>, where addr~=http://localhost:9081/myapp");
+            System.exit(1);
+        }
+
         System.setProperty("log4j.configurationFile", new File("config/log4j.xml").getAbsolutePath());
         Config.load();
         Db.init();
 
-        Endpoint.publish("http://localhost:9080/myapp/articles", new ArticleWebserviceImpl());
-        Endpoint.publish("http://localhost:9080/myapp/tools", new ToolsWebserviceImpl());
+        Endpoint.publish(args[0] + "/articles", new ArticleWebserviceImpl());
+        Endpoint.publish(args[0] + "/tools", new ToolsWebserviceImpl());
         System.out.println("Server started");
     }
 }
