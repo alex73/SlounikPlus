@@ -29,6 +29,18 @@ public class Related {
     // падрабязнасьці
     public String what;
 
+    public String getDescription() {
+        switch (type) {
+        case COMMENT:
+            return "К:" + what;
+        case HISTORY:
+            return "В:" + what;
+        case ISSUE:
+            return "З:" + what;
+        }
+        return null;
+    }
+
     public static void sortByTimeDesc(List<Related> list) {
         Collections.sort(list, new Comparator<Related>() {
             @Override

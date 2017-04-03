@@ -55,7 +55,7 @@ public class ArticleEditRelatedModel extends DefaultTableModel {
         case 1:
             return a.who;
         case 2:
-            return a.what;
+            return a.getDescription();
         default:
             return null;
         }

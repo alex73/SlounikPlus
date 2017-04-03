@@ -58,7 +58,7 @@ public class MainFrameIssuesModel extends DefaultTableModel {
         case 1:
             return a.who;
         case 2:
-            return a.what;
+            return a.getDescription();
         case 3:
             return Arrays.toString(a.words);
         default:
