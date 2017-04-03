@@ -8,14 +8,12 @@ public class XmlAdd extends JButton {
     public XmlAdd(AnnotationInfo ann) {
         super("+ " + ann.text);
         setBorder(null);
-        if (ann.color != null) {
-            setBackground(ann.color);
+        if (ann.bgColor != null) {
+            setBackground(ann.bgColor);
         } else {
             setOpaque(false);
             setContentAreaFilled(false);
         }
-        //setBackground(Color.RED);
-        //setContentAreaFilled(false);
         setHorizontalAlignment(SwingConstants.LEFT);
     }
 }

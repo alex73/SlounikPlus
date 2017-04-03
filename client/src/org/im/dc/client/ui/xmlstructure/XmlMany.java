@@ -18,7 +18,7 @@ import com.sun.org.apache.xerces.internal.xs.XSTypeDefinition;
 public class XmlMany extends JPanel {
     private static final Insets INSETS = new Insets(3, 3, 3, 3);
 
-    private final XmlGroup rootPanel;
+    private final XmlGroup rootPanel, parentPanel;
     protected final String tag;
     private XSElementDeclaration obj;
     private AnnotationInfo ann;
@@ -26,8 +26,9 @@ public class XmlMany extends JPanel {
 
     private XmlAdd add;
 
-    public XmlMany(XmlGroup rootPanel, XSElementDeclaration obj, int minOccurs, int maxOccurs) {
+    public XmlMany(XmlGroup rootPanel, XmlGroup parentPanel, XSElementDeclaration obj, int minOccurs, int maxOccurs) {
         this.rootPanel = rootPanel;
+        this.parentPanel = parentPanel;
         this.tag = obj.getName();
         this.obj = obj;
         this.ann = new AnnotationInfo(obj.getAnnotation());
@@ -36,9 +37,13 @@ public class XmlMany extends JPanel {
 
         setLayout(new VerticalListLayout(INSETS));
         setOpaque(false);
-        // setBackground(Color.yellow);
 
         add = new XmlAdd(ann);
+        if (ann.fgColor != null) {
+            add.setForeground(ann.fgColor);
+        } else {
+            add.setForeground(parentPanel.getForeground());
+        }
         add.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -57,9 +62,9 @@ public class XmlMany extends JPanel {
         JPanel p;
 
         if (obj.getTypeDefinition().getTypeCategory() == XSTypeDefinition.COMPLEX_TYPE) {
-            p = new XmlGroup(rootPanel, obj, ann);
+            p = new XmlGroup(rootPanel, parentPanel, obj, ann);
         } else {
-            p = new XmlSimple(rootPanel, (XSSimpleTypeDefinition) obj.getTypeDefinition(), ann);
+            p = new XmlSimple(rootPanel, parentPanel, (XSSimpleTypeDefinition) obj.getTypeDefinition(), ann);
         }
 
         add(p, getComponentCount() - 1);

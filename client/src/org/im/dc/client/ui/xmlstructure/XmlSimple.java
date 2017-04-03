@@ -22,13 +22,11 @@ import com.sun.org.apache.xerces.internal.xs.XSSimpleTypeDefinition;
 
 @SuppressWarnings("serial")
 public class XmlSimple extends JPanel implements IXmlElement {
-    private final XmlGroup rootPanel;
     private GridBagConstraints gbc = new GridBagConstraints();
     private JTextField field;
     private JButton closable;
 
-    public XmlSimple(XmlGroup rootPanel, XSSimpleTypeDefinition type, AnnotationInfo ann) {
-        this.rootPanel = rootPanel;
+    public XmlSimple(XmlGroup rootPanel, XmlGroup parentPanel, XSSimpleTypeDefinition type, AnnotationInfo ann) {
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -41,6 +39,11 @@ public class XmlSimple extends JPanel implements IXmlElement {
         JLabel lbl = new JLabel(ann.text + " : ");
         lbl.setFont(new Font(getFont().getName(), Font.PLAIN, getFont().getSize()));
         add(lbl, gbc);
+        if (ann.fgColor != null) {
+            lbl.setForeground(ann.fgColor);
+        } else {
+            lbl.setForeground(parentPanel.getForeground());
+        }
 
         gbc.weightx = 1;
         gbc.gridx = 1;
@@ -51,6 +54,7 @@ public class XmlSimple extends JPanel implements IXmlElement {
         gbc.gridx = 2;
         gbc.anchor = GridBagConstraints.NORTH;
         closable = new JButton("×");
+        closable.setForeground(lbl.getForeground());
         closable.setBorder(null);
         closable.setContentAreaFilled(false);
         add(closable, gbc);

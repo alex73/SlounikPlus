@@ -34,7 +34,7 @@ public class XmlGroup extends JPanel implements IXmlElement {
     private TitledBorder border;
     private String borderTitle;
 
-    public XmlGroup(XmlGroup rootPanel, XSElementDeclaration root, AnnotationInfo ann) {
+    public XmlGroup(XmlGroup rootPanel, XmlGroup parentPanel, XSElementDeclaration root, AnnotationInfo ann) {
         this.rootPanel = rootPanel != null ? rootPanel : this;
         setLayout(new GridBagLayout());
         setOpaque(false);
@@ -42,15 +42,27 @@ public class XmlGroup extends JPanel implements IXmlElement {
         gr = new JPanel();
 
         borderTitle = ann.text;
-        border = BorderFactory.createTitledBorder(borderTitle);
-        border.setTitleFont(new Font(border.getTitleFont().getName(), Font.BOLD, border.getTitleFont().getSize() + 2));
-        gr.setBorder(border);
-        gr.setLayout(new GridBagLayout());
-        if (ann.color != null) {
-            gr.setBackground(ann.color);
+
+        if (ann.borderColor != null) {
+            border = BorderFactory.createTitledBorder(BorderFactory.createLineBorder(ann.borderColor), borderTitle);
+            border.setTitleColor(ann.borderColor);
+        } else {
+            border = BorderFactory.createTitledBorder(borderTitle);
+        }
+        if (ann.bgColor != null) {
+            gr.setBackground(ann.bgColor);
         } else {
             gr.setOpaque(false);
         }
+        if (ann.fgColor != null) {
+            setForeground(ann.fgColor);
+        } else if (parentPanel != null) {
+            setForeground(parentPanel.getForeground());
+        }
+
+        border.setTitleFont(new Font(border.getTitleFont().getName(), Font.BOLD, border.getTitleFont().getSize() + 2));
+        gr.setBorder(border);
+        gr.setLayout(new GridBagLayout());
 
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -66,6 +78,7 @@ public class XmlGroup extends JPanel implements IXmlElement {
         gbc.anchor = GridBagConstraints.NORTH;
         gbc.weightx = 0;
         closable = new JButton("×");
+        closable.setForeground(getForeground());
         closable.setBorder(null);
         closable.setContentAreaFilled(false);
         closable.setVisible(false);
@@ -93,7 +106,7 @@ public class XmlGroup extends JPanel implements IXmlElement {
         for (int i = 0; i < list.getLength(); i++) {
             XSParticle o = (XSParticle) list.item(i);
             XSElementDeclaration grElem = (XSElementDeclaration) o.getTerm();
-            gr.add(new XmlMany(rootPanel, grElem, o.getMinOccurs(), o.getMaxOccurs()), gbc);
+            gr.add(new XmlMany(rootPanel, this, grElem, o.getMinOccurs(), o.getMaxOccurs()), gbc);
             gbc.gridy++;
         }
     }

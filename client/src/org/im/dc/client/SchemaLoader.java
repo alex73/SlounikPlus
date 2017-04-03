@@ -95,6 +95,6 @@ public class SchemaLoader {
     }
 
     public static XmlGroup createUI() {
-        return new XmlGroup(null, root, new AnnotationInfo(root.getAnnotation()));
+        return new XmlGroup(null, null, root, new AnnotationInfo(root.getAnnotation()));
     }
 }
