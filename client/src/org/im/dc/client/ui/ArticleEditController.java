@@ -20,6 +20,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JRadioButton;
 import javax.swing.KeyStroke;
+import javax.swing.RootPaneContainer;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.xml.stream.XMLInputFactory;
@@ -43,7 +44,15 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
 
     public ArticleEditController(JFrame parent, int articleId) {
         super(new ArticleEditDialog(parent, false));
-        setupCloseOnEscape();
+
+        ActionListener cancelListener = (e) -> {
+            if (askSave()) {
+                return;
+            }
+            window.dispose();
+        };
+        ((RootPaneContainer) window).getRootPane().registerKeyboardAction(cancelListener,
+                KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
 
         displayOn(parent);
 
@@ -126,9 +135,7 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
 
     private void show() {
         window.btnSave.setVisible(article.youCanEdit);
-        window.btnSave.setEnabled(false);
         window.btnProposeSave.setVisible(!article.youCanEdit);
-        window.btnProposeSave.setEnabled(false);
         window.txtNotes.setEditable(article.youCanEdit);
         window.btnChangeState.setVisible(!article.youCanChangeStateTo.isEmpty());
         displayWatch();
@@ -160,6 +167,8 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
                     JOptionPane.ERROR_MESSAGE);
         }
         window.panelEditor.setViewportView(editorUI);
+        window.btnSave.setEnabled(false);
+        window.btnProposeSave.setEnabled(false);
 
         Related.sortByTimeDesc(article.related);
 
@@ -328,6 +337,10 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
     }
 
     private void changeStateAsk() {
+        if (askSave()) {
+            return;
+        }
+
         ArticleEditNewStateDialog askState = new ArticleEditNewStateDialog(MainController.instance.window, true);
 
         for (String state : article.youCanChangeStateTo) {
@@ -365,6 +378,10 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
     }
 
     private void addComment() {
+        if (askSave()) {
+            return;
+        }
+
         ArticleEditAddCommentDialog askComment = new ArticleEditAddCommentDialog(MainController.instance.window, true);
 
         askComment.btnAdd.addActionListener((e) -> {
@@ -387,6 +404,10 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
     }
 
     private void askWords() {
+        if (askSave()) {
+            return;
+        }
+
         ArticleEditChangeWordsDialog askWords = new ArticleEditChangeWordsDialog(MainController.instance.window, true);
         askWords.txtWords.setText(Arrays.toString(article.article.words).replace("[", "").replace("]", ""));
 
@@ -430,5 +451,17 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
 
         askProposeComment.setLocationRelativeTo(window);
         askProposeComment.setVisible(true);
+    }
+
+    private boolean askSave() {
+        if (!window.btnSave.isEnabled() && !window.btnProposeSave.isEnabled()) {
+            return false;
+        }
+        if (JOptionPane.showConfirmDialog(window, "Змены, што Вы зрабілі ў артыкуле, згубяцца. Працягнуць ?",
+                "Працягнуць", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.CANCEL_OPTION) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }
