@@ -53,7 +53,6 @@ public class DbTestArticle {
         recSource.setLettersCount(3);
         recSource.setLinkedTo(new String[] { "I", "J" });
         recSource.setMarkers(new String[] { "E", "F" });
-        recSource.setNotes("notes1");
         recSource.setState("initial");
         recSource.setTextForSearch("text1");
         recSource.setWatchers(new String[] { "G", "H" });
@@ -72,7 +71,6 @@ public class DbTestArticle {
         rec.setLettersCount(2);
         rec.setLinkedTo(new String[] { "X" });
         rec.setMarkers(new String[] { "Y" });
-        rec.setNotes("notes2");
         rec.setState("next");
         rec.setTextForSearch("text2");
         rec.setWatchers(new String[] { "W" });
@@ -109,7 +107,6 @@ public class DbTestArticle {
         assertEquals(3, rec.getLettersCount());
         assertArrayEquals(new String[] { "I", "J" }, rec.getLinkedTo());
         assertArrayEquals(new String[] { "E", "F" }, rec.getMarkers());
-        assertEquals("notes1", rec.getNotes());
         assertEquals("initial", rec.getState());
         assertEquals("text1", rec.getTextForSearch());
         assertArrayEquals(new String[] { "G", "H" }, rec.getWatchers());
@@ -124,7 +121,6 @@ public class DbTestArticle {
         assertEquals(2, rec.getLettersCount());
         assertArrayEquals(new String[] { "X" }, rec.getLinkedTo());
         assertArrayEquals(new String[] { "Y" }, rec.getMarkers());
-        assertEquals("notes2", rec.getNotes());
         assertEquals("next", rec.getState());
         assertEquals("text2", rec.getTextForSearch());
         assertArrayEquals(new String[] { "W" }, rec.getWatchers());

@@ -11,6 +11,7 @@ import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.apache.ibatis.session.TransactionIsolationLevel;
 import org.im.dc.server.db.DoArticle;
 import org.im.dc.server.db.DoArticleHistory;
+import org.im.dc.server.db.DoArticleNote;
 import org.im.dc.server.db.DoComment;
 import org.im.dc.server.db.DoIssue;
 import org.slf4j.Logger;
@@ -83,6 +84,10 @@ public class Db {
 
         public DoArticle getArticleMapper() {
             return s.getMapper(DoArticle.class);
+        }
+
+        public DoArticleNote getArticleNoteMapper() {
+            return s.getMapper(DoArticleNote.class);
         }
 
         public DoArticleHistory getArticleHistoryMapper() {

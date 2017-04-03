@@ -15,8 +15,6 @@ public class RecArticle {
     private String[] assignedUsers;
     // стан
     private String state;
-    // нататнік
-    private String notes;
     // пазнакі
     private String[] markers;
     // хто сочыць
@@ -68,14 +66,6 @@ public class RecArticle {
 
     public void setState(String state) {
         this.state = state;
-    }
-
-    public String getNotes() {
-        return notes;
-    }
-
-    public void setNotes(String notes) {
-        this.notes = notes;
     }
 
     public String[] getMarkers() {

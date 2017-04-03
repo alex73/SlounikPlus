@@ -30,6 +30,7 @@
 		<mapper resource="org/im/dc/server/db/Issue.xml" />
 		<mapper resource="org/im/dc/server/db/History.xml" />
 		<mapper class="org.im.dc.server.db.DoArticle" />
+		<mapper class="org.im.dc.server.db.DoArticleNote" />
 		<mapper class="org.im.dc.server.db.DoArticleHistory" />
 		<mapper class="org.im.dc.server.db.DoComment" />
 		<mapper class="org.im.dc.server.db.DoIssue" />

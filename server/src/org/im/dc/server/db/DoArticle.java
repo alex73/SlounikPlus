@@ -27,8 +27,8 @@ public interface DoArticle {
     @Results({ @Result(property = "words", column = "words", typeHandler = StringArrayTypeHandler.class) })
     List<RecArticle> selectLinkedTo(String[] words);
 
-    @Insert("INSERT INTO Articles (words,xml,assignedUsers,state,notes,markers,watchers,linkedTo,textForSearch,lettersCount,lastUpdated) "
-            + "VALUES(#{words,typeHandler=StringArrayTypeHandler},#{xml},#{assignedUsers,typeHandler=StringArrayTypeHandler},#{state},#{notes},#{markers,typeHandler=StringArrayTypeHandler},#{watchers,typeHandler=StringArrayTypeHandler},#{linkedTo,typeHandler=StringArrayTypeHandler},#{textForSearch},#{lettersCount},#{lastUpdated})")
+    @Insert("INSERT INTO Articles (words,xml,assignedUsers,state,markers,watchers,linkedTo,textForSearch,lettersCount,lastUpdated) "
+            + "VALUES(#{words,typeHandler=StringArrayTypeHandler},#{xml},#{assignedUsers,typeHandler=StringArrayTypeHandler},#{state},#{markers,typeHandler=StringArrayTypeHandler},#{watchers,typeHandler=StringArrayTypeHandler},#{linkedTo,typeHandler=StringArrayTypeHandler},#{textForSearch},#{lettersCount},#{lastUpdated})")
     @Options(useGeneratedKeys = true, keyProperty = "articleId")
     void insertArticle(RecArticle rec);
 
@@ -37,7 +37,7 @@ public interface DoArticle {
             + " markers = #{0.markers,typeHandler=StringArrayTypeHandler},"
             + " watchers = #{0.watchers,typeHandler=StringArrayTypeHandler},"
             + " linkedTo = #{0.linkedTo,typeHandler=StringArrayTypeHandler},"
-            + " notes = #{0.notes}, textForSearch = #{0.textForSearch}, lettersCount = #{0.lettersCount}, lastUpdated = #{0.lastUpdated} "
+            + " textForSearch = #{0.textForSearch}, lettersCount = #{0.lettersCount}, lastUpdated = #{0.lastUpdated} "
             + " WHERE articleId = #{0.articleId} AND lastUpdated = #{1}")
     int updateArticle(RecArticle rec, Date prevLastUpdated);
 

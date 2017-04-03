@@ -4,7 +4,7 @@
 <mapper namespace="Article">
 	<insert id="insertArticles" parameterType="java.util.List">
 		INSERT INTO Articles
-		(words,xml,assignedUsers,state,notes,markers,watchers,linkedTo,textForSearch,lettersCount,lastUpdated)
+		(words,xml,assignedUsers,state,markers,watchers,linkedTo,textForSearch,lettersCount,lastUpdated)
 		VALUES
 		<foreach collection="list" item="item" index="index"
 			separator=",">
@@ -12,7 +12,6 @@
 			#{item.xml},
 			#{item.assignedUsers,typeHandler=StringArrayTypeHandler},
 			#{item.state},
-			#{item.notes},
 			#{item.markers,typeHandler=StringArrayTypeHandler},
 			#{item.watchers,typeHandler=StringArrayTypeHandler},
 			#{item.linkedTo,typeHandler=StringArrayTypeHandler},

@@ -25,7 +25,6 @@ CREATE TABLE Articles (
 	assignedUsers VARCHAR(50)[] NOT NULL,
 	state VARCHAR(50) NOT NULL,
 	deleted BOOLEAN NOT NULL DEFAULT FALSE,
-	notes TEXT,
 	markers VARCHAR(50)[] NOT NULL,
 	watchers VARCHAR(50)[] NOT NULL,
 	linkedTo VARCHAR(50)[] NOT NULL,
@@ -36,7 +35,7 @@ CREATE TABLE Articles (
 
 CREATE TABLE ArticlesHistory (
 	historyId SERIAL PRIMARY KEY,
-	articleId INTEGER NOT NULL,
+	articleId INTEGER NOT NULL REFERENCES Articles(articleId),
 	changed TIMESTAMP WITHOUT TIME ZONE NOT NULL,
 	changer VARCHAR(50) NOT NULL,
 	oldState VARCHAR(50) NULL,
@@ -51,7 +50,7 @@ CREATE TABLE ArticlesHistory (
 
 CREATE TABLE Comments (
 	commentId SERIAL PRIMARY KEY,
-	articleId INTEGER NOT NULL,
+	articleId INTEGER NOT NULL REFERENCES Articles(articleId),
 	created TIMESTAMP WITHOUT TIME ZONE NOT NULL,
 	author VARCHAR(50) NOT NULL,
 	comment TEXT NOT NULL
@@ -59,7 +58,7 @@ CREATE TABLE Comments (
 
 CREATE TABLE Issues (
 	issueId SERIAL PRIMARY KEY,
-	articleId INTEGER NOT NULL,
+	articleId INTEGER NOT NULL REFERENCES Articles(articleId),
 	created TIMESTAMP WITHOUT TIME ZONE NOT NULL,
 	author VARCHAR(50) NOT NULL,
 	comment TEXT,
@@ -70,5 +69,9 @@ CREATE TABLE Issues (
 	accepted BOOLEAN NOT NULL DEFAULT FALSE
 );
 
-INSERT INTO Articles(words, xml, assignedUsers, state, markers, watchers, linkedTo, textForSearch, lettersCount, lastUpdated)
-VALUES('{"тлумачальны"}', NULL, '{"user1","user2"}', 'Неапрацаванае', '{}','{}','{}','слова',2,now());
+CREATE TABLE ArticleNotes (
+    articleId INTEGER NOT NULL REFERENCES Articles(articleId),
+    creator VARCHAR(50) NOT NULL,
+    note TEXT NOT NULL,
+    PRIMARY KEY (articleId, creator)
+);

@@ -19,6 +19,7 @@ import org.im.dc.server.Db;
 import org.im.dc.server.PermissionChecker;
 import org.im.dc.server.db.RecArticle;
 import org.im.dc.server.db.RecArticleHistory;
+import org.im.dc.server.db.RecArticleNote;
 import org.im.dc.server.db.RecComment;
 import org.im.dc.server.db.RecIssue;
 import org.im.dc.service.AppConst;
@@ -82,7 +83,6 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
         a.article.state = rec.getState();
         a.article.markers = rec.getMarkers();
         a.article.assignedUsers = rec.getAssignedUsers();
-        a.article.notes = rec.getNotes();
         a.article.lastUpdated = rec.getLastUpdated();
 
         String userRole = PermissionChecker.getUserRole(header.user);
@@ -103,6 +103,12 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
                 a.youWatched = true;
                 break;
             }
+        }
+        // нататкі
+        RecArticleNote note = Db
+                .execAndReturn((api) -> api.getArticleNoteMapper().getNote(rec.getArticleId(), header.user));
+        if (note != null) {
+            a.article.notes = note.getNote();
         }
         // гісторыя
         for (RecArticleHistory rh : Db
@@ -162,7 +168,6 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
             history.setOldXml(rec.getXml());
 
             rec.setXml(article.xml);
-            rec.setNotes(article.notes);
             rec.setLastUpdated(currentDate);
 
             preprocessArticle(api, rec);
@@ -171,6 +176,15 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
             if (u != 1) {
                 LOG.info("<< saveArticle: db was not updated");
                 throw new RuntimeException("No updated. Possible somebody other updated");
+            }
+
+            api.getArticleNoteMapper().deleteNote(rec.getArticleId(), header.user);
+            if (article.notes != null && !article.notes.trim().isEmpty()) {
+                RecArticleNote note = new RecArticleNote();
+                note.setArticleId(rec.getArticleId());
+                note.setCreator(header.user);
+                note.setNote(article.notes);
+                api.getArticleNoteMapper().insertNote(note);
             }
 
             history.setNewXml(rec.getXml());
