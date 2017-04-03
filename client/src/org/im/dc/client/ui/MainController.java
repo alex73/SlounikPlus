@@ -170,12 +170,16 @@ public class MainController extends BaseController<MainFrame> {
             @Override
             protected void exec() throws Exception {
                 model = new MainFrameArticlesModel(WS.getArticleService().listArticles(WS.header, null));
+                issuesModel = new MainFrameIssuesModel(WS.getToolsWebservice().listIssues(WS.header));
+                newsModel = new MainFrameNewsModel(WS.getToolsWebservice().listNews(WS.header));
             }
 
             @Override
             protected void ok() {
                 SettingsController.savePlacesForWindow(window);
                 window.tableArticles.setModel(model);
+                window.tableIssues.setModel(issuesModel);
+                window.tableNews.setModel(newsModel);
                 SettingsController.loadPlacesForWindow(window);
             }
         };
