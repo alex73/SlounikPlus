@@ -10,7 +10,7 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
+import javax.swing.JTextArea;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.xml.stream.XMLStreamConstants;
@@ -23,7 +23,7 @@ import com.sun.org.apache.xerces.internal.xs.XSSimpleTypeDefinition;
 @SuppressWarnings("serial")
 public class XmlSimple extends JPanel implements IXmlElement {
     private GridBagConstraints gbc = new GridBagConstraints();
-    private JTextField field;
+    private JTextArea field;
     private JButton closable;
 
     public XmlSimple(XmlGroup rootPanel, XmlGroup parentPanel, XSSimpleTypeDefinition type, AnnotationInfo ann) {
@@ -47,7 +47,8 @@ public class XmlSimple extends JPanel implements IXmlElement {
 
         gbc.weightx = 1;
         gbc.gridx = 1;
-        field = new JTextField();
+        field = new JTextArea();
+        field.setLineWrap(true);
         add(field, gbc);
 
         gbc.weightx = 0;

@@ -68,6 +68,7 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
     }
 
     private void init() {
+        window.panelEditor.getVerticalScrollBar().setUnitIncrement(20);
         window.btnSave.addActionListener((e) -> save());
         window.btnChangeState.addActionListener((e) -> changeStateAsk());
         window.btnProposeSave.addActionListener((e) -> proposeChanges());
