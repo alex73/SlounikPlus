@@ -14,6 +14,7 @@ import java.net.URI;
 import java.util.Arrays;
 import java.util.Map;
 
+import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -147,6 +148,7 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
         window.txtNotes.setEditable(article.youCanEdit);
         window.btnChangeState.setVisible(!article.youCanChangeStateTo.isEmpty());
         displayWatch();
+        displayIssue();
 
         window.setTitle(window.getTitle().replaceAll("\\[.*\\]", Arrays.toString(article.article.words)));
         window.txtWords.setText(Arrays.toString(article.article.words));
@@ -233,7 +235,24 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
     }
 
     private void displayWatch() {
-        window.lblWatched.setText(article.youWatched ? "*" : "-");
+        window.lblWatched.setIcon(new ImageIcon(
+                getClass().getResource(article.youWatched ? "images/watch-on.png" : "images/watch-off.png")));
+    }
+
+    private void displayIssue() {
+        boolean hasIssue = getOpenIssue() != null;
+
+        window.lblHasProposedChanges.setIcon(
+                new ImageIcon(getClass().getResource(hasIssue ? "images/proposed-on.png" : "images/proposed-off.png")));
+    }
+
+    private Related getOpenIssue() {
+        for (Related rel : article.related) {
+            if (rel.type == RelatedType.ISSUE && rel.requiresActivity) {
+                return rel;
+            }
+        }
+        return null;
     }
 
     private byte[] extractXml() throws Exception {

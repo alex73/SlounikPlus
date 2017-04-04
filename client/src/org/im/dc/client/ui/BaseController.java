@@ -56,7 +56,7 @@ public abstract class BaseController<T extends Window> {
         };
         glass.setOpaque(false);
 
-        JLabel la = new JLabel(new ImageIcon(BaseController.class.getResource("/progress.gif")));
+        JLabel la = new JLabel(new ImageIcon(BaseController.class.getResource("images/progress.gif")));
         la.setOpaque(false);
         glass.add(la);
         ((RootPaneContainer) window).setGlassPane(glass);

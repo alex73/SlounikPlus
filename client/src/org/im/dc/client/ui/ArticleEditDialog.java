@@ -65,16 +65,16 @@ public class ArticleEditDialog extends javax.swing.JDialog {
 
         jPanel5.add(jPanel6, java.awt.BorderLayout.WEST);
 
-        lblAddComment.setText(bundle.getString("ArticleEditDialog.lblAddComment.text")); // NOI18N
+        lblAddComment.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/im/dc/client/ui/images/add_comment.png"))); // NOI18N
         jPanel7.add(lblAddComment);
 
-        lblHasProposedChanges.setText(bundle.getString("ArticleEditDialog.lblHasProposedChanges.text")); // NOI18N
+        lblHasProposedChanges.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/im/dc/client/ui/images/proposed-off.png"))); // NOI18N
         jPanel7.add(lblHasProposedChanges);
 
-        lblWatched.setText(bundle.getString("ArticleEditDialog.lblWatched.text")); // NOI18N
+        lblWatched.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/im/dc/client/ui/images/watch-off.png"))); // NOI18N
         jPanel7.add(lblWatched);
 
-        lblPreview.setText(bundle.getString("ArticleEditDialog.lblPreview.text")); // NOI18N
+        lblPreview.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/im/dc/client/ui/images/show-text.png"))); // NOI18N
         jPanel7.add(lblPreview);
 
         jPanel5.add(jPanel7, java.awt.BorderLayout.EAST);
