@@ -2,20 +2,29 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="Comment">
-	<select id="retrieveUserHistory" resultType="RecArticleHistory"
-		resultMap="RecArticleHistoryMap">
+	<select id="retrieveUserHistory" resultType="RecArticleHistory" resultMap="RecArticleHistoryMap">
 		SELECT ArticlesHistory.*, Articles.words
 		FROM ArticlesHistory,
 		Articles
-		WHERE ArticlesHistory.articleId = Articles.articleId
+		WHERE
+		ArticlesHistory.articleId = Articles.articleId
 		AND
 		(Articles.assignedUsers @>
 		ARRAY[#{user}]::varchar[][] OR
 		Articles.watchers @>
 		ARRAY[#{user}]::varchar[][])
 	</select>
+	<select id="retrieveHistory" resultType="RecArticleHistory" resultMap="RecArticleHistoryMap">
+		SELECT * FROM ArticlesHistory WHERE articleId = #{articleId}
+	</select>
+	<select id="getHistory" resultType="RecArticleHistory" resultMap="RecArticleHistoryMap">
+		SELECT * FROM ArticlesHistory WHERE historyId = #{historyId}
+	</select>
+
 	<resultMap id="RecArticleHistoryMap" type="RecArticleHistory">
 		<id property="historyId" column="historyId" />
 		<result property="words" column="words" typeHandler="StringArrayTypeHandler" />
+		<result property="oldWords" column="oldWords" typeHandler="StringArrayTypeHandler" />
+		<result property="newWords" column="newWords" typeHandler="StringArrayTypeHandler" />
 	</resultMap>
 </mapper>

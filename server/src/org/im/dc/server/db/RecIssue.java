@@ -125,13 +125,18 @@ public class RecIssue {
         if (fixed != null) {
             r.when = fixed;
             r.who = fixer;
-            r.sk = "ЗУ"; // заўвага ўлічаная
+            if (accepted) {
+                r.sk = "ЗУ"; // заўвага ўлічаная
+            } else {
+                r.sk = "ЗН"; // заўвага адкінутая
+            }
         } else {
             r.when = created;
             r.who = author;
             r.sk = "ЗА"; // заўвага актуальная
+            r.requiresActivity = true;
         }
-        r.what = (accepted ? "done:" : "open:") + comment;
+        r.what = comment;
         return r;
     }
 }

@@ -19,8 +19,17 @@ public class ArticleDetailsDialog extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        panelHeader = new javax.swing.JPanel();
+        panelButtons = new javax.swing.JPanel();
+        scroll = new javax.swing.JScrollPane();
+
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Дэталі зменаў");
+
+        panelHeader.setLayout(new java.awt.GridLayout(0, 1, 0, 5));
+        getContentPane().add(panelHeader, java.awt.BorderLayout.NORTH);
+        getContentPane().add(panelButtons, java.awt.BorderLayout.SOUTH);
+        getContentPane().add(scroll, java.awt.BorderLayout.CENTER);
         setPreferredSize(new java.awt.Dimension(400, 300));
 
         pack();
@@ -70,5 +79,8 @@ public class ArticleDetailsDialog extends javax.swing.JDialog {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    public javax.swing.JPanel panelButtons;
+    public javax.swing.JPanel panelHeader;
+    public javax.swing.JScrollPane scroll;
     // End of variables declaration//GEN-END:variables
 }

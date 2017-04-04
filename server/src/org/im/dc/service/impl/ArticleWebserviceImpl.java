@@ -29,6 +29,7 @@ import org.im.dc.service.dto.ArticleCommentFull;
 import org.im.dc.service.dto.ArticleFull;
 import org.im.dc.service.dto.ArticleFullInfo;
 import org.im.dc.service.dto.ArticleHistoryFull;
+import org.im.dc.service.dto.ArticleIssueFull;
 import org.im.dc.service.dto.ArticleShort;
 import org.im.dc.service.dto.ArticlesFilter;
 import org.im.dc.service.dto.Header;
@@ -114,8 +115,9 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
             a.article.notes = note.getNote();
         }
         // гісторыя
-        for (RecArticleHistory rh : Db
-                .execAndReturn((api) -> api.getArticleHistoryMapper().retrieveHistory(rec.getArticleId()))) {
+        List<RecArticleHistory> history = Db
+                .execAndReturn((api) -> api.getSession().selectList("retrieveHistory", rec.getArticleId()));
+        for (RecArticleHistory rh : history) {
             a.related.add(rh.getRelated());
         }
         // камэнтары
@@ -375,7 +377,16 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
     }
 
     @Override
-    public void fixIssue(Header header, int articleId, int issueId, boolean accepted) {
+    public ArticleFullInfo fixIssue(Header header, int articleId, int issueId, boolean accepted)  throws Exception {
+        LOG.info(">> addComment");
+        check(header);
+
+        Db.exec((api) -> {
+            api.getIssueMapper().fixIssue(issueId, accepted, header.user, new Date());
+        });
+
+        LOG.info("<< addComment");
+        return getArticleFullInfo(header, articleId);
     }
 
     @Override
@@ -433,11 +444,34 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
     }
 
     @Override
-    public ArticleHistoryFull getHistory(Header header, int historyId) throws Exception {
-        LOG.info(">> getComment");
+    public ArticleIssueFull getIssue(Header header, int issueId) throws Exception {
+        LOG.info(">> getIssue");
         check(header);
 
-        RecArticleHistory rc = Db.execAndReturn((api) -> api.getArticleHistoryMapper().getHistory(historyId));
+        RecIssue rc = Db.execAndReturn((api) -> api.getIssueMapper().getIssue(issueId));
+        ArticleIssueFull result;
+        if (rc == null) {
+            result = null;
+        } else {
+            result = new ArticleIssueFull();
+            result.comment = rc.getComment();
+            result.oldXml = rc.getOldXml();
+            result.newXml = rc.getNewXml();
+            result.who = rc.getAuthor();
+            result.when = rc.getCreated();
+            result.fixed = rc.getFixed();
+            result.fixer = rc.getFixer();
+        }
+        LOG.info("<< getIssue");
+        return result;
+    }
+
+    @Override
+    public ArticleHistoryFull getHistory(Header header, int historyId) throws Exception {
+        LOG.info(">> getHistory");
+        check(header);
+
+        RecArticleHistory rc = Db.execAndReturn((api) -> api.getSession().selectOne("getHistory", historyId));
         ArticleHistoryFull result;
         if (rc == null) {
             result = null;
@@ -448,7 +482,7 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
             result.who = rc.getChanger();
             result.when = rc.getChanged();
         }
-        LOG.info("<< getComment");
+        LOG.info("<< getHistory");
         return result;
     }
 }

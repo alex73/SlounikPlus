@@ -9,6 +9,7 @@ import org.im.dc.service.dto.ArticleCommentFull;
 import org.im.dc.service.dto.ArticleFull;
 import org.im.dc.service.dto.ArticleFullInfo;
 import org.im.dc.service.dto.ArticleHistoryFull;
+import org.im.dc.service.dto.ArticleIssueFull;
 import org.im.dc.service.dto.ArticleShort;
 import org.im.dc.service.dto.ArticlesFilter;
 import org.im.dc.service.dto.Header;
@@ -28,13 +29,15 @@ public interface ArticleWebservice {
     ArticleFullInfo addIssue(Header header, int articleId, String issueText, byte[] proposedXml, Date lastUpdated)
             throws Exception;
 
-    void fixIssue(Header header, int articleId, int issueId, boolean accepted);
+    ArticleFullInfo fixIssue(Header header, int articleId, int issueId, boolean accepted) throws Exception;
 
     void setWatch(Header header, int articleId, boolean watch) throws Exception;
 
     List<ArticleShort> listArticles(Header header, ArticlesFilter filter) throws Exception;
 
     ArticleCommentFull getComment(Header header, int commentId) throws Exception;
+
+    ArticleIssueFull getIssue(Header header, int issueId) throws Exception;
 
     ArticleHistoryFull getHistory(Header header, int historyId) throws Exception;
 }

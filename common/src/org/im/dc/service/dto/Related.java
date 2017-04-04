@@ -31,6 +31,8 @@ public class Related {
     // падрабязнасьці
     public String what;
 
+    public boolean requiresActivity;
+
     public String getDescription() {
         return sk + ": " + what;
     }

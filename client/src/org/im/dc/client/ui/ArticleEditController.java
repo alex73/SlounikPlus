@@ -34,6 +34,7 @@ import org.im.dc.client.WS;
 import org.im.dc.client.ui.xmlstructure.XmlGroup;
 import org.im.dc.service.dto.ArticleFullInfo;
 import org.im.dc.service.dto.Related;
+import org.im.dc.service.dto.Related.RelatedType;
 
 /**
  * Controls article editor.
@@ -41,7 +42,7 @@ import org.im.dc.service.dto.Related;
 public class ArticleEditController extends BaseController<ArticleEditDialog> {
     private XmlGroup editorUI;
 
-    private volatile ArticleFullInfo article;
+    protected volatile ArticleFullInfo article;
 
     public ArticleEditController(JFrame parent, int articleId) {
         super(new ArticleEditDialog(parent, false));
@@ -91,7 +92,16 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
         window.lblHasProposedChanges.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                todo("будзе паказваць ці ёсць прапанаваныя змены, і адчыняць дыялог параўнання");
+                if (!article.youCanEdit) {
+                    return;
+                }
+                Related r = getOpenIssue();
+                if (r != null) {
+                    if (askSave()) {
+                        return;
+                    }
+                    new ArticleDetailsController(ArticleEditController.this, r);
+                }
             }
         });
         window.lblWatched.addMouseListener(new MouseAdapter() {
@@ -113,7 +123,6 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
             }
         });
         window.txtNotes.getDocument().addDocumentListener(new DocumentListener() {
-
             @Override
             public void removeUpdate(DocumentEvent e) {
                 window.btnSave.setEnabled(true);
@@ -137,12 +146,15 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
             public void mouseClicked(MouseEvent e) {
                 ArticleEditRelatedModel model = (ArticleEditRelatedModel) window.tableHistory.getModel();
                 Related rel = model.related.get(window.tableHistory.getSelectedRow());
-                new ArticleDetailsController(window, rel);
+                if (rel.type == RelatedType.ISSUE && rel.requiresActivity && askSave()) {
+                    return;
+                }
+                new ArticleDetailsController(ArticleEditController.this, rel);
             }
         });
     }
 
-    private void show() {
+    void show() {
         window.btnSave.setVisible(article.youCanEdit);
         window.btnProposeSave.setVisible(!article.youCanEdit);
         window.txtNotes.setEditable(article.youCanEdit);
