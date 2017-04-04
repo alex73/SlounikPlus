@@ -32,6 +32,7 @@ import javax.xml.stream.XMLStreamWriter;
 import org.im.dc.client.SchemaLoader;
 import org.im.dc.client.WS;
 import org.im.dc.client.ui.xmlstructure.XmlGroup;
+import org.im.dc.gen.config.Permission;
 import org.im.dc.service.dto.ArticleFullInfo;
 import org.im.dc.service.dto.Related;
 import org.im.dc.service.dto.Related.RelatedType;
@@ -110,10 +111,15 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
                 changeWatch();
             }
         });
+        window.lblPreview
+                .setVisible(MainController.initialData.currentUserPermissions.contains(Permission.VIEW_OUTPUT.name()));
         window.lblPreview.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                todo("прагляд папяровага варыянта калі карыстальнік мае дазвол");
+                if (askSave()) {
+                    return;
+                }
+                new PreviewController(window, article.article.id);
             }
         });
         window.txtWords.addMouseListener(new MouseAdapter() {

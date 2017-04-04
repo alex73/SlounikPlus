@@ -1,6 +1,7 @@
 package org.im.dc.service.impl;
 
 import java.io.ByteArrayInputStream;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -142,13 +143,15 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
         Validator validator = Config.articleSchema.newValidator();
         validator.validate(new StreamSource(new ByteArrayInputStream(rec.getXml())));
 
+        StringWriter out=new StringWriter();
         SimpleScriptContext context = new SimpleScriptContext();
         context.setAttribute("words", rec.getWords(), ScriptContext.ENGINE_SCOPE);
         context.setAttribute("article", new JsDomWrapper(rec.getXml()), ScriptContext.ENGINE_SCOPE);
+        context.setWriter(out);
         JsProcessing.exec("config/output.js", context);
 
         LOG.info("<< printPreview");
-        return (String) context.getAttribute("out", ScriptContext.ENGINE_SCOPE);
+        return out.toString();
     }
 
     @Override

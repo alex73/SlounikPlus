@@ -1,11 +1,20 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package org.im.dc.client.ui;
 
-public class ArticleDetailsDialog extends javax.swing.JDialog {
+/**
+ *
+ * @author alex
+ */
+public class PreviewDialog extends javax.swing.JDialog {
 
     /**
-     * Creates new form ArticleDetails
+     * Creates new form PreviewDialog
      */
-    public ArticleDetailsDialog(java.awt.Frame parent, boolean modal) {
+    public PreviewDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
     }
@@ -19,18 +28,17 @@ public class ArticleDetailsDialog extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        panelHeader = new javax.swing.JPanel();
-        panelButtons = new javax.swing.JPanel();
-        scroll = new javax.swing.JScrollPane();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        text = new javax.swing.JEditorPane();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("Дэталі зменаў");
-        setPreferredSize(new java.awt.Dimension(400, 300));
+        setTitle("Перадпрагляд");
 
-        panelHeader.setLayout(new java.awt.GridLayout(0, 1, 0, 5));
-        getContentPane().add(panelHeader, java.awt.BorderLayout.NORTH);
-        getContentPane().add(panelButtons, java.awt.BorderLayout.SOUTH);
-        getContentPane().add(scroll, java.awt.BorderLayout.CENTER);
+        text.setEditable(false);
+        text.setContentType("text/html"); // NOI18N
+        jScrollPane1.setViewportView(text);
+
+        getContentPane().add(jScrollPane1, java.awt.BorderLayout.CENTER);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -52,21 +60,20 @@ public class ArticleDetailsDialog extends javax.swing.JDialog {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(ArticleDetailsDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(PreviewDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(ArticleDetailsDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(PreviewDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(ArticleDetailsDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(PreviewDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(ArticleDetailsDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(PreviewDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the dialog */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                ArticleDetailsDialog dialog = new ArticleDetailsDialog(new javax.swing.JFrame(), true);
+                PreviewDialog dialog = new PreviewDialog(new javax.swing.JFrame(), true);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     @Override
                     public void windowClosing(java.awt.event.WindowEvent e) {
@@ -79,8 +86,7 @@ public class ArticleDetailsDialog extends javax.swing.JDialog {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    public javax.swing.JPanel panelButtons;
-    public javax.swing.JPanel panelHeader;
-    public javax.swing.JScrollPane scroll;
+    public javax.swing.JScrollPane jScrollPane1;
+    public javax.swing.JEditorPane text;
     // End of variables declaration//GEN-END:variables
 }
