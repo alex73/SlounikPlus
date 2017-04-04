@@ -1,5 +1,6 @@
 package org.im.dc.client.ui.xmlstructure;
 
+import java.awt.Color;
 import java.awt.Container;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
@@ -7,6 +8,7 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -49,6 +51,8 @@ public class XmlSimple extends JPanel implements IXmlElement {
         gbc.gridx = 1;
         field = new JTextArea();
         field.setLineWrap(true);
+        field.setWrapStyleWord(true);
+        field.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         add(field, gbc);
 
         gbc.weightx = 0;

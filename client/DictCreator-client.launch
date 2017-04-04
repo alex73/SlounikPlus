@@ -11,4 +11,5 @@
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.im.dc.client.ui.ClientStartup"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="http://localhost:9081/myapp user2 456"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="DictCreator-client"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Xmx128m"/>
 </launchConfiguration>

@@ -24,7 +24,7 @@
 		</role>
 	</roles>
 	<states>
-		<state id="Неапрацаванае">
+		<state id="Неапрацаванае" edit_roles="укладальнік,рэдактар">
 			<change to="У працы" roles="укладальнік,рэдактар" />
 		</state>
 		<state id="У працы" edit_roles="укладальнік,рэдактар">
