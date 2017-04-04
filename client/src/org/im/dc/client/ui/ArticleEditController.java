@@ -131,6 +131,14 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
                 window.btnProposeSave.setEnabled(true);
             }
         });
+        window.tableHistory.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                ArticleEditRelatedModel model = (ArticleEditRelatedModel) window.tableHistory.getModel();
+                Related rel = model.related.get(window.tableHistory.getSelectedRow());
+                new ArticleDetailsController(window, rel);
+            }
+        });
     }
 
     private void show() {

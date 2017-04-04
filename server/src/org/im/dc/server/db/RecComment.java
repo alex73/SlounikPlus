@@ -75,6 +75,7 @@ public class RecComment {
         r.when = created;
         r.who = author;
         r.what = comment;
+        r.sk = "К";
         return r;
     }
 }

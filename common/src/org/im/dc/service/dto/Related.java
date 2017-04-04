@@ -26,19 +26,13 @@ public class Related {
     public Date when;
     // хто змяніў
     public String who;
+    // скарот тыпу
+    public String sk;
     // падрабязнасьці
     public String what;
 
     public String getDescription() {
-        switch (type) {
-        case COMMENT:
-            return "К:" + what;
-        case HISTORY:
-            return "В:" + what;
-        case ISSUE:
-            return "З:" + what;
-        }
-        return null;
+        return sk + ": " + what;
     }
 
     public static void sortByTimeDesc(List<Related> list) {

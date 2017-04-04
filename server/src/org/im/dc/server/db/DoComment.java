@@ -14,4 +14,7 @@ public interface DoComment {
 
     @Select("SELECT * FROM Comments WHERE articleId = #{articleId}")
     List<RecComment> retrieveComments(int articleId);
+
+    @Select("SELECT * FROM Comments WHERE commentId = #{commentId}")
+    RecComment getComment(int commentId);
 }

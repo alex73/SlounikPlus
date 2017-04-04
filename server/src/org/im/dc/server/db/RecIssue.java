@@ -125,9 +125,11 @@ public class RecIssue {
         if (fixed != null) {
             r.when = fixed;
             r.who = fixer;
+            r.sk = "ЗУ"; // заўвага ўлічаная
         } else {
             r.when = created;
             r.who = author;
+            r.sk = "ЗА"; // заўвага актуальная
         }
         r.what = (accepted ? "done:" : "open:") + comment;
         return r;

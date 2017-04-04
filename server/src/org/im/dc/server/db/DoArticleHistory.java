@@ -15,4 +15,7 @@ public interface DoArticleHistory {
 
     @Select("SELECT * FROM ArticlesHistory WHERE articleId = #{articleId}")
     List<RecArticleHistory> retrieveHistory(int articleId);
+
+    @Select("SELECT * FROM ArticlesHistory WHERE historyId = #{historyId}")
+    RecArticleHistory getHistory(int historyId);
 }

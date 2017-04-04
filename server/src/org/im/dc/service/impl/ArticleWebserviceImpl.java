@@ -25,8 +25,10 @@ import org.im.dc.server.db.RecComment;
 import org.im.dc.server.db.RecIssue;
 import org.im.dc.service.AppConst;
 import org.im.dc.service.ArticleWebservice;
+import org.im.dc.service.dto.ArticleCommentFull;
 import org.im.dc.service.dto.ArticleFull;
 import org.im.dc.service.dto.ArticleFullInfo;
+import org.im.dc.service.dto.ArticleHistoryFull;
 import org.im.dc.service.dto.ArticleShort;
 import org.im.dc.service.dto.ArticlesFilter;
 import org.im.dc.service.dto.Header;
@@ -408,6 +410,45 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
         }
 
         LOG.info("<< listArticles");
+        return result;
+    }
+
+    @Override
+    public ArticleCommentFull getComment(Header header, int commentId) throws Exception {
+        LOG.info(">> getComment");
+        check(header);
+
+        RecComment rc = Db.execAndReturn((api) -> api.getCommentMapper().getComment(commentId));
+        ArticleCommentFull result;
+        if (rc == null) {
+            result = null;
+        } else {
+            result = new ArticleCommentFull();
+            result.comment = rc.getComment();
+            result.who = rc.getAuthor();
+            result.when = rc.getCreated();
+        }
+        LOG.info("<< getComment");
+        return result;
+    }
+
+    @Override
+    public ArticleHistoryFull getHistory(Header header, int historyId) throws Exception {
+        LOG.info(">> getComment");
+        check(header);
+
+        RecArticleHistory rc = Db.execAndReturn((api) -> api.getArticleHistoryMapper().getHistory(historyId));
+        ArticleHistoryFull result;
+        if (rc == null) {
+            result = null;
+        } else {
+            result = new ArticleHistoryFull();
+            result.oldXml = rc.getOldXml();
+            result.newXml = rc.getNewXml();
+            result.who = rc.getChanger();
+            result.when = rc.getChanged();
+        }
+        LOG.info("<< getComment");
         return result;
     }
 }

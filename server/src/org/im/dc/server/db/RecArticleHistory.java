@@ -1,5 +1,6 @@
 package org.im.dc.server.db;
 
+import java.util.Arrays;
 import java.util.Date;
 
 import org.im.dc.service.dto.Related;
@@ -144,10 +145,15 @@ public class RecArticleHistory {
         r.articleId = articleId;
         r.when = changed;
         r.who = changer;
-        if (oldState != null && newState != null) {
+        if (newState != null) {
             r.what = oldState + " -> " + newState;
+            r.sk = "Ст";
         } else if (newXml != null) {
-            r.what = "Тэкст артыкула";
+            r.what = "Тэкст";
+            r.sk = "Са";
+        } else if (newWords != null) {
+            r.what = Arrays.toString(oldWords) + " -> " + Arrays.toString(newWords);
+            r.sk = "Сг";
         }
         return r;
     }

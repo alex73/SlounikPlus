@@ -39,7 +39,7 @@ public abstract class BaseController<T extends Window> {
 
         window.addWindowListener(new WindowAdapter() {
             @Override
-            public void windowClosing(WindowEvent e) {
+            public void windowClosed(WindowEvent e) {
                 SettingsController.savePlacesForWindow(window);
             }
         });
@@ -65,7 +65,7 @@ public abstract class BaseController<T extends Window> {
     /**
      * Show UI on the center of parent.
      */
-    protected void displayOn(JFrame parent) {
+    protected void displayOn(Window parent) {
         window.setLocationRelativeTo(parent);
         window.setVisible(true);
     }

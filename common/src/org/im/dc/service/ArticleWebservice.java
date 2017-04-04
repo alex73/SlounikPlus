@@ -5,8 +5,10 @@ import java.util.List;
 
 import javax.jws.WebService;
 
+import org.im.dc.service.dto.ArticleCommentFull;
 import org.im.dc.service.dto.ArticleFull;
 import org.im.dc.service.dto.ArticleFullInfo;
+import org.im.dc.service.dto.ArticleHistoryFull;
 import org.im.dc.service.dto.ArticleShort;
 import org.im.dc.service.dto.ArticlesFilter;
 import org.im.dc.service.dto.Header;
@@ -31,4 +33,8 @@ public interface ArticleWebservice {
     void setWatch(Header header, int articleId, boolean watch) throws Exception;
 
     List<ArticleShort> listArticles(Header header, ArticlesFilter filter) throws Exception;
+
+    ArticleCommentFull getComment(Header header, int commentId) throws Exception;
+
+    ArticleHistoryFull getHistory(Header header, int historyId) throws Exception;
 }
