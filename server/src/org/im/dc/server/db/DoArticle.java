@@ -54,4 +54,8 @@ public interface DoArticle {
 
     @Update("UPDATE Articles SET watchers = array_remove(watchers, #{1}) WHERE articleId = #{0} AND (watchers @> ARRAY[#{1}]::varchar[][])")
     void removeWatch(int articleId, String user);
+
+    @Select("SELECT * FROM Articles")
+    @Results({ @Result(property = "words", column = "words", typeHandler = StringArrayTypeHandler.class) })
+    List<RecArticle> selectAll();
 }
