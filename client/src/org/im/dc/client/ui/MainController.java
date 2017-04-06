@@ -16,6 +16,7 @@ import org.im.dc.client.SchemaLoader;
 import org.im.dc.client.WS;
 import org.im.dc.gen.config.Permission;
 import org.im.dc.service.dto.ArticleShort;
+import org.im.dc.service.dto.ArticlesFilter;
 import org.im.dc.service.dto.InitialData;
 import org.im.dc.service.dto.Related;
 
@@ -111,7 +112,10 @@ public class MainController extends BaseController<MainFrame> {
     }
 
     private void init() {
-        window.cbUser.setModel(new DefaultComboBoxModel<>(new Vector<>(initialData.allUsers)));
+        Vector<String> users = new Vector<>();
+        users.add(null);
+        users.addAll(initialData.allUsers);
+        window.cbUser.setModel(new DefaultComboBoxModel<>(users));
         window.btnSearch.addActionListener((e) -> search());
         window.tableArticles.addMouseListener(new MouseAdapter() {
             @Override
@@ -164,12 +168,16 @@ public class MainController extends BaseController<MainFrame> {
      * Search articles by filter.
      */
     private void search() {
+        ArticlesFilter filter = new ArticlesFilter();
+        filter.user = (String) window.cbUser.getSelectedItem();
+        filter.word = window.txtWord.getText().trim().isEmpty() ? null : window.txtWord.getText().trim();
+        filter.text = window.txtText.getText().trim().isEmpty() ? null : window.txtText.getText().trim();
         new LongProcess() {
             MainFrameArticlesModel model;
 
             @Override
             protected void exec() throws Exception {
-                model = new MainFrameArticlesModel(WS.getArticleService().listArticles(WS.header, null));
+                model = new MainFrameArticlesModel(WS.getArticleService().listArticles(WS.header, filter));
                 issuesModel = new MainFrameIssuesModel(WS.getToolsWebservice().listIssues(WS.header));
                 newsModel = new MainFrameNewsModel(WS.getToolsWebservice().listNews(WS.header));
             }
