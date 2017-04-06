@@ -5,16 +5,27 @@ import org.im.dc.server.js.JsDomWrapper;
 public class HtmlOut {
     private final StringBuilder out = new StringBuilder(4096);
 
-    public void tag(String tag) {
+    public HtmlOut tag(String tag) {
         out.append(tag);
+        return this;
     }
 
-    public void text(String text) {
-        out.append(text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;"));
+    public HtmlOut text(String text) {
+        text = text.replace('+', '\u0301');
+        text = text.replace("&", "&amp;");
+        text = text.replace("<", "&lt;");
+        text = text.replace(">", "&gt;");
+        out.append(text);
+        return this;
     }
 
-    public void text(JsDomWrapper w) {
+    public HtmlOut text(JsDomWrapper w) {
         text((String) w.get("textContent"));
+        return this;
+    }
+
+    public void log(String text) {
+        System.err.println(text);
     }
 
     @Override
