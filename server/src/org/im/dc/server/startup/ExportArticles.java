@@ -27,6 +27,7 @@ public class ExportArticles {
 
         System.setProperty("log4j.configurationFile", new File("config/log4j.xml").getAbsolutePath());
         Db.init();
+        new File(args[0]).mkdirs();
 
         Db.exec((api) -> {
             for (RecArticle a : api.getArticleMapper().selectAll()) {

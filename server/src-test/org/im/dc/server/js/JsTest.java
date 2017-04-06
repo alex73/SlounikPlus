@@ -13,7 +13,7 @@ public class JsTest {
         HtmlOut out = new HtmlOut();
         SimpleScriptContext context = new SimpleScriptContext();
         context.setAttribute("out", out, ScriptContext.ENGINE_SCOPE);
-        context.setAttribute("words", new String[] { "first", "second" }, ScriptContext.ENGINE_SCOPE);
+        context.setAttribute("words", new String[] { "хадзіць" }, ScriptContext.ENGINE_SCOPE);
         context.setAttribute("article",
                 new JsDomWrapper(Files.readAllBytes(Paths.get("src-test/org/im/dc/server/js/test-article.xml"))),
                 ScriptContext.ENGINE_SCOPE);

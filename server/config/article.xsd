@@ -2,22 +2,14 @@
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
 	<xs:element name="root">
 		<xs:annotation>
-			<xs:appinfo>Артыкул{bg:#FFFFFF,border:#0000FF}</xs:appinfo>
+			<xs:appinfo>Артыкул{bg:#FFFFFF,border:#003300}</xs:appinfo>
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="zah" maxOccurs="1" minOccurs="1" />
 				<xs:element ref="tlum" maxOccurs="unbounded" minOccurs="1" />
-				<xs:element name="ustterm" type="xs:string" maxOccurs="unbounded" minOccurs="0">
-					<xs:annotation>
-						<xs:appinfo>Тэрміналагічнае словазлучэнне</xs:appinfo>
-					</xs:annotation>
-				</xs:element>
-				<xs:element name="ustfraz" type="xs:string" maxOccurs="unbounded" minOccurs="0">
-					<xs:annotation>
-						<xs:appinfo>Фразеалагізм</xs:appinfo>
-					</xs:annotation>
-				</xs:element>
+				<xs:element ref="term" maxOccurs="unbounded" minOccurs="0"/>
+				<xs:element ref="fraz" maxOccurs="unbounded" minOccurs="0"/>
 				<xs:element name="ustetym" type="xs:string" maxOccurs="unbounded" minOccurs="0">
 					<xs:annotation>
 						<xs:appinfo>Этымалогія</xs:appinfo>
@@ -28,13 +20,13 @@
 	</xs:element>
 	<xs:element name="zah">
 		<xs:annotation>
-			<xs:appinfo>Паметы загалоўных слоў{bg:#b7dde8,fg:#FF0000}</xs:appinfo>
+			<xs:appinfo>Паметы загалоўных слоў{bg:#b0d89c,border:#000000}</xs:appinfo>
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element name="gram" type="xs:string" maxOccurs="unbounded" minOccurs="1">
 					<xs:annotation>
-						<xs:appinfo>Граматыка і паметы загалоўнага слова{fg:#00FF00}</xs:appinfo>
+						<xs:appinfo>Граматыка і паметы загалоўнага слова</xs:appinfo>
 					</xs:annotation>
 				</xs:element>
 			</xs:sequence>
@@ -42,7 +34,7 @@
 	</xs:element>
 	<xs:element name="tlum">
 		<xs:annotation>
-			<xs:appinfo>Тлумачэнне{bg:#fbd7bb}</xs:appinfo>
+			<xs:appinfo>Тлумачэнне{bg:#b7dde8,border:#0000FF}</xs:appinfo>
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
@@ -74,12 +66,30 @@
 				<xs:element ref="ex" maxOccurs="unbounded" minOccurs="0" />
 				<xs:element ref="adc" maxOccurs="unbounded" minOccurs="0" />
 				<xs:element ref="usd" maxOccurs="unbounded" minOccurs="0" />
+				<xs:element ref="subdesc" maxOccurs="unbounded" minOccurs="0" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="subdesc">
+		<xs:annotation>
+			<xs:appinfo>Падтлумачэнне{bg:#b7dde8,border:#0000FF}</xs:appinfo>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="desc" type="xs:string" maxOccurs="1" minOccurs="1">
+					<xs:annotation>
+						<xs:appinfo>Тэкст тлумачэння</xs:appinfo>
+					</xs:annotation>
+				</xs:element>
+				<xs:element ref="ex" maxOccurs="unbounded" minOccurs="0" />
+				<xs:element ref="usd" maxOccurs="unbounded" minOccurs="0" />
+				<xs:element ref="adc" maxOccurs="unbounded" minOccurs="0" />
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="adc">
 		<xs:annotation>
-			<xs:appinfo>//{bg:#fcebdd}</xs:appinfo>
+			<xs:appinfo>//{bg:#d5e7ed,border:#0000FF}</xs:appinfo>
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
@@ -114,7 +124,7 @@
 	</xs:element>
 	<xs:element name="usd">
 		<xs:annotation>
-			<xs:appinfo>/{bg:#fcebdd}</xs:appinfo>
+			<xs:appinfo>/{bg:#d5e7ed,border:#0000FF}</xs:appinfo>
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
@@ -149,7 +159,7 @@
 	</xs:element>
 	<xs:element name="ex">
 		<xs:annotation>
-			<xs:appinfo>Прыклад{bg:#fcebdd}</xs:appinfo>
+			<xs:appinfo>Прыклад{bg:#b7dde8,border:#44634b}</xs:appinfo>
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
@@ -166,4 +176,44 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
+
+	<xs:element name="term">
+		<xs:annotation>
+			<xs:appinfo>Тэрміналагічнае словазлучэнне{bg:#dbdd99}</xs:appinfo>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="term" type="xs:string" maxOccurs="1" minOccurs="1">
+					<xs:annotation>
+						<xs:appinfo>Словазлучэнне</xs:appinfo>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="explanation" type="xs:string" maxOccurs="1" minOccurs="1">
+					<xs:annotation>
+						<xs:appinfo>Тлумачэнне</xs:appinfo>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="fraz">
+		<xs:annotation>
+			<xs:appinfo>Фразеалагізм{bg:#f3f4d2}</xs:appinfo>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="fraz" type="xs:string" maxOccurs="1" minOccurs="1">
+					<xs:annotation>
+						<xs:appinfo>Фразеалагізм</xs:appinfo>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="explanation" type="xs:string" maxOccurs="1" minOccurs="1">
+					<xs:annotation>
+						<xs:appinfo>Тлумачэнне</xs:appinfo>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
 </xs:schema>
