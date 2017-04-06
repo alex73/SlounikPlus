@@ -2,36 +2,44 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="org.im.dc.server.db.DoIssue">
-	<select id="retrieveUserOpenIssues" resultType="RecIssue"
-		resultMap="RecIssueMap">
+	<select id="retrieveUserOpenIssues" resultType="RecIssue" resultMap="RecIssueMap">
 		SELECT Issues.*, Articles.words
 		FROM Issues, Articles
-		WHERE
-		Issues.articleId = Articles.articleId
-		AND (Articles.assignedUsers @>
-		ARRAY[#{user}]::varchar[][] OR
-		Articles.watchers @>
-		ARRAY[#{user}]::varchar[][])
-		AND fixed IS NULL
+		WHERE Issues.articleId = Articles.articleId AND
+			(Articles.assignedUsers @> ARRAY[#{user}]::varchar[][] OR Articles.watchers @> ARRAY[#{user}]::varchar[][]) AND
+			fixed IS NULL
 	</select>
 	<select id="retrieveUserIssues" resultType="RecIssue" resultMap="RecIssueMap">
 		SELECT Issues.*, Articles.words
 		FROM Issues, Articles
-		WHERE
-		Issues.articleId = Articles.articleId
-		AND (Articles.assignedUsers @>
-		ARRAY[#{user}]::varchar[][] OR
-		Articles.watchers @>
-		ARRAY[#{user}]::varchar[][])
+		WHERE Issues.articleId = Articles.articleId AND
+			(Articles.assignedUsers @> ARRAY[#{user}]::varchar[][] OR Articles.watchers @> ARRAY[#{user}]::varchar[][])
 	</select>
-	<select id="retrieveAuthorIssues" resultType="RecIssue"
-		resultMap="RecIssueMap">
+	<select id="retrieveAuthorIssues" resultType="RecIssue" resultMap="RecIssueMap">
 		SELECT Issues.*, Articles.words
 		FROM Issues, Articles
-		WHERE
-		Issues.articleId = Articles.articleId
-		AND Issues.author = #{user}
+		WHERE Issues.articleId = Articles.articleId AND Issues.author = #{user}
 	</select>
+    <select id="retrieveIssues" resultType="RecIssue" resultMap="RecIssueMap">
+        SELECT *
+        FROM Issues
+        WHERE articleId = #{articleId}
+    </select>
+    <select id="getIssue" resultType="RecIssue" resultMap="RecIssueMap">
+        SELECT *
+        FROM Issues
+        WHERE issueId = #{issueId}
+    </select>
+	<insert id="insertIssue" useGeneratedKeys="true" keyProperty="issue.issueId">
+		INSERT INTO Issues (articleId,created,author,comment,oldXml,newXml) 
+		VALUES(#{issue.articleId},#{issue.created},#{issue.author},#{issue.comment},#{issue.oldXml},#{issue.newXml})
+	</insert>
+	<update id="fixIssue">
+		UPDATE Issues
+		SET accepted=#{accepted}, fixer=#{fixer}, fixed=#{fixed}
+		WHERE issueId = #{issueId}
+	</update>
+
 	<resultMap id="RecIssueMap" type="RecIssue">
 		<id property="issueId" column="issueId" />
 		<result property="words" column="words" typeHandler="StringArrayTypeHandler" />

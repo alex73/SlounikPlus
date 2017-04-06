@@ -13,26 +13,33 @@
 			AND assignedUsers @> ARRAY[#{filter.user}]::varchar[][]
 		</if>
 		<if test="filter.word != null">
-			AND articleId IN (SELECT articleId FROM (SELECT articleId, unnest(words) w FROM Articles) AS L WHERE w LIKE #{filter.likeWord})
+			AND articleId IN (SELECT articleId FROM (SELECT articleId,
+			unnest(words) w FROM Articles) AS L WHERE w LIKE
+			#{filter.likeWord})
 		</if>
 		<if test="filter.text != null">
 			AND textForSearch LIKE #{filter.likeText}
 		</if>
 	</select>
+	<select id="selectAll" resultType="RecArticle" resultMap="RecArticleMap">
+		SELECT *
+		FROM Articles
+	</select>
 	<select id="selectArticleForUpdate" parameterType="int" resultType="RecArticle" resultMap="RecArticleMap">
-		SELECT * FROM Articles WHERE articleId = #{id} FOR UPDATE
+		SELECT *
+		FROM Articles
+		WHERE articleId = #{id} FOR UPDATE
 	</select>
 	<select id="selectLinkedTo" resultType="RecArticle" resultMap="RecArticleMap">
 		SELECT articleId, words
 		FROM Articles
-		WHERE linkedTo &amp;&amp;
-		ARRAY[#{words,typeHandler=StringArrayTypeHandler}]::varchar[][]
+		WHERE linkedTo &amp;&amp; ARRAY[#{words,typeHandler=StringArrayTypeHandler}]::varchar[][]
 	</select>
 	<select id="hasArticlesWithWords" parameterType="java.util.List" resultType="RecArticle" resultMap="RecArticleMap">
 		SELECT *
 		FROM Articles
 		WHERE
-		<foreach collection="list" item="item" index="index" separator="OR">
+		<foreach collection="words" item="item" index="index" separator="OR">
 			#{item} = ANY(words)
 		</foreach>
 	</select>
@@ -54,10 +61,47 @@
 		</foreach>
 	</insert>
 	<insert id="insertArticle" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="record.articleId">
-		INSERT INTO Articles
+		INSERT INTO
+		Articles
 		(words,xml,assignedUsers,state,markers,watchers,linkedTo,textForSearch,lettersCount,lastUpdated)
 		VALUES(#{record.words,typeHandler=StringArrayTypeHandler},#{record.xml},#{record.assignedUsers,typeHandler=StringArrayTypeHandler},#{record.state},#{record.markers,typeHandler=StringArrayTypeHandler},#{record.watchers,typeHandler=StringArrayTypeHandler},#{record.linkedTo,typeHandler=StringArrayTypeHandler},#{record.textForSearch},#{record.lettersCount},#{record.lastUpdated})
 	</insert>
+	<update id="updateArticle">
+		UPDATE Articles
+		SET xml = #{record.xml},
+			words = #{record.words,typeHandler=StringArrayTypeHandler},
+			assignedUsers = #{record.assignedUsers,typeHandler=StringArrayTypeHandler},
+			state = #{record.state},
+			markers = #{record.markers,typeHandler=StringArrayTypeHandler},
+			watchers = #{record.watchers,typeHandler=StringArrayTypeHandler},
+			linkedTo = #{record.linkedTo,typeHandler=StringArrayTypeHandler},
+			textForSearch = #{record.textForSearch},
+			lettersCount = #{record.lettersCount},
+			lastUpdated = #{record.lastUpdated}
+		WHERE articleId = #{record.articleId} AND lastUpdated = #{prevLastUpdated}
+	</update>
+	<update id="updateWords">
+		UPDATE Articles
+		SET words = #{record.words,typeHandler=StringArrayTypeHandler},
+			lastUpdated = #{record.lastUpdated}
+		WHERE articleId = #{record.articleId} AND lastUpdated = #{prevLastUpdated}
+	</update>
+	<update id="updateArticleState">
+		UPDATE Articles
+		SET state = #{record.state},
+			lastUpdated = #{record.lastUpdated}
+		WHERE articleId = #{record.articleId} AND lastUpdated = #{prevLastUpdated}
+	</update>
+	<update id="addWatch">
+		UPDATE Articles
+		SET watchers = array_append(watchers, #{user})
+		WHERE articleId = #{articleId} AND NOT (watchers @> ARRAY[#{user}]::varchar[][])
+	</update>
+	<update id="removeWatch">
+		UPDATE Articles
+		SET watchers = array_remove(watchers, #{user})
+		WHERE articleId = #{articleId} AND (watchers @> ARRAY[#{user}]::varchar[][])
+	</update>
 
 	<resultMap id="RecArticleMap" type="RecArticle">
 		<id property="articleId" column="articleId" />

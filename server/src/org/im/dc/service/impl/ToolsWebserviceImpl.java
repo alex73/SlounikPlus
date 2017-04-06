@@ -118,12 +118,12 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
         }
 
         Db.exec((api) -> {
-            List<RecArticle> existArticles = api.getSession().selectList("hasArticlesWithWords", checkWords);
+            List<RecArticle> existArticles = api.getArticleMapper().hasArticlesWithWords(checkWords);
             if (!existArticles.isEmpty()) {
                 LOG.warn("<< addWords: already exist " + Arrays.toString(existArticles.get(0).getWords()));
                 throw new RuntimeException("Словы ўжо ёсьць: " + Arrays.toString(existArticles.get(0).getWords()));
             }
-            api.getSession().insert("insertArticles", list);
+            api.getArticleMapper().insertArticles(list);
         });
 
         LOG.info("<< addWords");
@@ -160,7 +160,7 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
         List<Related> related = new ArrayList<>();
         // заўвагі
         List<RecIssue> list = Db
-                .execAndReturn((api) -> api.getSession().selectList("retrieveUserOpenIssues", header.user));
+                .execAndReturn((api) -> api.getIssueMapper().retrieveUserOpenIssues(header.user));
         for (RecIssue rc : list) {
             related.add(rc.getRelated());
         }
@@ -176,24 +176,24 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
         List<Related> related = new ArrayList<>();
         // заўвагі карыстальніка
         List<RecIssue> list = Db
-                .execAndReturn((api) -> api.getSession().selectList("retrieveAuthorIssues", header.user));
+                .execAndReturn((api) -> api.getIssueMapper().retrieveAuthorIssues(header.user));
         for (RecIssue rc : list) {
             related.add(rc.getRelated());
         }
         // заўвагі для артыкулаў за якімі сочыць карыстальнік
-        list = Db.execAndReturn((api) -> api.getSession().selectList("retrieveUserIssues", header.user));
+        list = Db.execAndReturn((api) -> api.getIssueMapper().retrieveUserIssues(header.user));
         for (RecIssue rc : list) {
             related.add(rc.getRelated());
         }
         // камэнтары
         List<RecComment> listComments = Db
-                .execAndReturn((api) -> api.getSession().selectList("retrieveUserComment", header.user));
+                .execAndReturn((api) -> api.getCommentMapper().retrieveUserComments(header.user));
         for (RecComment rc : listComments) {
             related.add(rc.getRelated());
         }
         // гісторыя
         List<RecArticleHistory> listHistory = Db
-                .execAndReturn((api) -> api.getSession().selectList("retrieveUserHistory", header.user));
+                .execAndReturn((api) -> api.getArticleHistoryMapper().retrieveUserHistory(header.user));
         for (RecArticleHistory rh : listHistory) {
             related.add(rh.getRelated());
         }

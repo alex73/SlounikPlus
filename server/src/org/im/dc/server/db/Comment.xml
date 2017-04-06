@@ -1,18 +1,28 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="Comment">
-	<select id="retrieveUserComment" resultType="RecComment"
-		resultMap="RecCommentMap">
+<mapper namespace="org.im.dc.server.db.DoComment">
+	<select id="getComment" resultType="RecComment" resultMap="RecCommentMap">
+		SELECT *
+		FROM Comments
+		WHERE commentId = #{commentId}
+	</select>
+	<select id="retrieveArticleComments" resultType="RecComment" resultMap="RecCommentMap">
+		SELECT *
+		FROM Comments
+		WHERE articleId = #{articleId}
+	</select>
+	<select id="retrieveUserComments" resultType="RecComment" resultMap="RecCommentMap">
 		SELECT Comments.*, Articles.words
 		FROM Comments, Articles
-		WHERE
-		Comments.articleId = Articles.articleId
-		AND (Articles.assignedUsers @>
-		ARRAY[#{user}]::varchar[][] OR
-		Articles.watchers @>
-		ARRAY[#{user}]::varchar[][])
+		WHERE Comments.articleId = Articles.articleId AND
+			(Articles.assignedUsers @> ARRAY[#{user}]::varchar[][] OR Articles.watchers @> ARRAY[#{user}]::varchar[][])
 	</select>
+	<insert id="insertComment" useGeneratedKeys="true" keyProperty="comment.commentId">
+		INSERT INTO Comments (articleId,created,author,comment)
+		VALUES(#{comment.articleId},#{comment.created},#{comment.author},#{comment.comment})
+	</insert>
+
 	<resultMap id="RecCommentMap" type="RecComment">
 		<id property="commentId" column="commentId" />
 		<result property="words" column="words" typeHandler="StringArrayTypeHandler" />

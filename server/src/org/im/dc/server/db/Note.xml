@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.im.dc.server.db.DoArticleNote">
+	<select id="getNote" resultType="RecArticleNote" resultMap="RecArticleNoteMap">
+		SELECT *
+		FROM ArticleNotes
+		WHERE articleId = #{articleId} AND creator = #{user}
+	</select>
+	<insert id="insertNote">
+		INSERT INTO ArticleNotes (articleId,creator,note)
+		VALUES(#{note.articleId},#{note.creator},#{note.note})
+	</insert>
+	<delete id="deleteNote">
+		DELETE FROM ArticleNotes
+		WHERE articleId = #{articleId} AND creator = #{user}
+	</delete>
+
+	<resultMap id="RecArticleNoteMap" type="RecArticleNote">
+		<result property="articleId" column="articleId" />
+		<result property="creator" column="creator" />
+		<result property="note" column="note" />
+	</resultMap>
+</mapper>

@@ -101,9 +101,5 @@ public class Db {
         public DoIssue getIssueMapper() {
             return s.getMapper(DoIssue.class);
         }
-
-        public SqlSession getSession() {
-            return s;
-        }
     }
 }

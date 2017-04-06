@@ -76,10 +76,11 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
     }
 
     private void preprocessArticle(Db.Api api, RecArticle rec) throws Exception {
-        if (rec.getXml() != null) {
-            Validator validator = Config.articleSchema.newValidator();
-            validator.validate(new StreamSource(new ByteArrayInputStream(rec.getXml())));
+        if (rec.getXml() == null) {
+            return;
         }
+        Validator validator = Config.articleSchema.newValidator();
+        validator.validate(new StreamSource(new ByteArrayInputStream(rec.getXml())));
         rec.setTextForSearch(new WordSplitter().parse(rec.getXml()));
 
         StringWriter out = new StringWriter();
@@ -128,12 +129,12 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
         }
         // гісторыя
         List<RecArticleHistory> history = Db
-                .execAndReturn((api) -> api.getSession().selectList("retrieveHistory", rec.getArticleId()));
+                .execAndReturn((api) -> api.getArticleHistoryMapper().retrieveHistory(rec.getArticleId()));
         for (RecArticleHistory rh : history) {
             a.related.add(rh.getRelated());
         }
         // камэнтары
-        for (RecComment rc : Db.execAndReturn((api) -> api.getCommentMapper().retrieveComments(rec.getArticleId()))) {
+        for (RecComment rc : Db.execAndReturn((api) -> api.getCommentMapper().retrieveArticleComments(rec.getArticleId()))) {
             a.related.add(rc.getRelated());
         }
         // заўвагі
@@ -243,7 +244,7 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
         PermissionChecker.userRequiresPermission(header.user, Permission.ADD_WORDS);
 
         RecArticle art = Db.execAndReturn((api) -> {
-            List<RecArticle> existArticles = api.getSession().selectList("hasArticlesWithWords", ws);
+            List<RecArticle> existArticles = api.getArticleMapper().hasArticlesWithWords(ws);
             for (RecArticle e : existArticles) {
                 if (e.getArticleId() != articleId) {
                     // the same article
@@ -423,7 +424,7 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
         check(header);
 
         List<ArticleShort> result = new ArrayList<>();
-        List<RecArticle> list = Db.execAndReturn((api) -> api.getSession().selectList("listArticles", filter));
+        List<RecArticle> list = Db.execAndReturn((api) -> api.getArticleMapper().listArticles(filter));
         for (RecArticle r : list) {
             ArticleShort o = new ArticleShort();
             o.id = r.getArticleId();
@@ -483,7 +484,7 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
         LOG.info(">> getHistory");
         check(header);
 
-        RecArticleHistory rc = Db.execAndReturn((api) -> api.getSession().selectOne("getHistory", historyId));
+        RecArticleHistory rc = Db.execAndReturn((api) -> api.getArticleHistoryMapper().getHistory(historyId));
         ArticleHistoryFull result;
         if (rc == null) {
             result = null;

@@ -1,12 +1,15 @@
 package org.im.dc.server.db;
 
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Options;
+import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
 
 public interface DoArticleHistory {
+    List<RecArticleHistory> retrieveUserHistory(@Param("user") String user);
 
-    @Insert("INSERT INTO ArticlesHistory (articleId,changed,changer,oldState,newState,oldWords,newWords,oldAssignedUsers,newAssignedUsers,oldXml,newXml) "
-            + "VALUES(#{articleId},#{changed},#{changer},#{oldState},#{newState},#{oldWords,typeHandler=StringArrayTypeHandler},#{newWords,typeHandler=StringArrayTypeHandler},#{oldAssignedUsers,typeHandler=StringArrayTypeHandler},#{newAssignedUsers,typeHandler=StringArrayTypeHandler},#{oldXml},#{newXml})")
-    @Options(useGeneratedKeys = true, keyProperty = "historyId")
-    void insertArticleHistory(RecArticleHistory hist);
+    List<RecArticleHistory> retrieveHistory(@Param("articleId") int articleId);
+
+    RecArticleHistory getHistory(@Param("historyId") int historyId);
+
+    void insertArticleHistory(@Param("hist") RecArticleHistory hist);
 }

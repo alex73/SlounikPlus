@@ -34,5 +34,6 @@
 		<mapper resource="org/im/dc/server/db/Comment.xml" />
 		<mapper resource="org/im/dc/server/db/Issue.xml" />
 		<mapper resource="org/im/dc/server/db/History.xml" />
+		<mapper resource="org/im/dc/server/db/Note.xml" />
 	</mappers>
 </configuration>

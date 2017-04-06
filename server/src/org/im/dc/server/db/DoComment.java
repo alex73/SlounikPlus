@@ -2,19 +2,14 @@ package org.im.dc.server.db;
 
 import java.util.List;
 
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Options;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Param;
 
 public interface DoComment {
-    @Insert("INSERT INTO Comments (articleId,created,author,comment) "
-            + "VALUES(#{articleId},#{created},#{author},#{comment})")
-    @Options(useGeneratedKeys = true, keyProperty = "commentId")
-    void insertComment(RecComment comment);
+    RecComment getComment(@Param("commentId") int commentId);
 
-    @Select("SELECT * FROM Comments WHERE articleId = #{articleId}")
-    List<RecComment> retrieveComments(int articleId);
+    List<RecComment> retrieveArticleComments(@Param("articleId") int articleId);
 
-    @Select("SELECT * FROM Comments WHERE commentId = #{commentId}")
-    RecComment getComment(int commentId);
+    List<RecComment> retrieveUserComments(@Param("user") String user);
+
+    void insertComment(@Param("comment") RecComment comment);
 }
