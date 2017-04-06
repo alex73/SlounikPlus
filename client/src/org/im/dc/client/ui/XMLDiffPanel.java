@@ -116,6 +116,11 @@ public class XMLDiffPanel extends JPanel {
 		int j = 0;
 		int k = 0;
 		int y = -1;
+		
+		/*if(common.isEmpty()){
+			common.add(null);
+		}*/
+		
 		GridBagLayout layout = new GridBagLayout();		
 		setLayout(layout);
 		setOpaque(false);
@@ -131,33 +136,36 @@ public class XMLDiffPanel extends JPanel {
 			String firstString = firstLines.get(i);
 			String secondString = secondLines.get(j);
 			
-			if(firstString.trim().equals(commonStr.trim()) && secondString.trim().equals(commonStr.trim())){
+			if(commonStr != null && firstString.trim().equals(commonStr.trim()) && secondString.trim().equals(commonStr.trim())){
 				
 				constraints.gridx = 0;
 				constraints.gridy = y;
 				JTextArea labelFirst = new JTextArea(firstString);
+				labelFirst.setFont(new Font("Monospaced", Font.PLAIN, 14));
 				setLabelProps(labelFirst,coincidenceColor);
 				add(labelFirst, constraints);
 
 				constraints.gridx = 1;
 				constraints.gridy = y;
 				JTextArea labelSecond = new JTextArea(secondString);
+				labelSecond.setFont(new Font("Monospaced", Font.PLAIN, 14));
 				setLabelProps(labelSecond,coincidenceColor);
 				add(labelSecond,constraints);
 				
 				i++;
 				j++;
 			}else{
-				if(firstString.trim().equals(commonStr.trim())){
+				if(commonStr != null && firstString.trim().equals(commonStr.trim())){
 
 					constraints.gridx = 1;
 					constraints.gridy = y;
 					JTextArea labelSecond = new JTextArea(secondString);
+					labelSecond.setFont(new Font("Monospaced", Font.PLAIN, 14));
 					setLabelProps(labelSecond, diffColor);
 					add(labelSecond,constraints);
 					
 					j++;
-				}else if(secondString.trim().equals(commonStr.trim())){
+				}else if(commonStr != null && secondString.trim().equals(commonStr.trim())){
 					constraints.gridx = 0;
 					constraints.gridy = y;
 					JTextArea labelFirst = new JTextArea(firstString);
@@ -186,6 +194,7 @@ public class XMLDiffPanel extends JPanel {
 					constraints.gridx = 1;
 					constraints.gridy = y;
 					JTextArea labelSecond = new JTextArea(secondString);
+					labelSecond.setFont(new Font("Monospaced", Font.PLAIN, 14));
 					setLabelProps(labelSecond, diffColor);
 					add(labelSecond,constraints);
 					i++;
@@ -194,6 +203,43 @@ public class XMLDiffPanel extends JPanel {
 				continue;
 			}
 			k++;
+		}
+		while(i < firstLines.size() || j < secondLines.size()){
+			
+			y++;
+			
+			String firstString = null;
+			String secondString = null;
+
+			if(firstLines.size()>i){
+				firstString = firstLines.get(i);
+				i++;
+			}
+			if(secondLines.size()>j){
+				secondString = secondLines.get(j);
+				j++;
+			}
+			if(firstString != null){
+				constraints.gridx = 0;
+				constraints.gridy = y;
+				JTextArea labelFirst = new JTextArea(firstString);
+	
+				labelFirst.setFont(new Font("Monospaced", Font.PLAIN, 14));
+				setLabelProps(labelFirst, diffColor);
+	
+				add(labelFirst, constraints);
+			}
+
+			if(secondString != null){
+				constraints.gridx = 1;
+				constraints.gridy = y;
+				JTextArea labelSecond = new JTextArea(secondString);
+				labelSecond.setFont(new Font("Monospaced", Font.PLAIN, 14));
+				setLabelProps(labelSecond, diffColor);
+				add(labelSecond,constraints);
+			}
+
+			
 		}
 	}
 
