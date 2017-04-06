@@ -1,6 +1,7 @@
 package org.im.dc.service.impl;
 
 import java.io.ByteArrayInputStream;
+import java.io.StringWriter;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -8,6 +9,8 @@ import java.util.Date;
 import java.util.List;
 
 import javax.jws.WebService;
+import javax.script.ScriptContext;
+import javax.script.SimpleScriptContext;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Validator;
 
@@ -23,6 +26,8 @@ import org.im.dc.server.db.RecArticleHistory;
 import org.im.dc.server.db.RecArticleNote;
 import org.im.dc.server.db.RecComment;
 import org.im.dc.server.db.RecIssue;
+import org.im.dc.server.js.JsDomWrapper;
+import org.im.dc.server.js.JsProcessing;
 import org.im.dc.service.AppConst;
 import org.im.dc.service.ArticleWebservice;
 import org.im.dc.service.dto.ArticleCommentFull;
@@ -75,7 +80,14 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
             Validator validator = Config.articleSchema.newValidator();
             validator.validate(new StreamSource(new ByteArrayInputStream(rec.getXml())));
         }
-        // TODO call script for check article
+        rec.setTextForSearch(new WordSplitter().parse(rec.getXml()));
+
+        StringWriter out = new StringWriter();
+        SimpleScriptContext context = new SimpleScriptContext();
+        context.setAttribute("words", rec.getWords(), ScriptContext.ENGINE_SCOPE);
+        context.setAttribute("article", new JsDomWrapper(rec.getXml()), ScriptContext.ENGINE_SCOPE);
+        context.setWriter(out);
+        JsProcessing.exec("config/validation.js", context);
     }
 
     private ArticleFullInfo getAdditionalArticleInfo(Header header, RecArticle rec) throws Exception {

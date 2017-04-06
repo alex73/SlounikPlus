@@ -134,7 +134,7 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
         LOG.info(">> printPreview");
         check(header);
 
-        RecArticle rec = Db.execAndReturn((api) -> api.getArticleMapper().selectArticle(articleId));
+        RecArticle rec = Db.execAndReturn((api) -> api.getArticleMapper().selectArticleForUpdate(articleId));
         if (rec == null) {
             LOG.warn("<< printPreview: article not found");
             return null;
@@ -143,11 +143,11 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
         Validator validator = Config.articleSchema.newValidator();
         validator.validate(new StreamSource(new ByteArrayInputStream(rec.getXml())));
 
-        StringWriter out=new StringWriter();
+        HtmlOut out = new HtmlOut();
         SimpleScriptContext context = new SimpleScriptContext();
+        context.setAttribute("out", out, ScriptContext.ENGINE_SCOPE);
         context.setAttribute("words", rec.getWords(), ScriptContext.ENGINE_SCOPE);
         context.setAttribute("article", new JsDomWrapper(rec.getXml()), ScriptContext.ENGINE_SCOPE);
-        context.setWriter(out);
         JsProcessing.exec("config/output.js", context);
 
         LOG.info("<< printPreview");

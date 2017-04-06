@@ -6,15 +6,19 @@ import java.nio.file.Paths;
 import javax.script.ScriptContext;
 import javax.script.SimpleScriptContext;
 
-import org.junit.Test;
+import org.im.dc.service.impl.HtmlOut;
 
 public class JsTest {
-    @Test
-    public void test() throws Exception {
+    public static void main(String[] a) throws Exception {
+        HtmlOut out = new HtmlOut();
         SimpleScriptContext context = new SimpleScriptContext();
+        context.setAttribute("out", out, ScriptContext.ENGINE_SCOPE);
+        context.setAttribute("words", new String[] { "first", "second" }, ScriptContext.ENGINE_SCOPE);
         context.setAttribute("article",
                 new JsDomWrapper(Files.readAllBytes(Paths.get("src-test/org/im/dc/server/js/test-article.xml"))),
                 ScriptContext.ENGINE_SCOPE);
         JsProcessing.exec("src-test/org/im/dc/server/js/test.js", context);
+
+        System.out.print(out);
     }
 }
