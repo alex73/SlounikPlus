@@ -29,7 +29,6 @@ public class MainFrame extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         txtText = new javax.swing.JTextField();
         btnSearch = new javax.swing.JButton();
-        jLabel4 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tableArticles = new javax.swing.JTable();
         jSplitPane2 = new javax.swing.JSplitPane();
@@ -112,13 +111,6 @@ public class MainFrame extends javax.swing.JFrame {
         gridBagConstraints.gridheight = 3;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         jPanel3.add(btnSearch, gridBagConstraints);
-
-        jLabel4.setText(bundle.getString("MainFrame.jLabel4.text")); // NOI18N
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 3;
-        gridBagConstraints.gridwidth = 3;
-        jPanel3.add(jLabel4, gridBagConstraints);
 
         jPanel2.add(jPanel3, java.awt.BorderLayout.NORTH);
 
@@ -258,7 +250,6 @@ public class MainFrame extends javax.swing.JFrame {
     public javax.swing.JLabel jLabel1;
     public javax.swing.JLabel jLabel2;
     public javax.swing.JLabel jLabel3;
-    public javax.swing.JLabel jLabel4;
     public javax.swing.JPanel jPanel1;
     public javax.swing.JPanel jPanel2;
     public javax.swing.JPanel jPanel3;
