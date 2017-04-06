@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Options;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
@@ -19,6 +20,8 @@ public interface DoIssue {
 
     @Select("SELECT * FROM Issues WHERE articleId = #{articleId}")
     List<RecIssue> retrieveIssues(int articleId);
+
+    List<RecIssue> retrieveUserIssues(@Param("user") String user);
 
     @Select("SELECT * FROM Issues WHERE issueId = #{issueId}")
     RecIssue getIssue(int issueId);

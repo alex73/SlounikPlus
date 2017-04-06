@@ -58,7 +58,7 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
         LOG.info(">> getArticleFullInfo: " + articleId);
         check(header);
 
-        RecArticle rec = Db.execAndReturn((api) -> api.getArticleMapper().selectArticle(articleId));
+        RecArticle rec = Db.execAndReturn((api) -> api.getArticleMapper().selectArticleForUpdate(articleId));
         if (rec == null) {
             LOG.warn("<< getArticleFullInfo: there is no specified article");
             throw new Exception("Няма вызначанага артыкула");
@@ -160,7 +160,7 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
             Date currentDate = new Date();
             RecArticleHistory history = new RecArticleHistory();
 
-            RecArticle rec = api.getArticleMapper().selectArticle(article.id);
+            RecArticle rec = api.getArticleMapper().selectArticleForUpdate(article.id);
             if (rec == null) {
                 LOG.warn("<< saveArticle: no record in db");
                 throw new RuntimeException("No record in db");
@@ -243,7 +243,7 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
             Date currentDate = new Date();
             RecArticleHistory history = new RecArticleHistory();
 
-            RecArticle rec = api.getArticleMapper().selectArticle(articleId);
+            RecArticle rec = api.getArticleMapper().selectArticleForUpdate(articleId);
             if (rec == null) {
                 LOG.warn("<< changeWords: no record in db");
                 throw new RuntimeException("No record in db");
@@ -285,7 +285,7 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
         check(header);
 
         RecArticle art = Db.execAndReturn((api) -> {
-            RecArticle rec = api.getArticleMapper().selectArticle(articleId);
+            RecArticle rec = api.getArticleMapper().selectArticleForUpdate(articleId);
             if (rec == null) {
                 LOG.warn("<< addIssue: no record in db");
                 throw new RuntimeException("No record in db");
@@ -323,7 +323,7 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
             Date currentDate = new Date();
             RecArticleHistory history = new RecArticleHistory();
 
-            RecArticle rec = api.getArticleMapper().selectArticle(articleId);
+            RecArticle rec = api.getArticleMapper().selectArticleForUpdate(articleId);
             if (rec == null) {
                 LOG.warn("<< changeState: no record in db");
                 throw new RuntimeException("No record in db");

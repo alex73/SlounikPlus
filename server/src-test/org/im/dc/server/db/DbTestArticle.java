@@ -43,7 +43,7 @@ public class DbTestArticle {
         r2.setLinkedTo(new String[0]);
         r2.setLastUpdated(new Date());
         list.add(r2);
-        Db.exec((api) -> api.getSession().insert("insertArticles", list));
+        Db.exec((api) -> api.getArticleMapper().insertArticles(list));
     }
 
     @Test
@@ -64,7 +64,7 @@ public class DbTestArticle {
         check1(recSource);
 
         final RecArticle rec = Db
-                .execAndReturn((api) -> api.getArticleMapper().selectArticle(recSource.getArticleId()));
+                .execAndReturn((api) -> api.getArticleMapper().selectArticleForUpdate(recSource.getArticleId()));
         check1(rec);
 
         rec.setAssignedUsers(new String[] { "Z" });
@@ -84,16 +84,16 @@ public class DbTestArticle {
         int u = Db.execAndReturn((api) -> api.getArticleMapper().updateArticle(rec, new Date(3344)));
         assertEquals(1, u);
         check2(rec);
-        RecArticle rec2 = Db.execAndReturn((api) -> api.getArticleMapper().selectArticle(recSource.getArticleId()));
+        RecArticle rec2 = Db.execAndReturn((api) -> api.getArticleMapper().selectArticleForUpdate(recSource.getArticleId()));
         check2(rec2);
     }
 
     @Test
     public void testList() throws Exception {
         ArticlesFilter filter = new ArticlesFilter();
-        List<RecArticle> list = Db.execAndReturn((api) -> api.getSession().selectList("listArticles", filter));
+        List<RecArticle> list = Db.execAndReturn((api) -> api.getArticleMapper().listArticles(filter));
         filter.state = "state";
-        Db.exec((api) -> api.getSession().selectList("listArticles", filter));
+        Db.exec((api) -> api.getArticleMapper().listArticles(filter));
     }
 
     @Test

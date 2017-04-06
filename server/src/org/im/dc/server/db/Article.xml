@@ -1,13 +1,46 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="Article">
+<mapper namespace="org.im.dc.server.db.DoArticle">
+	<select id="listArticles" parameterType="ArticlesFilter" resultType="RecArticle" resultMap="RecArticleMap">
+		SELECT articleId, words, state
+		FROM Articles
+		WHERE 1=1
+		<if test="filter.state != null">
+			AND state=#{filter.state}
+		</if>
+		<if test="filter.user != null">
+			AND assignedUsers @> ARRAY[#{filter.user}]::varchar[][]
+		</if>
+		<if test="filter.word != null">
+			AND articleId IN (SELECT articleId FROM (SELECT articleId, unnest(words) w FROM Articles) AS L WHERE w LIKE #{filter.likeWord})
+		</if>
+		<if test="filter.text != null">
+			AND textForSearch LIKE #{filter.likeText}
+		</if>
+	</select>
+	<select id="selectArticleForUpdate" parameterType="int" resultType="RecArticle" resultMap="RecArticleMap">
+		SELECT * FROM Articles WHERE articleId = #{id} FOR UPDATE
+	</select>
+	<select id="selectLinkedTo" resultType="RecArticle" resultMap="RecArticleMap">
+		SELECT articleId, words
+		FROM Articles
+		WHERE linkedTo &amp;&amp;
+		ARRAY[#{words,typeHandler=StringArrayTypeHandler}]::varchar[][]
+	</select>
+	<select id="hasArticlesWithWords" parameterType="java.util.List" resultType="RecArticle" resultMap="RecArticleMap">
+		SELECT *
+		FROM Articles
+		WHERE
+		<foreach collection="list" item="item" index="index" separator="OR">
+			#{item} = ANY(words)
+		</foreach>
+	</select>
 	<insert id="insertArticles" parameterType="java.util.List">
 		INSERT INTO Articles
 		(words,xml,assignedUsers,state,markers,watchers,linkedTo,textForSearch,lettersCount,lastUpdated)
 		VALUES
-		<foreach collection="list" item="item" index="index"
-			separator=",">
+		<foreach collection="records" item="item" index="index" separator=",">
 			(#{item.words,typeHandler=StringArrayTypeHandler},
 			#{item.xml},
 			#{item.assignedUsers,typeHandler=StringArrayTypeHandler},
@@ -20,29 +53,24 @@
 			#{item.lastUpdated})
 		</foreach>
 	</insert>
+	<insert id="insertArticle" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="record.articleId">
+		INSERT INTO Articles
+		(words,xml,assignedUsers,state,markers,watchers,linkedTo,textForSearch,lettersCount,lastUpdated)
+		VALUES(#{record.words,typeHandler=StringArrayTypeHandler},#{record.xml},#{record.assignedUsers,typeHandler=StringArrayTypeHandler},#{record.state},#{record.markers,typeHandler=StringArrayTypeHandler},#{record.watchers,typeHandler=StringArrayTypeHandler},#{record.linkedTo,typeHandler=StringArrayTypeHandler},#{record.textForSearch},#{record.lettersCount},#{record.lastUpdated})
+	</insert>
 
-	<select id="listArticles" parameterType="ArticlesFilter"
-		resultType="RecArticle" resultMap="RecArticleMap">
-		SELECT articleId, words, state
-		FROM Articles
-		<if test="state != null">
-			WHERE state=#{state}
-		</if>
-	</select>
 	<resultMap id="RecArticleMap" type="RecArticle">
 		<id property="articleId" column="articleId" />
 		<result property="words" column="words" typeHandler="StringArrayTypeHandler" />
+		<result property="xml" column="xml" />
+		<result property="assignedUsers" column="assignedUsers" typeHandler="StringArrayTypeHandler" />
 		<result property="state" column="state" />
+		<result property="markers" column="markers" typeHandler="StringArrayTypeHandler" />
+		<result property="watchers" column="watchers" typeHandler="StringArrayTypeHandler" />
+		<result property="linkedTo" column="linkedTo" typeHandler="StringArrayTypeHandler" />
+		<result property="textForSearch" column="textForSearch" />
+		<result property="lettersCount" column="lettersCount" />
+		<result property="lastUpdated" column="lastUpdated" />
 	</resultMap>
 
-	<select id="hasArticlesWithWords" parameterType="java.util.List"
-		resultType="RecArticle" resultMap="RecArticleMap">
-		SELECT *
-		FROM Articles
-		WHERE
-		<foreach collection="list" item="item" index="index"
-			separator="OR">
-			#{item} = ANY(words)
-		</foreach>
-	</select>
 </mapper>

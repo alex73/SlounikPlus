@@ -3,34 +3,27 @@ package org.im.dc.server.db;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Options;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Result;
 import org.apache.ibatis.annotations.Results;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 import org.im.dc.server.handlers.StringArrayTypeHandler;
+import org.im.dc.service.dto.ArticlesFilter;
 
 /**
  * Interface for declare DB access statements.
  */
 public interface DoArticle {
-    @Select("SELECT * FROM Articles WHERE articleId = #{id} FOR UPDATE")
-    @Results({ @Result(property = "words", column = "words", typeHandler = StringArrayTypeHandler.class),
-            @Result(property = "assignedUsers", column = "assignedUsers", typeHandler = StringArrayTypeHandler.class),
-            @Result(property = "markers", column = "markers", typeHandler = StringArrayTypeHandler.class),
-            @Result(property = "watchers", column = "watchers", typeHandler = StringArrayTypeHandler.class),
-            @Result(property = "linkedTo", column = "linkedTo", typeHandler = StringArrayTypeHandler.class) })
-    RecArticle selectArticle(int id);
+    List<RecArticle> listArticles(@Param("filter") ArticlesFilter filter);
 
-    @Select("SELECT articleId, words FROM Articles WHERE linkedTo && ARRAY[#{array,typeHandler=StringArrayTypeHandler}]::varchar[][]")
-    @Results({ @Result(property = "words", column = "words", typeHandler = StringArrayTypeHandler.class) })
-    List<RecArticle> selectLinkedTo(String[] words);
+    RecArticle selectArticleForUpdate(@Param("id") int id);
 
-    @Insert("INSERT INTO Articles (words,xml,assignedUsers,state,markers,watchers,linkedTo,textForSearch,lettersCount,lastUpdated) "
-            + "VALUES(#{words,typeHandler=StringArrayTypeHandler},#{xml},#{assignedUsers,typeHandler=StringArrayTypeHandler},#{state},#{markers,typeHandler=StringArrayTypeHandler},#{watchers,typeHandler=StringArrayTypeHandler},#{linkedTo,typeHandler=StringArrayTypeHandler},#{textForSearch},#{lettersCount},#{lastUpdated})")
-    @Options(useGeneratedKeys = true, keyProperty = "articleId")
-    void insertArticle(RecArticle rec);
+    List<RecArticle> selectLinkedTo(@Param("words") String[] words);
+
+    void insertArticle(@Param("record") RecArticle rec);
+
+    void insertArticles(@Param("records") List<RecArticle> list);
 
     @Update("UPDATE Articles SET xml = #{0.xml}," + " words = #{0.words,typeHandler=StringArrayTypeHandler},"
             + " assignedUsers = #{0.assignedUsers,typeHandler=StringArrayTypeHandler}," + " state = #{0.state},"

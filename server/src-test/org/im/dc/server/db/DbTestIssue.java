@@ -37,7 +37,7 @@ public class DbTestIssue {
 
     @Test
     public void testRetrieveUserIssues() throws Exception {
-        Db.exec((api) -> api.getSession().selectList("retrieveUserIssues", "user"));
+        Db.exec((api) -> api.getIssueMapper().retrieveUserIssues("user"));
     }
 
     void check(RecIssue rec) {
