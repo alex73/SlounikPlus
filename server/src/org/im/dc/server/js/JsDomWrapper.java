@@ -11,7 +11,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
+import org.w3c.dom.Node;
 
 public class JsDomWrapper implements Map<String, Object> {
     static DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -55,10 +55,14 @@ public class JsDomWrapper implements Map<String, Object> {
         if (el.hasAttribute(key.toString())) {
             return el.getAttribute(key.toString());
         }
-        NodeList ns = el.getElementsByTagName(key.toString());
+
         List<JsDomWrapper> r = new ArrayList<>();
-        for (int i = 0; i < ns.getLength(); i++) {
-            r.add(new JsDomWrapper((Element) ns.item(i)));
+        for (Node n = el.getFirstChild(); n != null; n = n.getNextSibling()) {
+            if (n.getNodeType() == Node.ELEMENT_NODE) {
+                if (n.getNodeName().equals(key)) {
+                    r.add(new JsDomWrapper((Element) n));
+                }
+            }
         }
         return r.isEmpty() ? null : r;
     }
