@@ -1,5 +1,6 @@
 package org.im.dc.server.js;
 
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -20,5 +21,7 @@ public class JsTest {
         JsProcessing.exec("src-test/org/im/dc/server/js/test.js", context);
 
         System.out.print(out);
+
+        Files.write(new File("/tmp/a.html").toPath(), out.toString().getBytes());
     }
 }
