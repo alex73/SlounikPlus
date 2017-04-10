@@ -4,4 +4,5 @@ public class ArticleShort {
     public int id;
     public String[] words;
     public String state;
+    public String[] assignedUsers;
 }

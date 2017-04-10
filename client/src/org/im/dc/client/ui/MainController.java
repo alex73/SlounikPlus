@@ -6,11 +6,15 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComponent;
 import javax.swing.KeyStroke;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import org.im.dc.client.SchemaLoader;
 import org.im.dc.client.WS;
@@ -121,9 +125,12 @@ public class MainController extends BaseController<MainFrame> {
             @Override
             public void mouseClicked(MouseEvent e) {
                 ArticleShort a = ((MainFrameArticlesModel) window.tableArticles.getModel()).articles
-                        .get(window.tableArticles.getSelectedRow());
+                        .get(window.tableArticles.rowAtPoint(e.getPoint()));
                 new ArticleEditController(window, a.id);
             }
+        });
+        window.tableArticles.getSelectionModel().addListSelectionListener((e) -> {
+            window.labelSelected.setText("Пазначана: " + window.tableArticles.getSelectedRows().length);
         });
         window.tableIssues.addMouseListener(new MouseAdapter() {
             @Override
@@ -153,8 +160,7 @@ public class MainController extends BaseController<MainFrame> {
 
         window.btnSettings.addActionListener((e) -> new SettingsController(window));
 
-        window.btnUsers.addActionListener(
-                (e) -> todo("Тут будзе пераназначэнне карыстальнікаў, з фільтрам па карыстальнікам і станах"));
+        window.btnUsers.addActionListener(reassign);
 
         window.btnValidateFull.addActionListener((e) -> todo("Тут будзе праверка ўсяго слоўніка"));
 
@@ -163,6 +169,16 @@ public class MainController extends BaseController<MainFrame> {
         window.tableNews.setModel(newsModel);
         SettingsController.loadPlacesForWindow(window);
     }
+
+    ActionListener reassign = (e) -> {
+        MainFrameArticlesModel model = ((MainFrameArticlesModel) window.tableArticles.getModel());
+        List<ArticleShort> articles = new ArrayList<>();
+        for (int r : window.tableArticles.getSelectedRows()) {
+            articles.add(model.articles.get(r));
+        }
+
+        new ReassignController(window, articles);
+    };
 
     /**
      * Search articles by filter.
@@ -188,6 +204,7 @@ public class MainController extends BaseController<MainFrame> {
                 window.tableArticles.setModel(model);
                 window.tableIssues.setModel(issuesModel);
                 window.tableNews.setModel(newsModel);
+                window.labelSelected.setText("Знойдзена: " + model.getRowCount());
                 SettingsController.loadPlacesForWindow(window);
             }
         };

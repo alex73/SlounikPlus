@@ -3,7 +3,7 @@
 
 <mapper namespace="org.im.dc.server.db.DoArticle">
 	<select id="listArticles" parameterType="ArticlesFilter" resultType="RecArticle" resultMap="RecArticleMap">
-		SELECT articleId, words, state
+		SELECT articleId, words, state, assignedUsers
 		FROM Articles
 		WHERE 1=1
 		<if test="filter.state != null">
@@ -101,6 +101,15 @@
 		UPDATE Articles
 		SET watchers = array_remove(watchers, #{user})
 		WHERE articleId = #{articleId} AND (watchers @> ARRAY[#{user}]::varchar[][])
+	</update>
+	<update id="reassignArticles">
+		UPDATE Articles
+		SET assignedUsers = #{users,typeHandler=StringArrayTypeHandler}
+		WHERE articleId IN (
+		<foreach collection="articleIds" item="articleId" separator=",">
+			#{articleId}
+		</foreach>
+		)
 	</update>
 
 	<resultMap id="RecArticleMap" type="RecArticle">

@@ -110,6 +110,7 @@ public class ArticleEditDialog extends javax.swing.JDialog {
         ));
         tableHistory.setToolTipText(bundle.getString("ArticleEditDialog.tableHistory.toolTipText")); // NOI18N
         tableHistory.setName("history"); // NOI18N
+        tableHistory.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         jScrollPane1.setViewportView(tableHistory);
 
         jSplitPane2.setBottomComponent(jScrollPane1);

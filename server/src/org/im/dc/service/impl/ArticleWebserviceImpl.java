@@ -430,6 +430,7 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
             o.id = r.getArticleId();
             o.state = r.getState();
             o.words = r.getWords();
+            o.assignedUsers = r.getAssignedUsers();
             result.add(o);
         }
 

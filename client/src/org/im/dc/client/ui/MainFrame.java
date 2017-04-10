@@ -29,6 +29,7 @@ public class MainFrame extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         txtText = new javax.swing.JTextField();
         btnSearch = new javax.swing.JButton();
+        labelSelected = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tableArticles = new javax.swing.JTable();
         jSplitPane2 = new javax.swing.JSplitPane();
@@ -108,9 +109,15 @@ public class MainFrame extends javax.swing.JFrame {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridheight = 3;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         jPanel3.add(btnSearch, gridBagConstraints);
+
+        labelSelected.setText(bundle.getString("MainFrame.labelSelected.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        jPanel3.add(labelSelected, gridBagConstraints);
 
         jPanel2.add(jPanel3, java.awt.BorderLayout.NORTH);
 
@@ -138,6 +145,7 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
         tableArticles.setName("list"); // NOI18N
+        tableArticles.setSelectionMode(javax.swing.ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         jScrollPane1.setViewportView(tableArticles);
         if (tableArticles.getColumnModel().getColumnCount() > 0) {
             tableArticles.getColumnModel().getColumn(0).setHeaderValue(bundle.getString("MainFrame.list.columnModel.title0")); // NOI18N
@@ -162,6 +170,7 @@ public class MainFrame extends javax.swing.JFrame {
         ));
         tableIssues.setToolTipText(bundle.getString("MainFrame.tableIssues.toolTipText")); // NOI18N
         tableIssues.setName("issues"); // NOI18N
+        tableIssues.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         jScrollPane2.setViewportView(tableIssues);
 
         jSplitPane2.setTopComponent(jScrollPane2);
@@ -176,6 +185,7 @@ public class MainFrame extends javax.swing.JFrame {
         ));
         tableNews.setToolTipText(bundle.getString("MainFrame.tableNews.toolTipText")); // NOI18N
         tableNews.setName("news"); // NOI18N
+        tableNews.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         jScrollPane3.setViewportView(tableNews);
 
         jSplitPane2.setRightComponent(jScrollPane3);
@@ -260,6 +270,7 @@ public class MainFrame extends javax.swing.JFrame {
     public javax.swing.JScrollPane jScrollPane3;
     public javax.swing.JSplitPane jSplitPane1;
     public javax.swing.JSplitPane jSplitPane2;
+    public javax.swing.JLabel labelSelected;
     public javax.swing.JTable tableArticles;
     public javax.swing.JTable tableIssues;
     public javax.swing.JTable tableNews;

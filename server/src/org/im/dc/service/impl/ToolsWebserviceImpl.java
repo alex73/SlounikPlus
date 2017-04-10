@@ -80,7 +80,16 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
     }
 
     @Override
-    public void reassignUsers() {
+    public void reassignUsers(Header header, int[] articleIds, String[] users) throws Exception {
+        LOG.info(">> reassignUsers");
+        check(header);
+        PermissionChecker.userRequiresPermission(header.user, Permission.REASSIGN);
+
+        Db.exec((api) -> {
+            api.getArticleMapper().reassignArticles(articleIds, users);
+        });
+
+        LOG.info("<< reassignUsers");
     }
 
     @Override
