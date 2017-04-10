@@ -55,26 +55,33 @@ public class ArticleEditDialog extends javax.swing.JDialog {
         jPanel5.setLayout(new java.awt.BorderLayout());
 
         txtWords.setEditable(false);
+        txtWords.setToolTipText(bundle.getString("ArticleEditDialog.txtWords.toolTipText")); // NOI18N
         jPanel6.add(txtWords);
 
         txtState.setEditable(false);
+        txtState.setToolTipText(bundle.getString("ArticleEditDialog.txtState.toolTipText")); // NOI18N
         jPanel6.add(txtState);
 
         txtUsers.setEditable(false);
+        txtUsers.setToolTipText(bundle.getString("ArticleEditDialog.txtUsers.toolTipText")); // NOI18N
         jPanel6.add(txtUsers);
 
         jPanel5.add(jPanel6, java.awt.BorderLayout.WEST);
 
         lblAddComment.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/im/dc/client/ui/images/add_comment.png"))); // NOI18N
+        lblAddComment.setToolTipText(bundle.getString("ArticleEditDialog.lblAddComment.toolTipText")); // NOI18N
         jPanel7.add(lblAddComment);
 
         lblHasProposedChanges.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/im/dc/client/ui/images/proposed-off.png"))); // NOI18N
+        lblHasProposedChanges.setToolTipText(bundle.getString("ArticleEditDialog.lblHasProposedChanges.toolTipText")); // NOI18N
         jPanel7.add(lblHasProposedChanges);
 
         lblWatched.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/im/dc/client/ui/images/watch-off.png"))); // NOI18N
+        lblWatched.setToolTipText(bundle.getString("ArticleEditDialog.lblWatched.toolTipText")); // NOI18N
         jPanel7.add(lblWatched);
 
         lblPreview.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/im/dc/client/ui/images/show-text.png"))); // NOI18N
+        lblPreview.setToolTipText(bundle.getString("ArticleEditDialog.lblPreview.toolTipText")); // NOI18N
         jPanel7.add(lblPreview);
 
         jPanel5.add(jPanel7, java.awt.BorderLayout.EAST);
@@ -101,6 +108,7 @@ public class ArticleEditDialog extends javax.swing.JDialog {
 
             }
         ));
+        tableHistory.setToolTipText(bundle.getString("ArticleEditDialog.tableHistory.toolTipText")); // NOI18N
         tableHistory.setName("history"); // NOI18N
         jScrollPane1.setViewportView(tableHistory);
 
@@ -108,6 +116,7 @@ public class ArticleEditDialog extends javax.swing.JDialog {
 
         txtNotes.setColumns(20);
         txtNotes.setRows(5);
+        txtNotes.setToolTipText(bundle.getString("ArticleEditDialog.txtNotes.toolTipText")); // NOI18N
         jScrollPane2.setViewportView(txtNotes);
 
         jSplitPane2.setLeftComponent(jScrollPane2);

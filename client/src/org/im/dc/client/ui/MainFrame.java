@@ -160,6 +160,7 @@ public class MainFrame extends javax.swing.JFrame {
 
             }
         ));
+        tableIssues.setToolTipText(bundle.getString("MainFrame.tableIssues.toolTipText")); // NOI18N
         tableIssues.setName("issues"); // NOI18N
         jScrollPane2.setViewportView(tableIssues);
 
@@ -173,6 +174,7 @@ public class MainFrame extends javax.swing.JFrame {
 
             }
         ));
+        tableNews.setToolTipText(bundle.getString("MainFrame.tableNews.toolTipText")); // NOI18N
         tableNews.setName("news"); // NOI18N
         jScrollPane3.setViewportView(tableNews);
 
