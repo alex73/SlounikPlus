@@ -114,7 +114,7 @@ public class MainController extends BaseController<MainFrame> {
     private void init() {
         Vector<String> users = new Vector<>();
         users.add(null);
-        users.addAll(initialData.allUsers);
+        users.addAll(initialData.allUsers.keySet());
         window.cbUser.setModel(new DefaultComboBoxModel<>(users));
         window.btnSearch.addActionListener((e) -> search());
         window.tableArticles.addMouseListener(new MouseAdapter() {

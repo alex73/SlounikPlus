@@ -1,11 +1,11 @@
 package org.im.dc.service.impl;
 
 import java.io.ByteArrayInputStream;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.TreeMap;
 
 import javax.jws.WebService;
 import javax.script.ScriptContext;
@@ -60,9 +60,9 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
         for (State st : Config.getConfig().getStates().getState()) {
             result.states.add(st.getId());
         }
-        result.allUsers = new ArrayList<>();
+        result.allUsers = new TreeMap<>();
         for (User u : Config.getConfig().getUsers().getUser()) {
-            result.allUsers.add(u.getName());
+            result.allUsers.put(u.getName(), u.getRole());
         }
         result.currentUserRole = PermissionChecker.getUserRole(header.user);
         result.currentUserPermissions = PermissionChecker.getUserPermissions(header.user);

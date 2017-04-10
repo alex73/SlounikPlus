@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import javax.swing.DefaultComboBoxModel;
@@ -22,8 +23,9 @@ public class AddWordsController extends BaseController<AddWordsDialog> {
         window.btnCancel.addActionListener((e) -> window.dispose());
 
         window.cbInitialState.setModel(new DefaultComboBoxModel<>(new Vector<>(MainController.initialData.states)));
-        for (String user : MainController.initialData.allUsers) {
-            JCheckBox cb = new JCheckBox(user);
+        for (Map.Entry<String, String> en : MainController.initialData.allUsers.entrySet()) {
+            JCheckBox cb = new JCheckBox(en.getKey() + " (" + en.getValue() + ')');
+            cb.setName(en.getKey());
             window.panelUsers.add(cb);
         }
 
@@ -37,7 +39,7 @@ public class AddWordsController extends BaseController<AddWordsDialog> {
             for (int i = 0; i < window.panelUsers.getComponentCount(); i++) {
                 JCheckBox cb = (JCheckBox) window.panelUsers.getComponent(i);
                 if (cb.isSelected()) {
-                    users.add(cb.getText());
+                    users.add(cb.getName());
                 }
             }
             String initialState = window.cbInitialState.getSelectedItem().toString();
