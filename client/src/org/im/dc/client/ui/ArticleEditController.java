@@ -44,6 +44,7 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
     private XmlGroup editorUI;
 
     protected volatile ArticleFullInfo article;
+    protected volatile boolean wasChanged;
 
     public ArticleEditController(JFrame parent, int articleId) {
         super(new ArticleEditDialog(parent, false));
@@ -83,7 +84,7 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
         window.panelEditor.getVerticalScrollBar().setUnitIncrement(20);
         window.btnSave.addActionListener((e) -> save());
         window.btnChangeState.addActionListener((e) -> changeStateAsk());
-        window.btnProposeSave.addActionListener((e) -> proposeChanges());
+        window.btnAddIssue.addActionListener((e) -> addIssue());
         window.lblAddComment.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -132,19 +133,16 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
             @Override
             public void removeUpdate(DocumentEvent e) {
                 window.btnSave.setEnabled(true);
-                window.btnProposeSave.setEnabled(true);
             }
 
             @Override
             public void insertUpdate(DocumentEvent e) {
                 window.btnSave.setEnabled(true);
-                window.btnProposeSave.setEnabled(true);
             }
 
             @Override
             public void changedUpdate(DocumentEvent e) {
                 window.btnSave.setEnabled(true);
-                window.btnProposeSave.setEnabled(true);
             }
         });
         window.tableHistory.addMouseListener(new MouseAdapter() {
@@ -162,7 +160,7 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
 
     void show() {
         window.btnSave.setVisible(article.youCanEdit);
-        window.btnProposeSave.setVisible(!article.youCanEdit);
+        window.btnAddIssue.setVisible(!article.youCanEdit);
         window.txtNotes.setEditable(article.youCanEdit);
         window.btnChangeState.setVisible(!article.youCanChangeStateTo.isEmpty());
         displayWatch();
@@ -176,6 +174,8 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
             window.txtNotes.setText(article.article.notes);
         }
 
+        wasChanged = false;
+        updateIssueButton();
         try {
             editorUI = SchemaLoader.createUI();
             if (article.article.xml != null) {
@@ -185,8 +185,9 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
                 editorUI.insertData(rd);
             }
             editorUI.addChangeListener((e) -> {
+                wasChanged = true;
                 window.btnSave.setEnabled(true);
-                window.btnProposeSave.setEnabled(true);
+                updateIssueButton();
             });
         } catch (Throwable ex) {
             editorUI = null;
@@ -196,7 +197,6 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
         }
         window.panelEditor.setViewportView(editorUI);
         window.btnSave.setEnabled(false);
-        window.btnProposeSave.setEnabled(false);
 
         Related.sortByTimeDesc(article.related);
 
@@ -352,7 +352,7 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
         new LongProcess() {
             @Override
             protected void exec() throws Exception {
-                byte[] proposedXml = extractXml();
+                byte[] proposedXml = wasChanged ? extractXml() : null;
 
                 article = WS.getArticleService().addIssue(WS.header, article.article.id, comment, proposedXml,
                         article.article.lastUpdated);
@@ -475,9 +475,14 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
         askWords.setVisible(true);
     }
 
-    private void proposeChanges() {
+    private void updateIssueButton() {
+        window.btnAddIssue.setText(wasChanged ? "Прапанаваць змены" : "Дадаць заўвагу");
+    }
+
+    private void addIssue() {
         ArticleEditProposeChangesDialog askProposeComment = new ArticleEditProposeChangesDialog(
                 MainController.instance.window, true);
+        askProposeComment.setTitle(wasChanged ? "Прапанаваць змены" : "Дадаць заўвагу");
 
         askProposeComment.btnOk.addActionListener((e) -> {
             saveProposal(askProposeComment.txtComment.getText(), () -> {
@@ -499,7 +504,7 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
     }
 
     private boolean askSave() {
-        if (!window.btnSave.isEnabled() && !window.btnProposeSave.isEnabled()) {
+        if (!wasChanged) {
             return false;
         }
         if (JOptionPane.showConfirmDialog(window, "Змены, што Вы зрабілі ў артыкуле, згубяцца. Працягнуць ?",

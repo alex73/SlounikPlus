@@ -313,7 +313,7 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
             issue.setCreated(new Date());
             issue.setAuthor(header.user);
             issue.setComment(issueText);
-            issue.setOldXml(rec.getXml());
+            issue.setOldXml(proposedXml != null ? rec.getXml() : null);
             issue.setNewXml(proposedXml);
 
             api.getIssueMapper().insertIssue(issue);

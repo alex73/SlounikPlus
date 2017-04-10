@@ -20,7 +20,7 @@ public class ArticleEditProposeChangesDialog extends javax.swing.JDialog {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
+        label = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         txtComment = new javax.swing.JTextArea();
         jPanel2 = new javax.swing.JPanel();
@@ -31,8 +31,8 @@ public class ArticleEditProposeChangesDialog extends javax.swing.JDialog {
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("org/im/dc/client/ui/Bundle"); // NOI18N
         setTitle(bundle.getString("ArticleEditProposeChangesDialog.title")); // NOI18N
 
-        jLabel1.setText(bundle.getString("ArticleEditProposeChangesDialog.jLabel1.text")); // NOI18N
-        jPanel1.add(jLabel1);
+        label.setText(bundle.getString("ArticleEditProposeChangesDialog.label.text")); // NOI18N
+        jPanel1.add(label);
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.NORTH);
 
@@ -100,10 +100,10 @@ public class ArticleEditProposeChangesDialog extends javax.swing.JDialog {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public javax.swing.JButton btnCancel;
     public javax.swing.JButton btnOk;
-    public javax.swing.JLabel jLabel1;
     public javax.swing.JPanel jPanel1;
     public javax.swing.JPanel jPanel2;
     public javax.swing.JScrollPane jScrollPane1;
+    public javax.swing.JLabel label;
     public javax.swing.JTextArea txtComment;
     // End of variables declaration//GEN-END:variables
 }

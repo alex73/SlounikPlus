@@ -44,7 +44,7 @@ public class ArticleEditDialog extends javax.swing.JDialog {
         jPanel4 = new javax.swing.JPanel();
         btnChangeState = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
-        btnProposeSave = new javax.swing.JButton();
+        btnAddIssue = new javax.swing.JButton();
         btnSave = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -145,8 +145,8 @@ public class ArticleEditDialog extends javax.swing.JDialog {
 
         jPanel2.add(jPanel4, java.awt.BorderLayout.WEST);
 
-        btnProposeSave.setText(bundle.getString("ArticleEditDialog.btnProposeSave.text")); // NOI18N
-        jPanel3.add(btnProposeSave);
+        btnAddIssue.setText(bundle.getString("ArticleEditDialog.btnAddIssue.text")); // NOI18N
+        jPanel3.add(btnAddIssue);
 
         btnSave.setText(bundle.getString("ArticleEditDialog.btnSave.text")); // NOI18N
         jPanel3.add(btnSave);
@@ -201,8 +201,8 @@ public class ArticleEditDialog extends javax.swing.JDialog {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    public javax.swing.JButton btnAddIssue;
     public javax.swing.JButton btnChangeState;
-    public javax.swing.JButton btnProposeSave;
     public javax.swing.JButton btnSave;
     public javax.swing.JPanel jPanel2;
     public javax.swing.JPanel jPanel3;
