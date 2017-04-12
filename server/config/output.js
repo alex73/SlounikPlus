@@ -4,7 +4,7 @@ out.tag("<html><head><meta charset=\"UTF-8\"></head><body>\n");
 out.tag("<b>");
 out.text(words[0].toUpperCase());
 out.tag("</b> <i>");
-out.text(article.zah[0].gram[0]); // zah.gram 1..N TODO Паметы загалоўных слоў
+zahoutput(article.zah[0]); // zah.gram 1..N TODO Паметы загалоўных слоў
 out.tag("</i>");
 out.tag("<br/>\n");
 for(var i=0; i<article.tlum.length; i++) { // root.tlum 1..N Тлумачэнне
@@ -24,6 +24,14 @@ for each (var ustetym in article.ustetym) { // root.ustetym 0..N Этымало�
 }
 
 out.tag("\n</body></html>\n");
+
+function zahoutput(zah) {
+    for each (var para in zah.para) { // root.zah.para Парадыгма
+      out.tag("<i>").out(para.sklon).tag("</i>").text(" "); // root.zah.para.sklon
+      out.out(para.forma).text(" "); // root.zah.para.forma
+    }
+    out.tag("<i>").out(zah.gram).tag("</i>").text(" "); // root.zah.gram 0..1 Граматычная памета
+}
 
 function tlumacennie(tlum) {
   if (article.tlum.length > 1) {
@@ -71,7 +79,9 @@ function b1(b) {
     out.tag("<i>").out(b.grpam).tag("</i>").text(" "); // grpam 0..1 Граматычныя паметы
     out.tag("<i>").out(b.styl).tag("</i>").text(" "); // styl 0..1 Стылістычныя паметы
     out.out(b.zaha).text(" "); // zaha 0..1 Загалоўнае слова ў артыкуле
-    out.out(b.desc).text(" "); // desc 1..1 Тэкст тлумачэння
+   // var desc = linksTo(b.desc[0].textContent);
+    var desc = b.desc[0].textContent;
+    out.text(desc).text(" "); // desc 1..1 Тэкст тлумачэння
     for each (var ex in b.ex) { // ex 0..N Прыклад
       out.out(ex.text).text(" "); // text 1..1 Ілюстрацыя
       if (ex.author[0].textContent) {
@@ -80,4 +90,16 @@ function b1(b) {
         out.tag(".</i> ");
       }
     }
+}
+
+function linksTo(str) {
+  var regexp = /@(.+?)(\[([0-9]+)\])?@/g;
+  var res = str.match(/@\S+@/g);
+  if (res) {
+    for each (var r in res) {
+      var m = regexp.exec(r);
+      out.text(" -"+r+"======"+m+"=====");
+    }
+  }
+  return str;
 }

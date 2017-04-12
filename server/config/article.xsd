@@ -9,7 +9,7 @@
 				<xs:element ref="zah" maxOccurs="1" minOccurs="1" />
 				<xs:element ref="tlum" maxOccurs="unbounded" minOccurs="1" />
 				<xs:element ref="term" maxOccurs="unbounded" minOccurs="0"/>
-				<xs:element ref="fraz" maxOccurs="unbounded" minOccurs="0"/>
+				<xs:element ref="fraz" minOccurs="0" maxOccurs="unbounded" />
 				<xs:element name="ustetym" type="xs:string" maxOccurs="unbounded" minOccurs="0">
 					<xs:annotation>
 						<xs:appinfo>Этымалогія</xs:appinfo>
@@ -24,9 +24,52 @@
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="gram" type="xs:string" maxOccurs="unbounded" minOccurs="1">
+				<xs:element name="gram" type="xs:string" minOccurs="0" maxOccurs="1">
 					<xs:annotation>
-						<xs:appinfo>Граматыка і паметы загалоўнага слова</xs:appinfo>
+						<xs:appinfo>Граматычная памета</xs:appinfo>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="gramatyka">
+		<xs:annotation>
+			<xs:appinfo>Граматыка</xs:appinfo>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+			<xs:element name="para" type="xs:string" maxOccurs="unbounded" minOccurs="1">
+				<xs:annotation>
+					<xs:appinfo>Парадыгма</xs:appinfo>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="sklon" type="xs:string" maxOccurs="1" minOccurs="0">
+							<xs:annotation>
+								<xs:appinfo>Склон</xs:appinfo>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="forma" type="xs:string" minOccurs="1" maxOccurs="1">
+							<xs:annotation>
+								<xs:appinfo>Форма</xs:appinfo>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+				<xs:element name="sem" type="xs:string" maxOccurs="1" minOccurs="0">
+					<xs:annotation>
+						<xs:appinfo>Семантычныя паметы</xs:appinfo>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="gram" type="xs:string" maxOccurs="1" minOccurs="0">
+					<xs:annotation>
+						<xs:appinfo>Граматычныя паметы</xs:appinfo>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="styl" type="xs:string" maxOccurs="1" minOccurs="0">
+					<xs:annotation>
+						<xs:appinfo>Стылістычныя паметы</xs:appinfo>
 					</xs:annotation>
 				</xs:element>
 			</xs:sequence>
@@ -89,7 +132,7 @@
 	</xs:element>
 	<xs:element name="adc">
 		<xs:annotation>
-			<xs:appinfo>//{bg:#d5e7ed,border:#0000FF}</xs:appinfo>
+			<xs:appinfo>// адценне{bg:#d5e7ed,border:#0000FF}</xs:appinfo>
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
@@ -124,7 +167,7 @@
 	</xs:element>
 	<xs:element name="usd">
 		<xs:annotation>
-			<xs:appinfo>/{bg:#d5e7ed,border:#0000FF}</xs:appinfo>
+			<xs:appinfo>/ ужыванне{bg:#d5e7ed,border:#0000FF}</xs:appinfo>
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
@@ -207,10 +250,39 @@
 						<xs:appinfo>Фразеалагізм</xs:appinfo>
 					</xs:annotation>
 				</xs:element>
-				<xs:element name="explanation" type="xs:string" maxOccurs="1" minOccurs="1">
+				<xs:element name="variants" minOccurs="1" maxOccurs="unbounded" >
 					<xs:annotation>
-						<xs:appinfo>Тлумачэнне</xs:appinfo>
+						<xs:appinfo>Варыянты значэнняў</xs:appinfo>
 					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+						<xs:element name="frazgram" type="xs:string" minOccurs="0" maxOccurs="1">
+							<xs:annotation>
+								<xs:appinfo>Граматыка фразеалагізма</xs:appinfo>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="toje" type="xs:string" minOccurs="0" maxOccurs="1">
+							<xs:annotation>
+								<xs:appinfo>Тое што і</xs:appinfo>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="tojegram" type="xs:string" minOccurs="0" maxOccurs="1">
+							<xs:annotation>
+								<xs:appinfo>Граматыка "тое што і"</xs:appinfo>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="tlum" type="xs:string" minOccurs="0" maxOccurs="1">
+							<xs:annotation>
+								<xs:appinfo>Тлумачэнне</xs:appinfo>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="linkword" type="xs:string" minOccurs="0" maxOccurs="1">
+							<xs:annotation>
+								<xs:appinfo>Спасылка</xs:appinfo>
+							</xs:annotation>
+						</xs:element>
+						</xs:sequence>
+					</xs:complexType>
 				</xs:element>
 			</xs:sequence>
 		</xs:complexType>
