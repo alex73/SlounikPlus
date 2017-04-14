@@ -1,15 +1,18 @@
+// \u25AD - падзел цытат ад рэдакцыйных прыкладаў
+// \u25CB - тэрміналагічнае спалучэнне
+// \u25CA - фразеалагізм
+
+
 var POSLETTERS="абвгдежзіклмнопрсту";
 out.tag("<!DOCTYPE html>\n");
 out.tag("<html><head><meta charset=\"UTF-8\"></head><body>\n");
 out.tag("<b>");
 out.text(words[0].toUpperCase());
-out.tag("</b> <i>");
+out.tag("</b> ");
 zahoutput(article.zah[0]); // zah.gram 1..N TODO Паметы загалоўных слоў
-out.tag("</i>");
-out.tag("<br/>\n");
+out.tag(" ");
 for(var i=0; i<article.tlum.length; i++) { // root.tlum 1..N Тлумачэнне
   tlumacennie(article.tlum[i]);
-  out.tag("<br/>\n");
 }
 for each (var term in article.term) { // root.term 0..N Тэрміналагічнае словазлучэнне
   out.text(term.term).text(" "); // term 1..1 Словазлучэнне
@@ -54,12 +57,18 @@ function tlumacennie(tlum) {
     }
     out.tag("<br/>\n").text(POSLETTERS[j]+") ");
     out.out(subdesc.desc).text(" "); // desc 1..1 Тэкст тлумачэння
+    var biazAutara = false;
     for each (var ex in subdesc.ex) { // ex 0..N Прыклад
+      if (biazAutara && ex.author[0].textContent) {
+        out.text("\u2610");
+      }
       out.out(ex.text).text(" "); // text 1..1 Ілюстрацыя
       if (ex.author[0].textContent) {
         out.tag("<i>");
         out.out(ex.author); // author 1..1 Аўтар
         out.tag(".</i> ");
+      } else {
+        biazAutara = true;
       }
     }
     for each (var usd in subdesc.usd) { // root.tlum.subdesc.usd 0..N /
@@ -72,6 +81,7 @@ function tlumacennie(tlum) {
     }
   }
   }
+  out.tag("<br/>\n");
 }
 
 function b1(b) {
@@ -79,27 +89,40 @@ function b1(b) {
     out.tag("<i>").out(b.grpam).tag("</i>").text(" "); // grpam 0..1 Граматычныя паметы
     out.tag("<i>").out(b.styl).tag("</i>").text(" "); // styl 0..1 Стылістычныя паметы
     out.out(b.zaha).text(" "); // zaha 0..1 Загалоўнае слова ў артыкуле
-   // var desc = linksTo(b.desc[0].textContent);
-    var desc = b.desc[0].textContent;
-    out.text(desc).text(" "); // desc 1..1 Тэкст тлумачэння
+    outLinks(b.desc[0].textContent); // desc 1..1 Тэкст тлумачэння
+    out.text(" ");
     for each (var ex in b.ex) { // ex 0..N Прыклад
-      out.out(ex.text).text(" "); // text 1..1 Ілюстрацыя
+      out.tag("<i>").out(ex.text).text("</i> "); // text 1..1 Ілюстрацыя
       if (ex.author[0].textContent) {
-        out.tag("<i>");
         out.out(ex.author); // author 1..1 Аўтар
-        out.tag(".</i> ");
+        out.tag(". ");
       }
     }
 }
 
-function linksTo(str) {
-  var regexp = /@(.+?)(\[([0-9]+)\])?@/g;
-  var res = str.match(/@\S+@/g);
-  if (res) {
-    for each (var r in res) {
-      var m = regexp.exec(r);
-      out.text(" -"+r+"======"+m+"=====");
+function outLinks(str) {
+  var regexp = /@(.+?)@/g;
+  var regexp1 = /@(.+?)(\/([0-9]+))?(\[([0-9]+)\])?@/;
+  
+  var prevPos = 0;
+  while(true) {
+    var pos = str.search(regexp);
+    if (pos<0) {
+      out.text(str.substring(prevPos));
+      break;
     }
+    out.text(str.substring(prevPos, pos)); // usual text
+    
+    var newPos = str.indexOf('@', pos+1) + 1;
+    var m = str.substring(pos,newPos).match(regexp1);
+    out.text(m[1]);
+    if (m[3]) {
+      out.tag("<sup>").text(m[3]).tag("</sup>");
+    }
+    if (m[5]) {
+      out.text("(у "+m[5]+"-м знач.)");
+    }
+    
+    prevPos = newPos;
   }
-  return str;
 }

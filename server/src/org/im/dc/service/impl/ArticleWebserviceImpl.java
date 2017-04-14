@@ -83,12 +83,14 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
         validator.validate(new StreamSource(new ByteArrayInputStream(rec.getXml())));
         rec.setTextForSearch(new WordSplitter().parse(rec.getXml()));
 
-        StringWriter out = new StringWriter();
+        ValidationHelper helper = new ValidationHelper();
         SimpleScriptContext context = new SimpleScriptContext();
+        context.setAttribute("helper", helper, ScriptContext.ENGINE_SCOPE);
         context.setAttribute("words", rec.getWords(), ScriptContext.ENGINE_SCOPE);
         context.setAttribute("article", new JsDomWrapper(rec.getXml()), ScriptContext.ENGINE_SCOPE);
-        context.setWriter(out);
         JsProcessing.exec("config/validation.js", context);
+
+        rec.setLinkedTo(helper.getLinks());
     }
 
     private ArticleFullInfo getAdditionalArticleInfo(Header header, RecArticle rec) throws Exception {
@@ -134,7 +136,8 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
             a.related.add(rh.getRelated());
         }
         // камэнтары
-        for (RecComment rc : Db.execAndReturn((api) -> api.getCommentMapper().retrieveArticleComments(rec.getArticleId()))) {
+        for (RecComment rc : Db
+                .execAndReturn((api) -> api.getCommentMapper().retrieveArticleComments(rec.getArticleId()))) {
             a.related.add(rc.getRelated());
         }
         // заўвагі
@@ -390,7 +393,7 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
     }
 
     @Override
-    public ArticleFullInfo fixIssue(Header header, int articleId, int issueId, boolean accepted)  throws Exception {
+    public ArticleFullInfo fixIssue(Header header, int articleId, int issueId, boolean accepted) throws Exception {
         LOG.info(">> addComment");
         check(header);
 

@@ -10,6 +10,7 @@ import javax.script.ScriptContext;
 import javax.script.SimpleScriptContext;
 
 import org.im.dc.service.impl.HtmlOut;
+import org.im.dc.service.impl.ValidationHelper;
 import org.junit.Test;
 
 public class JsValidation {
@@ -35,5 +36,15 @@ public class JsValidation {
         } catch (Exception ex) {
             assertTrue(ex.getMessage().startsWith(expectedError + " in <eval>"));
         }
+    }
+
+    public static void main(String[] a) throws Exception {
+        SimpleScriptContext context = new SimpleScriptContext();
+        context.setAttribute("helper", new ValidationHelper(), ScriptContext.ENGINE_SCOPE);
+        context.setAttribute("words", new String[] { "хадзіць" }, ScriptContext.ENGINE_SCOPE);
+        context.setAttribute("article",
+                new JsDomWrapper(Files.readAllBytes(Paths.get("src-test/org/im/dc/server/js/test-article.xml"))),
+                ScriptContext.ENGINE_SCOPE);
+        JsProcessing.exec("config/validation.js", context);
     }
 }

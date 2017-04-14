@@ -18,7 +18,7 @@ public class JsTest {
         context.setAttribute("article",
                 new JsDomWrapper(Files.readAllBytes(Paths.get("src-test/org/im/dc/server/js/test-article.xml"))),
                 ScriptContext.ENGINE_SCOPE);
-        JsProcessing.exec("src-test/org/im/dc/server/js/test.js", context);
+        JsProcessing.exec("config/output.js", context);
 
         System.out.print(out);
 
