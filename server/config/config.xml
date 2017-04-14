@@ -5,19 +5,21 @@
 		<user name="user2" pass="456" role="рэдактар" />
 	</users>
 	<roles>
-		<role id="укладальнік" />
-		<role id="рэдактар">
-			<permission>edit_header</permission>
-			<permission>statistics</permission>
+		<role id="укладальнік">
 			<permission>view_output</permission>
+		</role>
+		<role id="рэдактар">
+			<permission>view_output</permission>
+			<permission>edit_header</permission>
+			<permission>full_statistics</permission>
 			<permission>full_validation</permission>
 			<permission>add_words</permission>
 			<permission>reassign</permission>
 		</role>
 		<role id="галоўны_рэдактар">
-			<permission>edit_header</permission>
-			<permission>statistics</permission>
 			<permission>view_output</permission>
+			<permission>edit_header</permission>
+			<permission>full_statistics</permission>
 			<permission>full_validation</permission>
 			<permission>add_words</permission>
 			<permission>reassign</permission>
@@ -27,21 +29,33 @@
 		<state id="Неапрацаванае" edit_roles="укладальнік">
 			<change to="У працы" roles="укладальнік" />
 		</state>
-		<state id="У працы" edit_roles="укладальнік,рэдактар">
-			<change to="Падрыхтаванае" roles="укладальнік,рэдактар" />
-			<change to="На выдаленне" roles="укладальнік,рэдактар" />
-		</state>
-		<state id="На дапрацоўку" edit_roles="укладальнік,рэдактар">
-			<change to="Падрыхтаванае" roles="укладальнік,рэдактар" />
-			<change to="На выдаленне" roles="укладальнік,рэдактар" />
+		<state id="У працы" edit_roles="укладальнік">
+			<change to="Падрыхтаванае" roles="укладальнік" />
+			<change to="На выдаленне" roles="укладальнік" />
 		</state>
 		<state id="Падрыхтаванае" edit_roles="рэдактар">
-			<change to="Зацверджанае" roles="укладальнік,рэдактар" />
-			<change to="На дапрацоўку" roles="укладальнік,рэдактар" />
+			<change to="Зацверджанае" roles="рэдактар" />
+			<change to="На дапрацоўку" roles="рэдактар" />
+			<change to="На выдаленне" roles="рэдактар" />
+			<change to="Выдаленае" roles="рэдактар" />
 		</state>
-		<state id="На выдаленне">
+		<state id="На выдаленне" edit_roles="рэдактар">
+			<change to="На дапрацоўку" roles="рэдактар" />
+			<change to="Выдаленае" roles="рэдактар" />
 		</state>
-		<state id="Зацверджанае">
+		<state id="На дапрацоўку" edit_roles="укладальнік">
+			<change to="Пераробленае" roles="укладальнік" />
+			<change to="На выдаленне" roles="укладальнік" />
+		</state>
+		<state id="Пераробленае" edit_roles="рэдактар">
+			<change to="Зацверджанае" roles="рэдактар" />
+			<change to="На дапрацоўку" roles="рэдактар" />
+		</state>
+		<state id="Зацверджанае" edit_roles="рэдактар">
+			<change to="На дапрацоўку" roles="рэдактар" />
+		</state>
+		<state id="Выдаленае" edit_roles="рэдактар">
+			<change to="На дапрацоўку" roles="рэдактар" />
 		</state>
 	</states>
 	<external_links>

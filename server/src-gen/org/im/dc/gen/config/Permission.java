@@ -15,7 +15,7 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;simpleType name="permission">
  *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
  *     &lt;enumeration value="edit_header"/>
- *     &lt;enumeration value="statistics"/>
+ *     &lt;enumeration value="full_statistics"/>
  *     &lt;enumeration value="view_output"/>
  *     &lt;enumeration value="full_validation"/>
  *     &lt;enumeration value="add_words"/>
@@ -38,11 +38,11 @@ public enum Permission {
     EDIT_HEADER("edit_header"),
 
     /**
-     * Ці можа карыстальнік глядзець статыстыку
+     * Ці можа карыстальнік глядзець статыстыку па ўсіх
      * 
      */
-    @XmlEnumValue("statistics")
-    STATISTICS("statistics"),
+    @XmlEnumValue("full_statistics")
+    FULL_STATISTICS("full_statistics"),
 
     /**
      * Ці можа карыстальнік глядзець як будзе выглядае артыкул на паперы

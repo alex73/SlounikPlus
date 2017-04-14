@@ -38,7 +38,7 @@
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
-			<xs:element name="para" type="xs:string" maxOccurs="unbounded" minOccurs="1">
+			<xs:element name="para" minOccurs="1" maxOccurs="unbounded">
 				<xs:annotation>
 					<xs:appinfo>Парадыгма</xs:appinfo>
 				</xs:annotation>
@@ -81,6 +81,11 @@
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
+				<xs:element name="vyr" type="xs:string" minOccurs="0" maxOccurs="1">
+					<xs:annotation>
+						<xs:appinfo>Што выражае</xs:appinfo>
+					</xs:annotation>
+				</xs:element>
 				<xs:element name="sem" type="xs:string" maxOccurs="1" minOccurs="0">
 					<xs:annotation>
 						<xs:appinfo>Семантычныя паметы</xs:appinfo>
@@ -219,7 +224,6 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-
 	<xs:element name="term">
 		<xs:annotation>
 			<xs:appinfo>Тэрміналагічнае словазлучэнне{bg:#dbdd99}</xs:appinfo>
@@ -256,36 +260,35 @@
 					</xs:annotation>
 					<xs:complexType>
 						<xs:sequence>
-						<xs:element name="frazgram" type="xs:string" minOccurs="0" maxOccurs="1">
-							<xs:annotation>
-								<xs:appinfo>Граматыка фразеалагізма</xs:appinfo>
-							</xs:annotation>
-						</xs:element>
-						<xs:element name="toje" type="xs:string" minOccurs="0" maxOccurs="1">
-							<xs:annotation>
-								<xs:appinfo>Тое што і</xs:appinfo>
-							</xs:annotation>
-						</xs:element>
-						<xs:element name="tojegram" type="xs:string" minOccurs="0" maxOccurs="1">
-							<xs:annotation>
-								<xs:appinfo>Граматыка "тое што і"</xs:appinfo>
-							</xs:annotation>
-						</xs:element>
-						<xs:element name="tlum" type="xs:string" minOccurs="0" maxOccurs="1">
-							<xs:annotation>
-								<xs:appinfo>Тлумачэнне</xs:appinfo>
-							</xs:annotation>
-						</xs:element>
-						<xs:element name="linkword" type="xs:string" minOccurs="0" maxOccurs="1">
-							<xs:annotation>
-								<xs:appinfo>Спасылка</xs:appinfo>
-							</xs:annotation>
-						</xs:element>
+							<xs:element name="frazgram" type="xs:string" minOccurs="0" maxOccurs="1">
+								<xs:annotation>
+									<xs:appinfo>Граматыка фразеалагізма</xs:appinfo>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="toje" type="xs:string" minOccurs="0" maxOccurs="1">
+								<xs:annotation>
+									<xs:appinfo>Тое што і</xs:appinfo>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="tojegram" type="xs:string" minOccurs="0" maxOccurs="1">
+								<xs:annotation>
+									<xs:appinfo>Граматыка "тое што і"</xs:appinfo>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="tlum" type="xs:string" minOccurs="0" maxOccurs="1">
+								<xs:annotation>
+									<xs:appinfo>Тлумачэнне</xs:appinfo>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="linkword" type="xs:string" minOccurs="0" maxOccurs="1">
+								<xs:annotation>
+									<xs:appinfo>Спасылка</xs:appinfo>
+								</xs:annotation>
+							</xs:element>
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-
 </xs:schema>

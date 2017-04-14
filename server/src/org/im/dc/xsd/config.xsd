@@ -46,9 +46,9 @@
 					<xs:documentation>Ці можа карыстальнік мяняць загалоўныя словы</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
-			<xs:enumeration value="statistics">
+			<xs:enumeration value="full_statistics">
 				<xs:annotation>
-					<xs:documentation>Ці можа карыстальнік глядзець статыстыку</xs:documentation>
+					<xs:documentation>Ці можа карыстальнік глядзець статыстыку па ўсіх</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
 			<xs:enumeration value="view_output">
