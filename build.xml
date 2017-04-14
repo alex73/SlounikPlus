@@ -29,18 +29,11 @@
         </copy>
 
         <mkdir dir="dist" />
-        <jar destfile="dist/client.jar">
+        <jar destfile="dist/client/client.jar">
             <fileset dir="client/build" />
             <zipgroupfileset refid="client-jars-fileset" />
             <manifest>
                 <attribute name="Main-Class" value="org.im.dc.client.ui.ClientStartup" />
-            </manifest>
-        </jar>
-        <jar destfile="dist/uitest.jar">
-            <fileset dir="client/build" />
-            <zipgroupfileset refid="client-jars-fileset" />
-            <manifest>
-                <attribute name="Main-Class" value="org.im.dc.client.ui.xmlstructure.XmlUiTest" />
             </manifest>
         </jar>
     </target>
@@ -68,6 +61,12 @@
         <copy todir="dist/server/" flatten="true">
             <fileset refid="server-jars-fileset"/>
         </copy>
+        <copy todir="dist/server/config/">
+            <fileset dir="server/config/" />
+        </copy>
+        <zip destfile="dist/build.zip">
+            <fileset dir="dist" />
+        </zip>
     </target>
 
     <target name="all" depends="client, server" />
