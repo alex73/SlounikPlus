@@ -30,12 +30,14 @@ public class ExportArticles {
         new File(args[0]).mkdirs();
 
         Db.exec((api) -> {
-            for (RecArticle a : api.getArticleMapper().selectAll()) {
+            for (int id : api.getArticleMapper().selectAllIds()) {
+                RecArticle a = api.getArticleMapper().selectArticle(id);
                 if (a.getXml() == null) {
                     continue;
                 }
                 try {
-                    String fn = Arrays.toString(a.getWords()).replaceAll("^\\[", "").replaceAll("\\]$", "").replace('/', '_') + ".xml";
+                    String fn = Arrays.toString(a.getWords()).replaceAll("^\\[", "").replaceAll("\\]$", "").replace('/',
+                            '_') + ".xml";
                     System.err.println(fn);
                     Files.write(new File(args[0], fn).toPath(), xml2text(a.getXml()).getBytes("UTF-8"));
                 } catch (Exception ex) {

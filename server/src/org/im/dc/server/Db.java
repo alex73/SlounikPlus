@@ -82,6 +82,10 @@ public class Db {
             this.s = s;
         }
 
+        public SqlSession getSession() {
+            return s;
+        }
+
         public DoArticle getArticleMapper() {
             return s.getMapper(DoArticle.class);
         }
