@@ -14,6 +14,7 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
+import javax.swing.table.TableModel;
 
 import org.im.dc.client.SchemaLoader;
 import org.im.dc.client.WS;
@@ -36,7 +37,7 @@ public class MainController extends BaseController<MainFrame> {
     private MainFrameNewsModel newsModel;
 
     public MainController(String addr) {
-        super(new MainFrame());
+        super(new MainFrame(), null);
         this.addr = addr;
         instance = this;
     }
@@ -125,7 +126,7 @@ public class MainController extends BaseController<MainFrame> {
             public void mouseClicked(MouseEvent e) {
                 ArticleShort a = ((MainFrameArticlesModel) window.tableArticles.getModel()).articles
                         .get(window.tableArticles.rowAtPoint(e.getPoint()));
-                new ArticleEditController(window, a.id);
+                new ArticleEditController(a.id);
             }
         });
         window.tableArticles.getSelectionModel().addListSelectionListener((e) -> {
@@ -136,7 +137,7 @@ public class MainController extends BaseController<MainFrame> {
             public void mouseClicked(MouseEvent e) {
                 Related a = ((MainFrameIssuesModel) window.tableIssues.getModel()).issues
                         .get(window.tableIssues.getSelectedRow());
-                new ArticleEditController(window, a.articleId);
+                new ArticleEditController(a.articleId);
             }
         });
         window.tableNews.addMouseListener(new MouseAdapter() {
@@ -144,11 +145,11 @@ public class MainController extends BaseController<MainFrame> {
             public void mouseClicked(MouseEvent e) {
                 Related a = ((MainFrameNewsModel) window.tableNews.getModel()).news
                         .get(window.tableNews.getSelectedRow());
-                new ArticleEditController(window, a.articleId);
+                new ArticleEditController(a.articleId);
             }
         });
 
-        window.btnAddWords.addActionListener((e) -> new AddWordsController(window));
+        window.btnAddWords.addActionListener((e) -> new AddWordsController());
         window.btnAddWords.setVisible(initialData.currentUserPermissions.contains(Permission.ADD_WORDS.name()));
 
         window.btnStat.addActionListener((e) -> todo("Тут будзе статыстыка ў залежнасці ад дазволу"));
@@ -156,7 +157,7 @@ public class MainController extends BaseController<MainFrame> {
         window.btnValidateFull
                 .setVisible(initialData.currentUserPermissions.contains(Permission.FULL_VALIDATION.name()));
 
-        window.btnSettings.addActionListener((e) -> new SettingsController(window));
+        window.btnSettings.addActionListener((e) -> new SettingsController());
 
         window.btnUsers.addActionListener(reassign);
 
@@ -169,13 +170,16 @@ public class MainController extends BaseController<MainFrame> {
     }
 
     ActionListener reassign = (e) -> {
-        MainFrameArticlesModel model = ((MainFrameArticlesModel) window.tableArticles.getModel());
-        List<ArticleShort> articles = new ArrayList<>();
-        for (int r : window.tableArticles.getSelectedRows()) {
-            articles.add(model.articles.get(r));
-        }
+        TableModel m = window.tableArticles.getModel();
+        if (m instanceof MainFrameArticlesModel) {
+            MainFrameArticlesModel model = (MainFrameArticlesModel) m;
+            List<ArticleShort> articles = new ArrayList<>();
+            for (int r : window.tableArticles.getSelectedRows()) {
+                articles.add(model.articles.get(r));
+            }
 
-        new ReassignController(window, articles);
+            new ReassignController(articles);
+        }
     };
 
     /**

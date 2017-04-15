@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.JCheckBox;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import org.im.dc.client.WS;
@@ -16,8 +15,8 @@ import org.im.dc.service.dto.ArticleShort;
 public class ReassignController extends BaseController<ReassignDialog> {
     private int[] articleIds;
 
-    public ReassignController(JFrame parent, List<ArticleShort> articles) {
-        super(new ReassignDialog(parent, true));
+    public ReassignController(List<ArticleShort> articles) {
+        super(new ReassignDialog(MainController.instance.window, true), MainController.instance.window);
         setupCloseOnEscape();
 
         window.btnReassign.addActionListener(reassign);
@@ -37,8 +36,9 @@ public class ReassignController extends BaseController<ReassignDialog> {
         for (int i = 0; i < articles.size(); i++) {
             articleIds[i] = articles.get(i).id;
         }
+        window.pack();
 
-        displayOn(parent);
+        displayOnParent();
     }
 
     private int calcForUser(List<ArticleShort> articles, String user) {

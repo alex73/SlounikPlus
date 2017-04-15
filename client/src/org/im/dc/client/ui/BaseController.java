@@ -18,6 +18,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import javax.swing.RootPaneContainer;
+import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.xml.ws.soap.SOAPFaultException;
 
@@ -27,12 +28,14 @@ import javax.xml.ws.soap.SOAPFaultException;
 public abstract class BaseController<T extends Window> {
     /** UI window for this controller(JFrame or JDialog) */
     protected final T window;
+    private final Window parentWindow;
 
     /**
      * Remember UI window, then create glass pane with animated gif.
      */
-    public BaseController(T window) {
-        this.window = window;
+    public BaseController(T newWindow, Window parentWindow) {
+        this.window = newWindow;
+        this.parentWindow = parentWindow;
         SettingsController.setupFontForWindow(window);
         SettingsController.loadPlacesForWindow(window);
 
@@ -40,6 +43,7 @@ public abstract class BaseController<T extends Window> {
             @Override
             public void windowClosed(WindowEvent e) {
                 SettingsController.savePlacesForWindow(window);
+                SwingUtilities.invokeLater(() -> parentWindow.requestFocus());
             }
         });
 
@@ -64,8 +68,8 @@ public abstract class BaseController<T extends Window> {
     /**
      * Show UI on the center of parent.
      */
-    protected void displayOn(Window parent) {
-        window.setLocationRelativeTo(parent);
+    protected void displayOnParent() {
+        window.setLocationRelativeTo(parentWindow);
         window.setVisible(true);
     }
 

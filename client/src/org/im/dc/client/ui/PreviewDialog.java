@@ -33,6 +33,7 @@ public class PreviewDialog extends javax.swing.JDialog {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Перадпрагляд");
+        setPreferredSize(new java.awt.Dimension(400, 300));
 
         text.setEditable(false);
         text.setContentType("text/html"); // NOI18N

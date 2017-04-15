@@ -9,14 +9,13 @@ import java.util.Vector;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JCheckBox;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import org.im.dc.client.WS;
 
 public class AddWordsController extends BaseController<AddWordsDialog> {
-    public AddWordsController(JFrame parent) {
-        super(new AddWordsDialog(parent, true));
+    public AddWordsController() {
+        super(new AddWordsDialog(MainController.instance.window, true), MainController.instance.window);
         setupCloseOnEscape();
 
         window.btnOk.addActionListener(ok);
@@ -29,7 +28,7 @@ public class AddWordsController extends BaseController<AddWordsDialog> {
             window.panelUsers.add(cb);
         }
 
-        displayOn(parent);
+        displayOnParent();
     }
 
     private ActionListener ok = new ActionListener() {

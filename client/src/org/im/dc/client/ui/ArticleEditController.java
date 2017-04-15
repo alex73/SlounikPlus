@@ -16,10 +16,8 @@ import java.util.Map;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JRadioButton;
 import javax.swing.KeyStroke;
 import javax.swing.RootPaneContainer;
 import javax.swing.event.DocumentEvent;
@@ -46,8 +44,8 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
     protected volatile ArticleFullInfo article;
     protected volatile boolean wasChanged;
 
-    public ArticleEditController(JFrame parent, int articleId) {
-        super(new ArticleEditDialog(parent, false));
+    public ArticleEditController(int articleId) {
+        super(new ArticleEditDialog(MainController.instance.window, false), MainController.instance.window);
 
         ActionListener cancelListener = (e) -> {
             if (askSave()) {
@@ -58,7 +56,7 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
         ((RootPaneContainer) window).getRootPane().registerKeyboardAction(cancelListener,
                 KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
 
-        displayOn(parent);
+        displayOnParent();
 
         // request article from server
         new LongProcess() {
@@ -214,7 +212,7 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
                 lbl.addMouseListener(new MouseAdapter() {
                     @Override
                     public void mouseClicked(MouseEvent e) {
-                        new ArticleEditController(MainController.instance.window, lf.articleId);
+                        new ArticleEditController(lf.articleId);
                     }
                 });
                 asLink(lbl);
@@ -315,22 +313,6 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
         };
     }
 
-    private void saveState(String newState, Runnable ok) {
-        new LongProcess() {
-            @Override
-            protected void exec() throws Exception {
-                article = WS.getArticleService().changeState(WS.header, article.article.id, newState,
-                        article.article.lastUpdated);
-            }
-
-            @Override
-            protected void ok() {
-                ok.run();
-                show();
-            }
-        };
-    }
-
     private void saveComment(String comment, Runnable ok) {
         new LongProcess() {
             @Override
@@ -342,57 +324,6 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
             protected void ok() {
                 ok.run();
                 show();
-            }
-        };
-    }
-
-    private void saveWords(String words, Runnable ok) {
-        new LongProcess() {
-            @Override
-            protected void exec() throws Exception {
-                article = WS.getArticleService().changeWords(WS.header, article.article.id, words,
-                        article.article.lastUpdated);
-            }
-
-            @Override
-            protected void ok() {
-                ok.run();
-                show();
-            }
-        };
-    }
-
-    private void saveProposal(String comment, Runnable ok) {
-        new LongProcess() {
-            boolean saved = false;
-
-            @Override
-            protected void exec() throws Exception {
-                byte[] proposedXml = wasChanged ? extractXml() : null;
-
-                String err = WS.getToolsWebservice().validate(WS.header, article.article.id, article.article.words,
-                        proposedXml);
-                if (err != null) {
-                    if (JOptionPane.showConfirmDialog(window,
-                            "Памылка валідацыі: " + err + "\nЗахоўваць нягледзячы на гэта ?", "Памылка",
-                            JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION) {
-                        return;
-                    }
-                }
-
-                article = WS.getArticleService().addIssue(WS.header, article.article.id, comment, proposedXml,
-                        article.article.lastUpdated);
-                saved = true;
-            }
-
-            @Override
-            protected void ok() {
-                ok.run();
-                if (saved) {
-                    show();
-                    JOptionPane.showMessageDialog(window, "Прапановы паспяхова захаваныя", "Захавана",
-                            JOptionPane.INFORMATION_MESSAGE);
-                }
             }
         };
     }
@@ -417,40 +348,7 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
             return;
         }
 
-        ArticleEditNewStateDialog askState = new ArticleEditNewStateDialog(MainController.instance.window, true);
-
-        for (String state : article.youCanChangeStateTo) {
-            JRadioButton rb = new JRadioButton(state);
-            askState.statesGroup.add(rb);
-            askState.panelStates.add(rb);
-        }
-
-        askState.btnChange.addActionListener((e) -> {
-            String newState = null;
-            for (int i = 0; i < askState.panelStates.getComponentCount(); i++) {
-                JRadioButton rb = (JRadioButton) askState.panelStates.getComponent(i);
-                if (rb.isSelected()) {
-                    newState = rb.getText();
-                    break;
-                }
-            }
-            saveState(newState, () -> {
-                askState.dispose();
-                window.requestFocus();
-            });
-        });
-
-        // setup cancel button
-        ActionListener cancelListener = (e) -> {
-            askState.dispose();
-        };
-        askState.btnCancel.addActionListener(cancelListener);
-        askState.getRootPane().registerKeyboardAction(cancelListener, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
-                JComponent.WHEN_IN_FOCUSED_WINDOW);
-
-        askState.pack();
-        askState.setLocationRelativeTo(window);
-        askState.setVisible(true);
+        new ArticleEditNewStateController(this);
     }
 
     // TODO remove
@@ -484,27 +382,7 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
         if (askSave()) {
             return;
         }
-
-        ArticleEditChangeWordsDialog askWords = new ArticleEditChangeWordsDialog(MainController.instance.window, true);
-        askWords.txtWords.setText(Arrays.toString(article.article.words).replace("[", "").replace("]", ""));
-
-        askWords.btnChange.addActionListener((e) -> {
-            saveWords(askWords.txtWords.getText(), () -> {
-                askWords.dispose();
-                window.requestFocus();
-            });
-        });
-
-        // setup cancel button
-        ActionListener cancelListener = (e) -> {
-            askWords.dispose();
-        };
-        askWords.btnCancel.addActionListener(cancelListener);
-        askWords.getRootPane().registerKeyboardAction(cancelListener, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
-                JComponent.WHEN_IN_FOCUSED_WINDOW);
-
-        askWords.setLocationRelativeTo(window);
-        askWords.setVisible(true);
+        new ArticleEditChangeWordsController(this);
     }
 
     private void updateIssueButton() {
@@ -512,27 +390,7 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
     }
 
     private void addIssue() {
-        ArticleEditProposeChangesDialog askProposeComment = new ArticleEditProposeChangesDialog(
-                MainController.instance.window, true);
-        askProposeComment.setTitle(wasChanged ? "Прапанаваць змены" : "Дадаць заўвагу");
-
-        askProposeComment.btnOk.addActionListener((e) -> {
-            saveProposal(askProposeComment.txtComment.getText(), () -> {
-                askProposeComment.dispose();
-                window.requestFocus();
-            });
-        });
-
-        // setup cancel button
-        ActionListener cancelListener = (e) -> {
-            askProposeComment.dispose();
-        };
-        askProposeComment.btnCancel.addActionListener(cancelListener);
-        askProposeComment.getRootPane().registerKeyboardAction(cancelListener,
-                KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
-
-        askProposeComment.setLocationRelativeTo(window);
-        askProposeComment.setVisible(true);
+        new ArticleEditProposeChangesController(this);
     }
 
     private boolean askSave() {

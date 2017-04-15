@@ -17,7 +17,7 @@ public class PreviewController extends BaseController<PreviewDialog> {
     private static Font BASE_FONT;
 
     public PreviewController(JDialog parent, ArticleEditController articleEditController) {
-        super(new PreviewDialog(MainController.instance.window, true));
+        super(new PreviewDialog(MainController.instance.window, true), parent);
         setupCloseOnEscape();
 
         if (BASE_FONT == null) {
@@ -61,7 +61,7 @@ public class PreviewController extends BaseController<PreviewDialog> {
                 window.dispose();
             }
         };
-        displayOn(parent);
+        displayOnParent();
     }
 
     ActionListener resetZoom = (e) -> {

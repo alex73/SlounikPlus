@@ -33,7 +33,7 @@ public class ArticleDetailsController extends BaseController<ArticleDetailsDialo
     private byte[] newXml;
 
     public ArticleDetailsController(ArticleEditController parent, Related rel) {
-        super(new ArticleDetailsDialog(MainController.instance.window, true));
+        super(new ArticleDetailsDialog(MainController.instance.window, true), parent.window);
         this.parent = parent;
         this.rel = rel;
         setupCloseOnEscape();
@@ -112,7 +112,7 @@ public class ArticleDetailsController extends BaseController<ArticleDetailsDialo
             }
         };
 
-        displayOn(parent.window);
+        displayOnParent();
     }
 
     /**
