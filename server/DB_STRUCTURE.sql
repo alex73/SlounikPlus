@@ -31,7 +31,8 @@ CREATE TABLE Articles (
 	linkedTo VARCHAR(50)[] NOT NULL,
 	textForSearch TEXT,
 	lettersCount INTEGER NOT NULL,
-	lastUpdated TIMESTAMP WITHOUT TIME ZONE NOT NULL
+	lastUpdated TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+	validationError VARCHAR(500) NULL
 );
 
 CREATE TABLE ArticlesHistory (

@@ -12,9 +12,8 @@ import java.util.Vector;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComponent;
+import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
 import org.im.dc.client.SchemaLoader;
 import org.im.dc.client.WS;
@@ -161,7 +160,7 @@ public class MainController extends BaseController<MainFrame> {
 
         window.btnUsers.addActionListener(reassign);
 
-        window.btnValidateFull.addActionListener((e) -> todo("Тут будзе праверка ўсяго слоўніка"));
+        window.btnValidateFull.addActionListener((e) -> validateFull());
 
         SettingsController.savePlacesForWindow(window);
         window.tableIssues.setModel(issuesModel);
@@ -205,6 +204,22 @@ public class MainController extends BaseController<MainFrame> {
                 window.tableNews.setModel(newsModel);
                 window.labelSelected.setText("Знойдзена: " + model.getRowCount());
                 SettingsController.loadPlacesForWindow(window);
+            }
+        };
+    }
+
+    private void validateFull() {
+        new LongProcess() {
+            @Override
+            protected void exec() throws Exception {
+                WS.getToolsWebservice().validateAll(WS.header);
+            }
+
+            @Override
+            protected void ok() {
+                JOptionPane.showMessageDialog(window,
+                        "Валідацыя прайшла паспяхова. Абнавіце спіс артыкулаў каб бачыць вынікі", "Валідацыя",
+                        JOptionPane.INFORMATION_MESSAGE);
             }
         };
     }

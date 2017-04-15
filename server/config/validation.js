@@ -1,3 +1,6 @@
+if (!helper.checkUniqueWords(words)) {
+	throw "Загалоўныя словы не ўнікальныя";
+}
 if (words.length > 1) {
 	throw "Больш за 1 загалоўнае слова пакуль не падтрымліваецца";
 }
@@ -26,10 +29,15 @@ function collectLinks(str) {
     if (m == null) {
       break;
     }
+    var link;
     if (m[3]) {
-      helper.addLink(m[1]+'/'+m[3]);
+      link = m[1]+'/'+m[3];
     } else {
-      helper.addLink(m[1]);
+      link = m[1];
     }
+    if (!helper.checkExistWord(link)) {
+      throw "Спасылаецца на неіснуючы артыкул";
+    }
+    helper.addLink(link);
   }
 }

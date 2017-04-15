@@ -72,11 +72,63 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
     }
 
     @Override
-    public void getStatistics() {
+    public void getStatistics(Header header) {
     }
 
     @Override
-    public void validateAll() {
+    public String validate(Header header, int articleId, String[] words, byte[] xml) throws Exception {
+        LOG.info(">> validate");
+        check(header);
+
+        String err;
+        try {
+            RecArticle a = new RecArticle();
+            a.setArticleId(articleId);
+            a.setWords(words);
+            a.setXml(xml);
+            err = ArticleWebserviceImpl.validateArticle(a);
+        } catch (Exception ex) {
+            throw new RuntimeException("Памылка ў артыкуле #" + articleId);
+        }
+
+        LOG.info("<< validate");
+        return err;
+    }
+
+    @Override
+    public void validateAll(Header header) throws Exception {
+        LOG.info(">> validateAll");
+        check(header);
+        PermissionChecker.userRequiresPermission(header.user, Permission.FULL_VALIDATION);
+
+        List<Integer> articleIds = Db.execAndReturn((api) -> api.getArticleMapper().selectAllIds());
+
+        for (int id : articleIds) {
+            Db.exec((api) -> {
+                RecArticle a = api.getArticleMapper().selectArticleForUpdate(id);
+                String err;
+                try {
+                    err = ArticleWebserviceImpl.validateArticle(a);
+                } catch (Exception ex) {
+                    throw new RuntimeException("Памылка ў артыкуле #" + id);
+                }
+                if (err == null && a.getValidationError() == null) {
+                    return;
+                } else if (err != null && err.equals(a.getValidationError())) {
+                    return;
+                }
+                Date prevUpdated = a.getLastUpdated();
+                a.setValidationError(err);
+                a.setLastUpdated(new Date());
+                int u = api.getArticleMapper().updateArticle(a, prevUpdated);
+                if (u != 1) {
+                    LOG.info("<< validateAll: db was not updated");
+                    throw new RuntimeException("No updated. Possible somebody other updated");
+                }
+            });
+        }
+
+        LOG.info("<< validateAll");
     }
 
     @Override
@@ -127,7 +179,7 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
         }
 
         Db.exec((api) -> {
-            List<RecArticle> existArticles = api.getArticleMapper().hasArticlesWithWords(checkWords);
+            List<RecArticle> existArticles = api.getArticleMapper().getArticlesWithWords(checkWords);
             if (!existArticles.isEmpty()) {
                 LOG.warn("<< addWords: already exist " + Arrays.toString(existArticles.get(0).getWords()));
                 throw new RuntimeException("Словы ўжо ёсьць: " + Arrays.toString(existArticles.get(0).getWords()));
@@ -139,27 +191,21 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
     }
 
     @Override
-    public String printPreview(Header header, int articleId) throws Exception {
-        LOG.info(">> printPreview");
+    public String preparePreview(Header header, String[] words, byte[] xml) throws Exception {
+        LOG.info(">> preparePreview");
         check(header);
 
-        RecArticle rec = Db.execAndReturn((api) -> api.getArticleMapper().selectArticleForUpdate(articleId));
-        if (rec == null) {
-            LOG.warn("<< printPreview: article not found");
-            return null;
-        }
-
         Validator validator = Config.articleSchema.newValidator();
-        validator.validate(new StreamSource(new ByteArrayInputStream(rec.getXml())));
+        validator.validate(new StreamSource(new ByteArrayInputStream(xml)));
 
         HtmlOut out = new HtmlOut();
         SimpleScriptContext context = new SimpleScriptContext();
         context.setAttribute("out", out, ScriptContext.ENGINE_SCOPE);
-        context.setAttribute("words", rec.getWords(), ScriptContext.ENGINE_SCOPE);
-        context.setAttribute("article", new JsDomWrapper(rec.getXml()), ScriptContext.ENGINE_SCOPE);
+        context.setAttribute("words", words, ScriptContext.ENGINE_SCOPE);
+        context.setAttribute("article", new JsDomWrapper(xml), ScriptContext.ENGINE_SCOPE);
         JsProcessing.exec("config/output.js", context);
 
-        LOG.info("<< printPreview");
+        LOG.info("<< preparePreview");
         return out.toString();
     }
 
@@ -168,8 +214,7 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
         LOG.info(">> listIssues");
         List<Related> related = new ArrayList<>();
         // заўвагі
-        List<RecIssue> list = Db
-                .execAndReturn((api) -> api.getIssueMapper().retrieveUserOpenIssues(header.user));
+        List<RecIssue> list = Db.execAndReturn((api) -> api.getIssueMapper().retrieveUserOpenIssues(header.user));
         for (RecIssue rc : list) {
             related.add(rc.getRelated());
         }
@@ -184,8 +229,7 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
         LOG.info(">> listNews");
         List<Related> related = new ArrayList<>();
         // заўвагі карыстальніка
-        List<RecIssue> list = Db
-                .execAndReturn((api) -> api.getIssueMapper().retrieveAuthorIssues(header.user));
+        List<RecIssue> list = Db.execAndReturn((api) -> api.getIssueMapper().retrieveAuthorIssues(header.user));
         for (RecIssue rc : list) {
             related.add(rc.getRelated());
         }

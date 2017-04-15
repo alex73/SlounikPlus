@@ -1,7 +1,6 @@
 package org.im.dc.service.impl;
 
 import java.io.ByteArrayInputStream;
-import java.io.StringWriter;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,6 +9,7 @@ import java.util.List;
 
 import javax.jws.WebService;
 import javax.script.ScriptContext;
+import javax.script.ScriptException;
 import javax.script.SimpleScriptContext;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Validator;
@@ -63,34 +63,42 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
         LOG.info(">> getArticleFullInfo: " + articleId);
         check(header);
 
-        RecArticle rec = Db.execAndReturn((api) -> api.getArticleMapper().selectArticleForUpdate(articleId));
+        RecArticle rec = Db.execAndReturn((api) -> api.getArticleMapper().selectArticle(articleId));
         if (rec == null) {
             LOG.warn("<< getArticleFullInfo: there is no specified article");
             throw new Exception("Няма вызначанага артыкула");
         }
-        preprocessArticle(null, rec);
+        String err = validateArticle(rec);
+        rec.setValidationError(err);
 
         ArticleFullInfo a = getAdditionalArticleInfo(header, rec);
         LOG.info("<< getArticleFullInfo: " + articleId);
         return a;
     }
 
-    private void preprocessArticle(Db.Api api, RecArticle rec) throws Exception {
+    protected static String validateArticle(RecArticle rec) throws Exception {
         if (rec.getXml() == null) {
-            return;
+            return null;
         }
         Validator validator = Config.articleSchema.newValidator();
         validator.validate(new StreamSource(new ByteArrayInputStream(rec.getXml())));
+
+        ValidationHelper helper = new ValidationHelper(rec.getArticleId());
+        try {
+            SimpleScriptContext context = new SimpleScriptContext();
+            context.setAttribute("helper", helper, ScriptContext.ENGINE_SCOPE);
+            context.setAttribute("words", rec.getWords(), ScriptContext.ENGINE_SCOPE);
+            context.setAttribute("article", new JsDomWrapper(rec.getXml()), ScriptContext.ENGINE_SCOPE);
+            JsProcessing.exec("config/validation.js", context);
+        } catch (ScriptException ex) {
+            return ex.getCause().getMessage();
+        } catch (Exception ex) {
+            return "Памылка валідацыі артыкула: " + ex.getMessage();
+        }
+        rec.setLinkedTo(helper.getLinks());
         rec.setTextForSearch(new WordSplitter().parse(rec.getXml()));
 
-        ValidationHelper helper = new ValidationHelper();
-        SimpleScriptContext context = new SimpleScriptContext();
-        context.setAttribute("helper", helper, ScriptContext.ENGINE_SCOPE);
-        context.setAttribute("words", rec.getWords(), ScriptContext.ENGINE_SCOPE);
-        context.setAttribute("article", new JsDomWrapper(rec.getXml()), ScriptContext.ENGINE_SCOPE);
-        JsProcessing.exec("config/validation.js", context);
-
-        rec.setLinkedTo(helper.getLinks());
+        return null;
     }
 
     private ArticleFullInfo getAdditionalArticleInfo(Header header, RecArticle rec) throws Exception {
@@ -103,6 +111,7 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
         a.article.markers = rec.getMarkers();
         a.article.assignedUsers = rec.getAssignedUsers();
         a.article.lastUpdated = rec.getLastUpdated();
+        a.article.validationError = rec.getValidationError();
 
         String userRole = PermissionChecker.getUserRole(header.user);
         State state = Config.getStateByName(rec.getState());
@@ -193,7 +202,8 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
             rec.setXml(article.xml);
             rec.setLastUpdated(currentDate);
 
-            preprocessArticle(api, rec);
+            String err = validateArticle(rec);
+            rec.setValidationError(err);
 
             int u = api.getArticleMapper().updateArticle(rec, article.lastUpdated);
             if (u != 1) {
@@ -247,7 +257,7 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
         PermissionChecker.userRequiresPermission(header.user, Permission.ADD_WORDS);
 
         RecArticle art = Db.execAndReturn((api) -> {
-            List<RecArticle> existArticles = api.getArticleMapper().hasArticlesWithWords(ws);
+            List<RecArticle> existArticles = api.getArticleMapper().getArticlesWithWords(ws);
             for (RecArticle e : existArticles) {
                 if (e.getArticleId() != articleId) {
                     // the same article
@@ -434,6 +444,7 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
             o.state = r.getState();
             o.words = r.getWords();
             o.assignedUsers = r.getAssignedUsers();
+            o.validationError = r.getValidationError();
             result.add(o);
         }
 

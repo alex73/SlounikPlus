@@ -11,4 +11,5 @@ public class ArticleFull {
     public String[] assignedUsers;
     public String notes;
     public Date lastUpdated;
+    public String validationError;
 }

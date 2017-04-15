@@ -12,6 +12,8 @@ import org.im.dc.service.dto.ArticlesFilter;
 public interface DoArticle {
     List<RecArticle> listArticles(@Param("filter") ArticlesFilter filter);
 
+    RecArticle selectArticle(@Param("id") int id);
+
     RecArticle selectArticleForUpdate(@Param("id") int id);
 
     List<RecArticle> selectLinkedTo(@Param("words") String[] words);
@@ -32,7 +34,7 @@ public interface DoArticle {
 
     void removeWatch(@Param("articleId") int articleId, @Param("user") String user);
 
-    List<RecArticle> selectAll();
+    List<Integer> selectAllIds();
 
-    List<RecArticle> hasArticlesWithWords(@Param("words") List<String> words);
+    List<RecArticle> getArticlesWithWords(@Param("words") List<String> words);
 }

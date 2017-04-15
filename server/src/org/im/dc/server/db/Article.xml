@@ -3,7 +3,7 @@
 
 <mapper namespace="org.im.dc.server.db.DoArticle">
 	<select id="listArticles" parameterType="ArticlesFilter" resultType="RecArticle" resultMap="RecArticleMap">
-		SELECT articleId, words, state, assignedUsers
+		SELECT articleId, words, state, assignedUsers, validationError
 		FROM Articles
 		WHERE 1=1
 		<if test="filter.state != null">
@@ -21,10 +21,15 @@
 			AND textForSearch LIKE #{filter.likeText}
 		</if>
 	</select>
-	<select id="selectAll" resultType="RecArticle" resultMap="RecArticleMap">
-		SELECT *
+	<select id="selectAllIds" resultType="int">
+		SELECT articleId
 		FROM Articles
 	</select>
+    <select id="selectArticle" parameterType="int" resultType="RecArticle" resultMap="RecArticleMap">
+        SELECT *
+        FROM Articles
+        WHERE articleId = #{id}
+    </select>
 	<select id="selectArticleForUpdate" parameterType="int" resultType="RecArticle" resultMap="RecArticleMap">
 		SELECT *
 		FROM Articles
@@ -35,7 +40,7 @@
 		FROM Articles
 		WHERE linkedTo &amp;&amp; ARRAY[#{words,typeHandler=StringArrayTypeHandler}]::varchar[][]
 	</select>
-	<select id="hasArticlesWithWords" parameterType="java.util.List" resultType="RecArticle" resultMap="RecArticleMap">
+	<select id="getArticlesWithWords" parameterType="java.util.List" resultType="RecArticle" resultMap="RecArticleMap">
 		SELECT *
 		FROM Articles
 		WHERE
@@ -45,7 +50,7 @@
 	</select>
 	<insert id="insertArticles" parameterType="java.util.List">
 		INSERT INTO Articles
-		(words,xml,assignedUsers,state,markers,watchers,linkedTo,textForSearch,lettersCount,lastUpdated)
+		(words,xml,assignedUsers,state,markers,watchers,linkedTo,textForSearch,lettersCount,lastUpdated,validationError)
 		VALUES
 		<foreach collection="records" item="item" index="index" separator=",">
 			(#{item.words,typeHandler=StringArrayTypeHandler},
@@ -57,14 +62,15 @@
 			#{item.linkedTo,typeHandler=StringArrayTypeHandler},
 			#{item.textForSearch},
 			#{item.lettersCount},
-			#{item.lastUpdated})
+			#{item.lastUpdated},
+			#{item.validationError})
 		</foreach>
 	</insert>
 	<insert id="insertArticle" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="record.articleId">
 		INSERT INTO
 		Articles
-		(words,xml,assignedUsers,state,markers,watchers,linkedTo,textForSearch,lettersCount,lastUpdated)
-		VALUES(#{record.words,typeHandler=StringArrayTypeHandler},#{record.xml},#{record.assignedUsers,typeHandler=StringArrayTypeHandler},#{record.state},#{record.markers,typeHandler=StringArrayTypeHandler},#{record.watchers,typeHandler=StringArrayTypeHandler},#{record.linkedTo,typeHandler=StringArrayTypeHandler},#{record.textForSearch},#{record.lettersCount},#{record.lastUpdated})
+		(words,xml,assignedUsers,state,markers,watchers,linkedTo,textForSearch,lettersCount,lastUpdated,validationError)
+		VALUES(#{record.words,typeHandler=StringArrayTypeHandler},#{record.xml},#{record.assignedUsers,typeHandler=StringArrayTypeHandler},#{record.state},#{record.markers,typeHandler=StringArrayTypeHandler},#{record.watchers,typeHandler=StringArrayTypeHandler},#{record.linkedTo,typeHandler=StringArrayTypeHandler},#{record.textForSearch},#{record.lettersCount},#{record.lastUpdated},#{record.validationError})
 	</insert>
 	<update id="updateArticle">
 		UPDATE Articles
@@ -77,7 +83,8 @@
 			linkedTo = #{record.linkedTo,typeHandler=StringArrayTypeHandler},
 			textForSearch = #{record.textForSearch},
 			lettersCount = #{record.lettersCount},
-			lastUpdated = #{record.lastUpdated}
+			lastUpdated = #{record.lastUpdated},
+			validationError = #{record.validationError}
 		WHERE articleId = #{record.articleId} AND lastUpdated = #{prevLastUpdated}
 	</update>
 	<update id="updateWords">
@@ -124,6 +131,7 @@
 		<result property="textForSearch" column="textForSearch" />
 		<result property="lettersCount" column="lettersCount" />
 		<result property="lastUpdated" column="lastUpdated" />
+		<result property="validationError" column="validationError" />
 	</resultMap>
 
 </mapper>

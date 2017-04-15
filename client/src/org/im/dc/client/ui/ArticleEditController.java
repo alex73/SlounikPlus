@@ -85,12 +85,12 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
         window.btnSave.addActionListener((e) -> save());
         window.btnChangeState.addActionListener((e) -> changeStateAsk());
         window.btnAddIssue.addActionListener((e) -> addIssue());
-        window.lblAddComment.addMouseListener(new MouseAdapter() {
+        /*TODO remove window.lblAddComment.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 addComment();
             }
-        });
+        });*/
         window.lblHasProposedChanges.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -117,10 +117,7 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
         window.lblPreview.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (askSave()) {
-                    return;
-                }
-                new PreviewController(window, article.article.id);
+                new PreviewController(window, ArticleEditController.this);
             }
         });
         window.txtWords.addMouseListener(new MouseAdapter() {
@@ -173,6 +170,8 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
         if (article.article.notes != null) {
             window.txtNotes.setText(article.article.notes);
         }
+        window.lblValidationError
+                .setText(article.article.validationError != null ? article.article.validationError : " ");
 
         wasChanged = false;
         updateIssueButton();
@@ -273,7 +272,7 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
         return null;
     }
 
-    private byte[] extractXml() throws Exception {
+    protected byte[] extractXml() throws Exception {
         StringWriter w = new StringWriter();
         XMLStreamWriter wr = XMLOutputFactory.newInstance().createXMLStreamWriter(w);
         editorUI.extractData("root", wr);
@@ -287,16 +286,31 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
     private void save() {
         article.article.notes = window.txtNotes.getText();
         new LongProcess() {
+            boolean saved = false;
+
             @Override
             protected void exec() throws Exception {
                 article.article.xml = extractXml();
 
+                String err = WS.getToolsWebservice().validate(WS.header, article.article.id, article.article.words,
+                        article.article.xml);
+                if (err != null) {
+                    if (JOptionPane.showConfirmDialog(window,
+                            "Памылка валідацыі: " + err + "\nЗахоўваць нягледзячы на гэта ?", "Памылка",
+                            JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION) {
+                        return;
+                    }
+                }
+
                 article = WS.getArticleService().saveArticle(WS.header, article.article);
+                saved = true;
             }
 
             @Override
             protected void ok() {
-                show();
+                if (saved) {
+                    show();
+                }
             }
         };
     }
@@ -350,18 +364,35 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
 
     private void saveProposal(String comment, Runnable ok) {
         new LongProcess() {
+            boolean saved = false;
+
             @Override
             protected void exec() throws Exception {
                 byte[] proposedXml = wasChanged ? extractXml() : null;
 
+                String err = WS.getToolsWebservice().validate(WS.header, article.article.id, article.article.words,
+                        proposedXml);
+                if (err != null) {
+                    if (JOptionPane.showConfirmDialog(window,
+                            "Памылка валідацыі: " + err + "\nЗахоўваць нягледзячы на гэта ?", "Памылка",
+                            JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION) {
+                        return;
+                    }
+                }
+
                 article = WS.getArticleService().addIssue(WS.header, article.article.id, comment, proposedXml,
                         article.article.lastUpdated);
+                saved = true;
             }
 
             @Override
             protected void ok() {
                 ok.run();
-                show();
+                if (saved) {
+                    show();
+                    JOptionPane.showMessageDialog(window, "Прапановы паспяхова захаваныя", "Захавана",
+                            JOptionPane.INFORMATION_MESSAGE);
+                }
             }
         };
     }
@@ -422,6 +453,7 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
         askState.setVisible(true);
     }
 
+    // TODO remove
     private void addComment() {
         if (askSave()) {
             return;
@@ -508,10 +540,10 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
             return false;
         }
         if (JOptionPane.showConfirmDialog(window, "Змены, што Вы зрабілі ў артыкуле, згубяцца. Працягнуць ?",
-                "Працягнуць", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.CANCEL_OPTION) {
-            return true;
-        } else {
+                "Працягнуць", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
             return false;
+        } else {
+            return true;
         }
     }
 }

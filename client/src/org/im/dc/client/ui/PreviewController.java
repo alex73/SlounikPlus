@@ -16,7 +16,7 @@ import org.im.dc.client.WS;
 public class PreviewController extends BaseController<PreviewDialog> {
     private static Font BASE_FONT;
 
-    public PreviewController(JDialog parent, int articleId) {
+    public PreviewController(JDialog parent, ArticleEditController articleEditController) {
         super(new PreviewDialog(MainController.instance.window, true));
         setupCloseOnEscape();
 
@@ -46,7 +46,8 @@ public class PreviewController extends BaseController<PreviewDialog> {
 
             @Override
             protected void exec() throws Exception {
-                preview = WS.getToolsWebservice().printPreview(WS.header, articleId);
+                preview = WS.getToolsWebservice().preparePreview(WS.header, articleEditController.article.article.words,
+                        articleEditController.extractXml());
             }
 
             @Override

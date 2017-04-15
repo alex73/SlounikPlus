@@ -5,4 +5,5 @@ public class ArticleShort {
     public String[] words;
     public String state;
     public String[] assignedUsers;
+    public String validationError;
 }

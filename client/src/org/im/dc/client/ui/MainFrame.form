@@ -180,9 +180,10 @@
                 <Component class="javax.swing.JTable" name="tableArticles">
                   <Properties>
                     <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-                      <Table columnCount="2" rowCount="0">
+                      <Table columnCount="3" rowCount="0">
                         <Column editable="false" title="&#x410;&#x440;&#x442;&#x44b;&#x43a;&#x443;&#x43b;" type="java.lang.String"/>
                         <Column editable="false" title="&#x421;&#x442;&#x430;&#x43d;" type="java.lang.String"/>
+                        <Column editable="false" title="&#x41f;&#x430;&#x43c;&#x44b;&#x43b;&#x43a;&#x456;" type="java.lang.String"/>
                       </Table>
                     </Property>
                     <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">

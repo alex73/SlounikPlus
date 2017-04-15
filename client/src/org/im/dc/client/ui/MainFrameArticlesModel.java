@@ -7,6 +7,7 @@ import javax.swing.table.DefaultTableModel;
 
 import org.im.dc.service.dto.ArticleShort;
 
+@SuppressWarnings("serial")
 public class MainFrameArticlesModel extends DefaultTableModel {
     protected final List<ArticleShort> articles;
 
@@ -21,7 +22,7 @@ public class MainFrameArticlesModel extends DefaultTableModel {
 
     @Override
     public int getColumnCount() {
-        return 2;
+        return 3;
     }
 
     @Override
@@ -31,6 +32,8 @@ public class MainFrameArticlesModel extends DefaultTableModel {
             return "Артыкул";
         case 1:
             return "Стан";
+        case 2:
+            return "Памылкі";
         default:
             return null;
         }
@@ -49,6 +52,8 @@ public class MainFrameArticlesModel extends DefaultTableModel {
             return Arrays.toString(a.words);
         case 1:
             return a.state;
+        case 2:
+            return a.validationError;
         default:
             return null;
         }

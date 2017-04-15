@@ -27,6 +27,8 @@ public class RecArticle {
     private int lettersCount;
     // апошняе абнаўленне - для optimistic locks
     private Date lastUpdated;
+    // памылка валідацыі
+    private String validationError;
 
     public int getArticleId() {
         return articleId;
@@ -114,5 +116,13 @@ public class RecArticle {
 
     public void setLastUpdated(Date lastUpdated) {
         this.lastUpdated = lastUpdated;
+    }
+
+    public String getValidationError() {
+        return validationError;
+    }
+
+    public void setValidationError(String validationError) {
+        this.validationError = validationError;
     }
 }

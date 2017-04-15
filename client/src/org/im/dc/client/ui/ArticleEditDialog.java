@@ -25,10 +25,10 @@ public class ArticleEditDialog extends javax.swing.JDialog {
         txtState = new javax.swing.JTextField();
         txtUsers = new javax.swing.JTextField();
         jPanel7 = new javax.swing.JPanel();
-        lblAddComment = new javax.swing.JLabel();
         lblHasProposedChanges = new javax.swing.JLabel();
         lblWatched = new javax.swing.JLabel();
         lblPreview = new javax.swing.JLabel();
+        lblValidationError = new javax.swing.JLabel();
         jSplitPane1 = new javax.swing.JSplitPane();
         jPanel8 = new javax.swing.JPanel();
         jSplitPane2 = new javax.swing.JSplitPane();
@@ -68,10 +68,6 @@ public class ArticleEditDialog extends javax.swing.JDialog {
 
         jPanel5.add(jPanel6, java.awt.BorderLayout.WEST);
 
-        lblAddComment.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/im/dc/client/ui/images/add_comment.png"))); // NOI18N
-        lblAddComment.setToolTipText(bundle.getString("ArticleEditDialog.lblAddComment.toolTipText")); // NOI18N
-        jPanel7.add(lblAddComment);
-
         lblHasProposedChanges.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/im/dc/client/ui/images/proposed-off.png"))); // NOI18N
         lblHasProposedChanges.setToolTipText(bundle.getString("ArticleEditDialog.lblHasProposedChanges.toolTipText")); // NOI18N
         jPanel7.add(lblHasProposedChanges);
@@ -85,6 +81,10 @@ public class ArticleEditDialog extends javax.swing.JDialog {
         jPanel7.add(lblPreview);
 
         jPanel5.add(jPanel7, java.awt.BorderLayout.EAST);
+
+        lblValidationError.setForeground(new java.awt.Color(255, 0, 0));
+        lblValidationError.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jPanel5.add(lblValidationError, java.awt.BorderLayout.CENTER);
 
         getContentPane().add(jPanel5, java.awt.BorderLayout.NORTH);
 
@@ -217,9 +217,9 @@ public class ArticleEditDialog extends javax.swing.JDialog {
     public javax.swing.JScrollPane jScrollPane2;
     public javax.swing.JSplitPane jSplitPane1;
     public javax.swing.JSplitPane jSplitPane2;
-    public javax.swing.JLabel lblAddComment;
     public javax.swing.JLabel lblHasProposedChanges;
     public javax.swing.JLabel lblPreview;
+    public javax.swing.JLabel lblValidationError;
     public javax.swing.JLabel lblWatched;
     public javax.swing.JScrollPane panelEditor;
     public javax.swing.JPanel panelLinkedExternal;
