@@ -7,9 +7,13 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
@@ -20,15 +24,17 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
-import com.sun.org.apache.xerces.internal.xs.XSSimpleTypeDefinition;
+import org.im.dc.client.SchemaLoader;
 
 @SuppressWarnings("serial")
 public class XmlSimple extends JPanel implements IXmlElement {
     private GridBagConstraints gbc = new GridBagConstraints();
-    private JTextArea field;
+    private JComponent field;
     private JButton closable;
+    private final XmlGroup rootPanel;
 
-    public XmlSimple(XmlGroup rootPanel, XmlGroup parentPanel, XSSimpleTypeDefinition type, AnnotationInfo ann) {
+    public XmlSimple(XmlGroup rootPanel, XmlGroup parentPanel, AnnotationInfo ann) {
+        this.rootPanel = rootPanel;
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -49,10 +55,7 @@ public class XmlSimple extends JPanel implements IXmlElement {
 
         gbc.weightx = 1;
         gbc.gridx = 1;
-        field = new JTextArea();
-        field.setLineWrap(true);
-        field.setWrapStyleWord(true);
-        field.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        addField(ann);
         add(field, gbc);
 
         gbc.weightx = 0;
@@ -72,22 +75,45 @@ public class XmlSimple extends JPanel implements IXmlElement {
                 rootPanel.fireChanged();
             }
         });
-        field.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                rootPanel.fireChanged();
-            }
+    }
 
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                rootPanel.fireChanged();
-            }
+    private void addField(AnnotationInfo ann) {
+        if (ann.type == null) {
+            JTextArea f = new JTextArea();
+            f.setLineWrap(true);
+            f.setWrapStyleWord(true);
+            f.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+            f.getDocument().addDocumentListener(new DocumentListener() {
+                @Override
+                public void removeUpdate(DocumentEvent e) {
+                    rootPanel.fireChanged();
+                }
 
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                rootPanel.fireChanged();
-            }
-        });
+                @Override
+                public void insertUpdate(DocumentEvent e) {
+                    rootPanel.fireChanged();
+                }
+
+                @Override
+                public void changedUpdate(DocumentEvent e) {
+                    rootPanel.fireChanged();
+                }
+            });
+            field = f;
+        } else if (ann.type.startsWith("cbeditable/")) {
+            String typeName = ann.type.substring("cbeditable/".length());
+            JFilterComboBox f = new JFilterComboBox(SchemaLoader.getSimpleTypeEnumeration(typeName));
+          //  f.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+            f.addItemListener(new ItemListener() {
+                @Override
+                public void itemStateChanged(ItemEvent e) {
+                    rootPanel.fireChanged();
+                }
+            });
+            field = f;
+        } else {
+            throw new RuntimeException("Unknow article structure");
+        }
     }
 
     @Override
@@ -101,7 +127,15 @@ public class XmlSimple extends JPanel implements IXmlElement {
             int type = rd.next();
             switch (type) {
             case XMLStreamConstants.CHARACTERS:
-                field.setText(field.getText() + rd.getText());
+                if (field instanceof JTextArea) {
+                    JTextArea f = (JTextArea) field;
+                    f.setText(f.getText() + rd.getText());
+                } else if (field instanceof JComboBox) {
+                    JComboBox<String> f = (JComboBox<String>) field;
+                    f.setSelectedItem(rd.getText());
+                } else {
+                    throw new RuntimeException("Unknow article structure");
+                }
                 break;
             case XMLStreamConstants.END_ELEMENT:
                 return;
@@ -114,7 +148,16 @@ public class XmlSimple extends JPanel implements IXmlElement {
     @Override
     public void extractData(String tag, XMLStreamWriter wr) throws XMLStreamException {
         wr.writeStartElement(tag);
-        wr.writeCharacters(field.getText());
+        if (field instanceof JTextArea) {
+            JTextArea f = (JTextArea) field;
+            wr.writeCharacters(f.getText());
+        } else if (field instanceof JComboBox) {
+            JComboBox<String> f = (JComboBox<String>) field;
+            wr.writeCharacters((String) f.getSelectedItem());
+        } else {
+            throw new RuntimeException("Unknow article structure");
+        }
+
         wr.writeEndElement();
     }
 

@@ -218,7 +218,7 @@
 				</xs:element>
 				<xs:element name="author" type="xs:string" maxOccurs="1" minOccurs="1">
 					<xs:annotation>
-						<xs:appinfo>Аўтар</xs:appinfo>
+						<xs:appinfo>Аўтар{type:cbeditable/authors}</xs:appinfo>
 					</xs:annotation>
 				</xs:element>
 			</xs:sequence>
@@ -291,4 +291,11 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
+	<xs:simpleType name="authors">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Янка Купала" />
+			<xs:enumeration value="Якуб Колас" />
+			<xs:enumeration value="Чорны" />
+		</xs:restriction>
+	</xs:simpleType>
 </xs:schema>

@@ -11,7 +11,6 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
 import com.sun.org.apache.xerces.internal.xs.XSElementDeclaration;
-import com.sun.org.apache.xerces.internal.xs.XSSimpleTypeDefinition;
 import com.sun.org.apache.xerces.internal.xs.XSTypeDefinition;
 
 @SuppressWarnings("serial")
@@ -64,7 +63,7 @@ public class XmlMany extends JPanel {
         if (obj.getTypeDefinition().getTypeCategory() == XSTypeDefinition.COMPLEX_TYPE) {
             p = new XmlGroup(rootPanel, parentPanel, obj, ann);
         } else {
-            p = new XmlSimple(rootPanel, parentPanel, (XSSimpleTypeDefinition) obj.getTypeDefinition(), ann);
+            p = new XmlSimple(rootPanel, parentPanel, ann);
         }
 
         add(p, getComponentCount() - 1);

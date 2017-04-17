@@ -3,6 +3,7 @@ package org.im.dc.client;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.Reader;
+import java.util.List;
 
 import org.im.dc.client.ui.xmlstructure.AnnotationInfo;
 import org.im.dc.client.ui.xmlstructure.XmlGroup;
@@ -11,14 +12,15 @@ import org.w3c.dom.ls.LSInput;
 import com.sun.org.apache.xerces.internal.impl.xs.XMLSchemaLoader;
 import com.sun.org.apache.xerces.internal.xs.XSElementDeclaration;
 import com.sun.org.apache.xerces.internal.xs.XSModel;
+import com.sun.org.apache.xerces.internal.xs.XSSimpleTypeDefinition;
 
 public class SchemaLoader {
-    private static XSElementDeclaration root;
+    private static XSModel model;
 
     public static void init(byte[] schema) {
         XMLSchemaLoader schemaLoader = new XMLSchemaLoader();
 
-        XSModel model = schemaLoader.load(new LSInput() {
+        model = schemaLoader.load(new LSInput() {
             @Override
             public void setSystemId(String systemId) {
             }
@@ -91,10 +93,19 @@ public class SchemaLoader {
                 return null;
             }
         });
-        root = model.getElementDeclaration("root", null);
+
     }
 
     public static XmlGroup createUI() {
+        XSElementDeclaration root = model.getElementDeclaration("root", null);
         return new XmlGroup(null, null, root, new AnnotationInfo(root.getAnnotation()));
+    }
+
+    public static List<String> getSimpleTypeEnumeration(String typeName) {
+        XSSimpleTypeDefinition type = (XSSimpleTypeDefinition) model.getTypeDefinition(typeName, null);
+        if (type == null) {
+            return null;
+        }
+        return type.getLexicalEnumeration();
     }
 }
