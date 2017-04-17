@@ -24,12 +24,14 @@ public class MainFrame extends javax.swing.JFrame {
         jPanel3 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         cbUser = new javax.swing.JComboBox<>();
+        jLabel4 = new javax.swing.JLabel();
+        cbState = new javax.swing.JComboBox<>();
         jLabel2 = new javax.swing.JLabel();
         txtWord = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
         txtText = new javax.swing.JTextField();
-        btnSearch = new javax.swing.JButton();
         labelSelected = new javax.swing.JLabel();
+        btnSearch = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         tableArticles = new javax.swing.JTable();
         jSplitPane2 = new javax.swing.JSplitPane();
@@ -71,10 +73,26 @@ public class MainFrame extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         jPanel3.add(cbUser, gridBagConstraints);
 
-        jLabel2.setText(bundle.getString("MainFrame.jLabel2.text")); // NOI18N
+        jLabel4.setText(bundle.getString("MainFrame.jLabel4.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        jPanel3.add(jLabel4, gridBagConstraints);
+
+        cbState.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        jPanel3.add(cbState, gridBagConstraints);
+
+        jLabel2.setText(bundle.getString("MainFrame.jLabel2.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         jPanel3.add(jLabel2, gridBagConstraints);
@@ -83,7 +101,7 @@ public class MainFrame extends javax.swing.JFrame {
         txtWord.setText(bundle.getString("MainFrame.txtWord.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridy = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         jPanel3.add(txtWord, gridBagConstraints);
@@ -91,7 +109,7 @@ public class MainFrame extends javax.swing.JFrame {
         jLabel3.setText(bundle.getString("MainFrame.jLabel3.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridy = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         jPanel3.add(jLabel3, gridBagConstraints);
@@ -100,10 +118,17 @@ public class MainFrame extends javax.swing.JFrame {
         txtText.setText(bundle.getString("MainFrame.txtText.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridy = 3;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         jPanel3.add(txtText, gridBagConstraints);
+
+        labelSelected.setText(bundle.getString("MainFrame.labelSelected.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        jPanel3.add(labelSelected, gridBagConstraints);
 
         btnSearch.setText(bundle.getString("MainFrame.btnSearch.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -111,13 +136,6 @@ public class MainFrame extends javax.swing.JFrame {
         gridBagConstraints.gridy = 0;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         jPanel3.add(btnSearch, gridBagConstraints);
-
-        labelSelected.setText(bundle.getString("MainFrame.labelSelected.text")); // NOI18N
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        jPanel3.add(labelSelected, gridBagConstraints);
 
         jPanel2.add(jPanel3, java.awt.BorderLayout.NORTH);
 
@@ -258,10 +276,12 @@ public class MainFrame extends javax.swing.JFrame {
     public javax.swing.JButton btnStat;
     public javax.swing.JButton btnUsers;
     public javax.swing.JButton btnValidateFull;
+    public javax.swing.JComboBox<String> cbState;
     public javax.swing.JComboBox<String> cbUser;
     public javax.swing.JLabel jLabel1;
     public javax.swing.JLabel jLabel2;
     public javax.swing.JLabel jLabel3;
+    public javax.swing.JLabel jLabel4;
     public javax.swing.JPanel jPanel1;
     public javax.swing.JPanel jPanel2;
     public javax.swing.JPanel jPanel3;

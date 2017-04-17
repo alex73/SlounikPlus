@@ -120,6 +120,10 @@ public class MainController extends BaseController<MainFrame> {
         users.add(null);
         users.addAll(initialData.allUsers.keySet());
         window.cbUser.setModel(new DefaultComboBoxModel<>(users));
+        Vector<String> states = new Vector<>();
+        states.add(null);
+        states.addAll(initialData.states);
+        window.cbState.setModel(new DefaultComboBoxModel<>(states));
         window.btnSearch.addActionListener((e) -> search());
         window.tableArticles.addMouseListener(new MouseAdapter() {
             @Override
@@ -188,6 +192,7 @@ public class MainController extends BaseController<MainFrame> {
     private void search() {
         ArticlesFilter filter = new ArticlesFilter();
         filter.user = (String) window.cbUser.getSelectedItem();
+        filter.state = (String) window.cbState.getSelectedItem();
         filter.word = window.txtWord.getText().trim().isEmpty() ? null : window.txtWord.getText().trim();
         filter.text = window.txtText.getText().trim().isEmpty() ? null : window.txtText.getText().trim();
         new LongProcess() {
