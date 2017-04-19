@@ -103,6 +103,7 @@ public class XmlSimple extends JPanel implements IXmlElement {
         } else if (ann.type.startsWith("cbeditable/")) {
             String typeName = ann.type.substring("cbeditable/".length());
             JFilterComboBox f = new JFilterComboBox(SchemaLoader.getSimpleTypeEnumeration(typeName));
+            f.setSelectedItem("");
           //  f.setBorder(BorderFactory.createLineBorder(Color.BLACK));
             f.addItemListener(new ItemListener() {
                 @Override

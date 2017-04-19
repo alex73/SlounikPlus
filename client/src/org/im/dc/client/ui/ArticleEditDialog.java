@@ -36,9 +36,6 @@ public class ArticleEditDialog extends javax.swing.JDialog {
         tableHistory = new javax.swing.JTable();
         jScrollPane2 = new javax.swing.JScrollPane();
         txtNotes = new javax.swing.JTextArea();
-        jPanel9 = new javax.swing.JPanel();
-        panelLinkedFrom = new javax.swing.JPanel();
-        panelLinkedExternal = new javax.swing.JPanel();
         panelEditor = new javax.swing.JScrollPane();
         jPanel2 = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
@@ -46,6 +43,9 @@ public class ArticleEditDialog extends javax.swing.JDialog {
         jPanel3 = new javax.swing.JPanel();
         btnAddIssue = new javax.swing.JButton();
         btnSave = new javax.swing.JButton();
+        jPanel9 = new javax.swing.JPanel();
+        panelLinkedFrom = new javax.swing.JPanel();
+        panelLinkedExternal = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("org/im/dc/client/ui/Bundle"); // NOI18N
@@ -124,16 +124,6 @@ public class ArticleEditDialog extends javax.swing.JDialog {
 
         jPanel8.add(jSplitPane2, java.awt.BorderLayout.CENTER);
 
-        jPanel9.setLayout(new javax.swing.BoxLayout(jPanel9, javax.swing.BoxLayout.Y_AXIS));
-
-        panelLinkedFrom.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
-        jPanel9.add(panelLinkedFrom);
-
-        panelLinkedExternal.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
-        jPanel9.add(panelLinkedExternal);
-
-        jPanel8.add(jPanel9, java.awt.BorderLayout.SOUTH);
-
         jSplitPane1.setRightComponent(jPanel8);
         jSplitPane1.setLeftComponent(panelEditor);
 
@@ -153,6 +143,16 @@ public class ArticleEditDialog extends javax.swing.JDialog {
         jPanel3.add(btnSave);
 
         jPanel2.add(jPanel3, java.awt.BorderLayout.EAST);
+
+        jPanel9.setLayout(new java.awt.BorderLayout());
+
+        panelLinkedFrom.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+        jPanel9.add(panelLinkedFrom, java.awt.BorderLayout.WEST);
+
+        panelLinkedExternal.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+        jPanel9.add(panelLinkedExternal, java.awt.BorderLayout.EAST);
+
+        jPanel2.add(jPanel9, java.awt.BorderLayout.NORTH);
 
         getContentPane().add(jPanel2, java.awt.BorderLayout.SOUTH);
 
