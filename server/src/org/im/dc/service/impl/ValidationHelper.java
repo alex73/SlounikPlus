@@ -10,6 +10,7 @@ import org.im.dc.server.db.RecArticle;
 public class ValidationHelper {
     private final int currentArticleId;
     private final List<String> links = new ArrayList<>();
+    public String[] newWords;
 
     public ValidationHelper(int currentArticleId) {
         this.currentArticleId = currentArticleId;
@@ -17,6 +18,10 @@ public class ValidationHelper {
 
     public void addLink(String link) {
         links.add(link);
+    }
+
+    public void replaceWords(String[] newWords) {
+        this.newWords = newWords;
     }
 
     public String[] getLinks() {

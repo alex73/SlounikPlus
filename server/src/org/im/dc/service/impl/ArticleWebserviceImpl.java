@@ -90,6 +90,9 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
             context.setAttribute("words", rec.getWords(), ScriptContext.ENGINE_SCOPE);
             context.setAttribute("article", new JsDomWrapper(rec.getXml()), ScriptContext.ENGINE_SCOPE);
             JsProcessing.exec("config/validation.js", context);
+            if (helper.newWords != null) {
+                rec.setWords(helper.newWords);
+            }
         } catch (ScriptException ex) {
             return ex.getCause().getMessage();
         } catch (Exception ex) {
@@ -185,18 +188,27 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
             Date currentDate = new Date();
             RecArticleHistory history = new RecArticleHistory();
 
-            RecArticle rec = api.getArticleMapper().selectArticleForUpdate(article.id);
-            if (rec == null) {
-                LOG.warn("<< saveArticle: no record in db");
-                throw new RuntimeException("No record in db");
-            }
-            if (!rec.getLastUpdated().equals(article.lastUpdated)) {
-                LOG.info("<< saveArticle: lastUpdated was changed");
-                throw new RuntimeException("Possible somebody other updated");
+            RecArticle rec;
+            if (article.id != 0) {
+                rec = api.getArticleMapper().selectArticleForUpdate(article.id);
+                if (rec == null) {
+                    LOG.warn("<< saveArticle: no record in db");
+                    throw new RuntimeException("No record in db");
+                }
+                if (!rec.getLastUpdated().equals(article.lastUpdated)) {
+                    LOG.info("<< saveArticle: lastUpdated was changed");
+                    throw new RuntimeException("Possible somebody other updated");
+                }
+            } else {
+                // new article
+                rec = new RecArticle();
+                rec.setState(PermissionChecker.getUserNewArticleState(header.user));
+                rec.setAssignedUsers(PermissionChecker.getUserNewArticleUsers(header.user));
+                rec.setMarkers(new String[0]);
+                rec.setWatchers(new String[0]);
             }
             PermissionChecker.canUserEditArticle(header.user, rec.getState());
 
-            history.setArticleId(rec.getArticleId());
             history.setOldXml(rec.getXml());
 
             rec.setXml(article.xml);
@@ -205,10 +217,14 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
             String err = validateArticle(rec);
             rec.setValidationError(err);
 
-            int u = api.getArticleMapper().updateArticle(rec, article.lastUpdated);
-            if (u != 1) {
-                LOG.info("<< saveArticle: db was not updated");
-                throw new RuntimeException("No updated. Possible somebody other updated");
+            if (article.id != 0) {
+                int u = api.getArticleMapper().updateArticle(rec, article.lastUpdated);
+                if (u != 1) {
+                    LOG.info("<< saveArticle: db was not updated");
+                    throw new RuntimeException("No updated. Possible somebody other updated");
+                }
+            } else {
+                api.getArticleMapper().insertArticle(rec);
             }
 
             api.getArticleNoteMapper().deleteNote(rec.getArticleId(), header.user);
@@ -220,6 +236,7 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
                 api.getArticleNoteMapper().insertNote(note);
             }
 
+            history.setArticleId(rec.getArticleId());
             history.setNewXml(rec.getXml());
             history.setChanged(currentDate);
             history.setChanger(header.user);

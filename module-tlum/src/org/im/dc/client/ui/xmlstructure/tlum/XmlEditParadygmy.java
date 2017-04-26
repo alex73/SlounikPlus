@@ -15,6 +15,7 @@ import org.im.dc.client.ui.xmlstructure.AnnotationInfo;
 import org.im.dc.client.ui.xmlstructure.XmlEditBase;
 import org.im.dc.client.ui.xmlstructure.XmlGroup;
 
+@SuppressWarnings("serial")
 public class XmlEditParadygmy extends XmlEditBase<JTextArea> {
     public XmlEditParadygmy(XmlGroup rootPanel, XmlGroup parentPanel, AnnotationInfo ann,
             ArticleEditController editController) {
@@ -38,8 +39,6 @@ public class XmlEditParadygmy extends XmlEditBase<JTextArea> {
 
     @Override
     public void insertData(XMLStreamReader rd) throws XMLStreamException {
-        // TODO Auto-generated method stub
-
     }
 
     @Override

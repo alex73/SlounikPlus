@@ -5,6 +5,8 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.lang.reflect.Constructor;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JPanel;
 import javax.xml.stream.XMLStreamException;
@@ -121,7 +123,7 @@ public class XmlMany extends JPanel {
         super.revalidate();
     }
 
-    public void insertDataTo(XMLStreamReader rd, int pos) throws XMLStreamException {
+    public void insertDataTo(XMLStreamReader rd, int pos) throws Exception {
         if (pos >= getComponentCount() - 1) {
             addElement();
         }
@@ -129,7 +131,7 @@ public class XmlMany extends JPanel {
         e.insertData(rd);
     }
 
-    public void extractData(XMLStreamWriter wr) throws XMLStreamException {
+    public void extractData(XMLStreamWriter wr) throws Exception {
         for (Component c : getComponents()) {
             if (c == add) {
                 continue;
@@ -139,9 +141,19 @@ public class XmlMany extends JPanel {
         }
     }
 
-    public void replacePart(String[] path, XMLStreamReader rd) {
-        if (path.length == 0) {
+    public List<XmlGroup> getSubgroups() {
+        List<XmlGroup> subgroups = new ArrayList<>();
+        for (int i = 0; i < getComponentCount() - 1;) {
+            if (getComponent(i) instanceof XmlGroup) {
+                subgroups.add((XmlGroup) getComponent(i));
+            }
+        }
+        return subgroups;
+    }
 
+    public void removeAllElements() {
+        for (int i = 0; i < getComponentCount() - 1;) {
+            remove(i);
         }
     }
 }

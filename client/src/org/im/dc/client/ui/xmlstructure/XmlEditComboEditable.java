@@ -11,7 +11,8 @@ import org.im.dc.client.SchemaLoader;
 import org.im.dc.client.ui.ArticleEditController;
 
 public class XmlEditComboEditable extends XmlEditBase<JFilterComboBox> {
-    public XmlEditComboEditable(XmlGroup rootPanel, XmlGroup parentPanel, AnnotationInfo ann, ArticleEditController editController) {
+    public XmlEditComboEditable(XmlGroup rootPanel, XmlGroup parentPanel, AnnotationInfo ann,
+            ArticleEditController editController) {
         super(rootPanel, parentPanel, ann, editController);
     }
 

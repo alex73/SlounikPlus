@@ -15,7 +15,8 @@ import org.im.dc.client.SchemaLoader;
 import org.im.dc.client.ui.ArticleEditController;
 
 public class XmlEditRadio extends XmlEditBase<JPanel> {
-    public XmlEditRadio(XmlGroup rootPanel, XmlGroup parentPanel, AnnotationInfo ann, ArticleEditController editController) {
+    public XmlEditRadio(XmlGroup rootPanel, XmlGroup parentPanel, AnnotationInfo ann,
+            ArticleEditController editController) {
         super(rootPanel, parentPanel, ann, editController);
     }
 

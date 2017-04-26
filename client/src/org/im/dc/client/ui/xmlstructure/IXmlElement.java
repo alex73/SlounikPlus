@@ -7,9 +7,9 @@ import javax.xml.stream.XMLStreamWriter;
 public interface IXmlElement {
     void setClosableVisible(boolean visible);
 
-    void insertData(XMLStreamReader rd) throws XMLStreamException;
+    void insertData(XMLStreamReader rd) throws Exception;
 
-    void extractData(String tag, XMLStreamWriter wr) throws XMLStreamException;
+    void extractData(String tag, XMLStreamWriter wr) throws Exception;
 
     void setIndex(Integer index);
 }

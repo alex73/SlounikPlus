@@ -7,7 +7,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Arrays;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -123,7 +122,7 @@ public class XmlGroup extends JPanel implements IXmlElement {
     }
 
     @Override
-    public void insertData(XMLStreamReader rd) throws XMLStreamException {
+    public void insertData(XMLStreamReader rd) throws Exception {
         int groupIndex = 0;
         int indexInGroup = 0;
         while (rd.hasNext()) {
@@ -158,7 +157,7 @@ public class XmlGroup extends JPanel implements IXmlElement {
     }
 
     @Override
-    public void extractData(String tag, XMLStreamWriter wr) throws XMLStreamException {
+    public void extractData(String tag, XMLStreamWriter wr) throws Exception {
         wr.writeStartElement(tag);
         for (Component c : gr.getComponents()) {
             XmlMany many = (XmlMany) c;
@@ -167,13 +166,14 @@ public class XmlGroup extends JPanel implements IXmlElement {
         wr.writeEndElement();
     }
 
-    public void replacePart(String[] path, XMLStreamReader rd) {
+    public XmlMany getManyPart(String tag) {
         for (int i = 0; i < gr.getComponentCount(); i++) {
             XmlMany many = (XmlMany) gr.getComponent(i);
-            if (many.tag.equals(path[0])) {
-                many.replacePart(Arrays.copyOfRange(path, 1, path.length), rd);
+            if (many.tag.equals(tag)) {
+                return many;
             }
         }
+        return null;
     }
 
     @Override

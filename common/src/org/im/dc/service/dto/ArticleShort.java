@@ -20,9 +20,9 @@ public class ArticleShort {
             @Override
             public int compare(ArticleShort a1, ArticleShort a2) {
                 for (int index = 0;; index++) {
-                    if (a1.words.length < index) {
+                    if (a1.words.length <= index) {
                         return -1;
-                    } else if (a2.words.length < index) {
+                    } else if (a2.words.length <= index) {
                         return 1;
                     }
                     int r = BE.compare(a1.words[index].replace("+", ""), a2.words[index].replace("+", ""));

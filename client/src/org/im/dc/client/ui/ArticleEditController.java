@@ -24,6 +24,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
@@ -41,15 +42,15 @@ import org.im.dc.service.dto.Related.RelatedType;
  */
 public class ArticleEditController extends BaseController<ArticleEditDialog> {
     public static XMLInputFactory READER_FACTORY = XMLInputFactory.newInstance();
+    public static XMLOutputFactory WRITER_FACTORY = XMLOutputFactory.newInstance();
+
     private XmlGroup editorUI;
 
-    public final boolean isnew;
     protected volatile ArticleFullInfo article;
     protected volatile boolean wasChanged;
 
     private ArticleEditController(boolean isnew) {
         super(new ArticleEditDialog(MainController.instance.window, false), MainController.instance.window);
-        this.isnew = isnew;
 
         ActionListener cancelListener = (e) -> {
             if (askSave()) {
@@ -110,9 +111,11 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
         window.btnChangeState.addActionListener((e) -> changeStateAsk());
         window.btnAddIssue.addActionListener((e) -> addIssue());
         /*
-         * TODO remove window.lblAddComment.addMouseListener(new MouseAdapter() {
+         * TODO remove window.lblAddComment.addMouseListener(new MouseAdapter()
+         * {
          * 
-         * @Override public void mouseClicked(MouseEvent e) { addComment(); } });
+         * @Override public void mouseClicked(MouseEvent e) { addComment(); }
+         * });
          */
         window.lblHasProposedChanges.addMouseListener(new MouseAdapter() {
             @Override
@@ -176,6 +179,10 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
                 new ArticleDetailsController(ArticleEditController.this, rel);
             }
         });
+    }
+
+    public boolean isNew() {
+        return article.article.id == 0;
     }
 
     void show() {
@@ -254,6 +261,7 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
             for (ArticleFullInfo.LinkExternal le : article.linksExternal) {
                 JLabel lbl = new JLabel(le.name);
                 lbl.addMouseListener(new MouseAdapter() {
+
                     @Override
                     public void mouseClicked(MouseEvent e) {
                         try {
@@ -261,6 +269,7 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
                         } catch (Exception ex) {
                         }
                     }
+
                 });
                 asLink(lbl);
                 window.panelLinkedExternal.add(lbl);
@@ -268,9 +277,15 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
         }
     }
 
-    public void replacePart(String path, byte[] xml) throws Exception {
+    public static XMLStreamReader getReader(byte[] xml) throws Exception {
         XMLStreamReader rd = READER_FACTORY.createXMLStreamReader(new ByteArrayInputStream(xml));
-        editorUI.replacePart(path.split("/"), rd);
+        while (rd.hasNext()) {
+            int t = rd.nextTag();
+            if (t == XMLStreamConstants.START_ELEMENT) {
+                break;
+            }
+        }
+        return rd;
     }
 
     private void asLink(JLabel label) {
@@ -304,7 +319,7 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
 
     protected byte[] extractXml() throws Exception {
         StringWriter w = new StringWriter();
-        XMLStreamWriter wr = XMLOutputFactory.newInstance().createXMLStreamWriter(w);
+        XMLStreamWriter wr = WRITER_FACTORY.createXMLStreamWriter(w);
         editorUI.extractData("root", wr);
         wr.flush();
         return w.toString().getBytes("UTF-8");

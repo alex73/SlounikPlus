@@ -15,7 +15,8 @@ import org.im.dc.client.SchemaLoader;
 import org.im.dc.client.ui.ArticleEditController;
 
 public class XmlEditCheck extends XmlEditBase<JPanel> {
-    public XmlEditCheck(XmlGroup rootPanel, XmlGroup parentPanel, AnnotationInfo ann, ArticleEditController editController) {
+    public XmlEditCheck(XmlGroup rootPanel, XmlGroup parentPanel, AnnotationInfo ann,
+            ArticleEditController editController) {
         super(rootPanel, parentPanel, ann, editController);
     }
 

@@ -37,7 +37,7 @@ public class ExportArticles {
                 }
                 try {
                     String fn = Arrays.toString(a.getWords()).replaceAll("^\\[", "").replaceAll("\\]$", "").replace('/',
-                            '_') + ".xml";
+                            '_') + '-' + a.getArticleId() + ".xml";
                     System.err.println(fn);
                     Files.write(new File(args[0], fn).toPath(), xml2text(a.getXml()).getBytes("UTF-8"));
                 } catch (Exception ex) {

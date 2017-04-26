@@ -1,17 +1,16 @@
-/*
-if (article.zah.length != words.length) {
-  throw "Колькасць паметаў загалоўных слоў несупадае з колькасцю слоў";
+print (article.zah[0].textContent);
+var regexp = /[ЁЙЦУКЕНГШЗХФЫВАПРОЛДЖЭЯЧСМІИЪТЬБЮ]+/;
+var m=regexp.exec(article.zah[0].textContent);
+words = new Array();
+if (m) {
+	print(11111);
+  words.push(m[0]);
+  print(m[0]);
+} else {
+	print(2222);
 }
+helper.replaceWords(words);
 
-for each (var w in words) {
-	checkWord(w);
-}
-for each (var zah in article.zah) {
-  zah_check(zah);
-}
-for each (var tlum in article.tlum) {
-  tlum_check(tlum);
-}*/
 
 function zah_check(zah) {
   if (zah.lik[0].textContent == 'адз.' && zah.rod[0].value == null) throw "Род непазначаны";
@@ -45,7 +44,7 @@ function collectLinks(str) {
 //каб толькі правільныя сімвалы былі
 //напрыканцы могуць быць /1 /2 /3
 function checkWord(w) {
-  var regexp = /^[ЁЙЦУКЕНГШЗХФЫВАПРОЛДЖЭЯЧСМІТЬБЮ]?[ёйцукенгшўзх'фывапролджэячсмітьбю\-\+]+(\/[1-9])?$/;
+
   if (!regexp.test(w)) {
     throw "Няправільныя сімвалы ў загалоўным слове: " + w;
   }

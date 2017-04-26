@@ -13,7 +13,8 @@ import javax.xml.stream.XMLStreamWriter;
 import org.im.dc.client.ui.ArticleEditController;
 
 public class XmlEditText extends XmlEditBase<JTextArea> {
-    public XmlEditText(XmlGroup rootPanel, XmlGroup parentPanel, AnnotationInfo ann, ArticleEditController editController) {
+    public XmlEditText(XmlGroup rootPanel, XmlGroup parentPanel, AnnotationInfo ann,
+            ArticleEditController editController) {
         super(rootPanel, parentPanel, ann, editController);
     }
 
