@@ -33,7 +33,7 @@ public class Config {
     static public Schema articleSchema;
 
     public static void load() throws Exception {
-        LOG.info("Config loading start");
+        LOG.info("Config loading start from " + CONFIG_FILE.getAbsolutePath());
         SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
         Schema schema = schemaFactory.newSchema(Config.class.getResource("/org/im/dc/xsd/config.xsd"));
         Validator validator = schema.newValidator();

@@ -27,7 +27,7 @@ import javax.xml.ws.soap.SOAPFaultException;
  */
 public abstract class BaseController<T extends Window> {
     /** UI window for this controller(JFrame or JDialog) */
-    protected final T window;
+    public final T window;
     private final Window parentWindow;
 
     /**
@@ -98,7 +98,7 @@ public abstract class BaseController<T extends Window> {
     /**
      * SwingWorker extension for controllers.
      */
-    protected abstract class LongProcess extends SwingWorker<Void, Void> {
+    public abstract class LongProcess extends SwingWorker<Void, Void> {
         public LongProcess() {
             showProgress();
             execute();

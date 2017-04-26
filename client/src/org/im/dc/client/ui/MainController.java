@@ -29,7 +29,7 @@ import org.im.dc.service.dto.Related;
  */
 public class MainController extends BaseController<MainFrame> {
     static InitialData initialData;
-    static MainController instance;
+    public static MainController instance;
     int fontSize;
 
     private final String addr;
@@ -155,6 +155,9 @@ public class MainController extends BaseController<MainFrame> {
 
         window.btnAddWords.addActionListener((e) -> new AddWordsController());
         window.btnAddWords.setVisible(initialData.currentUserPermissions.contains(Permission.ADD_WORDS.name()));
+
+        window.btnAddArticle.addActionListener((e) -> new ArticleEditController());
+        window.btnAddArticle.setVisible(initialData.currentUserPermissions.contains(Permission.ADD_ARTICLE.name()));
 
         window.btnStat.addActionListener((e) -> todo("Тут будзе статыстыка ў залежнасці ад дазволу"));
 

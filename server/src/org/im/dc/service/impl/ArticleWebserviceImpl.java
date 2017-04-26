@@ -76,15 +76,15 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
         return a;
     }
 
-    protected static String validateArticle(RecArticle rec) throws Exception {
+    protected static String validateArticle(RecArticle rec) {
         if (rec.getXml() == null) {
             return null;
         }
         Validator validator = Config.articleSchema.newValidator();
-        validator.validate(new StreamSource(new ByteArrayInputStream(rec.getXml())));
-
         ValidationHelper helper = new ValidationHelper(rec.getArticleId());
         try {
+            validator.validate(new StreamSource(new ByteArrayInputStream(rec.getXml())));
+
             SimpleScriptContext context = new SimpleScriptContext();
             context.setAttribute("helper", helper, ScriptContext.ENGINE_SCOPE);
             context.setAttribute("words", rec.getWords(), ScriptContext.ENGINE_SCOPE);
@@ -447,6 +447,7 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
             o.validationError = r.getValidationError();
             result.add(o);
         }
+        ArticleShort.sortByAlphabet(result);
 
         LOG.info("<< listArticles");
         return result;

@@ -44,6 +44,24 @@ public class PermissionChecker {
         return result;
     }
 
+    public static String getUserNewArticleState(String user) {
+        for (User u : Config.getConfig().getUsers().getUser()) {
+            if (u.getName().equals(user)) {
+                return u.getNewArticleState();
+            }
+        }
+        return null;
+    }
+
+    public static String[] getUserNewArticleUsers(String user) {
+        for (User u : Config.getConfig().getUsers().getUser()) {
+            if (u.getName().equals(user)) {
+                return u.getNewArticleUsers() != null ? u.getNewArticleUsers().split(",") : null;
+            }
+        }
+        return null;
+    }
+
     public static void userRequiresPermission(String user, Permission perm) {
         String userRole = getUserRole(user);
         for (Role r : Config.getConfig().getRoles().getRole()) {

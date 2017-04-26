@@ -4,11 +4,14 @@ import java.awt.Component;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.lang.reflect.Constructor;
 
 import javax.swing.JPanel;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
+
+import org.im.dc.client.ui.ArticleEditController;
 
 import com.sun.org.apache.xerces.internal.xs.XSElementDeclaration;
 import com.sun.org.apache.xerces.internal.xs.XSTypeDefinition;
@@ -60,10 +63,35 @@ public class XmlMany extends JPanel {
     private void addElement() {
         JPanel p;
 
-        if (obj.getTypeDefinition().getTypeCategory() == XSTypeDefinition.COMPLEX_TYPE) {
-            p = new XmlGroup(rootPanel, parentPanel, obj, ann);
-        } else {
-            p = new XmlSimple(rootPanel, parentPanel, ann);
+        switch (ann.editType) {
+        case DEFAULT:
+            if (obj.getTypeDefinition().getTypeCategory() == XSTypeDefinition.COMPLEX_TYPE) {
+                p = new XmlGroup(rootPanel, parentPanel, obj, ann, rootPanel.editController);
+            } else {
+                p = new XmlEditText(rootPanel, parentPanel, ann, rootPanel.editController);
+            }
+            break;
+        case CHECK:
+            p = new XmlEditCheck(rootPanel, parentPanel, ann, rootPanel.editController);
+            break;
+        case RADIO:
+            p = new XmlEditRadio(rootPanel, parentPanel, ann, rootPanel.editController);
+            break;
+        case COMBO_EDITABLE:
+            p = new XmlEditComboEditable(rootPanel, parentPanel, ann, rootPanel.editController);
+            break;
+        case CUSTOM:
+            try {
+                Class<? extends JPanel> editor = (Class<? extends JPanel>) Class.forName(ann.editDetails);
+                Constructor<? extends JPanel> c = editor.getConstructor(XmlGroup.class, XmlGroup.class,
+                        AnnotationInfo.class, ArticleEditController.class);
+                p = c.newInstance(rootPanel, parentPanel, ann, rootPanel.editController);
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+            break;
+        default:
+            throw new RuntimeException("Unknown edit type");
         }
 
         add(p, getComponentCount() - 1);
@@ -108,6 +136,12 @@ public class XmlMany extends JPanel {
             }
             IXmlElement e = (IXmlElement) c;
             e.extractData(tag, wr);
+        }
+    }
+
+    public void replacePart(String[] path, XMLStreamReader rd) {
+        if (path.length == 0) {
+
         }
     }
 }

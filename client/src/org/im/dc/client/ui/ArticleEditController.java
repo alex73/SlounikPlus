@@ -31,6 +31,7 @@ import org.im.dc.client.SchemaLoader;
 import org.im.dc.client.WS;
 import org.im.dc.client.ui.xmlstructure.XmlGroup;
 import org.im.dc.gen.config.Permission;
+import org.im.dc.service.dto.ArticleFull;
 import org.im.dc.service.dto.ArticleFullInfo;
 import org.im.dc.service.dto.Related;
 import org.im.dc.service.dto.Related.RelatedType;
@@ -39,13 +40,16 @@ import org.im.dc.service.dto.Related.RelatedType;
  * Controls article editor.
  */
 public class ArticleEditController extends BaseController<ArticleEditDialog> {
+    public static XMLInputFactory READER_FACTORY = XMLInputFactory.newInstance();
     private XmlGroup editorUI;
 
+    public final boolean isnew;
     protected volatile ArticleFullInfo article;
     protected volatile boolean wasChanged;
 
-    public ArticleEditController(int articleId) {
+    private ArticleEditController(boolean isnew) {
         super(new ArticleEditDialog(MainController.instance.window, false), MainController.instance.window);
+        this.isnew = isnew;
 
         ActionListener cancelListener = (e) -> {
             if (askSave()) {
@@ -57,6 +61,28 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
                 KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
 
         displayOnParent();
+    }
+
+    /**
+     * New article.
+     */
+    public ArticleEditController() {
+        this(true);
+
+        article = new ArticleFullInfo();
+        article.youCanEdit = true;
+        article.article = new ArticleFull();
+        article.article.state = MainController.initialData.newArticleState;
+        article.article.assignedUsers = MainController.initialData.newArticleUsers;
+        init();
+        show();
+    }
+
+    /**
+     * Edit exist article.
+     */
+    public ArticleEditController(int articleId) {
+        this(false);
 
         // request article from server
         new LongProcess() {
@@ -83,12 +109,11 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
         window.btnSave.addActionListener((e) -> save());
         window.btnChangeState.addActionListener((e) -> changeStateAsk());
         window.btnAddIssue.addActionListener((e) -> addIssue());
-        /*TODO remove window.lblAddComment.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                addComment();
-            }
-        });*/
+        /*
+         * TODO remove window.lblAddComment.addMouseListener(new MouseAdapter() {
+         * 
+         * @Override public void mouseClicked(MouseEvent e) { addComment(); } });
+         */
         window.lblHasProposedChanges.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -161,8 +186,10 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
         displayWatch();
         displayIssue();
 
-        window.setTitle(window.getTitle().replaceAll("\\[.*\\]", Arrays.toString(article.article.words)));
-        window.txtWords.setText(Arrays.toString(article.article.words));
+        if (article.article.words != null) {
+            window.setTitle(window.getTitle().replaceAll("\\[.*\\]", Arrays.toString(article.article.words)));
+            window.txtWords.setText(Arrays.toString(article.article.words));
+        }
         window.txtState.setText(article.article.state);
         window.txtUsers.setText(Arrays.toString(article.article.assignedUsers));
         if (article.article.notes != null) {
@@ -174,9 +201,9 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
         wasChanged = false;
         updateIssueButton();
         try {
-            editorUI = SchemaLoader.createUI();
+            editorUI = SchemaLoader.createUI(this);
             if (article.article.xml != null) {
-                XMLStreamReader rd = XMLInputFactory.newInstance()
+                XMLStreamReader rd = READER_FACTORY
                         .createXMLStreamReader(new ByteArrayInputStream(article.article.xml));
                 rd.nextTag();
                 editorUI.insertData(rd);
@@ -239,6 +266,11 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
                 window.panelLinkedExternal.add(lbl);
             }
         }
+    }
+
+    public void replacePart(String path, byte[] xml) throws Exception {
+        XMLStreamReader rd = READER_FACTORY.createXMLStreamReader(new ByteArrayInputStream(xml));
+        editorUI.replacePart(path.split("/"), rd);
     }
 
     private void asLink(JLabel label) {

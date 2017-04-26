@@ -22,6 +22,8 @@
 			<xs:attribute name="name" type="xs:string" use="required" />
 			<xs:attribute name="pass" type="xs:string" use="required" />
 			<xs:attribute name="role" type="xs:string" use="required" />
+			<xs:attribute name="new-article-state" type="xs:string" use="optional" />
+			<xs:attribute name="new-article-users" type="xs:string" use="optional" />
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="roles">
@@ -64,6 +66,11 @@
 			<xs:enumeration value="add_words">
 				<xs:annotation>
 					<xs:documentation>Ці можа карыстальнік дадаваць новыя словы</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="add_article">
+				<xs:annotation>
+					<xs:documentation>Ці можа карыстальнік дадаваць артыкул</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
 			<xs:enumeration value="reassign">

@@ -7,6 +7,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Arrays;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -18,6 +19,8 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.im.dc.client.ui.ArticleEditController;
+
 import com.sun.org.apache.xerces.internal.xs.XSComplexTypeDefinition;
 import com.sun.org.apache.xerces.internal.xs.XSElementDeclaration;
 import com.sun.org.apache.xerces.internal.xs.XSModelGroup;
@@ -28,14 +31,17 @@ import com.sun.org.apache.xerces.internal.xs.XSTypeDefinition;
 @SuppressWarnings("serial")
 public class XmlGroup extends JPanel implements IXmlElement {
     private final XmlGroup rootPanel;
+    protected final ArticleEditController editController;
     private GridBagConstraints gbc = new GridBagConstraints();
     private JPanel gr;
     private JButton closable;
     private TitledBorder border;
     private String borderTitle;
 
-    public XmlGroup(XmlGroup rootPanel, XmlGroup parentPanel, XSElementDeclaration root, AnnotationInfo ann) {
+    public XmlGroup(XmlGroup rootPanel, XmlGroup parentPanel, XSElementDeclaration obj, AnnotationInfo ann,
+            ArticleEditController editController) {
         this.rootPanel = rootPanel != null ? rootPanel : this;
+        this.editController = editController;
         setLayout(new GridBagLayout());
         setOpaque(false);
 
@@ -70,7 +76,7 @@ public class XmlGroup extends JPanel implements IXmlElement {
         gbc.weightx = 1;
         add(gr, gbc);
 
-        p2(root);
+        p2(obj);
 
         gbc.gridx = 1;
         gbc.gridy = 0;
@@ -161,6 +167,15 @@ public class XmlGroup extends JPanel implements IXmlElement {
         wr.writeEndElement();
     }
 
+    public void replacePart(String[] path, XMLStreamReader rd) {
+        for (int i = 0; i < gr.getComponentCount(); i++) {
+            XmlMany many = (XmlMany) gr.getComponent(i);
+            if (many.tag.equals(path[0])) {
+                many.replacePart(Arrays.copyOfRange(path, 1, path.length), rd);
+            }
+        }
+    }
+
     @Override
     public void setIndex(Integer index) {
         if (borderTitle == null) {
@@ -180,7 +195,7 @@ public class XmlGroup extends JPanel implements IXmlElement {
         listenerList.add(ChangeListener.class, l);
     }
 
-    protected void fireChanged() {
+    public void fireChanged() {
         for (ChangeListener cl : listenerList.getListeners(ChangeListener.class)) {
             cl.stateChanged(null);
         }

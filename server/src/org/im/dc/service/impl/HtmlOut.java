@@ -1,49 +1,38 @@
 package org.im.dc.service.impl;
 
-import java.util.List;
-
 import org.im.dc.server.js.JsDomWrapper;
 
 public class HtmlOut {
     private final StringBuilder out = new StringBuilder(4096);
+
+    protected static String escape(String text) {
+        text = text.replace('+', '\u0301');
+        text = text.replace("&", "&amp;");
+        text = text.replace("<", "&lt;");
+        text = text.replace(">", "&gt;");
+        return text;
+    }
 
     public HtmlOut tag(String tag) {
         out.append(tag);
         return this;
     }
 
-    public HtmlOut text(String text) {
-        text = text.replace('+', '\u0301');
-        text = text.replace("&", "&amp;");
-        text = text.replace("<", "&lt;");
-        text = text.replace(">", "&gt;");
-        out.append(text);
-        return this;
+    public String prepare(String tagb, Object w, String tage) {
+        String t = prepare(w);
+        if (!t.isEmpty()) {
+            return tagb + t + tage;
+        } else {
+            return "";
+        }
     }
 
-    public HtmlOut text(JsDomWrapper w) {
-        text((String) w.get("textContent"));
-        return this;
-    }
-
-    /**
-     * Толькі першы элемэнт, калі існуе.
-     */
-    public HtmlOut out(List<JsDomWrapper> list) {
-        if (list == null) {
-            return this;
+    public String prepare(Object w) {
+        if (w instanceof JsDomWrapper) {
+            return escape((String) ((JsDomWrapper) w).get("textContent"));
+        } else {
+            return escape(w.toString());
         }
-        switch (list.size()) {
-        case 0:
-            break;
-        case 1:
-            text((String) list.get(0).get("textContent"));
-            break;
-        default:
-            throw new RuntimeException("Зашмат элементаў: " + list.size() + " 0: " + list.get(0).get("textContent")
-                    + " 1: " + list.get(1).get("textContent"));
-        }
-        return this;
     }
 
     public void log(String text) {

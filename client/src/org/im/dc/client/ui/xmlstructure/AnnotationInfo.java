@@ -10,9 +10,14 @@ public class AnnotationInfo {
     private static final Pattern RE_DETAILS = Pattern.compile("(.+)\\{(.+)\\}");
     private static final Pattern RE_COLOR = Pattern.compile("#([0-9A-Fa-f]{2})([0-9A-Fa-f]{2})([0-9A-Fa-f]{2})");
 
+    enum EDIT_TYPE {
+        DEFAULT, COMBO_EDITABLE, RADIO, CHECK, CUSTOM
+    };
+
     public final String text;
     public Color fgColor, bgColor, borderColor;
-    public String type;
+    public EDIT_TYPE editType = EDIT_TYPE.DEFAULT;
+    public String editDetails;
 
     public AnnotationInfo(XSAnnotation ann) {
         if (ann == null) {
@@ -42,7 +47,9 @@ public class AnnotationInfo {
                     borderColor = parseColor(value);
                     break;
                 case "type":
-                    type = value;
+                    int pp = value.indexOf('/');
+                    editType = EDIT_TYPE.valueOf(value.substring(0, pp).toUpperCase());
+                    editDetails = value.substring(pp + 1);
                     break;
                 default:
                     System.err.println("Wrong color: " + cn);

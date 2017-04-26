@@ -6,9 +6,15 @@
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="zah" maxOccurs="1" minOccurs="1" />
+				<xs:element name="comment" type="xs:string" minOccurs="0" maxOccurs="1">
+					<xs:annotation>
+						<xs:appinfo>Каментар да артыкула</xs:appinfo>
+					</xs:annotation>
+				</xs:element>
+				<xs:element ref="paradyhmy" minOccurs="1" maxOccurs="1" />
+				<xs:element ref="zah" minOccurs="1" maxOccurs="1" />
 				<xs:element ref="tlum" maxOccurs="unbounded" minOccurs="1" />
-				<xs:element ref="term" maxOccurs="unbounded" minOccurs="0"/>
+				<xs:element ref="term" maxOccurs="unbounded" minOccurs="0" />
 				<xs:element ref="fraz" minOccurs="0" maxOccurs="unbounded" />
 				<xs:element name="ustetym" type="xs:string" maxOccurs="unbounded" minOccurs="0">
 					<xs:annotation>
@@ -18,58 +24,105 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
+    <xs:element name="paradyhmy" type="xs:string">
+        <xs:annotation>
+            <xs:appinfo>Парадыгмы{type:custom/org.im.dc.client.ui.xmlstructure.tlum.XmlEditParadygmy}</xs:appinfo>
+        </xs:annotation>
+    </xs:element>
 	<xs:element name="zah">
 		<xs:annotation>
-			<xs:appinfo>Паметы загалоўных слоў{bg:#b0d89c,border:#000000}</xs:appinfo>
+			<xs:appinfo>Загаловак артыкула{bg:#b0d89c,border:#000000}</xs:appinfo>
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="gram" type="xs:string" minOccurs="0" maxOccurs="1">
+				<xs:element ref="partComplex" minOccurs="1" maxOccurs="unbounded" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="partComplex">
+		<xs:annotation>
+			<xs:appinfo>Складаная частка{bg:#b0d89c,border:#000000}</xs:appinfo>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="partSimple" minOccurs="1" maxOccurs="unbounded" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="partSimple">
+		<xs:annotation>
+			<xs:appinfo>Простая частка{bg:#b0d89c,border:#000000}</xs:appinfo>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="lik" type="likEnum" minOccurs="1" maxOccurs="1">
 					<xs:annotation>
-						<xs:appinfo>Граматычная памета</xs:appinfo>
+						<xs:appinfo>Асноўны лік{type:radio/likEnum}</xs:appinfo>
 					</xs:annotation>
+				</xs:element>
+				<xs:element name="rod" type="rodType" minOccurs="1" maxOccurs="1">
+					<xs:annotation>
+						<xs:appinfo>Род{type:check/rodEnum}</xs:appinfo>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="sklpazn" type="pazType" minOccurs="1" maxOccurs="1">
+					<xs:annotation>
+						<xs:appinfo>Скланяльнасць{type:check/pazEnum}</xs:appinfo>
+					</xs:annotation>
+				</xs:element>
+				<xs:element ref="wordform" minOccurs="1" maxOccurs="1" />
+				<xs:element name="insyLik" minOccurs="0" maxOccurs="1">
+					<xs:annotation>
+						<xs:appinfo>Іншы лік</xs:appinfo>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="rod" type="rodType" minOccurs="1" maxOccurs="1">
+								<xs:annotation>
+									<xs:appinfo>Род{type:check/rodEnum}</xs:appinfo>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="sklpazn" type="pazType" minOccurs="1" maxOccurs="1">
+								<xs:annotation>
+									<xs:appinfo>Скланяльнасць{type:check/pazEnum}</xs:appinfo>
+								</xs:annotation>
+							</xs:element>
+							<xs:element ref="wordform" minOccurs="1" maxOccurs="2" />
+						</xs:sequence>
+					</xs:complexType>
 				</xs:element>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="gramatyka">
+	<xs:element name="wordform">
 		<xs:annotation>
-			<xs:appinfo>Граматыка</xs:appinfo>
+			<xs:appinfo>Слова з формамі</xs:appinfo>
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
-			<xs:element name="para" minOccurs="1" maxOccurs="unbounded">
-				<xs:annotation>
-					<xs:appinfo>Парадыгма</xs:appinfo>
-				</xs:annotation>
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element name="sklon" type="xs:string" maxOccurs="1" minOccurs="0">
-							<xs:annotation>
-								<xs:appinfo>Склон</xs:appinfo>
-							</xs:annotation>
-						</xs:element>
-						<xs:element name="forma" type="xs:string" minOccurs="1" maxOccurs="1">
-							<xs:annotation>
-								<xs:appinfo>Форма</xs:appinfo>
-							</xs:annotation>
-						</xs:element>
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
-				<xs:element name="sem" type="xs:string" maxOccurs="1" minOccurs="0">
+				<xs:element name="word" type="xs:string" minOccurs="1" maxOccurs="1">
 					<xs:annotation>
-						<xs:appinfo>Семантычныя паметы</xs:appinfo>
+						<xs:appinfo>Слова</xs:appinfo>
 					</xs:annotation>
 				</xs:element>
-				<xs:element name="gram" type="xs:string" maxOccurs="1" minOccurs="0">
+				<xs:element ref="form" minOccurs="0" maxOccurs="unbounded" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="form">
+		<xs:annotation>
+			<xs:appinfo>Форма</xs:appinfo>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="sklon" type="sklonType" minOccurs="1" maxOccurs="1">
 					<xs:annotation>
-						<xs:appinfo>Граматычныя паметы</xs:appinfo>
+						<xs:appinfo>Склон{type:check/sklonEnum}</xs:appinfo>
 					</xs:annotation>
 				</xs:element>
-				<xs:element name="styl" type="xs:string" maxOccurs="1" minOccurs="0">
+				<xs:element name="end" type="xs:string" minOccurs="1" maxOccurs="1">
 					<xs:annotation>
-						<xs:appinfo>Стылістычныя паметы</xs:appinfo>
+						<xs:appinfo>Канчатак ці поўная форма</xs:appinfo>
 					</xs:annotation>
 				</xs:element>
 			</xs:sequence>
@@ -81,31 +134,17 @@
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="vyr" type="xs:string" minOccurs="0" maxOccurs="1">
+				<xs:element name="gram" type="xs:string" minOccurs="0" maxOccurs="1">
 					<xs:annotation>
-						<xs:appinfo>Што выражае</xs:appinfo>
+						<xs:appinfo>Граматычная памета(прысл,прыназ,ліч,звычайна мн)</xs:appinfo>
 					</xs:annotation>
 				</xs:element>
-				<xs:element name="sem" type="xs:string" maxOccurs="1" minOccurs="0">
+				<xs:element name="slova" type="xs:string" minOccurs="0" maxOccurs="1">
 					<xs:annotation>
-						<xs:appinfo>Семантычныя паметы</xs:appinfo>
+						<xs:appinfo>Слова</xs:appinfo>
 					</xs:annotation>
 				</xs:element>
-				<xs:element name="grpam" type="xs:string" maxOccurs="1" minOccurs="0">
-					<xs:annotation>
-						<xs:appinfo>Граматычныя паметы</xs:appinfo>
-					</xs:annotation>
-				</xs:element>
-				<xs:element name="styl" type="xs:string" maxOccurs="1" minOccurs="0">
-					<xs:annotation>
-						<xs:appinfo>Стылістычныя паметы</xs:appinfo>
-					</xs:annotation>
-				</xs:element>
-				<xs:element name="zaha" type="xs:string" maxOccurs="1" minOccurs="0">
-					<xs:annotation>
-						<xs:appinfo>Загалоўнае слова ў артыкуле</xs:appinfo>
-					</xs:annotation>
-				</xs:element>
+				<xs:element ref="form" minOccurs="0" maxOccurs="unbounded" />
 				<xs:element name="desc" type="xs:string" maxOccurs="1" minOccurs="1">
 					<xs:annotation>
 						<xs:appinfo>Тэкст тлумачэння</xs:appinfo>
@@ -141,29 +180,9 @@
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="sem" type="xs:string" maxOccurs="1" minOccurs="0">
-					<xs:annotation>
-						<xs:appinfo>Семантычныя паметы</xs:appinfo>
-					</xs:annotation>
-				</xs:element>
-				<xs:element name="grpam" type="xs:string" maxOccurs="1" minOccurs="0">
-					<xs:annotation>
-						<xs:appinfo>Граматычныя паметы</xs:appinfo>
-					</xs:annotation>
-				</xs:element>
-				<xs:element name="styl" type="xs:string" maxOccurs="1" minOccurs="0">
-					<xs:annotation>
-						<xs:appinfo>Стылістычныя паметы</xs:appinfo>
-					</xs:annotation>
-				</xs:element>
-				<xs:element name="zaha" type="xs:string" maxOccurs="1" minOccurs="0">
-					<xs:annotation>
-						<xs:appinfo>Загалоўнае слова ў артыкуле</xs:appinfo>
-					</xs:annotation>
-				</xs:element>
 				<xs:element name="desc" type="xs:string" maxOccurs="1" minOccurs="1">
 					<xs:annotation>
-						<xs:appinfo>Тэкст тлумачэння</xs:appinfo>
+						<xs:appinfo>Тэкст</xs:appinfo>
 					</xs:annotation>
 				</xs:element>
 				<xs:element ref="ex" maxOccurs="unbounded" minOccurs="0" />
@@ -176,29 +195,9 @@
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="sem" type="xs:string" maxOccurs="1" minOccurs="0">
-					<xs:annotation>
-						<xs:appinfo>Семантычныя паметы</xs:appinfo>
-					</xs:annotation>
-				</xs:element>
-				<xs:element name="grpam" type="xs:string" maxOccurs="1" minOccurs="0">
-					<xs:annotation>
-						<xs:appinfo>Граматычныя паметы</xs:appinfo>
-					</xs:annotation>
-				</xs:element>
-				<xs:element name="styl" type="xs:string" maxOccurs="1" minOccurs="0">
-					<xs:annotation>
-						<xs:appinfo>Стылістычныя паметы</xs:appinfo>
-					</xs:annotation>
-				</xs:element>
-				<xs:element name="zaha" type="xs:string" maxOccurs="1" minOccurs="0">
-					<xs:annotation>
-						<xs:appinfo>Загалоўнае слова ў артыкуле</xs:appinfo>
-					</xs:annotation>
-				</xs:element>
 				<xs:element name="desc" type="xs:string" maxOccurs="1" minOccurs="1">
 					<xs:annotation>
-						<xs:appinfo>Тэкст тлумачэння</xs:appinfo>
+						<xs:appinfo>Тэкст</xs:appinfo>
 					</xs:annotation>
 				</xs:element>
 				<xs:element ref="ex" maxOccurs="unbounded" minOccurs="0" />
@@ -218,7 +217,7 @@
 				</xs:element>
 				<xs:element name="author" type="xs:string" maxOccurs="1" minOccurs="1">
 					<xs:annotation>
-						<xs:appinfo>Аўтар{type:cbeditable/authors}</xs:appinfo>
+						<xs:appinfo>Аўтар{type:combo_editable/authorsType}</xs:appinfo>
 					</xs:annotation>
 				</xs:element>
 			</xs:sequence>
@@ -254,7 +253,7 @@
 						<xs:appinfo>Фразеалагізм</xs:appinfo>
 					</xs:annotation>
 				</xs:element>
-				<xs:element name="variants" minOccurs="1" maxOccurs="unbounded" >
+				<xs:element name="variants" minOccurs="1" maxOccurs="unbounded">
 					<xs:annotation>
 						<xs:appinfo>Варыянты значэнняў</xs:appinfo>
 					</xs:annotation>
@@ -291,7 +290,51 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-	<xs:simpleType name="authors">
+	<xs:complexType name="rodType">
+		<xs:sequence>
+			<xs:element name="value" type="rodEnum" minOccurs="0" maxOccurs="3" />
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="rodEnum">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="м." />
+			<xs:enumeration value="ж." />
+			<xs:enumeration value="н." />
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="pazType">
+		<xs:sequence>
+			<xs:element name="value" type="pazEnum" minOccurs="0" maxOccurs="1" />
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="pazEnum">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="нескл." />
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="likEnum">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="адз." />
+			<xs:enumeration value="мн." />
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="sklonType">
+		<xs:sequence>
+			<xs:element name="value" type="sklonEnum" minOccurs="0" maxOccurs="3" />
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="sklonEnum">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Н" />
+			<xs:enumeration value="Р" />
+			<xs:enumeration value="Д" />
+			<xs:enumeration value="В" />
+			<xs:enumeration value="Т" />
+			<xs:enumeration value="М" />
+			<xs:enumeration value="К" />
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="authorsType">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="Авяр’ян Дзеружынскі" />
 			<xs:enumeration value="Адам Бабарэка" />

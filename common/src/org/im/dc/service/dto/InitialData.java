@@ -11,4 +11,6 @@ public class InitialData {
     public Map<String, String> allUsers; // map: key=user, value=role
     public String currentUserRole;
     public Set<String> currentUserPermissions = new TreeSet<>();
+    public String newArticleState;
+    public String[] newArticleUsers;
 }

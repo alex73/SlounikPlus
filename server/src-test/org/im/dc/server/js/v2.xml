@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <root>
-  <zah>
-    <gram>хаджу, ходзіш, ходзіць; незак. тр.</gram>
-    <gram>хаджу, ходзіш, ходзіць; незак. тр.</gram>
-  </zah>
+	<zah>
+		<lik>адз.</lik>
+		<rod></rod>
+		<form>
+			<sklon />
+			<end>-а</end>
+		</form>
+	</zah>
+	<tlum>
+		<desc></desc>
+	</tlum>
 </root>

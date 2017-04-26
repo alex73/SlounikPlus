@@ -19,6 +19,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;enumeration value="view_output"/>
  *     &lt;enumeration value="full_validation"/>
  *     &lt;enumeration value="add_words"/>
+ *     &lt;enumeration value="add_article"/>
  *     &lt;enumeration value="reassign"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
@@ -64,6 +65,13 @@ public enum Permission {
      */
     @XmlEnumValue("add_words")
     ADD_WORDS("add_words"),
+
+    /**
+     * Ці можа карыстальнік дадаваць артыкул
+     * 
+     */
+    @XmlEnumValue("add_article")
+    ADD_ARTICLE("add_article"),
 
     /**
      * Ці можа карыстальнік пераназначаць словы

@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.util.List;
 
+import org.im.dc.client.ui.ArticleEditController;
 import org.im.dc.client.ui.xmlstructure.AnnotationInfo;
 import org.im.dc.client.ui.xmlstructure.XmlGroup;
 import org.w3c.dom.ls.LSInput;
@@ -96,9 +97,9 @@ public class SchemaLoader {
 
     }
 
-    public static XmlGroup createUI() {
+    public static XmlGroup createUI(ArticleEditController editor) {
         XSElementDeclaration root = model.getElementDeclaration("root", null);
-        return new XmlGroup(null, null, root, new AnnotationInfo(root.getAnnotation()));
+        return new XmlGroup(null, null, root, new AnnotationInfo(root.getAnnotation()), editor);
     }
 
     public static List<String> getSimpleTypeEnumeration(String typeName) {

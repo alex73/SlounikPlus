@@ -66,6 +66,8 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
         }
         result.currentUserRole = PermissionChecker.getUserRole(header.user);
         result.currentUserPermissions = PermissionChecker.getUserPermissions(header.user);
+        result.newArticleState = PermissionChecker.getUserNewArticleState(header.user);
+        result.newArticleUsers = PermissionChecker.getUserNewArticleUsers(header.user);
 
         LOG.info("<< getInitialData");
         return result;

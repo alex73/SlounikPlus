@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+	<users>
+        <user name="user1" pass="123" role="укладальнік" new-article-state="Звычайны" new-article-users="user1,user2"/>
+		<user name="user2" pass="456" role="укладальнік" new-article-state="Звычайны" new-article-users="user1,user2"/>
+	</users>
+	<roles>
+		<role id="укладальнік">
+			<permission>add_article</permission>
+		</role>
+		<role id="галоўны_рэдактар">
+			<permission>view_output</permission>
+			<permission>edit_header</permission>
+			<permission>full_statistics</permission>
+			<permission>full_validation</permission>
+			<permission>add_words</permission>
+			<permission>reassign</permission>
+		</role>
+	</roles>
+	<states>
+		<state id="Звычайны" edit_roles="укладальнік" />
+	</states>
+	<external_links />
+</config>

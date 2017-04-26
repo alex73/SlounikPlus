@@ -13,25 +13,31 @@ public class WordSplitter {
     private StringBuilder result = new StringBuilder(1024);
     private StringBuilder str = new StringBuilder(256);
 
-    public String parse(byte[] xml) throws Exception {
+    public String parse(byte[] xml) {
         result.append(' ');
-        XMLStreamReader r = FACTORY.createXMLStreamReader(new ByteArrayInputStream(xml));
-        while (r.hasNext()) {
-            int eventType = r.next();
-            switch (eventType) {
-            case XMLEvent.CHARACTERS:
-                str.append(r.getText());
-                break;
-            case XMLEvent.SPACE:
-                str.append(" ");
-                break;
-            default:
-                if (str.length() > 0) {
-                    process();
-                    str.setLength(0);
+
+        try {
+            XMLStreamReader r = FACTORY.createXMLStreamReader(new ByteArrayInputStream(xml));
+            while (r.hasNext()) {
+                int eventType = r.next();
+                switch (eventType) {
+                case XMLEvent.CHARACTERS:
+                    str.append(r.getText());
+                    break;
+                case XMLEvent.SPACE:
+                    str.append(" ");
+                    break;
+                default:
+                    if (str.length() > 0) {
+                        process();
+                        str.setLength(0);
+                    }
                 }
             }
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
         }
+
         result.append(' ');
 
         return result.toString().toLowerCase();
