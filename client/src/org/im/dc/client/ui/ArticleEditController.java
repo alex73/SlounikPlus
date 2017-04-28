@@ -110,13 +110,6 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
         window.btnSave.addActionListener((e) -> save());
         window.btnChangeState.addActionListener((e) -> changeStateAsk());
         window.btnAddIssue.addActionListener((e) -> addIssue());
-        /*
-         * TODO remove window.lblAddComment.addMouseListener(new MouseAdapter()
-         * {
-         * 
-         * @Override public void mouseClicked(MouseEvent e) { addComment(); }
-         * });
-         */
         window.lblHasProposedChanges.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {

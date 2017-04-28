@@ -1,9 +1,9 @@
-CYR_UPPER_LETTERS = "ЙЦУКЕНГШЎЗХФЫВАПРОЛДЖЭЯЧСМІТЬБЮЁИЩЪҐ"
-CYR_WRONG_LETTERS = "ЈјÁÓÉÍóáéíŎǑÔĂÊĚĔăǎāôŏĕěêę\uF007\uF02D’ΪÏïѲθ0123456789…^+*<>«»";
-CYR_LOWER_LETTERS = "йцукенгшўзхфывапролджэячсмітьбюёищъґ";
-CYR_LETTERS=CYR_UPPER_LETTERS+CYR_LOWER_LETTERS+CYR_WRONG_LETTERS+"\u0301"+"παίωπλέχωτρέπαίρε";
+CYR_UPPER_LETTERS = "ЙЦУКЕНГШЎЗХФЫВАПРОЛДЖЭЯЧСМІТЬБЮЁИЩЪҐѢѲ"
+CYR_WRONG_LETTERS = "ŎÔĂÊĔăôŏĕê’ΪÏï0123456789^+*<>«»";
+CYR_LOWER_LETTERS = "йцукенгшўзхфывапролджэячсмітьбюёищъґѣѳ";
+CYR_LETTERS=CYR_UPPER_LETTERS+CYR_LOWER_LETTERS+CYR_WRONG_LETTERS+"´"+"παίωπλέχωτρέπαίρε";
 NON_LETTERS=" ,.)!?-;:[](|)–=\n/“”\"";
-LAT_LETTERS = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNMüžłė";
+LAT_LETTERS = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNMüžłėę";
 
 var nextPos = 0;
 while(true) {

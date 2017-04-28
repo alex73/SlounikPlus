@@ -1,14 +1,15 @@
-print (article.zah[0].textContent);
-var regexp = /[ЁЙЦУКЕНГШЗХФЫВАПРОЛДЖЭЯЧСМІИЪТЬБЮ]+/;
-var m=regexp.exec(article.zah[0].textContent);
+var regexpWordUppercase = /^[ЙЦУКЕНГШЎЗХФЫВАПРОЛДЖЭЯЧСМІТЬБЮЁИЩЪҐѢѲ´]+(\-[ЙЦУКЕНГШЎЗХФЫВАПРОЛДЖЭЯЧСМІТЬБЮЁИЩЪҐѢѲ´]+)?$/;
+
+var zahWords = article.zah[0].textContent.split(/[ \.,]/);
+
 words = new Array();
-if (m) {
-	print(11111);
-  words.push(m[0]);
-  print(m[0]);
-} else {
-	print(2222);
+for each (var z in zahWords) {
+  if (regexpWordUppercase.test(z)) {
+    words.push(z);
+    print(z);
+  }
 }
+
 helper.replaceWords(words);
 
 

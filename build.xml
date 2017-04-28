@@ -15,8 +15,18 @@
         <include name="client/lib/**/*.jar" />
         <include name="common/lib/**/*.jar" />
     </fileset>
+    <fileset dir="." id="client-tlum-jars-fileset">
+        <include name="module-tlum/lib/**/*.jar" />
+        <include name="client/lib/**/*.jar" />
+        <include name="common/lib/**/*.jar" />
+    </fileset>
+    <fileset dir="." id="client-nasovic-jars-fileset">
+        <include name="module-nasovic/lib/**/*.jar" />
+        <include name="client/lib/**/*.jar" />
+        <include name="common/lib/**/*.jar" />
+    </fileset>
 
-    <target name="client" depends="clean,xjc">
+    <target name="client">
         <mkdir dir="client/build" />
         <javac srcdir="client/src:client/src-gen:common/src" includes="**" encoding="utf-8" destdir="client/build"  debug="true" debuglevel="lines,vars,source">
             <classpath>
@@ -38,7 +48,59 @@
         </jar>
     </target>
 
-    <target name="server" depends="clean,xjc">
+    <target name="client-tlum">
+        <mkdir dir="module-tlum/build" />
+        <javac srcdir="module-tlum/src:client/src:client/src-gen:common/src" includes="**" encoding="utf-8" destdir="module-tlum/build"  debug="true" debuglevel="lines,vars,source">
+            <classpath>
+                <fileset refid="client-tlum-jars-fileset"/>
+            </classpath>
+        </javac>
+        <copy todir="module-tlum/build">
+            <fileset dir="module-tlum/src" />
+            <fileset dir="client/src" />
+            <fileset dir="common/src" />
+        </copy>
+
+        <mkdir dir="dist" />
+        <jar destfile="dist/client-tlum/client-tlum.jar">
+            <fileset dir="module-tlum/build" />
+            <zipgroupfileset refid="client-tlum-jars-fileset" />
+            <manifest>
+                <attribute name="Main-Class" value="org.im.dc.client.ui.ClientStartup" />
+            </manifest>
+        </jar>
+        <copy todir="dist/client-tlum/config/">
+            <fileset dir="module-tlum/config/" />
+        </copy>
+    </target>
+
+    <target name="client-nasovic">
+        <mkdir dir="module-nasovic/build" />
+        <javac srcdir="module-nasovic/src:client/src:client/src-gen:common/src" includes="**" encoding="utf-8" destdir="module-nasovic/build"  debug="true" debuglevel="lines,vars,source">
+            <classpath>
+                <fileset refid="client-nasovic-jars-fileset"/>
+            </classpath>
+        </javac>
+        <copy todir="module-nasovic/build">
+            <fileset dir="module-nasovic/src" />
+            <fileset dir="client/src" />
+            <fileset dir="common/src" />
+        </copy>
+
+        <mkdir dir="dist" />
+        <jar destfile="dist/client-nasovic/client-nasovic.jar">
+            <fileset dir="module-nasovic/build" />
+            <zipgroupfileset refid="client-nasovic-jars-fileset" />
+            <manifest>
+                <attribute name="Main-Class" value="org.im.dc.client.ui.ClientStartup" />
+            </manifest>
+        </jar>
+        <copy todir="dist/client-nasovic/config/">
+            <fileset dir="module-nasovic/config/" />
+        </copy>
+    </target>
+
+    <target name="server">
         <mkdir dir="server/build" />
         <javac srcdir="server/src:server/src-gen:common/src" includes="**" encoding="utf-8" destdir="server/build"  debug="true" debuglevel="lines,vars,source">
             <classpath>
@@ -61,15 +123,9 @@
         <copy todir="dist/server/" flatten="true">
             <fileset refid="server-jars-fileset"/>
         </copy>
-        <copy todir="dist/server/config/">
-            <fileset dir="server/config/" />
-        </copy>
-        <zip destfile="dist/build.zip">
-            <fileset dir="dist" />
-        </zip>
     </target>
 
-    <target name="all" depends="client, server" />
+    <target name="all" depends="clean, xjc, server, client-tlum, client-nasovic" />
 
     <target name="clean">
         <delete dir="dist" failonerror="false" />

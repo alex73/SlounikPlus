@@ -7,6 +7,7 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import javax.swing.BorderFactory;
 import javax.swing.JEditorPane;
@@ -18,7 +19,6 @@ import javax.swing.text.Element;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
-import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
@@ -30,6 +30,9 @@ import org.im.dc.client.ui.xmlstructure.XmlMany;
 
 @SuppressWarnings("serial")
 public class XmlEditNasovic extends XmlEditBase<JEditorPane> {
+    static final String ALLOWED_CHARS = "ЙЦУКЕНГШЎЗХФЫВАПРОЛДЖЭЯЧСМІТЬБЮЁИЩЪѢйцукенгшўзхфывапролджэячсмітьбюёищъѣ´ ,.!?-;:\\(\\)–";
+    static final Pattern UPPER_FIRST = Pattern.compile(
+            "([\\s,.!?;:\\(\\)–])([ЙЦУКЕНГШЎЗХФЫВАПРОЛДЖЭЯЧСМІТЬБЮЁИЩЪѢ][йцукенгшўзхфывапролджэячсмітьбюёищъѣ´\\-]+)([\\s,.!?;:\\(\\)–])");
 
     public XmlEditNasovic(XmlGroup rootPanel, XmlGroup parentPanel, AnnotationInfo ann,
             ArticleEditController editController) {
@@ -77,7 +80,17 @@ public class XmlEditNasovic extends XmlEditBase<JEditorPane> {
                     false);
 
             String text = field.getDocument().getText(0, field.getDocument().getLength());
+
             parsed = new PaNumarach(text);
+            SimpleAttributeSet ablue = new SimpleAttributeSet();
+            StyleConstants.setBackground(ablue, Color.GREEN);// new Color(0xca,0xe0,0xf7));
+            for (Numar n : parsed.numary) {
+                for (int i = n.start; i < n.end; i++) {
+                    if (ALLOWED_CHARS.indexOf(text.charAt(i)) < 0) {
+                        ((StyledDocument) field.getDocument()).setCharacterAttributes(i, 1, ablue, false);
+                    }
+                }
+            }
 
             switch (parsed.numary.size()) {
             case 0: // пусты
@@ -127,7 +140,6 @@ public class XmlEditNasovic extends XmlEditBase<JEditorPane> {
 
             XmlMany mTlum = rootPanel.getManyPart("tlum");
             prepareTlumXml(parsed, mTlum);
-
         } catch (Exception ex) {
             ex.printStackTrace();
             try {
@@ -203,7 +215,11 @@ public class XmlEditNasovic extends XmlEditBase<JEditorPane> {
 
         int nastupnySkaz(String text, int pos, int end) {
             for (int i = pos; i < end; i++) {
-                if (text.charAt(i) == '.') {
+                if (text.charAt(i) == '.' || text.charAt(i) == '?' || text.charAt(i) == '!') {
+                    String endText = text.substring(pos, i + 1).toLowerCase();
+                    if (endText.endsWith(" см.") || endText.endsWith(" слов.") || endText.endsWith(" приб.")) {
+                        continue;
+                    }
                     for (int j = i + 1; j < end; j++) {
                         if (!Character.isSpaceChar(text.charAt(j))) {
                             char nextLetter = text.charAt(j);
@@ -276,9 +292,9 @@ public class XmlEditNasovic extends XmlEditBase<JEditorPane> {
 
         String getAsSign() {
             String tt = getText();
-            if ("Погов.".equals(tt) || "Посл.".equals(tt)) {
+            if ("Погов.".equals(tt) || "Посл.".equals(tt) || "Изъ пѣсни.".equals(tt)) {
                 return '(' + tt + ')';
-            } else if ("(Погов.)".equals(tt) || "(Посл.)".equals(tt)) {
+            } else if ("(Погов.)".equals(tt) || "(Посл.)".equals(tt) || "(Изъ пѣсни.)".equals(tt)) {
                 return tt;
             } else {
                 return null;
@@ -295,7 +311,12 @@ public class XmlEditNasovic extends XmlEditBase<JEditorPane> {
         XMLStreamWriter wr = ArticleEditController.WRITER_FACTORY.createXMLStreamWriter(w);
         wr.writeStartElement("zah");
         if (parsed.numary.size() > 0) {
-            wr.writeCharacters(parsed.numary.get(0).getText());
+            String d = parsed.numary.get(0).getText();
+            d = UPPER_FIRST.matcher(d).replaceAll("$1{$2}$3");
+            d = d.replace("{См}", "См");
+            d = d.replace("{Слов}", "Слов");
+            d = d.replace("{Приб}", "Приб");
+            wr.writeCharacters(d);
         }
         wr.writeEndElement();
         wr.flush();
@@ -329,12 +350,18 @@ public class XmlEditNasovic extends XmlEditBase<JEditorPane> {
                     tlTo = n.skazy.size();
                 }
                 wr.writeStartElement("desc");
+                StringBuilder desc = new StringBuilder(100);
                 for (int i = tlFrom; i < tlTo; i++) {
                     if (i > tlFrom) {
-                        wr.writeCharacters(" ");
+                        desc.append(" ");
                     }
-                    wr.writeCharacters(n.skazy.get(i).getText());
+                    desc.append(n.skazy.get(i).getText());
                 }
+                String d = UPPER_FIRST.matcher(desc).replaceAll("$1{$2}$3");
+                d = d.replace("{См}", "См");
+                d = d.replace("{Слов}", "Слов");
+                d = d.replace("{Приб}", "Приб");
+                wr.writeCharacters(d);
                 wr.writeEndElement();
                 for (int i = tlTo; i < n.skazy.size(); i++) {
                     wr.writeStartElement("ex");
