@@ -24,11 +24,17 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-    <xs:element name="paradyhmy" type="xs:string">
-        <xs:annotation>
-            <xs:appinfo>Парадыгмы{type:custom/org.im.dc.client.ui.xmlstructure.tlum.XmlEditParadygmy}</xs:appinfo>
-        </xs:annotation>
-    </xs:element>
+	<xs:element name="paradyhmy">
+		<xs:annotation>
+			<xs:appinfo>Парадыгмы{type:custom/org.im.dc.client.ui.xmlstructure.tlum.XmlEditParadygmy}</xs:appinfo>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip" />
+			</xs:sequence>
+			<xs:attribute name="count" type="xs:int" />
+		</xs:complexType>
+	</xs:element>
 	<xs:element name="zah">
 		<xs:annotation>
 			<xs:appinfo>Загаловак артыкула{bg:#b0d89c,border:#000000}</xs:appinfo>
@@ -51,7 +57,7 @@
 	</xs:element>
 	<xs:element name="partSimple">
 		<xs:annotation>
-			<xs:appinfo>Простая частка{bg:#b0d89c,border:#000000}</xs:appinfo>
+			<xs:appinfo>Простая частка{bg:#b0d89c,border:#000000,type:custom/org.im.dc.client.ui.xmlstructure.tlum.XmlEditOneParadigm}</xs:appinfo>
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>

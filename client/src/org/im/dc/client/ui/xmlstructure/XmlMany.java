@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JPanel;
-import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
@@ -149,6 +148,14 @@ public class XmlMany extends JPanel {
             }
         }
         return subgroups;
+    }
+
+    public List<IXmlElement> getElements() {
+        List<IXmlElement> result = new ArrayList<>();
+        for (int i = 0; i < getComponentCount() - 1; i++) {
+            result.add((IXmlElement) getComponent(i));
+        }
+        return result;
     }
 
     public void removeAllElements() {

@@ -26,10 +26,10 @@
 		FROM Articles
 	</select>
     <select id="selectArticle" parameterType="int" resultType="RecArticle" resultMap="RecArticleMap">
-        SELECT *
-        FROM Articles
-        WHERE articleId = #{id}
-    </select>
+		SELECT *
+		FROM Articles
+		WHERE articleId = #{id}
+	</select>
 	<select id="selectArticleForUpdate" parameterType="int" resultType="RecArticle" resultMap="RecArticleMap">
 		SELECT *
 		FROM Articles
@@ -86,6 +86,12 @@
 			lastUpdated = #{record.lastUpdated},
 			validationError = #{record.validationError}
 		WHERE articleId = #{record.articleId} AND lastUpdated = #{prevLastUpdated}
+	</update>
+	<update id="updateArticleWordsXml">
+		UPDATE Articles
+		SET xml = #{record.xml},
+		words = #{record.words,typeHandler=StringArrayTypeHandler}
+		WHERE articleId = #{record.articleId}
 	</update>
 	<update id="updateWords">
 		UPDATE Articles

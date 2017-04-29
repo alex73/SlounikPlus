@@ -1,44 +1,61 @@
 package org.im.dc.client.ui.xmlstructure.tlum;
 
 import java.awt.Font;
+import java.text.Collator;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.stream.Collectors;
 
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 
 import org.alex73.corpus.paradigm.Paradigm;
+import org.alex73.corpus.paradigm.Variant;
 import org.alex73.korpus.base.BelarusianTags;
 import org.alex73.korpus.base.GrammarDB2;
-import org.alex73.korpus.base.GrammarDBSaver;
+import org.alex73.korpus.utils.StressUtils;
 import org.im.dc.client.ui.ArticleEditController;
 import org.im.dc.client.ui.BaseController;
 import org.im.dc.client.ui.MainController;
 
 public class SelectParadigmController extends BaseController<SelectParadigmDialog> {
     protected static GrammarDB2 db;
-    protected static List<Paradigm> filteredParadigms;
-    protected Set<Integer> selectedParadigms = new TreeSet<>();
+    protected static Map<Integer, Paradigm> paradigmById;
+    protected static List<VariantInfo> filteredParadigms;
+    protected Set<String> selectedVariants = new TreeSet<>();
 
-    public SelectParadigmController(ArticleEditController editor, XmlEditParadygmy parent) {
+    public SelectParadigmController(ArticleEditController editor, XmlEditParadygmy parent,
+            List<VariantInfo> input) {
         super(new SelectParadigmDialog(MainController.instance.window, true), editor.window);
 
         setupCloseOnEscape();
 
+        for (VariantInfo p : input) {
+            if (p.id != 0) {
+                selectedVariants.add(p.getVariantId());
+            }
+        }
         if (db == null) {
             // request article from server
             new LongProcess() {
                 @Override
                 protected void exec() throws Exception {
                     db = GrammarDB2.initializeFromJar();
+                    List<Paradigm> all = db.getAllParadigms();
+                    paradigmById = new HashMap<>(all.size());
+                    all.forEach(p -> paradigmById.put(p.getPdgId(), p));
                 }
 
                 @Override
                 protected void ok() {
-                    filteredParadigms = db.getAllParadigms();
+                    filteredParadigms = new ArrayList<>();
                     show();
                 }
 
@@ -48,7 +65,7 @@ public class SelectParadigmController extends BaseController<SelectParadigmDialo
                 }
             };
         } else {
-            filteredParadigms = db.getAllParadigms();
+            filteredParadigms = new ArrayList<>();
             show();
         }
         window.table.setFont(window.table.getFont().deriveFont(Font.PLAIN));
@@ -72,7 +89,17 @@ public class SelectParadigmController extends BaseController<SelectParadigmDialo
         });
 
         window.btnChoose.addActionListener(e -> {
-            parent.field.setText(selectedParadigms.toString());
+            List<VariantInfo> list = new ArrayList<>();
+            selectedVariants.forEach(vid -> {
+                int id = Integer.parseInt(vid.substring(0, vid.length() - 1));
+                char vi = vid.charAt(vid.length() - 1);
+
+                Paradigm p = paradigmById.get(id);
+                if (p != null) {
+                    list.add(new VariantInfo(p, vi));
+                }
+            });
+            parent.setCurrent(list);
             window.dispose();
         });
 
@@ -82,14 +109,29 @@ public class SelectParadigmController extends BaseController<SelectParadigmDialo
     void filterChanged() {
         String filter = window.txtFilter.getText().trim();
         if (filter.isEmpty()) {
-            filteredParadigms = db.getAllParadigms();
+            filteredParadigms = new ArrayList<>();
         } else {
-            filteredParadigms = db.getAllParadigms().parallelStream().filter(
-                    p -> selectedParadigms.contains(p.getPdgId()) || p.getLemma().replace("+", "").startsWith(filter))
-                    .collect(Collectors.toList());
-            filteredParadigms.sort(GrammarDBSaver.COMPARATOR);
+            filteredParadigms = Collections.synchronizedList(new ArrayList<>());
+            db.getAllParadigms().parallelStream().forEach(p -> {
+                for (int i = 0; i < p.getVariant().size(); i++) {
+                    char vIndex = (char) ('a' + i);
+                    Variant v = p.getVariant().get(i);
+                    if (isVariantSelected(p, vIndex) || isLemmaFiltered(filter, v)) {
+                        filteredParadigms.add(new VariantInfo(p, vIndex));
+                    }
+                }
+            });
+            filteredParadigms.sort(SelectedVariant_COMPARATOR);
         }
         ((DefaultTableModel) window.table.getModel()).fireTableDataChanged();
+    }
+
+    boolean isVariantSelected(Paradigm p, char vIndex) {
+        return selectedVariants.contains(Integer.toString(p.getPdgId()) + vIndex);
+    }
+
+    boolean isLemmaFiltered(String filter, Variant v) {
+        return v.getLemma().replace("+", "").startsWith(filter);
     }
 
     void show() {
@@ -119,15 +161,15 @@ public class SelectParadigmController extends BaseController<SelectParadigmDialo
 
             @Override
             public Object getValueAt(int row, int column) {
-                Paradigm p = filteredParadigms.get(row);
+                VariantInfo p = filteredParadigms.get(row);
                 switch (column) {
                 case 0:
-                    return selectedParadigms.contains(p.getPdgId());
+                    return selectedVariants.contains(p.getVariantId());
                 case 1:
-                    return p.getLemma();
+                    return p.lemma;
                 case 2:
                     try {
-                        return BelarusianTags.getInstance().describe(p.getTag());
+                        return BelarusianTags.getInstance().describe(p.tag);
                     } catch (Exception ex) {
                         return null;
                     }
@@ -138,12 +180,39 @@ public class SelectParadigmController extends BaseController<SelectParadigmDialo
             @Override
             public void setValueAt(Object aValue, int row, int column) {
                 if (column == 0) {
-                    Paradigm p = filteredParadigms.get(row);
-                    if (!selectedParadigms.remove(p.getPdgId())) {
-                        selectedParadigms.add(p.getPdgId());
+                    VariantInfo p = filteredParadigms.get(row);
+                    if (!selectedVariants.remove(p.getVariantId())) {
+                        selectedVariants.add(p.getVariantId());
                     }
                 }
             }
         });
     }
+
+    public static Locale BE = new Locale("be");
+    public static Collator BEL = Collator.getInstance(BE);
+    public static Comparator<VariantInfo> SelectedVariant_COMPARATOR = new Comparator<VariantInfo>() {
+        @Override
+        public int compare(VariantInfo p1, VariantInfo p2) {
+            String w1 = StressUtils.unstress(p1.lemma.toLowerCase(BE));
+            String w2 = StressUtils.unstress(p2.lemma.toLowerCase(BE));
+            int r = BEL.compare(w1.toLowerCase(), w2.toLowerCase());
+            if (r == 0) {
+                r = BEL.compare(p1.lemma.toLowerCase(), p2.lemma.toLowerCase());
+            }
+            if (r == 0) {
+                r = BEL.compare(p1.lemma, p2.lemma);
+            }
+            if (r == 0) {
+                r = p1.tag.compareTo(p2.tag);
+            }
+            if (r == 0) {
+                r = Integer.compare(p1.id, p2.id);
+            }
+            if (r == 0) {
+                r = Character.compare(p1.variantIndex, p2.variantIndex);
+            }
+            return r;
+        }
+    };
 }

@@ -1,12 +1,12 @@
-var regexpWordUppercase = /^[ЙЦУКЕНГШЎЗХФЫВАПРОЛДЖЭЯЧСМІТЬБЮЁИЩЪҐѢѲ´]+(\-[ЙЦУКЕНГШЎЗХФЫВАПРОЛДЖЭЯЧСМІТЬБЮЁИЩЪҐѢѲ´]+)?$/;
+var regexpWordUppercase = /^[ЙЦУКЕНГШЎЗХФЫВАПРОЛДЖЭЯЧСМІТЬБЮЁИЩЪҐѢѲ´\u0301]+(\-?[ЙЦУКЕНГШЎЗХФЫВАПРОЛДЖЭЯЧСМІТЬБЮЁИЩЪҐѢѲ´\u0301]+)?$/;
+//var regexpWordUppercase = /[ЙЦУКЕНГШЎЗХФЫВАПРОЛДЖЭЯЧСМІТЬБЮЁИЩЪҐѢѲ´]+/;
 
-var zahWords = article.zah[0].textContent.split(/[ \.,]/);
+var zahWords = article.zah[0].textContent.split(/[\s\.,]+/);
 
 words = new Array();
 for each (var z in zahWords) {
   if (regexpWordUppercase.test(z)) {
     words.push(z);
-    print(z);
   }
 }
 
