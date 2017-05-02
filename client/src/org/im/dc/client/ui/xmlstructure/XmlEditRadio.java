@@ -7,6 +7,7 @@ import java.awt.event.ItemListener;
 import javax.swing.ButtonGroup;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
@@ -42,7 +43,7 @@ public class XmlEditRadio extends XmlEditBase<JPanel> {
     }
 
     @Override
-    public void insertData(XMLStreamReader rd) throws XMLStreamException {
+    public void insertData(XMLStreamReader rd) throws Exception {
         String v = rd.getElementText();
         for (int i = 0; i < field.getComponentCount(); i++) {
             JRadioButton rb = (JRadioButton) field.getComponent(i);

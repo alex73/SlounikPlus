@@ -130,6 +130,16 @@ public class XmlMany extends JPanel {
         e.insertData(rd);
     }
 
+    public void displayed() {
+        for (Component c : getComponents()) {
+            if (c == add) {
+                continue;
+            }
+            IXmlElement e = (IXmlElement) c;
+            e.displayed();
+        }
+    }
+
     public void extractData(XMLStreamWriter wr) throws Exception {
         for (Component c : getComponents()) {
             if (c == add) {

@@ -29,7 +29,7 @@ public class VariantInfo {
 
     @Override
     public String toString() {
-        return id + variantIndex + "/" + tag + "/" + lemma;
+        return getVariantId() + "/" + tag + "/" + lemma;
     }
 
     public String getVariantId() {

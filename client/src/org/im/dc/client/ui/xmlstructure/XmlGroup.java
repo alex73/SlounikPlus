@@ -127,6 +127,7 @@ public class XmlGroup extends JPanel implements IXmlElement {
         int indexInGroup = 0;
         while (rd.hasNext()) {
             int t = rd.nextTag();
+            System.out.println(this + " " + rd.getLocalName());
             switch (t) {
             case XMLStreamConstants.START_ELEMENT:
                 String tagName = rd.getLocalName();
@@ -147,12 +148,23 @@ public class XmlGroup extends JPanel implements IXmlElement {
                 if (!done) {
                     throw new RuntimeException();
                 }
+                // if (rd.getEventType()==XMLStreamConstants.END_ELEMENT) {
+                // return;
+                // }
                 break;
             case XMLStreamConstants.END_ELEMENT:
                 return;
             default:
                 throw new RuntimeException();
             }
+        }
+    }
+
+    @Override
+    public void displayed() {
+        for (Component c : gr.getComponents()) {
+            XmlMany many = (XmlMany) c;
+            many.displayed();
         }
     }
 

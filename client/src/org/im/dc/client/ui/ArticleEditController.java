@@ -207,6 +207,7 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
                         .createXMLStreamReader(new ByteArrayInputStream(article.article.xml));
                 rd.nextTag();
                 editorUI.insertData(rd);
+                editorUI.displayed();
             }
             editorUI.addChangeListener((e) -> {
                 wasChanged = true;

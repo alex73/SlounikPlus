@@ -6,6 +6,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JTextArea;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
@@ -44,7 +45,7 @@ public class XmlEditText extends XmlEditBase<JTextArea> {
     }
 
     @Override
-    public void insertData(XMLStreamReader rd) throws XMLStreamException {
+    public void insertData(XMLStreamReader rd) throws Exception {
         field.setText(rd.getElementText());
     }
 

@@ -14,7 +14,9 @@ import java.util.TreeSet;
 
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
 
 import org.alex73.corpus.paradigm.Paradigm;
 import org.alex73.corpus.paradigm.Variant;
@@ -31,8 +33,7 @@ public class SelectParadigmController extends BaseController<SelectParadigmDialo
     protected static List<VariantInfo> filteredParadigms;
     protected Set<String> selectedVariants = new TreeSet<>();
 
-    public SelectParadigmController(ArticleEditController editor, XmlEditParadygmy parent,
-            List<VariantInfo> input) {
+    public SelectParadigmController(ArticleEditController editor, XmlEditParadygmy parent, List<VariantInfo> input) {
         super(new SelectParadigmDialog(MainController.instance.window, true), editor.window);
 
         setupCloseOnEscape();
@@ -55,7 +56,7 @@ public class SelectParadigmController extends BaseController<SelectParadigmDialo
 
                 @Override
                 protected void ok() {
-                    filteredParadigms = new ArrayList<>();
+                    filterChanged();
                     show();
                 }
 
@@ -65,7 +66,7 @@ public class SelectParadigmController extends BaseController<SelectParadigmDialo
                 }
             };
         } else {
-            filteredParadigms = new ArrayList<>();
+            filterChanged();
             show();
         }
         window.table.setFont(window.table.getFont().deriveFont(Font.PLAIN));
@@ -108,21 +109,17 @@ public class SelectParadigmController extends BaseController<SelectParadigmDialo
 
     void filterChanged() {
         String filter = window.txtFilter.getText().trim();
-        if (filter.isEmpty()) {
-            filteredParadigms = new ArrayList<>();
-        } else {
-            filteredParadigms = Collections.synchronizedList(new ArrayList<>());
-            db.getAllParadigms().parallelStream().forEach(p -> {
-                for (int i = 0; i < p.getVariant().size(); i++) {
-                    char vIndex = (char) ('a' + i);
-                    Variant v = p.getVariant().get(i);
-                    if (isVariantSelected(p, vIndex) || isLemmaFiltered(filter, v)) {
-                        filteredParadigms.add(new VariantInfo(p, vIndex));
-                    }
+        filteredParadigms = Collections.synchronizedList(new ArrayList<>());
+        db.getAllParadigms().parallelStream().forEach(p -> {
+            for (int i = 0; i < p.getVariant().size(); i++) {
+                char vIndex = (char) ('a' + i);
+                Variant v = p.getVariant().get(i);
+                if (isVariantSelected(p, vIndex) || isLemmaFiltered(filter, v)) {
+                    filteredParadigms.add(new VariantInfo(p, vIndex));
                 }
-            });
-            filteredParadigms.sort(SelectedVariant_COMPARATOR);
-        }
+            }
+        });
+        filteredParadigms.sort(SelectedVariant_COMPARATOR);
         ((DefaultTableModel) window.table.getModel()).fireTableDataChanged();
     }
 
@@ -131,10 +128,14 @@ public class SelectParadigmController extends BaseController<SelectParadigmDialo
     }
 
     boolean isLemmaFiltered(String filter, Variant v) {
+        if (filter.isEmpty()) {
+            return false;
+        }
         return v.getLemma().replace("+", "").startsWith(filter);
     }
 
     void show() {
+        window.table.setAutoCreateColumnsFromModel(false);
         window.table.setModel(new DefaultTableModel() {
             @Override
             public int getColumnCount() {

@@ -3,6 +3,7 @@ package org.im.dc.client.ui.xmlstructure;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
+import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
@@ -31,14 +32,17 @@ public class XmlEditComboEditable extends XmlEditBase<JFilterComboBox> {
     }
 
     @Override
-    public void insertData(XMLStreamReader rd) throws XMLStreamException {
+    public void insertData(XMLStreamReader rd) throws Exception {
         field.setSelectedItem(rd.getElementText());
     }
 
     @Override
     public void extractData(String tag, XMLStreamWriter wr) throws XMLStreamException {
         wr.writeStartElement(tag);
-
+        String text = (String) field.getSelectedItem();
+        if (text != null) {
+            wr.writeCharacters(text);
+        }
         wr.writeEndElement();
     }
 }

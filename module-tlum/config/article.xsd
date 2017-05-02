@@ -32,7 +32,6 @@
 			<xs:sequence>
 				<xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip" />
 			</xs:sequence>
-			<xs:attribute name="count" type="xs:int" />
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="zah">
@@ -61,42 +60,7 @@
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="lik" type="likEnum" minOccurs="1" maxOccurs="1">
-					<xs:annotation>
-						<xs:appinfo>Асноўны лік{type:radio/likEnum}</xs:appinfo>
-					</xs:annotation>
-				</xs:element>
-				<xs:element name="rod" type="rodType" minOccurs="1" maxOccurs="1">
-					<xs:annotation>
-						<xs:appinfo>Род{type:check/rodEnum}</xs:appinfo>
-					</xs:annotation>
-				</xs:element>
-				<xs:element name="sklpazn" type="pazType" minOccurs="1" maxOccurs="1">
-					<xs:annotation>
-						<xs:appinfo>Скланяльнасць{type:check/pazEnum}</xs:appinfo>
-					</xs:annotation>
-				</xs:element>
-				<xs:element ref="wordform" minOccurs="1" maxOccurs="1" />
-				<xs:element name="insyLik" minOccurs="0" maxOccurs="1">
-					<xs:annotation>
-						<xs:appinfo>Іншы лік</xs:appinfo>
-					</xs:annotation>
-					<xs:complexType>
-						<xs:sequence>
-							<xs:element name="rod" type="rodType" minOccurs="1" maxOccurs="1">
-								<xs:annotation>
-									<xs:appinfo>Род{type:check/rodEnum}</xs:appinfo>
-								</xs:annotation>
-							</xs:element>
-							<xs:element name="sklpazn" type="pazType" minOccurs="1" maxOccurs="1">
-								<xs:annotation>
-									<xs:appinfo>Скланяльнасць{type:check/pazEnum}</xs:appinfo>
-								</xs:annotation>
-							</xs:element>
-							<xs:element ref="wordform" minOccurs="1" maxOccurs="2" />
-						</xs:sequence>
-					</xs:complexType>
-				</xs:element>
+				<xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip" />
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>

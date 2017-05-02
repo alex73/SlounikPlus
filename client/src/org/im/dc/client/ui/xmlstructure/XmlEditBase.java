@@ -105,4 +105,8 @@ public abstract class XmlEditBase<T extends JComponent> extends JPanel implement
     @Override
     public void setIndex(Integer index) {
     }
+
+    @Override
+    public void displayed() {
+    }
 }

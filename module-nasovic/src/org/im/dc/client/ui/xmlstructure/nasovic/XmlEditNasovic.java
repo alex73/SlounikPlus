@@ -19,6 +19,7 @@ import javax.swing.text.Element;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
+import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
@@ -83,7 +84,8 @@ public class XmlEditNasovic extends XmlEditBase<JEditorPane> {
 
             parsed = new PaNumarach(text);
             SimpleAttributeSet ablue = new SimpleAttributeSet();
-            StyleConstants.setBackground(ablue, Color.GREEN);// new Color(0xca,0xe0,0xf7));
+            StyleConstants.setBackground(ablue, Color.GREEN);// new
+                                                             // Color(0xca,0xe0,0xf7));
             for (Numar n : parsed.numary) {
                 for (int i = n.start; i < n.end; i++) {
                     if (ALLOWED_CHARS.indexOf(text.charAt(i)) < 0) {
@@ -152,6 +154,7 @@ public class XmlEditNasovic extends XmlEditBase<JEditorPane> {
     @Override
     public void insertData(XMLStreamReader rd) throws Exception {
         byte[] rtf = Base64.getDecoder().decode(rd.getElementText());
+
         field.setText("");
         field.getEditorKit().read(new ByteArrayInputStream(rtf), field.getDocument(), 0);
     }

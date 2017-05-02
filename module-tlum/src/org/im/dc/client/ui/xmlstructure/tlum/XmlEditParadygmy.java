@@ -48,27 +48,32 @@ public class XmlEditParadygmy extends XmlEditBase<JTextArea> {
 
     @Override
     public void insertData(XMLStreamReader rd) throws Exception {
-        if (rd.getAttributeCount() != 1 || !"count".equals(rd.getAttributeName(0).getLocalPart())) {
-            throw new Exception("Expected 'count' attribute");
-        }
-        int count = Integer.parseInt(rd.getAttributeValue(0));
-
         Unmarshaller m = GrammarDB2.getContext().createUnmarshaller();
-        for (int i = 0; i < count; i++) {
-            if (rd.nextTag() != XMLStreamConstants.START_ELEMENT || !rd.getLocalName().equals("var")) {
+        while (true) {
+            int n = rd.nextTag();
+            System.out.println(rd.getLocalName());
+            if (n == XMLStreamConstants.END_ELEMENT) {
+                break;
+            }
+            if (n != XMLStreamConstants.START_ELEMENT || !rd.getLocalName().equals("var")) {
                 throw new Exception("Expected 'var' tag");
             }
             if (rd.getAttributeCount() != 1 || !"index".equals(rd.getAttributeName(0).getLocalPart())) {
                 throw new Exception("Expected 'index' attribute");
             }
             char variantIndex = rd.getAttributeValue(0).charAt(0);
-            rd.nextTag();
-            Paradigm p = m.unmarshal(rd, Paradigm.class).getValue();
-            if (rd.nextTag() != XMLStreamConstants.END_ELEMENT) {
-                throw new Exception("Expected 'var' end tag");
+            n = rd.nextTag();
+            if (n != XMLStreamConstants.START_ELEMENT || !rd.getLocalName().equals("Paradigm")) {
+                throw new Exception("Expected 'Paradigm' tag");
             }
-            
+            Paradigm p = m.unmarshal(rd, Paradigm.class).getValue();
+
             current.add(new VariantInfo(p, variantIndex));
+
+            System.out.println(rd.getLocalName());
+            if (rd.getEventType() != XMLStreamConstants.END_ELEMENT || !rd.getLocalName().equals("var")) {
+                throw new Exception("Expected 'var' tag end");
+            }
         }
         showCurrent();
     }
