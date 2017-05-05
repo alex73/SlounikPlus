@@ -24,7 +24,11 @@ public class FormsTableModel extends AbstractTableModel {
     public Object getValueAt(int rowIndex, int columnIndex) {
         OneParadigmInfo.SklonRow r = info.rows.get(rowIndex);
         if (columnIndex == 0) {
-            return r.getName();
+            if (info.showSklon.contains(r.getCode())) {
+                return '+' + r.getName();
+            } else {
+                return r.getName();
+            }
         } else {
             String v = r.getForm(columnIndex - 1);
             int m = r.getFormEnd(columnIndex - 1);

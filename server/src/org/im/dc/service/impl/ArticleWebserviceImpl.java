@@ -80,6 +80,7 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
         if (rec.getXml() == null) {
             return null;
         }
+        String result = null;
         Validator validator = Config.articleSchema.newValidator();
         ValidationHelper helper = new ValidationHelper(rec.getArticleId());
         try {
@@ -90,18 +91,18 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
             context.setAttribute("words", rec.getWords(), ScriptContext.ENGINE_SCOPE);
             context.setAttribute("article", new JsDomWrapper(rec.getXml()), ScriptContext.ENGINE_SCOPE);
             JsProcessing.exec("config/validation.js", context);
-            if (helper.newWords != null) {
-                rec.setWords(helper.newWords);
-            }
         } catch (ScriptException ex) {
-            return ex.getCause().getMessage();
+            result = ex.getCause().getMessage();
         } catch (Exception ex) {
             return "Памылка валідацыі артыкула: " + ex.getMessage();
+        }
+        if (helper.newWords != null) {
+            rec.setWords(helper.newWords);
         }
         rec.setLinkedTo(helper.getLinks());
         rec.setTextForSearch(new WordSplitter().parse(rec.getXml()));
 
-        return null;
+        return result;
     }
 
     private ArticleFullInfo getAdditionalArticleInfo(Header header, RecArticle rec) throws Exception {

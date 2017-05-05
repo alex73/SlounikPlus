@@ -51,7 +51,6 @@ public class XmlEditParadygmy extends XmlEditBase<JTextArea> {
         Unmarshaller m = GrammarDB2.getContext().createUnmarshaller();
         while (true) {
             int n = rd.nextTag();
-            System.out.println(rd.getLocalName());
             if (n == XMLStreamConstants.END_ELEMENT) {
                 break;
             }
@@ -70,7 +69,6 @@ public class XmlEditParadygmy extends XmlEditBase<JTextArea> {
 
             current.add(new VariantInfo(p, variantIndex));
 
-            System.out.println(rd.getLocalName());
             if (rd.getEventType() != XMLStreamConstants.END_ELEMENT || !rd.getLocalName().equals("var")) {
                 throw new Exception("Expected 'var' tag end");
             }

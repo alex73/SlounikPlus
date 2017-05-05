@@ -8,12 +8,12 @@
 			<xs:sequence>
 				<xs:element name="comment" type="xs:string" minOccurs="0" maxOccurs="1">
 					<xs:annotation>
-						<xs:appinfo>Каментар да артыкула</xs:appinfo>
+						<xs:appinfo>Каментар да артыкула{bg:#f9e877}</xs:appinfo>
 					</xs:annotation>
 				</xs:element>
 				<xs:element ref="rtf" minOccurs="1" maxOccurs="1" />
 				<xs:element ref="zah" minOccurs="1" maxOccurs="1" />
-				<xs:element ref="tlum" minOccurs="1" maxOccurs="unbounded" />
+				<xs:element ref="tlum" minOccurs="0" maxOccurs="unbounded" />
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -45,7 +45,7 @@
 				</xs:element>
 				<xs:element name="ex" type="xs:string" maxOccurs="unbounded" minOccurs="0">
 					<xs:annotation>
-						<xs:appinfo>Прыклад</xs:appinfo>
+						<xs:appinfo>Прыклад{bg:#87a3ab}</xs:appinfo>
 					</xs:annotation>
 				</xs:element>
 			</xs:sequence>

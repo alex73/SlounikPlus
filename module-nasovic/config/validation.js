@@ -1,4 +1,4 @@
-var regexpWordUppercase = /^[ЙЦУКЕНГШЎЗХФЫВАПРОЛДЖЭЯЧСМІТЬБЮЁИЩЪҐѢѲ´\u0301]+(\-?[ЙЦУКЕНГШЎЗХФЫВАПРОЛДЖЭЯЧСМІТЬБЮЁИЩЪҐѢѲ´\u0301]+)?$/;
+var regexpWordUppercase = /^[ЙЦУКЕНГШЎЗХФЫВАПРОЛДЖЭЯЧСМІТЬБЮЁИЩЪҐѢѲ´´ŎĂĔ\u0301]+(\-?[ЙЦУКЕНГШЎЗХФЫВАПРОЛДЖЭЯЧСМІТЬБЮЁИЩЪҐѢѲ´´ŎĂĔ\u0301]+)?$/;
 //var regexpWordUppercase = /[ЙЦУКЕНГШЎЗХФЫВАПРОЛДЖЭЯЧСМІТЬБЮЁИЩЪҐѢѲ´]+/;
 
 var zahWords = article.zah[0].textContent.split(/[\s\.,]+/);
@@ -11,6 +11,16 @@ for each (var z in zahWords) {
 }
 
 helper.replaceWords(words);
+for each (var w in words) {
+  var np = w.indexOf('´');
+  if (np <= 0) {
+    throw "Няма націску ў загалоўным слове: " + w;
+  } else {
+    if ("УЕЫАОЭЯІЮЁИѢ".indexOf(w.charAt(np-1))<0) {
+      throw "Націск не на галосную ў загалоўным слове: " + w;
+    }
+  }
+}
 
 
 function zah_check(zah) {

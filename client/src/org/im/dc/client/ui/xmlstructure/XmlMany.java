@@ -39,14 +39,23 @@ public class XmlMany extends JPanel {
         this.maxOccurs = maxOccurs < 0 ? Integer.MAX_VALUE : maxOccurs;
 
         setLayout(new VerticalListLayout(INSETS));
-        setOpaque(false);
 
         add = new XmlAdd(ann);
-        if (ann.fgColor != null) {
-            add.setForeground(ann.fgColor);
+        if (ann.bgColor != null) {
+            setBackground(ann.bgColor);
         } else {
-            add.setForeground(parentPanel.getForeground());
+            setOpaque(false);
         }
+        if (ann.fgColor != null) {
+            setForeground(ann.fgColor);
+        } else {
+            setForeground(parentPanel.getForeground());
+        }
+//        if (ann.fgColor != null) {
+//            add.setForeground(ann.fgColor);
+//        } else {
+//            add.setForeground(parentPanel.getForeground());
+//        }
         add.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

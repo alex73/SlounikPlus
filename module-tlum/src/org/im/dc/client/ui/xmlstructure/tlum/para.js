@@ -36,16 +36,24 @@ if (para.mainIsSingle) {
 function oneRod(formField, formEndField) {
   var ends = getEnds(formField, formEndField);
   var r = new Array();
-  for (var s in ends) {
+  for (var s in ends) { //print("(s="+s+"para.showSklon="+para.showSklon+")");
     if (ends[s]==null) continue;
+    var includeSo = para.showSklon.contains(s);
     var so = s;
     for (var s2 in ends) {
       if (s != s2 && ends[s] == ends[s2]) {
         so += s2;
         ends[s2] = null;
+        if (para.showSklon.contains(s2)) {
+          includeSo = true;
+        }
       }
     }
-    r.push(/*'<i>'+so+'</i> '+*/ends[s]);
+    if (includeSo) {
+      r.push('<i>'+so+'</i> '+ends[s]);
+    } else {
+      r.push(ends[s]);
+    }
   }
   return r.join(', ');
 }

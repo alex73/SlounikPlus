@@ -39,18 +39,23 @@ public abstract class XmlEditBase<T extends JComponent> extends JPanel implement
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         setLayout(new GridBagLayout());
-        setOpaque(false);
+        if (ann.bgColor != null) {
+            setBackground(ann.bgColor);
+        } else {
+            setOpaque(false);
+        }
+        if (ann.fgColor != null) {
+            setForeground(ann.fgColor);
+        } else {
+            setForeground(parentPanel.getForeground());
+        }
 
         gbc.weightx = 0;
         gbc.gridx = 0;
         JLabel lbl = new JLabel(ann.text + " : ");
         lbl.setFont(new Font(getFont().getName(), Font.PLAIN, getFont().getSize()));
         add(lbl, gbc);
-        if (ann.fgColor != null) {
-            lbl.setForeground(ann.fgColor);
-        } else {
-            lbl.setForeground(parentPanel.getForeground());
-        }
+        lbl.setForeground(getForeground());
 
         gbc.weightx = 1;
         gbc.gridx = 1;

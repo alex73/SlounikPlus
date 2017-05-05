@@ -13,6 +13,7 @@ import java.util.concurrent.ExecutionException;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -20,6 +21,7 @@ import javax.swing.KeyStroke;
 import javax.swing.RootPaneContainer;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
+import javax.swing.WindowConstants;
 import javax.xml.ws.soap.SOAPFaultException;
 
 /**
@@ -39,7 +41,18 @@ public abstract class BaseController<T extends Window> {
         SettingsController.setupFontForWindow(window);
         SettingsController.loadPlacesForWindow(window);
 
+        if (window instanceof JDialog) {
+            JDialog d = (JDialog) window;
+            d.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        }
         window.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                if (closing()) {
+                    window.dispose();
+                }
+            }
+
             @Override
             public void windowClosed(WindowEvent e) {
                 SettingsController.savePlacesForWindow(window);
@@ -65,6 +78,10 @@ public abstract class BaseController<T extends Window> {
         ((RootPaneContainer) window).setGlassPane(glass);
     }
 
+    boolean closing() {
+        return true;
+    }
+
     /**
      * Show UI on the center of parent.
      */
@@ -78,7 +95,9 @@ public abstract class BaseController<T extends Window> {
      */
     protected void setupCloseOnEscape() {
         ActionListener cancelListener = (e) -> {
-            window.dispose();
+            if (closing()) {
+                window.dispose();
+            }
         };
         ((RootPaneContainer) window).getRootPane().registerKeyboardAction(cancelListener,
                 KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);

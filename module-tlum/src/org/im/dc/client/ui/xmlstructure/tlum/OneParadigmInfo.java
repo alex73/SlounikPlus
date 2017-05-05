@@ -17,6 +17,8 @@ public class OneParadigmInfo {
     public List<SklonRow> rows = new ArrayList<>();
     @XmlAttribute
     public boolean mainIsSingle;
+    @XmlAttribute
+    public String showSklon = "";
 
     public OneParadigmInfo() {
         for (char c : "NGDAILV".toCharArray()) {
@@ -86,7 +88,16 @@ public class OneParadigmInfo {
             v = max;
         }
         rows.get(row).setFormEnd(col - 1, v);
+    }
 
+    public String changeShowSklon(int row) {
+        String sklon = rows.get(row).getCode();
+        if (showSklon.contains(sklon)) {
+            showSklon = showSklon.replace(sklon, "");
+        } else {
+            showSklon += sklon;
+        }
+        return sklon;
     }
 
     public boolean isChangedEnd(int row, int col) {
@@ -94,6 +105,10 @@ public class OneParadigmInfo {
             return false;
         }
         return rows.get(row).getFormEnd(col - 1) != 0;
+    }
+
+    public boolean isCHangedSklon(int row) {
+        return showSklon.contains(rows.get(row).getCode());
     }
 
     public static class SklonRow {

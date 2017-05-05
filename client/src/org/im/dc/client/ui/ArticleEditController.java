@@ -19,7 +19,6 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
-import javax.swing.RootPaneContainer;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.xml.stream.XMLInputFactory;
@@ -51,17 +50,13 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
 
     private ArticleEditController(boolean isnew) {
         super(new ArticleEditDialog(MainController.instance.window, false), MainController.instance.window);
-
-        ActionListener cancelListener = (e) -> {
-            if (askSave()) {
-                return;
-            }
-            window.dispose();
-        };
-        ((RootPaneContainer) window).getRootPane().registerKeyboardAction(cancelListener,
-                KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
-
+        setupCloseOnEscape();
         displayOnParent();
+    }
+
+    @Override
+    boolean closing() {
+        return !askSave();
     }
 
     /**

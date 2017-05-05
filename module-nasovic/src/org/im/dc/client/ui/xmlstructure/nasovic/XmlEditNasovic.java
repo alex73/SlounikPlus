@@ -3,6 +3,8 @@ package org.im.dc.client.ui.xmlstructure.nasovic;
 import java.awt.Color;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -14,12 +16,12 @@ import javax.swing.JEditorPane;
 import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Element;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
-import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
@@ -31,9 +33,11 @@ import org.im.dc.client.ui.xmlstructure.XmlMany;
 
 @SuppressWarnings("serial")
 public class XmlEditNasovic extends XmlEditBase<JEditorPane> {
-    static final String ALLOWED_CHARS = "ЙЦУКЕНГШЎЗХФЫВАПРОЛДЖЭЯЧСМІТЬБЮЁИЩЪѢйцукенгшўзхфывапролджэячсмітьбюёищъѣ´ ,.!?-;:\\(\\)–";
+    static final String ALLOWED_CHARS = "ЙЦУКЕНГШЎЗХФЫВАПРОЛДЖЭЯЧСМІТЬБЮЁИЩЪѢйцукенгшўзхфывапролджэячсмітьбюёищъѣ´ ,.!?-;:\\(\\)–´";
     static final Pattern UPPER_FIRST = Pattern.compile(
-            "([\\s,.!?;:\\(\\)–])([ЙЦУКЕНГШЎЗХФЫВАПРОЛДЖЭЯЧСМІТЬБЮЁИЩЪѢ][йцукенгшўзхфывапролджэячсмітьбюёищъѣ´\\-]+)([\\s,.!?;:\\(\\)–])");
+            "([^.!?]\\s+)([ЙЦУКЕНГШЎЗХФЫВАПРОЛДЖЭЯЧСМІТЬБЮЁИЩЪѢ][йцукенгшўзхфывапролджэячсмітьбюёищъѣ´\\-]+)([\\s,.!?;:\\(\\)–])");
+
+    private String defaultFont;
 
     public XmlEditNasovic(XmlGroup rootPanel, XmlGroup parentPanel, AnnotationInfo ann,
             ArticleEditController editController) {
@@ -44,6 +48,7 @@ public class XmlEditNasovic extends XmlEditBase<JEditorPane> {
     protected JEditorPane createField() {
         JEditorPane p = new JEditorPane();
         p.setContentType("text/rtf");
+        defaultFont = p.getFont().getFontName();
         p.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         p.getDocument().addDocumentListener(new DocumentListener() {
             @Override
@@ -66,33 +71,26 @@ public class XmlEditNasovic extends XmlEditBase<JEditorPane> {
             SwingUtilities.invokeLater(() -> {
                 p.setText("");
                 p.paste();
+                setFontSize();
                 parse();
             });
         }
         return p;
     }
 
+    void setFontSize() {
+        SimpleAttributeSet attr = new SimpleAttributeSet();
+        StyleConstants.setFontSize(attr, 20);
+        StyleConstants.setFontFamily(attr, defaultFont);
+        ((StyledDocument) field.getDocument()).setCharacterAttributes(0, field.getDocument().getLength(), attr, false);
+    }
+
     void parse() {
         PaNumarach parsed = null;
         try {
-            SimpleAttributeSet attr = new SimpleAttributeSet();
-            StyleConstants.setFontSize(attr, 20);
-            ((StyledDocument) field.getDocument()).setCharacterAttributes(0, field.getDocument().getLength(), attr,
-                    false);
-
             String text = field.getDocument().getText(0, field.getDocument().getLength());
 
             parsed = new PaNumarach(text);
-            SimpleAttributeSet ablue = new SimpleAttributeSet();
-            StyleConstants.setBackground(ablue, Color.GREEN);// new
-                                                             // Color(0xca,0xe0,0xf7));
-            for (Numar n : parsed.numary) {
-                for (int i = n.start; i < n.end; i++) {
-                    if (ALLOWED_CHARS.indexOf(text.charAt(i)) < 0) {
-                        ((StyledDocument) field.getDocument()).setCharacterAttributes(i, 1, ablue, false);
-                    }
-                }
-            }
 
             switch (parsed.numary.size()) {
             case 0: // пусты
@@ -137,6 +135,25 @@ public class XmlEditNasovic extends XmlEditBase<JEditorPane> {
                 }
             }
 
+            text = field.getDocument().getText(0, field.getDocument().getLength());
+            SimpleAttributeSet anacisk = new SimpleAttributeSet();
+            StyleConstants.setBackground(anacisk, Color.CYAN);
+            for (int i = 0; i < text.length(); i++) {
+                if (text.charAt(i) == '´') {
+                    ((StyledDocument) field.getDocument()).setCharacterAttributes(i, 1, anacisk, false);
+                }
+            }
+
+            SimpleAttributeSet ablue = new SimpleAttributeSet();
+            StyleConstants.setBackground(ablue, new Color(255, 128, 128));
+            for (Numar n : parsed.numary) {
+                for (int i = n.start; i < n.end; i++) {
+                    if (ALLOWED_CHARS.indexOf(text.charAt(i)) < 0) {
+                        ((StyledDocument) field.getDocument()).setCharacterAttributes(i, 1, ablue, false);
+                    }
+                }
+            }
+
             XmlMany mZah = rootPanel.getManyPart("zah");
             prepareZahXml(parsed, mZah);
 
@@ -153,10 +170,10 @@ public class XmlEditNasovic extends XmlEditBase<JEditorPane> {
 
     @Override
     public void insertData(XMLStreamReader rd) throws Exception {
-        byte[] rtf = Base64.getDecoder().decode(rd.getElementText());
+        byte[] data = Base64.getDecoder().decode(rd.getElementText());
+        RTFSerialization.deserialize(field, new DataInputStream(new ByteArrayInputStream(data)));
 
-        field.setText("");
-        field.getEditorKit().read(new ByteArrayInputStream(rtf), field.getDocument(), 0);
+        setFontSize();
     }
 
     @Override
@@ -164,8 +181,7 @@ public class XmlEditNasovic extends XmlEditBase<JEditorPane> {
         wr.writeStartElement(tag);
 
         ByteArrayOutputStream o = new ByteArrayOutputStream();
-        field.getEditorKit().write(o, field.getDocument(), 0, field.getDocument().getLength());
-        o.flush();
+        RTFSerialization.serialize(field, new DataOutputStream(o));
 
         wr.writeCharacters(Base64.getEncoder().encodeToString(o.toByteArray()));
         wr.writeEndElement();
@@ -179,7 +195,6 @@ public class XmlEditNasovic extends XmlEditBase<JEditorPane> {
             int pos = 0;
             while (true) {
                 String partPrefix = part + ")";
-                System.out.println(partPrefix);
                 int prevPos = pos;
                 pos = text.indexOf(partPrefix, pos);
                 if (pos < 0) {
@@ -259,8 +274,6 @@ public class XmlEditNasovic extends XmlEditBase<JEditorPane> {
             this.fullText = fullText;
             this.start = start;
             this.end = end;
-
-            System.out.println("    " + getText() + "  - italic=" + isItalic());
         }
 
         boolean fromBigLetter() {
@@ -289,7 +302,7 @@ public class XmlEditNasovic extends XmlEditBase<JEditorPane> {
 
         void yellow() {
             SimpleAttributeSet a = new SimpleAttributeSet();
-            StyleConstants.setBackground(a, Color.YELLOW);
+            StyleConstants.setBackground(a, new Color(255, 255, 128));
             ((StyledDocument) field.getDocument()).setCharacterAttributes(start, end - start, a, false);
         }
 
@@ -319,6 +332,8 @@ public class XmlEditNasovic extends XmlEditBase<JEditorPane> {
             d = d.replace("{См}", "См");
             d = d.replace("{Слов}", "Слов");
             d = d.replace("{Приб}", "Приб");
+            d = d.replaceAll("\\{(Русс\\S+)\\}", "$1");
+            d = d.replaceAll("\\{(Бѣлор\\S+)\\}", "$1");
             wr.writeCharacters(d);
         }
         wr.writeEndElement();
@@ -364,6 +379,8 @@ public class XmlEditNasovic extends XmlEditBase<JEditorPane> {
                 d = d.replace("{См}", "См");
                 d = d.replace("{Слов}", "Слов");
                 d = d.replace("{Приб}", "Приб");
+                d = d.replaceAll("\\{(Русс\\S+)\\}", "$1");
+                d = d.replaceAll("\\{(Бѣлор\\S+)\\}", "$1");
                 wr.writeCharacters(d);
                 wr.writeEndElement();
                 for (int i = tlTo; i < n.skazy.size(); i++) {
@@ -382,7 +399,6 @@ public class XmlEditNasovic extends XmlEditBase<JEditorPane> {
             wr.writeEndElement();
             wr.flush();
             byte[] xml = w.toString().getBytes("UTF-8");
-            System.out.println(w);
 
             mTlum.insertDataTo(ArticleEditController.getReader(xml), nn - 1);
         }

@@ -64,16 +64,26 @@ public class XmlEditOneParadigm extends XmlEditBase<XmlEditOneParadigmPanel> {
                 } else if (e.getKeyChar() == '-') {
                     c--;
                 }
-                if (c != 0) {
-                    int row = r.table.getSelectedRow();
-                    int col = r.table.getSelectedColumn();
-                    FormsTableModel model = (FormsTableModel) r.table.getModel();
+                if (c == 0) {
+                    return;
+                }
+                FormsTableModel model = (FormsTableModel) r.table.getModel();
+                int row = r.table.getSelectedRow();
+                int col = r.table.getSelectedColumn();
+                if (col == 0) {
+                    String sklon = model.info.changeShowSklon(row);
+                    for (int i = 0; i < model.info.rows.size(); i++) {
+                        if (model.info.rows.get(i).getCode().equals(sklon)) {
+                            model.fireTableCellUpdated(i, 0);
+                        }
+                    }
+                } else {
                     model.info.changeEnd(row, col, c);
                     model.fireTableCellUpdated(row, col);
-                    e.consume();
-                    refreshOut();
-                    rootPanel.fireChanged();
                 }
+                e.consume();
+                refreshOut();
+                rootPanel.fireChanged();
             }
         });
 
@@ -152,8 +162,12 @@ public class XmlEditOneParadigm extends XmlEditBase<XmlEditOneParadigmPanel> {
 
         wr.writeStartElement(tag);
 
-        FormsTableModel model = (FormsTableModel) field.table.getModel();
-        m.marshal(model.info, wr);
+        if (field.table.getModel() instanceof FormsTableModel) {
+            FormsTableModel model = (FormsTableModel) field.table.getModel();
+            m.marshal(model.info, wr);
+        }else {
+            m.marshal(new OneParadigmInfo(), wr);
+        }
 
         wr.writeEndElement();
     }
@@ -168,7 +182,8 @@ public class XmlEditOneParadigm extends XmlEditBase<XmlEditOneParadigmPanel> {
                     cellComponent.setBackground(Color.YELLOW);
                 } else {
                     FormsTableModel model = (FormsTableModel) field.table.getModel();
-                    boolean changed = model.info.isChangedEnd(row, column);
+                    boolean changed = column == 0 ? model.info.isCHangedSklon(row)
+                            : model.info.isChangedEnd(row, column);
                     cellComponent.setBackground(changed ? Color.CYAN : Color.WHITE);
                 }
             }

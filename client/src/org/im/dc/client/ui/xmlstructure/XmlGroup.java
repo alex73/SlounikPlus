@@ -42,9 +42,9 @@ public class XmlGroup extends JPanel implements IXmlElement {
         this.rootPanel = rootPanel != null ? rootPanel : this;
         this.editController = editController;
         setLayout(new GridBagLayout());
-        setOpaque(false);
 
         gr = new JPanel();
+        gr.setOpaque(false);
 
         borderTitle = ann.text;
 
@@ -55,9 +55,9 @@ public class XmlGroup extends JPanel implements IXmlElement {
             border = BorderFactory.createTitledBorder(borderTitle);
         }
         if (ann.bgColor != null) {
-            gr.setBackground(ann.bgColor);
+            setBackground(ann.bgColor);
         } else {
-            gr.setOpaque(false);
+            setOpaque(false);
         }
         if (ann.fgColor != null) {
             setForeground(ann.fgColor);
@@ -127,7 +127,6 @@ public class XmlGroup extends JPanel implements IXmlElement {
         int indexInGroup = 0;
         while (rd.hasNext()) {
             int t = rd.nextTag();
-            System.out.println(this + " " + rd.getLocalName());
             switch (t) {
             case XMLStreamConstants.START_ELEMENT:
                 String tagName = rd.getLocalName();
