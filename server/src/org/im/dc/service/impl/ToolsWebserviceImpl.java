@@ -51,7 +51,7 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
 
     @Override
     public InitialData getInitialData(Header header) {
-        LOG.info(">> getInitialData");
+        LOG.info(">> getInitialData(" + header.user + ")");
         check(header);
 
         InitialData result = new InitialData();
@@ -79,7 +79,7 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
 
     @Override
     public String validate(Header header, int articleId, String[] words, byte[] xml) throws Exception {
-        LOG.info(">> validate");
+        LOG.info(">> validate(" + header.user + ")");
         check(header);
 
         String err;
@@ -99,7 +99,7 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
 
     @Override
     public void validateAll(Header header) throws Exception {
-        LOG.info(">> validateAll");
+        LOG.info(">> validateAll(" + header.user + ")");
         check(header);
         PermissionChecker.userRequiresPermission(header.user, Permission.FULL_VALIDATION);
 
@@ -135,7 +135,7 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
 
     @Override
     public void reassignUsers(Header header, int[] articleIds, String[] users) throws Exception {
-        LOG.info(">> reassignUsers");
+        LOG.info(">> reassignUsers(" + header.user + ")");
         check(header);
         PermissionChecker.userRequiresPermission(header.user, Permission.REASSIGN);
 
@@ -148,7 +148,7 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
 
     @Override
     public void addWords(Header header, String[] users, String[] words, String initialState) throws Exception {
-        LOG.info(">> addWords");
+        LOG.info(">> addWords(" + header.user + ")");
         check(header);
         PermissionChecker.userRequiresPermission(header.user, Permission.ADD_WORDS);
 
@@ -194,7 +194,7 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
 
     @Override
     public String preparePreview(Header header, String[] words, byte[] xml) throws Exception {
-        LOG.info(">> preparePreview");
+        LOG.info(">> preparePreview(" + header.user + ")");
         check(header);
 
         Validator validator = Config.articleSchema.newValidator();
@@ -213,7 +213,7 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
 
     @Override
     public List<Related> listIssues(Header header) throws Exception {
-        LOG.info(">> listIssues");
+        LOG.info(">> listIssues(" + header.user + ")");
         List<Related> related = new ArrayList<>();
         // заўвагі
         List<RecIssue> list = Db.execAndReturn((api) -> api.getIssueMapper().retrieveUserOpenIssues(header.user));
@@ -228,7 +228,7 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
 
     @Override
     public List<Related> listNews(Header header) throws Exception {
-        LOG.info(">> listNews");
+        LOG.info(">> listNews(" + header.user + ")");
         List<Related> related = new ArrayList<>();
         // заўвагі карыстальніка
         List<RecIssue> list = Db.execAndReturn((api) -> api.getIssueMapper().retrieveAuthorIssues(header.user));

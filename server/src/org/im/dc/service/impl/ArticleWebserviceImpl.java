@@ -60,7 +60,7 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
 
     @Override
     public ArticleFullInfo getArticleFullInfo(Header header, int articleId) throws Exception {
-        LOG.info(">> getArticleFullInfo: " + articleId);
+        LOG.info(">> getArticleFullInfo(" + header.user + "): " + articleId);
         check(header);
 
         RecArticle rec = Db.execAndReturn((api) -> api.getArticleMapper().selectArticle(articleId));
@@ -182,7 +182,7 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
 
     @Override
     public ArticleFullInfo saveArticle(Header header, ArticleFull article) throws Exception {
-        LOG.info(">> saveArticle");
+        LOG.info(">> saveArticle(" + header.user + "): " + article.id);
         check(header);
 
         RecArticle art = Db.execAndReturn((api) -> {
@@ -257,7 +257,7 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
     @Override
     public ArticleFullInfo changeWords(Header header, int articleId, String newWords, Date lastUpdated)
             throws Exception {
-        LOG.info(">> changeWords");
+        LOG.info(">> changeWords(" + header.user + ")");
         check(header);
 
         List<String> ws = new ArrayList<>();
@@ -325,7 +325,7 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
     @Override
     public ArticleFullInfo addIssue(Header header, int articleId, String issueText, byte[] proposedXml,
             Date lastUpdated) throws Exception {
-        LOG.info(">> addIssue");
+        LOG.info(">> addIssue(" + header.user + ")");
         check(header);
 
         RecArticle art = Db.execAndReturn((api) -> {
@@ -360,7 +360,7 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
     @Override
     public ArticleFullInfo changeState(Header header, int articleId, String newState, Date lastUpdated)
             throws Exception {
-        LOG.info(">> changeState");
+        LOG.info(">> changeState(" + header.user + ")");
         check(header);
 
         RecArticle art = Db.execAndReturn((api) -> {
@@ -404,7 +404,7 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
 
     @Override
     public ArticleFullInfo addComment(Header header, int articleId, String comment) throws Exception {
-        LOG.info(">> addComment");
+        LOG.info(">> addComment(" + header.user + ")");
         check(header);
 
         Db.exec((api) -> {
@@ -422,20 +422,20 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
 
     @Override
     public ArticleFullInfo fixIssue(Header header, int articleId, int issueId, boolean accepted) throws Exception {
-        LOG.info(">> addComment");
+        LOG.info(">> fixIssue(" + header.user + ")");
         check(header);
 
         Db.exec((api) -> {
             api.getIssueMapper().fixIssue(issueId, accepted, header.user, new Date());
         });
 
-        LOG.info("<< addComment");
+        LOG.info("<< fixIssue");
         return getArticleFullInfo(header, articleId);
     }
 
     @Override
     public void setWatch(Header header, int articleId, boolean watch) throws Exception {
-        LOG.info(">> setWatch");
+        LOG.info(">> setWatch(" + header.user + ")");
         check(header);
 
         Db.exec((api) -> {
@@ -451,7 +451,7 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
 
     @Override
     public List<ArticleShort> listArticles(Header header, ArticlesFilter filter) throws Exception {
-        LOG.info(">> listArticles");
+        LOG.info(">> listArticles(" + header.user + ")");
         check(header);
 
         List<ArticleShort> result = new ArrayList<>();
@@ -473,7 +473,7 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
 
     @Override
     public ArticleCommentFull getComment(Header header, int commentId) throws Exception {
-        LOG.info(">> getComment");
+        LOG.info(">> getComment(" + header.user + ")");
         check(header);
 
         RecComment rc = Db.execAndReturn((api) -> api.getCommentMapper().getComment(commentId));
@@ -492,7 +492,7 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
 
     @Override
     public ArticleIssueFull getIssue(Header header, int issueId) throws Exception {
-        LOG.info(">> getIssue");
+        LOG.info(">> getIssue(" + header.user + ")");
         check(header);
 
         RecIssue rc = Db.execAndReturn((api) -> api.getIssueMapper().getIssue(issueId));
@@ -515,7 +515,7 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
 
     @Override
     public ArticleHistoryFull getHistory(Header header, int historyId) throws Exception {
-        LOG.info(">> getHistory");
+        LOG.info(">> getHistory(" + header.user + ")");
         check(header);
 
         RecArticleHistory rc = Db.execAndReturn((api) -> api.getArticleHistoryMapper().getHistory(historyId));
