@@ -16,7 +16,6 @@ import javax.swing.JEditorPane;
 import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Element;
 import javax.swing.text.SimpleAttributeSet;
@@ -73,7 +72,10 @@ public class XmlEditNasovic extends XmlEditBase<JEditorPane> {
                 p.paste();
                 setFontSize();
                 parse();
+                p.setEditable(false);
             });
+        } else {
+            p.setEditable(false);
         }
         return p;
     }

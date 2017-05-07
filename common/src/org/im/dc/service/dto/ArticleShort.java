@@ -33,4 +33,13 @@ public class ArticleShort {
             }
         });
     }
+
+    public static void sortById(List<ArticleShort> list) {
+        Collections.sort(list, new Comparator<ArticleShort>() {
+            @Override
+            public int compare(ArticleShort a1, ArticleShort a2) {
+                return Integer.compare(a1.id, a2.id);
+            }
+        });
+    }
 }

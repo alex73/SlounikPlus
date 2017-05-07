@@ -465,7 +465,7 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
             o.validationError = r.getValidationError();
             result.add(o);
         }
-        ArticleShort.sortByAlphabet(result);
+        ArticleShort.sortById(result);
 
         LOG.info("<< listArticles");
         return result;
