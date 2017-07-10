@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<endpoints xmlns='http://java.sun.com/xml/ns/jax-ws/ri/runtime'
+        version='2.0'>
+    <endpoint name='ArticleWebservice'
+            implementation='org.im.dc.service.impl.ArticleWebserviceImpl'
+            url-pattern='/articles'/>
+    <endpoint name='ToolsWebservice'
+            implementation='org.im.dc.service.impl.ToolsWebserviceImpl'
+            url-pattern='/tools'/>
+</endpoints>

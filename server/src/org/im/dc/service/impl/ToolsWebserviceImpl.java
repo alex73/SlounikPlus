@@ -1,6 +1,7 @@
 package org.im.dc.service.impl;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -200,7 +201,7 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
         context.setAttribute("out", out, ScriptContext.ENGINE_SCOPE);
         context.setAttribute("words", words, ScriptContext.ENGINE_SCOPE);
         context.setAttribute("article", new JsDomWrapper(xml), ScriptContext.ENGINE_SCOPE);
-        JsProcessing.exec("config/output.js", context);
+        JsProcessing.exec(new File(Config.CONFIG_DIR, "output.js").getAbsolutePath(), context);
 
         LOG.info("<< preparePreview");
         return out.toString();

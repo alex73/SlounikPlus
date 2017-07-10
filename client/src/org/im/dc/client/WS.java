@@ -1,9 +1,23 @@
 package org.im.dc.client;
 
 import java.net.URL;
+import java.security.SecureRandom;
+import java.security.cert.X509Certificate;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import javax.xml.namespace.QName;
+import javax.xml.ws.BindingProvider;
 import javax.xml.ws.Service;
+import javax.xml.ws.handler.MessageContext;
 
 import org.im.dc.service.AppConst;
 import org.im.dc.service.ArticleWebservice;
@@ -18,18 +32,60 @@ public class WS {
     public static void init(String urlPrefix, String user, String pass) throws Exception {
         Service service;
 
+        disableSSL();
+
         service = Service.create(new URL(urlPrefix + "/articles?wsdl"),
                 new QName("http://impl.service.dc.im.org/", "ArticleWebserviceImplService"));
         articleService = service.getPort(ArticleWebservice.class);
+        setupCompression((BindingProvider) articleService);
 
         service = Service.create(new URL(urlPrefix + "/tools?wsdl"),
                 new QName("http://impl.service.dc.im.org/", "ToolsWebserviceImplService"));
         toolsWebservice = service.getPort(ToolsWebservice.class);
+        setupCompression((BindingProvider) toolsWebservice);
 
         header = new Header();
         header.user = user;
         header.pass = pass;
         header.appVersion = AppConst.APP_VERSION;
+    }
+
+    private static void setupCompression(BindingProvider provider) {
+        Map<String, List<String>> httpHeaders = new HashMap<String, List<String>>();
+        httpHeaders.put("Accept-Encoding", Collections.singletonList("gzip"));
+        //httpHeaders.put("Content-Encoding", Collections.singletonList("gzip"));
+        Map<String, Object> reqContext = provider.getRequestContext();
+        reqContext.put(MessageContext.HTTP_REQUEST_HEADERS, httpHeaders);
+    }
+
+    private static void disableSSL() {
+        try {
+            TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
+                public X509Certificate[] getAcceptedIssuers() {
+                    X509Certificate[] myTrustedAnchors = new X509Certificate[0];
+                    return myTrustedAnchors;
+                }
+
+                @Override
+                public void checkClientTrusted(X509Certificate[] certs, String authType) {
+                }
+
+                @Override
+                public void checkServerTrusted(X509Certificate[] certs, String authType) {
+                }
+            } };
+
+            SSLContext sc = SSLContext.getInstance("SSL");
+            sc.init(null, trustAllCerts, new SecureRandom());
+            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+            HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier() {
+                @Override
+                public boolean verify(String arg0, SSLSession arg1) {
+                    return true;
+                }
+            });
+        } catch (Exception e) {
+        }
     }
 
     public static ArticleWebservice getArticleService() {

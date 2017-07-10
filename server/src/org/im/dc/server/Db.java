@@ -1,5 +1,6 @@
 package org.im.dc.server;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Properties;
@@ -27,7 +28,7 @@ public class Db {
 
     public static void init() throws Exception {
         Properties props = new Properties();
-        try (InputStream in = new FileInputStream("config/db.properties")) {
+        try (InputStream in = new FileInputStream(new File(Config.CONFIG_DIR, "db.properties"))) {
             props.load(in);
         }
 

@@ -3,6 +3,7 @@
 
     <fileset dir="." id="server-jars-fileset">
         <include name="server/lib/**/*.jar" />
+        <include name="server/lib-compile/**/*.jar" />
         <include name="common/lib/**/*.jar" />
     </fileset>
     <pathconvert pathsep=" " property="server-jars-path" refid="server-jars-fileset">
@@ -123,6 +124,11 @@
         <copy todir="dist/server/" flatten="true">
             <fileset refid="server-jars-fileset"/>
         </copy>
+        <war destfile="dist/server.war" webxml="server/web.xml">
+            <webinf file="server/sun-jaxws.xml" />
+            <classes dir="server/build" />
+            <lib dir="dist/server/" />
+        </war>
     </target>
 
     <target name="all" depends="clean, xjc, server, client-tlum, client-nasovic" />

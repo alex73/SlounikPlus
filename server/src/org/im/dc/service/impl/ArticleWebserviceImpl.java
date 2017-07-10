@@ -1,6 +1,7 @@
 package org.im.dc.service.impl;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -90,7 +91,7 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
             context.setAttribute("helper", helper, ScriptContext.ENGINE_SCOPE);
             context.setAttribute("words", rec.getWords(), ScriptContext.ENGINE_SCOPE);
             context.setAttribute("article", new JsDomWrapper(rec.getXml()), ScriptContext.ENGINE_SCOPE);
-            JsProcessing.exec("config/validation.js", context);
+            JsProcessing.exec(new File(Config.CONFIG_DIR, "validation.js").getAbsolutePath(), context);
         } catch (ScriptException ex) {
             result = ex.getCause().getMessage();
         } catch (Exception ex) {

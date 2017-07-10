@@ -24,8 +24,13 @@ import org.slf4j.LoggerFactory;
 public class Config {
     private static final Logger LOG = LoggerFactory.getLogger(Config.class);
 
-    static final File CONFIG_FILE = new File("config/config.xml");
-    static final File ARTICLE_SCHEMA_FILE = new File("config/article.xsd");
+    public static final String CONFIG_DIR;
+    static {
+        CONFIG_DIR = System.getProperty("CONFIG_DIR");
+        if (CONFIG_DIR == null) {
+            throw new ExceptionInInitializerError("CONFIG_DIR was not defined");
+        }
+    }
 
     static private org.im.dc.gen.config.Config config;
 
@@ -33,6 +38,9 @@ public class Config {
     static public Schema articleSchema;
 
     public static void load() throws Exception {
+        final File CONFIG_FILE = new File(CONFIG_DIR, "config.xml");
+        final File ARTICLE_SCHEMA_FILE = new File(CONFIG_DIR, "article.xsd");
+
         LOG.info("Config loading start from " + CONFIG_FILE.getAbsolutePath());
         SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
         Schema schema = schemaFactory.newSchema(Config.class.getResource("/org/im/dc/xsd/config.xsd"));
