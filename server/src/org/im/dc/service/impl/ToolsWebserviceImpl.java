@@ -114,11 +114,6 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
                 } catch (Exception ex) {
                     throw new RuntimeException("Памылка ў артыкуле #" + id);
                 }
-                if (err == null && a.getValidationError() == null) {
-                    return;
-                } else if (err != null && err.equals(a.getValidationError())) {
-                    return;
-                }
                 Date prevUpdated = a.getLastUpdated();
                 a.setValidationError(err);
                 a.setLastUpdated(new Date());

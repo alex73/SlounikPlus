@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config>
 	<users>
-        <user name="user1" pass="123" role="укладальнік" new-article-state="Звычайны" new-article-users="user1,user2"/>
-		<user name="user2" pass="456" role="укладальнік" new-article-state="Звычайны" new-article-users="user1,user2"/>
+        <user name="zz" pass="123" role="укладальнік" new-article-state="Звычайны" new-article-users="user1,user2"/>
+		<user name="ales" pass="123" role="галоўны_рэдактар" new-article-state="Звычайны" new-article-users="user1,user2"/>
 	</users>
 	<roles>
 		<role id="укладальнік">

@@ -1,8 +1,10 @@
 package org.im.dc.client.ui.xmlstructure.nasovic;
 
 import java.awt.Color;
+import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.util.Base64;
 
 import javax.swing.JEditorPane;
 import javax.swing.text.AttributeSet;
@@ -63,6 +65,22 @@ public class RTFSerialization {
                 StyleConstants.setForeground(a, new Color(fg[i]));
             }
             doc.setCharacterAttributes(i, 1, a, false);
+        }
+    }
+
+    public static String deserializeText(String base64in) throws Exception {
+        byte[] data = Base64.getDecoder().decode(base64in);
+        try (DataInputStream in = new DataInputStream(new ByteArrayInputStream(data))) {
+            int count = in.readInt();
+            StringBuilder text = new StringBuilder(count);
+            for (int i = 0; i < count; i++) {
+                text.append((char) in.readInt());
+                in.readBoolean();
+                in.readBoolean();
+                in.readInt();
+                in.readInt();
+            }
+            return text.toString();
         }
     }
 }

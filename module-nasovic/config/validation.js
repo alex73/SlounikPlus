@@ -22,6 +22,41 @@ for each (var w in words) {
   }
 }
 
+if (article.comment != null) {
+  //throw "Камэнтар: "+article.comment[0].textContent;
+}
+
+var text = Java.type("org.im.dc.client.ui.xmlstructure.nasovic.RTFSerialization").deserializeText(article.rtf[0].textContent);
+var fullText = article.zah[0].textContent;
+var idx=0;
+for each (var tlum in article.tlum) {
+  if (article.tlum.length>1) {
+    idx++;
+    fullText+=idx+")";
+  }
+  if (tlum.gram) {
+    fullText+=tlum.gram[0].textContent;
+  }
+  fullText += tlum.desc[0].textContent;
+  for each (var ex in tlum.ex) {
+    fullText += ex.textContent;
+  }
+}
+
+var diff = Java.type("org.im.dc.client.ui.xmlstructure.nasovic.DiffChecker").diffText(text, fullText);
+if (diff != null) {
+  throw "Несупадае тэкст: "+diff;
+}
+
+function rtfReadInt(rtf, pos) {
+     var ch1 = rtf.charAt(pos+0);
+     var ch2 = rtf.charAt(pos+1);
+     var ch3 = rtf.charAt(pos+2);
+     var ch4 = rtf.charAt(pos+3);
+     if ((ch1 | ch2 | ch3 | ch4) < 0)
+         throw "EOFException";
+     return ((ch1 << 24) + (ch2 << 16) + (ch3 << 8) + (ch4 << 0));
+}
 
 function zah_check(zah) {
   if (zah.lik[0].textContent == 'адз.' && zah.rod[0].value == null) throw "Род непазначаны";
