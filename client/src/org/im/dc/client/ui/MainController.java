@@ -136,6 +136,7 @@ public class MainController extends BaseController<MainFrame> {
         window.tableArticles.getSelectionModel().addListSelectionListener((e) -> {
             window.labelSelected.setText("Пазначана: " + window.tableArticles.getSelectedRows().length);
         });
+        window.tableArticles.setAutoCreateRowSorter(true);
         window.tableIssues.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
