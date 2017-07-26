@@ -14,6 +14,7 @@ import javax.xml.stream.XMLStreamWriter;
 import org.im.dc.client.SchemaLoader;
 import org.im.dc.client.ui.ArticleEditController;
 
+@SuppressWarnings("serial")
 public class XmlEditCheck extends XmlEditBase<JPanel> {
     public XmlEditCheck(XmlGroup rootPanel, XmlGroup parentPanel, AnnotationInfo ann,
             ArticleEditController editController) {

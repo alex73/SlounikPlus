@@ -6,13 +6,13 @@ import javax.swing.BorderFactory;
 import javax.swing.JTextArea;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.im.dc.client.ui.ArticleEditController;
 
+@SuppressWarnings("serial")
 public class XmlEditText extends XmlEditBase<JTextArea> {
     public XmlEditText(XmlGroup rootPanel, XmlGroup parentPanel, AnnotationInfo ann,
             ArticleEditController editController) {

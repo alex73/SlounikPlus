@@ -7,7 +7,6 @@ import java.awt.event.ItemListener;
 import javax.swing.ButtonGroup;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
-import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
@@ -15,6 +14,7 @@ import javax.xml.stream.XMLStreamWriter;
 import org.im.dc.client.SchemaLoader;
 import org.im.dc.client.ui.ArticleEditController;
 
+@SuppressWarnings("serial")
 public class XmlEditRadio extends XmlEditBase<JPanel> {
     public XmlEditRadio(XmlGroup rootPanel, XmlGroup parentPanel, AnnotationInfo ann,
             ArticleEditController editController) {

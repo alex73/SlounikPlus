@@ -8,11 +8,12 @@ import java.util.Locale;
 
 public class ArticleShort {
     static final Collator BE = Collator.getInstance(new Locale("be"));
+    static final String[] EMPTY_LIST = new String[0];
 
     public int id;
-    public String[] words;
+    public String[] words = EMPTY_LIST;
     public String state;
-    public String[] assignedUsers;
+    public String[] assignedUsers = EMPTY_LIST;
     public String validationError;
 
     public static void sortByAlphabet(List<ArticleShort> list) {

@@ -14,6 +14,7 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.im.dc.client.ui.ArticleEditController;
 
+import com.sun.org.apache.xerces.internal.impl.dv.XSSimpleType;
 import com.sun.org.apache.xerces.internal.xs.XSElementDeclaration;
 import com.sun.org.apache.xerces.internal.xs.XSTypeDefinition;
 
@@ -75,10 +76,25 @@ public class XmlMany extends JPanel {
 
         switch (ann.editType) {
         case DEFAULT:
-            if (obj.getTypeDefinition().getTypeCategory() == XSTypeDefinition.COMPLEX_TYPE) {
+            switch (obj.getTypeDefinition().getTypeCategory()) {
+            case XSTypeDefinition.COMPLEX_TYPE:
                 p = new XmlGroup(rootPanel, parentPanel, obj, ann, rootPanel.editController);
-            } else {
-                p = new XmlEditText(rootPanel, parentPanel, ann, rootPanel.editController);
+                break;
+            case XSTypeDefinition.SIMPLE_TYPE:
+                XSSimpleType type = (XSSimpleType) obj.getTypeDefinition();
+                switch (type.getPrimitiveKind()) {
+                case XSSimpleType.PRIMITIVE_BOOLEAN:
+                    p = new XmlEditBoolean(rootPanel, parentPanel, ann, rootPanel.editController);
+                    break;
+                case XSSimpleType.PRIMITIVE_STRING:
+                    p = new XmlEditText(rootPanel, parentPanel, ann, rootPanel.editController);
+                    break;
+                default:
+                    throw new RuntimeException("Can't creaet editor for simple type: " + type.getName());
+                }
+                break;
+            default:
+                throw new RuntimeException("Unknown schema type: " + obj.getTypeDefinition().getTypeCategory());
             }
             break;
         case CHECK:

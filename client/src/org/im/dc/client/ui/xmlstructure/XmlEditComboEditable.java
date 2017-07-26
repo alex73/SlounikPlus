@@ -3,7 +3,6 @@ package org.im.dc.client.ui.xmlstructure;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
-import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
@@ -11,6 +10,7 @@ import javax.xml.stream.XMLStreamWriter;
 import org.im.dc.client.SchemaLoader;
 import org.im.dc.client.ui.ArticleEditController;
 
+@SuppressWarnings("serial")
 public class XmlEditComboEditable extends XmlEditBase<JFilterComboBox> {
     public XmlEditComboEditable(XmlGroup rootPanel, XmlGroup parentPanel, AnnotationInfo ann,
             ArticleEditController editController) {

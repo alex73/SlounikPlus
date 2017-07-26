@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:element name="root">
+		<xs:annotation>
+			<xs:appinfo>Артыкул</xs:appinfo>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="pl" minOccurs="0" maxOccurs="1" />
+				<xs:element ref="gramzah" minOccurs="1" maxOccurs="1" />
+				<xs:element ref="stylzah" minOccurs="0" maxOccurs="3" />
+				<xs:element ref="tlum" minOccurs="1" maxOccurs="unbounded" />
+				<xs:element ref="si" minOccurs="1" maxOccurs="1" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="pl" type="plType">
+		<xs:annotation>
+			<xs:appinfo>pl{type:radio/plEnum}</xs:appinfo>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="gramzah" type="gramType">
+		<xs:annotation>
+			<xs:appinfo>Граматычныя паметы загалоўка{type:check/gramEnum}</xs:appinfo>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="stylzah" type="stylEnum">
+		<xs:annotation>
+			<xs:appinfo>Стылістычныя паметы загалоўка{type:combo_editable/stylEnum}</xs:appinfo>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="tlum">
+		<xs:annotation>
+			<xs:appinfo>Тлумачэнне{bg:#b7dde8,border:#0000FF}</xs:appinfo>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="gram" type="gramType" minOccurs="1" maxOccurs="1">
+					<xs:annotation>
+						<xs:appinfo>Граматычная памета{type:check/gramEnum}</xs:appinfo>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="styl" type="stylEnum" minOccurs="0" maxOccurs="3">
+					<xs:annotation>
+						<xs:appinfo>Стылістычная памета{type:combo_editable/stylEnum}</xs:appinfo>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="desc" type="xs:string" maxOccurs="1" minOccurs="1">
+					<xs:annotation>
+						<xs:appinfo>Тэкст тлумачэння</xs:appinfo>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="ex" maxOccurs="unbounded" minOccurs="0">
+					<xs:annotation>
+						<xs:appinfo>Прыклад{bg:#87a3ab}</xs:appinfo>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="it" type="xs:string" minOccurs="1" maxOccurs="1">
+								<xs:annotation>
+									<xs:appinfo>It</xs:appinfo>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="bel" type="xs:string" minOccurs="1" maxOccurs="1">
+								<xs:annotation>
+									<xs:appinfo>Bel</xs:appinfo>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="si" type="xs:boolean">
+		<xs:annotation>
+			<xs:appinfo>si</xs:appinfo>
+		</xs:annotation>
+	</xs:element>
+	<xs:complexType name="plType">
+		<xs:sequence>
+			<xs:element name="value" type="plEnum" minOccurs="1" maxOccurs="1" />
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="plEnum">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="-ci" />
+			<xs:enumeration value="-chi" />
+			<xs:enumeration value="-i" />
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="gramType">
+		<xs:sequence>
+			<xs:element name="value" type="gramEnum" minOccurs="0" maxOccurs="3" />
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="gramEnum">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="m" />
+			<xs:enumeration value="f" />
+			<xs:enumeration value="m, f" />
+			<xs:enumeration value="vi" />
+			<xs:enumeration value="vi (e)" />
+			<xs:enumeration value="vi (a)" />
+			<xs:enumeration value="vt" />
+			<xs:enumeration value="agg" />
+			<xs:enumeration value="avv" />
+			<xs:enumeration value="inter" />
+			<xs:enumeration value="num" />
+			<xs:enumeration value="part" />
+            <xs:enumeration value="invar" />
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="stylType">
+		<xs:sequence>
+			<xs:element name="value" type="stylEnum" minOccurs="0" maxOccurs="3" />
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="stylEnum">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="анат." />
+			<xs:enumeration value="англ." />
+			<xs:enumeration value="архіт." />
+			<xs:enumeration value="астр." />
+			<xs:enumeration value="аўт." />
+			<xs:enumeration value="бат." />
+			<xs:enumeration value="бібл." />
+			<xs:enumeration value="біял." />
+			<xs:enumeration value="буд." />
+			<xs:enumeration value="ваен." />
+			<xs:enumeration value="вайск." />
+			<xs:enumeration value="гандл." />
+			<xs:enumeration value="гіст." />
+			<xs:enumeration value="геагр." />
+			<xs:enumeration value="геал." />
+			<xs:enumeration value="ген." />
+			<xs:enumeration value="горн." />
+			<xs:enumeration value="друк." />
+			<xs:enumeration value="дыял." />
+			<xs:enumeration value="жарг." />
+			<xs:enumeration value="жарт." />
+			<xs:enumeration value="журн." />
+			<xs:enumeration value="жыв." />
+			<xs:enumeration value="заал." />
+			<xs:enumeration value="зневаж." />
+			<xs:enumeration value="іран." />
+			<xs:enumeration value="камп." />
+			<xs:enumeration value="кніжн." />
+			<xs:enumeration value="кул." />
+			<xs:enumeration value="лац." />
+			<xs:enumeration value="лінгв." />
+			<xs:enumeration value="літ." />
+			<xs:enumeration value="мар." />
+			<xs:enumeration value="маст." />
+			<xs:enumeration value="мат." />
+			<xs:enumeration value="мед." />
+			<xs:enumeration value="міф." />
+			<xs:enumeration value="муз." />
+			<xs:enumeration value="нескл." />
+			<xs:enumeration value="паэт." />
+			<xs:enumeration value="паліт." />
+			<xs:enumeration value="паліграф." />
+			<xs:enumeration value="перан." />
+			<xs:enumeration value="разм." />
+			<xs:enumeration value="рэл." />
+			<xs:enumeration value="спарт." />
+			<xs:enumeration value="спец." />
+			<xs:enumeration value="спраж." />
+			<xs:enumeration value="таск." />
+			<xs:enumeration value="тэтр." />
+			<xs:enumeration value="тэх." />
+			<xs:enumeration value="уст." />
+			<xs:enumeration value="фам." />
+			<xs:enumeration value="фіз." />
+			<xs:enumeration value="філас." />
+			<xs:enumeration value="фін." />
+			<xs:enumeration value="фр." />
+			<xs:enumeration value="хім." />
+			<xs:enumeration value="экал." />
+			<xs:enumeration value="экан." />
+			<xs:enumeration value="эл." />
+			<xs:enumeration value="юр." />
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>
+
+<!-- <xs:enumeration value="vi" /> <xs:enumeration value="(таксама перан." /> мн - множны лік м - мужчынскі род н - ніякі род ж - жаночы род -->
