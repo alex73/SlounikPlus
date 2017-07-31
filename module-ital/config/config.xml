@@ -17,9 +17,6 @@
 		</role>
 	</roles>
 	<states>
-		<state id="Звычайны" edit_roles="укладальнік">
-			<change to="0" roles="укладальнік" />
-		</state>
 		<state id="0" edit_roles="укладальнік">
 			<change to="Зроблена" roles="укладальнік" />
 			<change to="Зроблена з заўвагамі" roles="укладальнік" />

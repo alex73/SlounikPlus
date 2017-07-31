@@ -9,6 +9,7 @@
 				<xs:element ref="pl" minOccurs="0" maxOccurs="1" />
 				<xs:element ref="gramzah" minOccurs="1" maxOccurs="1" />
 				<xs:element ref="stylzah" minOccurs="0" maxOccurs="3" />
+				<xs:element ref="inszah" minOccurs="0" maxOccurs="1" />
 				<xs:element ref="tlum" minOccurs="1" maxOccurs="unbounded" />
 				<xs:element ref="si" minOccurs="1" maxOccurs="1" />
 			</xs:sequence>
@@ -29,6 +30,11 @@
 			<xs:appinfo>Стылістычныя паметы загалоўка{type:combo_editable/stylEnum}</xs:appinfo>
 		</xs:annotation>
 	</xs:element>
+    <xs:element name="inszah" type="xs:string">
+        <xs:annotation>
+            <xs:appinfo>Іншыя паметы загалоўка</xs:appinfo>
+        </xs:annotation>
+    </xs:element>
 	<xs:element name="tlum">
 		<xs:annotation>
 			<xs:appinfo>Тлумачэнне{bg:#b7dde8,border:#0000FF}</xs:appinfo>
@@ -53,6 +59,25 @@
 				<xs:element name="ex" maxOccurs="unbounded" minOccurs="0">
 					<xs:annotation>
 						<xs:appinfo>Прыклад{bg:#87a3ab}</xs:appinfo>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="it" type="xs:string" minOccurs="1" maxOccurs="1">
+								<xs:annotation>
+									<xs:appinfo>It</xs:appinfo>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="bel" type="xs:string" minOccurs="1" maxOccurs="1">
+								<xs:annotation>
+									<xs:appinfo>Bel</xs:appinfo>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="ust" maxOccurs="unbounded" minOccurs="0">
+					<xs:annotation>
+						<xs:appinfo>Устойлівы выраз</xs:appinfo>
 					</xs:annotation>
 					<xs:complexType>
 						<xs:sequence>
@@ -108,7 +133,7 @@
 			<xs:enumeration value="inter" />
 			<xs:enumeration value="num" />
 			<xs:enumeration value="part" />
-            <xs:enumeration value="invar" />
+			<xs:enumeration value="invar" />
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:complexType name="stylType">
