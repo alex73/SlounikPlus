@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 public class InitialData {
+    public String configVersion;
     public byte[] articleSchema;
     public List<String> states;
     public Map<String, String> allUsers; // map: key=user, value=role

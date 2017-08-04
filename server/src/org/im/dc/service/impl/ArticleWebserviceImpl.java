@@ -15,6 +15,7 @@ import javax.script.SimpleScriptContext;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Validator;
 
+import org.apache.commons.lang3.StringUtils;
 import org.im.dc.gen.config.Change;
 import org.im.dc.gen.config.Link;
 import org.im.dc.gen.config.Permission;
@@ -52,6 +53,11 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
             LOG.warn("<< getInitialData: version required " + AppConst.APP_VERSION + " but requested "
                     + header.appVersion);
             throw new RuntimeException("Wrong app version");
+        }
+        if (!StringUtils.equals(Config.getConfig().getVersion(), header.configVersion)) {
+            LOG.warn("<< getInitialData: config version required " + Config.getConfig().getVersion() + " but requested "
+                    + header.configVersion);
+            throw new RuntimeException("Wrong config version");
         }
         if (!PermissionChecker.checkUser(header.user, header.pass)) {
             LOG.warn("<< getInitialData: wrong user/pass");

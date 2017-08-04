@@ -53,9 +53,11 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
     @Override
     public InitialData getInitialData(Header header) {
         LOG.info(">> getInitialData(" + header.user + ")");
+        header.configVersion = Config.getConfig().getVersion(); // set version for initial client call
         check(header);
 
         InitialData result = new InitialData();
+        result.configVersion = Config.getConfig().getVersion();
         result.articleSchema = Config.articleSchemaSource;
         result.states = new ArrayList<>();
         for (State st : Config.getConfig().getStates().getState()) {

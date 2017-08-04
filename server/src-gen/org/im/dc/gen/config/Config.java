@@ -18,6 +18,7 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
+ *         &lt;element ref="{}version"/>
  *         &lt;element ref="{}users"/>
  *         &lt;element ref="{}roles"/>
  *         &lt;element ref="{}states"/>
@@ -32,6 +33,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
+    "version",
     "users",
     "roles",
     "states",
@@ -41,6 +43,8 @@ import javax.xml.bind.annotation.XmlType;
 public class Config {
 
     @XmlElement(required = true)
+    protected String version;
+    @XmlElement(required = true)
     protected Users users;
     @XmlElement(required = true)
     protected Roles roles;
@@ -48,6 +52,30 @@ public class Config {
     protected States states;
     @XmlElement(name = "external_links", required = true)
     protected ExternalLinks externalLinks;
+
+    /**
+     * Gets the value of the version property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getVersion() {
+        return version;
+    }
+
+    /**
+     * Sets the value of the version property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setVersion(String value) {
+        this.version = value;
+    }
 
     /**
      * Gets the value of the users property.

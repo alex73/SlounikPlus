@@ -100,6 +100,7 @@ public class MainController extends BaseController<MainFrame> {
             protected void exec() throws Exception {
                 WS.init(addr, username, pass);
                 initialData = WS.getToolsWebservice().getInitialData(WS.header);
+                WS.header.configVersion = initialData.configVersion;
 
                 SchemaLoader.init(initialData.articleSchema);
 

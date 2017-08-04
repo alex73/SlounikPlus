@@ -1,7 +1,10 @@
 
 package org.im.dc.gen.config;
 
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.annotation.XmlElementDecl;
 import javax.xml.bind.annotation.XmlRegistry;
+import javax.xml.namespace.QName;
 
 
 /**
@@ -21,6 +24,7 @@ import javax.xml.bind.annotation.XmlRegistry;
 @XmlRegistry
 public class ObjectFactory {
 
+    private final static QName _Version_QNAME = new QName("", "version");
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: org.im.dc.gen.config
@@ -107,6 +111,15 @@ public class ObjectFactory {
      */
     public States createStates() {
         return new States();
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link String }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "", name = "version")
+    public JAXBElement<String> createVersion(String value) {
+        return new JAXBElement<String>(_Version_QNAME, String.class, null, value);
     }
 
 }

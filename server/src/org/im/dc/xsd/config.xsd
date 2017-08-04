@@ -3,6 +3,7 @@
 	<xs:element name="config">
 		<xs:complexType>
 			<xs:sequence>
+				<xs:element ref="version" />
 				<xs:element ref="users" />
 				<xs:element ref="roles" />
 				<xs:element ref="states" />
@@ -10,6 +11,7 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
+	<xs:element name="version" type="xs:string" />
 	<xs:element name="users">
 		<xs:complexType>
 			<xs:sequence>
