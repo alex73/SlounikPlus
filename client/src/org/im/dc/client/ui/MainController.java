@@ -172,6 +172,8 @@ public class MainController extends BaseController<MainFrame> {
 
         window.btnValidateFull.addActionListener((e) -> validateFull());
 
+        window.btnPreview.addActionListener(preview);
+
         SettingsController.savePlacesForWindow(window);
         window.tableIssues.setModel(issuesModel);
         window.tableNews.setModel(newsModel);
@@ -188,6 +190,21 @@ public class MainController extends BaseController<MainFrame> {
             }
 
             new ReassignController(articles);
+        }
+    };
+    ActionListener preview = (e) -> {
+        TableModel m = window.tableArticles.getModel();
+        if (m instanceof MainFrameArticlesModel) {
+            MainFrameArticlesModel model = (MainFrameArticlesModel) m;
+            List<ArticleShort> articles = new ArrayList<>();
+            for (int r : window.tableArticles.getSelectedRows()) {
+                articles.add(model.articles.get(r));
+            }
+            if (articles.size() > 100) {
+                todo("Абрана зашмат артыкулаў");
+            } else {
+                new PreviewAllController(articles);
+            }
         }
     };
 

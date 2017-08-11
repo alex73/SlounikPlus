@@ -46,6 +46,7 @@ public class MainFrame extends javax.swing.JFrame {
         btnAddWords = new javax.swing.JButton();
         btnAddArticle = new javax.swing.JButton();
         btnValidateFull = new javax.swing.JButton();
+        btnPreview = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("org/im/dc/client/ui/Bundle"); // NOI18N
@@ -233,6 +234,9 @@ public class MainFrame extends javax.swing.JFrame {
         btnValidateFull.setText(bundle.getString("MainFrame.btnValidateFull.text")); // NOI18N
         jPanel1.add(btnValidateFull);
 
+        btnPreview.setText(bundle.getString("MainFrame.btnPreview.text")); // NOI18N
+        jPanel1.add(btnPreview);
+
         getContentPane().add(jPanel1, java.awt.BorderLayout.SOUTH);
 
         pack();
@@ -276,6 +280,7 @@ public class MainFrame extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public javax.swing.JButton btnAddArticle;
     public javax.swing.JButton btnAddWords;
+    public javax.swing.JButton btnPreview;
     public javax.swing.JButton btnSearch;
     public javax.swing.JButton btnSettings;
     public javax.swing.JButton btnStat;
