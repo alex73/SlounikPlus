@@ -124,14 +124,19 @@
 			<xs:enumeration value="m" />
 			<xs:enumeration value="f" />
 			<xs:enumeration value="m, f" />
+			<xs:enumeration value="m (-trice f)" />
 			<xs:enumeration value="vi" />
 			<xs:enumeration value="vi (e)" />
 			<xs:enumeration value="vi (a)" />
+			<xs:enumeration value="vi (a, e)" />
 			<xs:enumeration value="vt" />
+			<xs:enumeration value="vt (di qc)" />
 			<xs:enumeration value="agg" />
 			<xs:enumeration value="avv" />
 			<xs:enumeration value="inter" />
 			<xs:enumeration value="num" />
+			<xs:enumeration value="num ord" />
+			<xs:enumeration value="num card" />
 			<xs:enumeration value="part" />
 			<xs:enumeration value="invar" />
 		</xs:restriction>

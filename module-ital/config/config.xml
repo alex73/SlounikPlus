@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config>
+	<version>20170804</version>
 	<users>
 		<user name="uladz" pass="123" role="укладальнік" new-article-state="0" new-article-users="uladz" />
+		<user name="jalyncava" pass="369" role="укладальнік" new-article-state="0" new-article-users="jalyncava" />
+		<user name="marakulina" pass="456" role="укладальнік" new-article-state="0" new-article-users="marakulina" />
+		<user name="kapylou" pass="741" role="укладальнік" new-article-state="0" new-article-users="kapylou" />
+		<user name="redaktar" pass="951" role="галоўны_рэдактар" new-article-state="0" new-article-users="redaktar" />
 	</users>
 	<roles>
 		<role id="укладальнік">

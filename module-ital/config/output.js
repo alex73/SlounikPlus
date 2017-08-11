@@ -1,5 +1,5 @@
-out.tag("<!DOCTYPE html>\n");
-out.tag("<html><head><meta charset=\"UTF-8\"></head><body>");
+//out.tag("<!DOCTYPE html>\n");
+//out.tag("<html><head><meta charset=\"UTF-8\"></head><body>");
 
 out.tag("<b>");
 for(var i=0; i < words.length; i++) {
@@ -19,11 +19,11 @@ if (article.inszah) {
   out.tag(t);
 }
 
-var tlumIndex = 1;
+var tlumIndex = 0;
 for each (var tlum in article.tlum) {
+  tlumIndex++;
   if (article.tlum.length > 1) {
     out.tag(out.prepare(" <b>", tlumIndex+".", "</b> "));
-    tlumIndex++;
   }
 
   for each (var g in tlum.gram[0].value) {
@@ -37,6 +37,8 @@ for each (var tlum in article.tlum) {
   d = d.replace(' м.', ' <i>м.</i>');
   d = d.replace(' н.', ' <i>н.</i>');
   d = d.replace(' ж.', ' <i>ж.</i>');
+  d = d.replace(' мн.', ' <i>мн.</i>');
+  d = d.replace(' нескл.', ' <i>нескл.</i>');
   d = d.replace(/{(.+?)}/, '<i>$1</i>');
   out.tag(d);
   
@@ -48,14 +50,23 @@ for each (var tlum in article.tlum) {
     out.tag("</i>");
     lastTlum = ex.bel[0].textContent;
   }
-  for each (var ust in tlum.ust) {
+  if (tlum.ust) {
     out.tag("; ♦ ");
-    out.tag(out.prepare("<b>", ex.it[0], "</b> "));
-    out.tag(out.prepare(ex.bel[0]));
+  }
+  var was = false;
+  for each (var ust in tlum.ust) {
+    if (was) {
+      out.tag("; ");
+    }
+    was = true;
+    out.tag("<i>");
+    out.tag(out.prepare("<b>", ust.it[0], "</b> "));
+    out.tag(out.prepare(ust.bel[0]));
+    out.tag("</i>");
     lastTlum = ust.bel[0].textContent;
   }
 
-  if (tlumIndex < article.tlum.length-1) {
+  if (tlumIndex < article.tlum.length) {
     out.tag(';');
   } else if (!lastTlum.trim().match(/[\?\!\.]$/)) {
     out.tag('.');
@@ -66,4 +77,4 @@ if (article.si[0].textContent === 'true') {
    out.tag(" || -si.");
 }
 
-out.tag("</body></html>\n");
+//out.tag("</body></html>\n");
