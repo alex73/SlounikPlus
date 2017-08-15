@@ -46,8 +46,10 @@ public class PreviewController extends BaseController<PreviewDialog> {
 
             @Override
             protected void exec() throws Exception {
-                preview = WS.getToolsWebservice().preparePreview(WS.header, articleEditController.article.article.words,
-                        articleEditController.extractXml());
+                String text = preview = WS.getToolsWebservice().preparePreview(WS.header,
+                        articleEditController.article.article.words, articleEditController.extractXml());
+                preview = "<!DOCTYPE html>\n<html><head><meta charset=\"UTF-8\"></head><body>\n" + text
+                        + "\n</body></html>\n";
             }
 
             @Override

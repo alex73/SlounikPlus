@@ -39,6 +39,26 @@ public class HtmlOut {
         System.err.println(text);
     }
 
+    // get latest non-space char
+    public char latestNonSpace() {
+        boolean tag = false;
+        for (int i = out.length() - 1; i >= 0; i--) {
+            char c = out.charAt(i);
+            if (!tag && c == '>') {
+                tag = true;
+                continue;
+            }
+            if (tag && c == '<') {
+                tag = false;
+                continue;
+            }
+            if (!tag && !Character.isWhitespace(c)) {
+                return c;
+            }
+        }
+        return 0;
+    }
+
     @Override
     public String toString() {
         return out.toString();

@@ -66,15 +66,18 @@ public class PreviewAllController extends BaseController<PreviewAllDialog> {
 
             @Override
             protected void exec() throws Exception {
-                out = new StringBuilder("<!DOCTYPE html>\n<html><head><meta charset=\"UTF-8\"></head><body>");
+                out = new StringBuilder("<!DOCTYPE html>\n<html><head><meta charset=\"UTF-8\"></head><body>\n");
 
                 for (ArticleShort a : articles) {
                     ArticleFullInfo info = WS.getArticleService().getArticleFullInfo(WS.header, a.id);
+                    if (info.article.xml == null) {
+                        continue;
+                    }
                     out.append(WS.getToolsWebservice().preparePreview(WS.header, info.article.words, info.article.xml));
                     out.append(" <a href='" + a.id + "'>рэдагаваць</a>\n");
                     out.append("<hr/>\n");
                 }
-                out.append("</body></html>\n");
+                out.append("\n</body></html>\n");
             }
 
             @Override

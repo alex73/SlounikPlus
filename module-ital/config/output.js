@@ -1,6 +1,3 @@
-//out.tag("<!DOCTYPE html>\n");
-//out.tag("<html><head><meta charset=\"UTF-8\"></head><body>");
-
 out.tag("<b>");
 for(var i=0; i < words.length; i++) {
   if (i > 0) {out.tag(", ");}
@@ -15,7 +12,7 @@ for each (var s in article.stylzah) {
   out.tag(out.prepare(" <i>", s.textContent, "</i> "));
 }
 if (article.inszah) {
-  var t = out.prepare(article.inszah[0].textContent).replace(/{(.+?)}/, '<i>$1</i>');
+  var t = out.prepare(article.inszah[0].textContent).replace(/{(.+?)}/g, '<i>$1</i>');
   out.tag(t);
 }
 
@@ -34,21 +31,23 @@ for each (var tlum in article.tlum) {
   }
 
   var d = out.prepare(tlum.desc[0]);
-  d = d.replace(' м.', ' <i>м.</i>');
-  d = d.replace(' н.', ' <i>н.</i>');
-  d = d.replace(' ж.', ' <i>ж.</i>');
-  d = d.replace(' мн.', ' <i>мн.</i>');
-  d = d.replace(' нескл.', ' <i>нескл.</i>');
-  d = d.replace(/{(.+?)}/, '<i>$1</i>');
+  d = d.replace(/ м\./g, ' <i>м.</i>');
+  d = d.replace(/ н\./g, ' <i>н.</i>');
+  d = d.replace(/ ж\./g, ' <i>ж.</i>');
+  d = d.replace(/ мн\./g, ' <i>мн.</i>');
+  d = d.replace(/ нескл\./g, ' <i>нескл.</i>');
+  d = d.replace(/{(.+?)}/g, '<i>$1</i>');
+  d = d.replace(/\((.+?)\)/g, '(<i>$1</i>)');
   out.tag(d);
   
-  var lastTlum='';
   for each (var ex in tlum.ex) {
-    out.tag("; <i>");
+    if (":".indexOf(out.latestNonSpace())<0) {
+      out.tag(";");
+    }
+    out.tag(" <i>");
     out.tag(out.prepare("<b>", ex.it[0], "</b> "));
     out.tag(out.prepare(ex.bel[0]));
     out.tag("</i>");
-    lastTlum = ex.bel[0].textContent;
   }
   if (tlum.ust) {
     out.tag("; ♦ ");
@@ -63,12 +62,11 @@ for each (var tlum in article.tlum) {
     out.tag(out.prepare("<b>", ust.it[0], "</b> "));
     out.tag(out.prepare(ust.bel[0]));
     out.tag("</i>");
-    lastTlum = ust.bel[0].textContent;
   }
 
   if (tlumIndex < article.tlum.length) {
     out.tag(';');
-  } else if (!lastTlum.trim().match(/[\?\!\.]$/)) {
+  } else if ("?!.".indexOf(out.latestNonSpace())<0) {
     out.tag('.');
   }
 }
@@ -76,5 +74,3 @@ for each (var tlum in article.tlum) {
 if (article.si[0].textContent === 'true') {
    out.tag(" || -si.");
 }
-
-//out.tag("</body></html>\n");

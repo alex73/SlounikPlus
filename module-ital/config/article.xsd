@@ -139,6 +139,7 @@
 			<xs:enumeration value="num card" />
 			<xs:enumeration value="part" />
 			<xs:enumeration value="invar" />
+			<xs:enumeration value="pl" />
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:complexType name="stylType">
