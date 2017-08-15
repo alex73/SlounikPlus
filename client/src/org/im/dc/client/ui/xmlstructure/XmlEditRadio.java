@@ -23,7 +23,9 @@ public class XmlEditRadio extends XmlEditBase<JPanel> {
 
     @Override
     protected JPanel createField() {
-        JPanel field = new JPanel(new FlowLayout());
+        FlowLayoutFullHeight layout = new FlowLayoutFullHeight();
+        layout.setAlignment(FlowLayout.LEFT);
+        JPanel field = new JPanel(layout);
         field.setOpaque(false);
         ButtonGroup gr = new ButtonGroup();
         for (String v : SchemaLoader.getSimpleTypeEnumeration(ann.editDetails)) {
