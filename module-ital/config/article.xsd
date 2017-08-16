@@ -15,7 +15,7 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="pl" type="plType">
+	<xs:element name="pl" type="plEnum">
 		<xs:annotation>
 			<xs:appinfo>pl{type:radio/plEnum}</xs:appinfo>
 		</xs:annotation>
@@ -30,11 +30,11 @@
 			<xs:appinfo>Стылістычныя паметы загалоўка{type:combo_editable/stylEnum}</xs:appinfo>
 		</xs:annotation>
 	</xs:element>
-    <xs:element name="inszah" type="xs:string">
-        <xs:annotation>
-            <xs:appinfo>Іншыя паметы загалоўка</xs:appinfo>
-        </xs:annotation>
-    </xs:element>
+	<xs:element name="inszah" type="xs:string">
+		<xs:annotation>
+			<xs:appinfo>Іншыя паметы загалоўка</xs:appinfo>
+		</xs:annotation>
+	</xs:element>
 	<xs:element name="tlum">
 		<xs:annotation>
 			<xs:appinfo>Тлумачэнне{bg:#b7dde8,border:#0000FF}</xs:appinfo>
@@ -67,6 +67,11 @@
 									<xs:appinfo>It</xs:appinfo>
 								</xs:annotation>
 							</xs:element>
+							<xs:element name="pam" type="xs:string" minOccurs="0" maxOccurs="1">
+								<xs:annotation>
+									<xs:appinfo>Памета</xs:appinfo>
+								</xs:annotation>
+							</xs:element>
 							<xs:element name="bel" type="xs:string" minOccurs="1" maxOccurs="1">
 								<xs:annotation>
 									<xs:appinfo>Bel</xs:appinfo>
@@ -86,6 +91,11 @@
 									<xs:appinfo>It</xs:appinfo>
 								</xs:annotation>
 							</xs:element>
+							<xs:element name="pam" type="xs:string" minOccurs="0" maxOccurs="1">
+								<xs:annotation>
+									<xs:appinfo>Памета</xs:appinfo>
+								</xs:annotation>
+							</xs:element>
 							<xs:element name="bel" type="xs:string" minOccurs="1" maxOccurs="1">
 								<xs:annotation>
 									<xs:appinfo>Bel</xs:appinfo>
@@ -102,11 +112,6 @@
 			<xs:appinfo>si</xs:appinfo>
 		</xs:annotation>
 	</xs:element>
-	<xs:complexType name="plType">
-		<xs:sequence>
-			<xs:element name="value" type="plEnum" minOccurs="1" maxOccurs="1" />
-		</xs:sequence>
-	</xs:complexType>
 	<xs:simpleType name="plEnum">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="-ci" />

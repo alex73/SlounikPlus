@@ -5,11 +5,21 @@ for(var i=0; i < words.length; i++) {
 }
 out.tag("</b> ");
 
+if (article.pl) {
+  out.tag(out.prepare("(<i>pl</i> ",article.pl[0].textContent,") "));
+}
+
 for each (var g in article.gramzah[0].value) {
   out.tag(out.prepare(" <i>", g.textContent, "</i> "));
 }
-for each (var s in article.stylzah) {
-  out.tag(out.prepare(" <i>", s.textContent, "</i> "));
+if (article.stylzah) {
+  out.tag('<i>');
+  var p = '';
+  for each (var s in article.stylzah) {
+    out.tag(out.prepare(p + " ", s.textContent, ""));
+    p = ',';
+  }
+  out.tag('</i> ');
 }
 if (article.inszah) {
   var t = out.prepare(article.inszah[0].textContent).replace(/{(.+?)}/g, '<i>$1</i>');
@@ -38,6 +48,7 @@ for each (var tlum in article.tlum) {
   d = d.replace(/ нескл\./g, ' <i>нескл.</i>');
   d = d.replace(/{(.+?)}/g, '<i>$1</i>');
   d = d.replace(/\((.+?)\)/g, '(<i>$1</i>)');
+  d = d.replace(/\[(.+?)\]/g, '($1)');
   out.tag(d);
   
   for each (var ex in tlum.ex) {
@@ -46,6 +57,9 @@ for each (var tlum in article.tlum) {
     }
     out.tag(" <i>");
     out.tag(out.prepare("<b>", ex.it[0], "</b> "));
+    if (ex.pam) {
+      out.tag(out.prepare("(", ex.pam[0], ") "));
+    }
     out.tag(out.prepare(ex.bel[0]));
     out.tag("</i>");
   }
@@ -60,6 +74,9 @@ for each (var tlum in article.tlum) {
     was = true;
     out.tag("<i>");
     out.tag(out.prepare("<b>", ust.it[0], "</b> "));
+    if (ust.pam) {
+      out.tag(out.prepare("(", ust.pam[0], ") "));
+    }
     out.tag(out.prepare(ust.bel[0]));
     out.tag("</i>");
   }
