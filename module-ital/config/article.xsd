@@ -41,6 +41,7 @@
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
+				<xs:element ref="pl" minOccurs="0" maxOccurs="1" />
 				<xs:element name="gram" type="gramType" minOccurs="1" maxOccurs="1">
 					<xs:annotation>
 						<xs:appinfo>Граматычная памета{type:check/gramEnum}</xs:appinfo>

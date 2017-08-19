@@ -33,6 +33,9 @@ for each (var tlum in article.tlum) {
     out.tag(out.prepare(" <b>", tlumIndex+".", "</b> "));
   }
 
+  if (tlum.pl) {
+    out.tag(out.prepare("(<i>pl</i> ",tlum.pl[0].textContent,") "));
+  }
   for each (var g in tlum.gram[0].value) {
     out.tag(out.prepare(" <i>", g.textContent, "</i> "));
   }
