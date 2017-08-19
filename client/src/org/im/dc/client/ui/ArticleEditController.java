@@ -39,7 +39,6 @@ import org.im.dc.service.dto.Related.RelatedType;
 
 import com.vlsolutions.swing.docking.DockKey;
 import com.vlsolutions.swing.docking.Dockable;
-import com.vlsolutions.swing.docking.DockingConstants;
 import com.vlsolutions.swing.docking.DockingDesktop;
 
 /**
@@ -54,10 +53,9 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
     protected volatile ArticleFullInfo article;
     protected volatile boolean wasChanged;
 
-    private ArticlePanelEdit panelEdit = new ArticlePanelEdit();
-    private ArticlePanelHistory panelHistory = new ArticlePanelHistory();
-    private ArticlePanelNotes panelNotes = new ArticlePanelNotes();
-
+    public ArticlePanelEdit panelEdit = new ArticlePanelEdit();
+    public ArticlePanelHistory panelHistory = new ArticlePanelHistory();
+    public ArticlePanelNotes panelNotes = new ArticlePanelNotes();
 
     private ArticleEditController(boolean isnew) {
         super(new ArticleEditDialog(MainController.instance.window, false), MainController.instance.window);

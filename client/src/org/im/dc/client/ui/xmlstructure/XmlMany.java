@@ -1,9 +1,12 @@
 package org.im.dc.client.ui.xmlstructure;
 
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +16,7 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.im.dc.client.ui.ArticleEditController;
+import org.im.dc.client.ui.ArticlePanelEdit;
 
 import com.sun.org.apache.xerces.internal.impl.dv.XSSimpleType;
 import com.sun.org.apache.xerces.internal.xs.XSElementDeclaration;
@@ -123,6 +127,49 @@ public class XmlMany extends JPanel {
         add(p, getComponentCount() - 1);
 
         revalidate();
+
+        p.addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent e) {
+                checkPopup(e);
+            }
+
+            public void mouseClicked(MouseEvent e) {
+                checkPopup(e);
+            }
+
+            public void mouseReleased(MouseEvent e) {
+                checkPopup(e);
+            }
+
+            private void checkPopup(MouseEvent e) {
+                if (e.isPopupTrigger()) {
+                    ArticlePanelEdit panelEdit = rootPanel.editController.panelEdit;
+                    List<IXmlElement> allElements=getElements();
+                    int idx = allElements.indexOf(p);
+                    panelEdit.cmMoveUp.setEnabled(idx > 0);
+                    panelEdit.cmMoveDown.setEnabled(idx < allElements.size() - 1);
+                    panelEdit.contextMenu.show(e.getComponent(), e.getX(), e.getY());
+                    for (ActionListener l : panelEdit.cmMoveUp.getActionListeners()) {
+                        panelEdit.cmMoveUp.removeActionListener(l);
+                    }
+                    for (ActionListener l : panelEdit.cmMoveDown.getActionListeners()) {
+                        panelEdit.cmMoveDown.removeActionListener(l);
+                    }
+                    panelEdit.cmMoveUp.addActionListener(l -> {
+                        XmlMany.this.remove(idx);
+                        XmlMany.this.add(p, idx - 1);
+                        rootPanel.fireChanged();
+                        revalidate();
+                    });
+                    panelEdit.cmMoveDown.addActionListener(l -> {
+                        XmlMany.this.remove(idx);
+                        XmlMany.this.add(p, idx + 1);
+                        rootPanel.fireChanged();
+                        revalidate();
+                    });
+                }
+            }
+        });
     }
 
     @Override

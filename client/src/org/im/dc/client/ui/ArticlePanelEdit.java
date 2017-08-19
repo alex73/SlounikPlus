@@ -27,7 +27,17 @@ public class ArticlePanelEdit extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        contextMenu = new javax.swing.JPopupMenu();
+        cmMoveUp = new javax.swing.JMenuItem();
+        cmMoveDown = new javax.swing.JMenuItem();
         panelEditor = new javax.swing.JScrollPane();
+
+        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("org/im/dc/client/ui/Bundle"); // NOI18N
+        cmMoveUp.setText(bundle.getString("ArticlePanelEdit.cmMoveUp.text")); // NOI18N
+        contextMenu.add(cmMoveUp);
+
+        cmMoveDown.setText(bundle.getString("ArticlePanelEdit.cmMoveDown.text")); // NOI18N
+        contextMenu.add(cmMoveDown);
 
         setLayout(new java.awt.BorderLayout());
         add(panelEditor, java.awt.BorderLayout.CENTER);
@@ -35,6 +45,9 @@ public class ArticlePanelEdit extends javax.swing.JPanel {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    public javax.swing.JMenuItem cmMoveDown;
+    public javax.swing.JMenuItem cmMoveUp;
+    public javax.swing.JPopupMenu contextMenu;
     public javax.swing.JScrollPane panelEditor;
     // End of variables declaration//GEN-END:variables
 }
