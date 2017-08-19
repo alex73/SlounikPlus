@@ -1,5 +1,6 @@
 package org.im.dc.client.ui;
 
+import java.awt.Component;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -24,6 +25,11 @@ import org.im.dc.service.dto.ArticlesFilter;
 import org.im.dc.service.dto.InitialData;
 import org.im.dc.service.dto.Related;
 
+import com.vlsolutions.swing.docking.DockKey;
+import com.vlsolutions.swing.docking.Dockable;
+import com.vlsolutions.swing.docking.DockingConstants;
+import com.vlsolutions.swing.docking.DockingDesktop;
+
 /**
  * Controls main window.
  */
@@ -36,10 +42,63 @@ public class MainController extends BaseController<MainFrame> {
     private MainFrameIssuesModel issuesModel;
     private MainFrameNewsModel newsModel;
 
+    private MainFramePanelArticles panelArticles = new MainFramePanelArticles();
+    private MainFramePanelIssues panelIssues = new MainFramePanelIssues();
+    private MainFramePanelNews panelNews = new MainFramePanelNews();
+
     public MainController(String addr) {
         super(new MainFrame(), null);
+        initDocking();
         this.addr = addr;
         instance = this;
+    }
+
+    void initDocking() {
+        Dockable articles = new Dockable() {
+            DockKey key = new DockKey("articlesList", "Артыкулы");
+
+            @Override
+            public DockKey getDockKey() {
+                return key;
+            }
+
+            @Override
+            public Component getComponent() {
+                return panelArticles;
+            }
+        };
+        Dockable issues = new Dockable() {
+            DockKey key = new DockKey("issuesList", "Заўвагі");
+
+            @Override
+            public DockKey getDockKey() {
+                return key;
+            }
+
+            @Override
+            public Component getComponent() {
+                return panelIssues;
+            }
+        };
+        Dockable news = new Dockable() {
+            DockKey key = new DockKey("newsList", "Навіны");
+
+            @Override
+            public DockKey getDockKey() {
+                return key;
+            }
+
+            @Override
+            public Component getComponent() {
+                return panelNews;
+            }
+        };
+        DockingDesktop desk = new DockingDesktop();
+        window.getContentPane().removeAll();
+        window.getContentPane().add(desk);
+        desk.addDockable(articles);
+        desk.split(articles, issues, DockingConstants.SPLIT_RIGHT);
+        desk.split(issues, news, DockingConstants.SPLIT_BOTTOM);
     }
 
     public void start() throws Exception {
@@ -120,72 +179,72 @@ public class MainController extends BaseController<MainFrame> {
         Vector<String> users = new Vector<>();
         users.add(null);
         users.addAll(initialData.allUsers.keySet());
-        window.cbUser.setModel(new DefaultComboBoxModel<>(users));
+        panelArticles.cbUser.setModel(new DefaultComboBoxModel<>(users));
         Vector<String> states = new Vector<>();
         states.add(null);
         states.addAll(initialData.states);
-        window.cbState.setModel(new DefaultComboBoxModel<>(states));
-        window.btnSearch.addActionListener((e) -> search());
-        window.tableArticles.addMouseListener(new MouseAdapter() {
+        panelArticles.cbState.setModel(new DefaultComboBoxModel<>(states));
+        panelArticles.btnSearch.addActionListener((e) -> search());
+        panelArticles.tableArticles.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                ArticleShort a = ((MainFrameArticlesModel) window.tableArticles.getModel()).articles
-                        .get(window.tableArticles.rowAtPoint(e.getPoint()));
+                ArticleShort a = ((MainFrameArticlesModel) panelArticles.tableArticles.getModel()).articles
+                        .get(panelArticles.tableArticles.rowAtPoint(e.getPoint()));
                 new ArticleEditController(a.id);
             }
         });
-        window.tableArticles.getSelectionModel().addListSelectionListener((e) -> {
-            window.labelSelected.setText("Пазначана: " + window.tableArticles.getSelectedRows().length);
+        panelArticles.tableArticles.getSelectionModel().addListSelectionListener((e) -> {
+            panelArticles.labelSelected.setText("Пазначана: " + panelArticles.tableArticles.getSelectedRows().length);
         });
-        window.tableArticles.setAutoCreateRowSorter(true);
-        window.tableIssues.addMouseListener(new MouseAdapter() {
+        panelArticles.tableArticles.setAutoCreateRowSorter(true);
+        panelIssues.tableIssues.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                Related a = ((MainFrameIssuesModel) window.tableIssues.getModel()).issues
-                        .get(window.tableIssues.getSelectedRow());
+                Related a = ((MainFrameIssuesModel) panelIssues.tableIssues.getModel()).issues
+                        .get(panelIssues.tableIssues.getSelectedRow());
                 new ArticleEditController(a.articleId);
             }
         });
-        window.tableNews.addMouseListener(new MouseAdapter() {
+        panelNews.tableNews.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                Related a = ((MainFrameNewsModel) window.tableNews.getModel()).news
-                        .get(window.tableNews.getSelectedRow());
+                Related a = ((MainFrameNewsModel) panelNews.tableNews.getModel()).news
+                        .get(panelNews.tableNews.getSelectedRow());
                 new ArticleEditController(a.articleId);
             }
         });
 
-        window.btnAddWords.addActionListener((e) -> new AddWordsController());
-        window.btnAddWords.setVisible(initialData.currentUserPermissions.contains(Permission.ADD_WORDS.name()));
+        window.miAddWords.addActionListener((e) -> new AddWordsController());
+        window.miAddWords.setVisible(initialData.currentUserPermissions.contains(Permission.ADD_WORDS.name()));
 
-        window.btnAddArticle.addActionListener((e) -> new ArticleEditController());
-        window.btnAddArticle.setVisible(initialData.currentUserPermissions.contains(Permission.ADD_ARTICLE.name()));
+        window.miAddArticle.addActionListener((e) -> new ArticleEditController());
+        window.miAddArticle.setVisible(initialData.currentUserPermissions.contains(Permission.ADD_ARTICLE.name()));
 
-        window.btnStat.addActionListener((e) -> todo("Тут будзе статыстыка ў залежнасці ад дазволу"));
+        window.miStat.addActionListener((e) -> todo("Тут будзе статыстыка ў залежнасці ад дазволу"));
 
-        window.btnValidateFull
+        window.miValidateFull
                 .setVisible(initialData.currentUserPermissions.contains(Permission.FULL_VALIDATION.name()));
 
-        window.btnSettings.addActionListener((e) -> new SettingsController());
+        window.miSettings.addActionListener((e) -> new SettingsController());
 
-        window.btnUsers.addActionListener(reassign);
+        window.miUsers.addActionListener(reassign);
 
-        window.btnValidateFull.addActionListener((e) -> validateFull());
+        window.miValidateFull.addActionListener((e) -> validateFull());
 
-        window.btnPreview.addActionListener(preview);
+        window.miPreview.addActionListener(preview);
 
         SettingsController.savePlacesForWindow(window);
-        window.tableIssues.setModel(issuesModel);
-        window.tableNews.setModel(newsModel);
+        panelIssues.tableIssues.setModel(issuesModel);
+        panelNews.tableNews.setModel(newsModel);
         SettingsController.loadPlacesForWindow(window);
     }
 
     ActionListener reassign = (e) -> {
-        TableModel m = window.tableArticles.getModel();
+        TableModel m = panelArticles.tableArticles.getModel();
         if (m instanceof MainFrameArticlesModel) {
             MainFrameArticlesModel model = (MainFrameArticlesModel) m;
             List<ArticleShort> articles = new ArrayList<>();
-            for (int r : window.tableArticles.getSelectedRows()) {
+            for (int r : panelArticles.tableArticles.getSelectedRows()) {
                 articles.add(model.articles.get(r));
             }
 
@@ -193,11 +252,11 @@ public class MainController extends BaseController<MainFrame> {
         }
     };
     ActionListener preview = (e) -> {
-        TableModel m = window.tableArticles.getModel();
+        TableModel m = panelArticles.tableArticles.getModel();
         if (m instanceof MainFrameArticlesModel) {
             MainFrameArticlesModel model = (MainFrameArticlesModel) m;
             List<ArticleShort> articles = new ArrayList<>();
-            for (int r : window.tableArticles.getSelectedRows()) {
+            for (int r : panelArticles.tableArticles.getSelectedRows()) {
                 articles.add(model.articles.get(r));
             }
             if (articles.size() > 100) {
@@ -213,10 +272,10 @@ public class MainController extends BaseController<MainFrame> {
      */
     private void search() {
         ArticlesFilter filter = new ArticlesFilter();
-        filter.user = (String) window.cbUser.getSelectedItem();
-        filter.state = (String) window.cbState.getSelectedItem();
-        filter.word = window.txtWord.getText().trim().isEmpty() ? null : window.txtWord.getText().trim();
-        filter.text = window.txtText.getText().trim().isEmpty() ? null : window.txtText.getText().trim();
+        filter.user = (String) panelArticles.cbUser.getSelectedItem();
+        filter.state = (String) panelArticles.cbState.getSelectedItem();
+        filter.word = panelArticles.txtWord.getText().trim().isEmpty() ? null : panelArticles.txtWord.getText().trim();
+        filter.text = panelArticles.txtText.getText().trim().isEmpty() ? null : panelArticles.txtText.getText().trim();
         new LongProcess() {
             MainFrameArticlesModel model;
 
@@ -230,10 +289,10 @@ public class MainController extends BaseController<MainFrame> {
             @Override
             protected void ok() {
                 SettingsController.savePlacesForWindow(window);
-                window.tableArticles.setModel(model);
-                window.tableIssues.setModel(issuesModel);
-                window.tableNews.setModel(newsModel);
-                window.labelSelected.setText("Знойдзена: " + model.getRowCount());
+                panelArticles.tableArticles.setModel(model);
+                panelIssues.tableIssues.setModel(issuesModel);
+                panelNews.tableNews.setModel(newsModel);
+                panelArticles.labelSelected.setText("Знойдзена: " + model.getRowCount());
                 SettingsController.loadPlacesForWindow(window);
             }
         };

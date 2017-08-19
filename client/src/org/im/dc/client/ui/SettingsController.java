@@ -29,6 +29,9 @@ public class SettingsController extends BaseController<SettingsDialog> {
             setup();
             window.dispose();
         });
+        window.btnCancel.addActionListener((e) -> {
+            window.dispose();
+        });
 
         setupCloseOnEscape();
 
