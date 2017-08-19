@@ -78,8 +78,6 @@ public class FlowLayoutFullHeight extends FlowLayout {
             Insets insets = target.getInsets();
             dim.width += insets.left + insets.right + getHgap() * 2;
             dim.height += insets.top + insets.bottom + getVgap() * 2;
-            System.out
-                    .println("minimum=" + dim + " for " + target.getSize() + " parent " + target.getParent().getSize());
             return dim;
         }
     }

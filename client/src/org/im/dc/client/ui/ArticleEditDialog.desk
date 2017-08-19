@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VLDocking version="2.1">
+   <DockingDesktop name="">
+      <DockingPanel x="315" y="141" width="1250" height="700">
+         <Split orientation="1" location="0.75">
+            <Dockable>
+               <Key dockName="edit" />
+            </Dockable>
+            <Split orientation="0" location="0.33">
+               <Dockable>
+                  <Key dockName="notes" />
+               </Dockable>
+               <Dockable>
+                  <Key dockName="history" />
+               </Dockable>
+            </Split>
+         </Split>
+      </DockingPanel>
+      <TabGroups />
+   </DockingDesktop>
+</VLDocking>

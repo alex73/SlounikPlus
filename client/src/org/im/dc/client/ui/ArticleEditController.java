@@ -1,6 +1,7 @@
 package org.im.dc.client.ui;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Desktop;
 import java.awt.Font;
 import java.awt.event.ActionListener;
@@ -36,6 +37,11 @@ import org.im.dc.service.dto.ArticleFullInfo;
 import org.im.dc.service.dto.Related;
 import org.im.dc.service.dto.Related.RelatedType;
 
+import com.vlsolutions.swing.docking.DockKey;
+import com.vlsolutions.swing.docking.Dockable;
+import com.vlsolutions.swing.docking.DockingConstants;
+import com.vlsolutions.swing.docking.DockingDesktop;
+
 /**
  * Controls article editor.
  */
@@ -48,8 +54,14 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
     protected volatile ArticleFullInfo article;
     protected volatile boolean wasChanged;
 
+    private ArticlePanelEdit panelEdit = new ArticlePanelEdit();
+    private ArticlePanelHistory panelHistory = new ArticlePanelHistory();
+    private ArticlePanelNotes panelNotes = new ArticlePanelNotes();
+
+
     private ArticleEditController(boolean isnew) {
         super(new ArticleEditDialog(MainController.instance.window, false), MainController.instance.window);
+        initDocking();
         setupCloseOnEscape();
         displayOnParent();
     }
@@ -100,8 +112,56 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
         };
     }
 
+    void initDocking() {
+        Dockable edit = new Dockable() {
+            DockKey key = new DockKey("edit", "Артыкул");
+
+            @Override
+            public DockKey getDockKey() {
+                return key;
+            }
+
+            @Override
+            public Component getComponent() {
+                return panelEdit;
+            }
+        };
+        Dockable history = new Dockable() {
+            DockKey key = new DockKey("history", "Гісторыя");
+
+            @Override
+            public DockKey getDockKey() {
+                return key;
+            }
+
+            @Override
+            public Component getComponent() {
+                return panelHistory;
+            }
+        };
+        Dockable notes = new Dockable() {
+            DockKey key = new DockKey("notes", "Заўвагі");
+
+            @Override
+            public DockKey getDockKey() {
+                return key;
+            }
+
+            @Override
+            public Component getComponent() {
+                return panelNotes;
+            }
+        };
+        desk = new DockingDesktop();
+        window.getContentPane().add(desk);
+        desk.registerDockable(edit);
+        desk.registerDockable(notes);
+        desk.registerDockable(history);
+        SettingsController.loadDocking(window, desk);
+    }
+
     private void init() {
-        window.panelEditor.getVerticalScrollBar().setUnitIncrement(20);
+        panelEdit.panelEditor.getVerticalScrollBar().setUnitIncrement(20);
         window.btnSave.addActionListener((e) -> save());
         window.btnChangeState.addActionListener((e) -> changeStateAsk());
         window.btnAddIssue.addActionListener((e) -> addIssue());
@@ -140,7 +200,7 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
                 askWords();
             }
         });
-        window.txtNotes.getDocument().addDocumentListener(new DocumentListener() {
+        panelNotes.txtNotes.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void removeUpdate(DocumentEvent e) {
                 window.btnSave.setEnabled(true);
@@ -156,11 +216,11 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
                 window.btnSave.setEnabled(true);
             }
         });
-        window.tableHistory.addMouseListener(new MouseAdapter() {
+        panelHistory.tableHistory.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                ArticleEditRelatedModel model = (ArticleEditRelatedModel) window.tableHistory.getModel();
-                Related rel = model.related.get(window.tableHistory.getSelectedRow());
+                ArticleEditRelatedModel model = (ArticleEditRelatedModel) panelHistory.tableHistory.getModel();
+                Related rel = model.related.get(panelHistory.tableHistory.getSelectedRow());
                 if (rel.type == RelatedType.ISSUE && rel.requiresActivity && askSave()) {
                     return;
                 }
@@ -176,7 +236,7 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
     void show() {
         window.btnSave.setVisible(article.youCanEdit);
         window.btnAddIssue.setVisible(!article.youCanEdit);
-        window.txtNotes.setEditable(article.youCanEdit);
+        panelNotes.txtNotes.setEditable(article.youCanEdit);
         window.btnChangeState.setVisible(!article.youCanChangeStateTo.isEmpty());
         displayWatch();
         displayIssue();
@@ -188,7 +248,7 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
         window.txtState.setText(article.article.state);
         window.txtUsers.setText(Arrays.toString(article.article.assignedUsers));
         if (article.article.notes != null) {
-            window.txtNotes.setText(article.article.notes);
+            panelNotes.txtNotes.setText(article.article.notes);
         }
         window.lblValidationError
                 .setText(article.article.validationError != null ? article.article.validationError : " ");
@@ -215,14 +275,14 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
             JOptionPane.showMessageDialog(window, "Памылка чытання XML артыкула: " + ex.getMessage(), "Памылка",
                     JOptionPane.ERROR_MESSAGE);
         }
-        window.panelEditor.setViewportView(editorUI);
+        panelEdit.panelEditor.setViewportView(editorUI);
         window.btnSave.setEnabled(false);
 
         Related.sortByTimeDesc(article.related);
 
-        SettingsController.savePlacesForWindow(window);
-        window.tableHistory.setModel(new ArticleEditRelatedModel(article.related));
-        SettingsController.loadPlacesForWindow(window);
+        SettingsController.savePlacesForWindow(window, desk);
+        panelHistory.tableHistory.setModel(new ArticleEditRelatedModel(article.related));
+        SettingsController.loadPlacesForWindow(window, desk);
 
         if (article.linksFrom.isEmpty()) {
             window.panelLinkedFrom.setVisible(false);
@@ -318,7 +378,7 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
      * Захоўвае змены на серверы.
      */
     private void save() {
-        article.article.notes = window.txtNotes.getText();
+        article.article.notes = panelNotes.txtNotes.getText();
         new LongProcess() {
             boolean saved = false;
 

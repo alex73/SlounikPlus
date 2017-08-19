@@ -29,14 +29,6 @@ public class ArticleEditDialog extends javax.swing.JDialog {
         lblWatched = new javax.swing.JLabel();
         lblPreview = new javax.swing.JLabel();
         lblValidationError = new javax.swing.JLabel();
-        jSplitPane1 = new javax.swing.JSplitPane();
-        jPanel8 = new javax.swing.JPanel();
-        jSplitPane2 = new javax.swing.JSplitPane();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        tableHistory = new javax.swing.JTable();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        txtNotes = new javax.swing.JTextArea();
-        panelEditor = new javax.swing.JScrollPane();
         jPanel2 = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
         btnChangeState = new javax.swing.JButton();
@@ -87,47 +79,6 @@ public class ArticleEditDialog extends javax.swing.JDialog {
         jPanel5.add(lblValidationError, java.awt.BorderLayout.CENTER);
 
         getContentPane().add(jPanel5, java.awt.BorderLayout.NORTH);
-
-        jSplitPane1.setDividerLocation(400);
-        jSplitPane1.setResizeWeight(0.5);
-        jSplitPane1.setName("hor"); // NOI18N
-
-        jPanel8.setLayout(new java.awt.BorderLayout());
-
-        jSplitPane2.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
-        jSplitPane2.setResizeWeight(0.5);
-
-        tableHistory.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {},
-                {},
-                {},
-                {}
-            },
-            new String [] {
-
-            }
-        ));
-        tableHistory.setToolTipText(bundle.getString("ArticleEditDialog.tableHistory.toolTipText")); // NOI18N
-        tableHistory.setName("history"); // NOI18N
-        tableHistory.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        jScrollPane1.setViewportView(tableHistory);
-
-        jSplitPane2.setBottomComponent(jScrollPane1);
-
-        txtNotes.setColumns(20);
-        txtNotes.setRows(5);
-        txtNotes.setToolTipText(bundle.getString("ArticleEditDialog.txtNotes.toolTipText")); // NOI18N
-        jScrollPane2.setViewportView(txtNotes);
-
-        jSplitPane2.setLeftComponent(jScrollPane2);
-
-        jPanel8.add(jSplitPane2, java.awt.BorderLayout.CENTER);
-
-        jSplitPane1.setRightComponent(jPanel8);
-        jSplitPane1.setLeftComponent(panelEditor);
-
-        getContentPane().add(jSplitPane1, java.awt.BorderLayout.CENTER);
 
         jPanel2.setLayout(new java.awt.BorderLayout());
 
@@ -211,21 +162,13 @@ public class ArticleEditDialog extends javax.swing.JDialog {
     public javax.swing.JPanel jPanel5;
     public javax.swing.JPanel jPanel6;
     public javax.swing.JPanel jPanel7;
-    public javax.swing.JPanel jPanel8;
     public javax.swing.JPanel jPanel9;
-    public javax.swing.JScrollPane jScrollPane1;
-    public javax.swing.JScrollPane jScrollPane2;
-    public javax.swing.JSplitPane jSplitPane1;
-    public javax.swing.JSplitPane jSplitPane2;
     public javax.swing.JLabel lblHasProposedChanges;
     public javax.swing.JLabel lblPreview;
     public javax.swing.JLabel lblValidationError;
     public javax.swing.JLabel lblWatched;
-    public javax.swing.JScrollPane panelEditor;
     public javax.swing.JPanel panelLinkedExternal;
     public javax.swing.JPanel panelLinkedFrom;
-    public javax.swing.JTable tableHistory;
-    public javax.swing.JTextArea txtNotes;
     public javax.swing.JTextField txtState;
     public javax.swing.JTextField txtUsers;
     public javax.swing.JTextField txtWords;

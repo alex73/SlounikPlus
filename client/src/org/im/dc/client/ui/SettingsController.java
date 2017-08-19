@@ -5,6 +5,10 @@ import java.awt.Container;
 import java.awt.Font;
 import java.awt.Rectangle;
 import java.awt.Window;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.prefs.Preferences;
 
@@ -14,6 +18,8 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.UIManager;
 import javax.swing.plaf.FontUIResource;
 import javax.swing.table.TableColumnModel;
+
+import com.vlsolutions.swing.docking.DockingDesktop;
 
 public class SettingsController extends BaseController<SettingsDialog> {
     private static int fontSize;
@@ -102,7 +108,7 @@ public class SettingsController extends BaseController<SettingsDialog> {
     /**
      * Усталёўвае запісаныя месца вакна, пазыцыі слупкоў табліцы, JSplitPane.
      */
-    public static void loadPlacesForWindow(Window root) {
+    public static void loadPlacesForWindow(Window root, DockingDesktop desk) {
         Preferences prefs = Preferences.userNodeForPackage(root.getClass());
         String prefix = root.getClass().getSimpleName() + '.';
         Rectangle rect = root.getBounds();
@@ -112,6 +118,7 @@ public class SettingsController extends BaseController<SettingsDialog> {
         rect.height = prefs.getInt(prefix + "h", rect.height);
         root.setBounds(rect);
         loadPlacesForWindow(root, prefs, prefix);
+        loadDocking(root, desk);
     }
 
     private static void loadPlacesForWindow(Container c, Preferences prefs, String prefix) {
@@ -137,10 +144,27 @@ public class SettingsController extends BaseController<SettingsDialog> {
         }
     }
 
+    public static void loadDocking(Window root, DockingDesktop desk) {
+        Preferences prefs = Preferences.userNodeForPackage(root.getClass());
+        String prefix = root.getClass().getSimpleName() + '.';
+        byte[] xml = prefs.getByteArray(prefix + "desk", null);
+        try {
+            if (xml != null) {
+                desk.readXML(new ByteArrayInputStream(xml));
+            } else {
+                String xmlName = root.getClass().getSimpleName() + ".desk";
+                try (InputStream in = root.getClass().getResourceAsStream(xmlName)) {
+                    desk.readXML(in);
+                }
+            }
+        } catch (Exception ex) {
+        }
+    }
+
     /**
      * Запісвае месца вакна, пазыцыі слупкоў табліцы, JSplitPane.
      */
-    public static void savePlacesForWindow(Window root) {
+    public static void savePlacesForWindow(Window root, DockingDesktop desk) {
         Preferences prefs = Preferences.userNodeForPackage(root.getClass());
         String prefix = root.getClass().getSimpleName() + '.';
         Rectangle rect = root.getBounds();
@@ -149,6 +173,14 @@ public class SettingsController extends BaseController<SettingsDialog> {
         prefs.putInt(prefix + "w", rect.width);
         prefs.putInt(prefix + "h", rect.height);
         savePlacesForWindow(root, prefs, prefix);
+        if (desk != null) {
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            try {
+                desk.writeXML(out);
+                prefs.putByteArray(prefix + "desk", out.toByteArray());
+            } catch (IOException ex) {
+            }
+        }
     }
 
     private static void savePlacesForWindow(Container c, Preferences prefs, String prefix) {

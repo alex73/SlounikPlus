@@ -93,12 +93,12 @@ public class MainController extends BaseController<MainFrame> {
                 return panelNews;
             }
         };
-        DockingDesktop desk = new DockingDesktop();
-        window.getContentPane().removeAll();
+        desk = new DockingDesktop();
         window.getContentPane().add(desk);
-        desk.addDockable(articles);
-        desk.split(articles, issues, DockingConstants.SPLIT_RIGHT);
-        desk.split(issues, news, DockingConstants.SPLIT_BOTTOM);
+        desk.registerDockable(articles);
+        desk.registerDockable(news);
+        desk.registerDockable(issues);
+        SettingsController.loadDocking(window, desk);
     }
 
     public void start() throws Exception {
@@ -233,10 +233,10 @@ public class MainController extends BaseController<MainFrame> {
 
         window.miPreview.addActionListener(preview);
 
-        SettingsController.savePlacesForWindow(window);
+        SettingsController.savePlacesForWindow(window, desk);
         panelIssues.tableIssues.setModel(issuesModel);
         panelNews.tableNews.setModel(newsModel);
-        SettingsController.loadPlacesForWindow(window);
+        SettingsController.loadPlacesForWindow(window, desk);
     }
 
     ActionListener reassign = (e) -> {
@@ -288,12 +288,12 @@ public class MainController extends BaseController<MainFrame> {
 
             @Override
             protected void ok() {
-                SettingsController.savePlacesForWindow(window);
+                SettingsController.savePlacesForWindow(window, desk);
                 panelArticles.tableArticles.setModel(model);
                 panelIssues.tableIssues.setModel(issuesModel);
                 panelNews.tableNews.setModel(newsModel);
                 panelArticles.labelSelected.setText("Знойдзена: " + model.getRowCount());
-                SettingsController.loadPlacesForWindow(window);
+                SettingsController.loadPlacesForWindow(window, desk);
             }
         };
     }

@@ -24,6 +24,8 @@ import javax.swing.SwingWorker;
 import javax.swing.WindowConstants;
 import javax.xml.ws.soap.SOAPFaultException;
 
+import com.vlsolutions.swing.docking.DockingDesktop;
+
 /**
  * Base functionality for controllers.
  */
@@ -31,6 +33,7 @@ public abstract class BaseController<T extends Window> {
     /** UI window for this controller(JFrame or JDialog) */
     public final T window;
     private final Window parentWindow;
+    protected DockingDesktop desk;
 
     /**
      * Remember UI window, then create glass pane with animated gif.
@@ -39,7 +42,7 @@ public abstract class BaseController<T extends Window> {
         this.window = newWindow;
         this.parentWindow = parentWindow;
         SettingsController.setupFontForWindow(window);
-        SettingsController.loadPlacesForWindow(window);
+        SettingsController.loadPlacesForWindow(window, desk);
 
         if (window instanceof JDialog) {
             JDialog d = (JDialog) window;
@@ -55,7 +58,7 @@ public abstract class BaseController<T extends Window> {
 
             @Override
             public void windowClosed(WindowEvent e) {
-                SettingsController.savePlacesForWindow(window);
+                SettingsController.savePlacesForWindow(window, desk);
                 SwingUtilities.invokeLater(() -> parentWindow.requestFocus());
             }
         });
