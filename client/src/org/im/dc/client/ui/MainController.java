@@ -20,6 +20,7 @@ import javax.swing.table.TableModel;
 import org.im.dc.client.SchemaLoader;
 import org.im.dc.client.WS;
 import org.im.dc.gen.config.Permission;
+import org.im.dc.service.dto.ArticleFull;
 import org.im.dc.service.dto.ArticleShort;
 import org.im.dc.service.dto.ArticlesFilter;
 import org.im.dc.service.dto.InitialData;
@@ -27,7 +28,6 @@ import org.im.dc.service.dto.Related;
 
 import com.vlsolutions.swing.docking.DockKey;
 import com.vlsolutions.swing.docking.Dockable;
-import com.vlsolutions.swing.docking.DockingConstants;
 import com.vlsolutions.swing.docking.DockingDesktop;
 
 /**
@@ -312,5 +312,20 @@ public class MainController extends BaseController<MainFrame> {
                         JOptionPane.INFORMATION_MESSAGE);
             }
         };
+    }
+
+    public void fireArticleUpdated(ArticleFull article) {
+        if (panelArticles.tableArticles.getModel() instanceof MainFrameArticlesModel) {
+            MainFrameArticlesModel model = (MainFrameArticlesModel) panelArticles.tableArticles.getModel();
+            for (ArticleShort a : model.articles) {
+                if (a.id == article.id) {
+                    a.assignedUsers = article.assignedUsers;
+                    a.state = article.state;
+                    a.validationError = article.validationError;
+                    a.words = article.words;
+                }
+            }
+            model.fireTableDataChanged();
+        }
     }
 }

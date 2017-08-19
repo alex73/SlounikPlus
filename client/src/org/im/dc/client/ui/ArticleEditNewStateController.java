@@ -44,6 +44,7 @@ public class ArticleEditNewStateController extends BaseController<ArticleEditNew
             protected void exec() throws Exception {
                 parent.article = WS.getArticleService().changeState(WS.header, parent.article.article.id, ns,
                         parent.article.article.lastUpdated);
+                MainController.instance.fireArticleUpdated(parent.article.article);
             }
 
             @Override

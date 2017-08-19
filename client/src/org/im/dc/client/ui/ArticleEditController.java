@@ -396,6 +396,7 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
 
                 article = WS.getArticleService().saveArticle(WS.header, article.article);
                 saved = true;
+                MainController.instance.fireArticleUpdated(article.article);
             }
 
             @Override

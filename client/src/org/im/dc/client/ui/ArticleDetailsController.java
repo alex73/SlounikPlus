@@ -18,6 +18,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.im.dc.client.WS;
 import org.im.dc.service.dto.ArticleCommentFull;
+import org.im.dc.service.dto.ArticleFullInfo;
 import org.im.dc.service.dto.ArticleHistoryFull;
 import org.im.dc.service.dto.ArticleIssueFull;
 import org.im.dc.service.dto.Related;
@@ -124,7 +125,8 @@ public class ArticleDetailsController extends BaseController<ArticleDetailsDialo
             protected void exec() throws Exception {
                 if (newXml != null) {
                     parent.article.article.xml = newXml;
-                    WS.getArticleService().saveArticle(WS.header, parent.article.article);
+                    ArticleFullInfo ai = WS.getArticleService().saveArticle(WS.header, parent.article.article);
+                    MainController.instance.fireArticleUpdated(ai.article);
                 }
                 parent.article = WS.getArticleService().fixIssue(WS.header, parent.article.article.id, rel.id, true);
             }
