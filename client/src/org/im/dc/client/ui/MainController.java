@@ -232,6 +232,11 @@ public class MainController extends BaseController<MainFrame> {
         window.miValidateFull.addActionListener((e) -> validateFull());
 
         window.miPreview.addActionListener(preview);
+        window.miResetDesk.addActionListener(e -> {
+            SettingsController.resetPlaces(MainFrame.class);
+            SettingsController.resetPlaces(ArticleEditDialog.class);
+            SettingsController.loadPlacesForWindow(window, desk);
+        });
 
         SettingsController.savePlacesForWindow(window, desk);
         panelIssues.tableIssues.setModel(issuesModel);

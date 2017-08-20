@@ -28,6 +28,7 @@ public class MainFrame extends javax.swing.JFrame {
         miStat = new javax.swing.JMenuItem();
         miAddWords = new javax.swing.JMenuItem();
         miValidateFull = new javax.swing.JMenuItem();
+        miResetDesk = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("org/im/dc/client/ui/Bundle"); // NOI18N
@@ -59,6 +60,9 @@ public class MainFrame extends javax.swing.JFrame {
 
         miValidateFull.setText(bundle.getString("MainFrame.miValidateFull.text")); // NOI18N
         jMenu2.add(miValidateFull);
+
+        miResetDesk.setText(bundle.getString("MainFrame.miResetDesk.text")); // NOI18N
+        jMenu2.add(miResetDesk);
 
         jMenuBar1.add(jMenu2);
 
@@ -109,6 +113,7 @@ public class MainFrame extends javax.swing.JFrame {
     public javax.swing.JMenuItem miAddArticle;
     public javax.swing.JMenuItem miAddWords;
     public javax.swing.JMenuItem miPreview;
+    public javax.swing.JMenuItem miResetDesk;
     public javax.swing.JMenuItem miSettings;
     public javax.swing.JMenuItem miStat;
     public javax.swing.JMenuItem miUsers;

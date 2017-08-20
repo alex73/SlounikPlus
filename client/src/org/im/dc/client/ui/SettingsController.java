@@ -10,6 +10,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Enumeration;
+import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 import javax.swing.JSplitPane;
@@ -103,6 +104,16 @@ public class SettingsController extends BaseController<SettingsDialog> {
                 ((JTable) cc).setRowHeight(fontSize + 2);
             }
         }
+    }
+
+    public static void resetPlaces(Class<? extends Window> rootClass) {
+        Preferences prefs = Preferences.userNodeForPackage(rootClass);
+        String prefix = rootClass.getSimpleName() + '.';
+        prefs.remove(prefix + "x");
+        prefs.remove(prefix + "y");
+        prefs.remove(prefix + "w");
+        prefs.remove(prefix + "h");
+        prefs.remove(prefix + "desk");
     }
 
     /**
