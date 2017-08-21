@@ -20,8 +20,8 @@ public class JsOutput {
     @Before
     public void prepare() throws Exception {
         System.setProperty("log4j.configurationFile", new File("config/log4j.xml").getAbsolutePath());
+        Config.load(System.getProperty("CONFIG_DIR"));
         Db.init();
-        Config.load();
 
         // process(new String[] { "камфара+", "ка+мфара", "камфо+ра" }, "v-kamfara.xml");
         // process(new String[] { "гамё+лак", "гамё+лка" }, "v-hamiolak.xml");

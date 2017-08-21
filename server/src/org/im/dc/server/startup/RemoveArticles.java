@@ -13,8 +13,8 @@ public class RemoveArticles {
         }
 
         System.setProperty("log4j.configurationFile", new File("config/log4j.xml").getAbsolutePath());
+        Config.load(System.getProperty("CONFIG_DIR"));
         Db.init();
-        Config.load();
 
         Db.exec((api) -> {
             try {

@@ -203,7 +203,7 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
         context.setAttribute("out", out, ScriptContext.ENGINE_SCOPE);
         context.setAttribute("words", words, ScriptContext.ENGINE_SCOPE);
         context.setAttribute("article", new JsDomWrapper(xml), ScriptContext.ENGINE_SCOPE);
-        JsProcessing.exec(new File(Config.CONFIG_DIR, "output.js").getAbsolutePath(), context);
+        JsProcessing.exec(new File(Config.getConfigDir(), "output.js").getAbsolutePath(), context);
 
         LOG.info("<< preparePreview");
         return out.toString();

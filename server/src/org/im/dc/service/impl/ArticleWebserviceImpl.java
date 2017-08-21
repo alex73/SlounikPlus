@@ -97,7 +97,7 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
             context.setAttribute("helper", helper, ScriptContext.ENGINE_SCOPE);
             context.setAttribute("words", rec.getWords(), ScriptContext.ENGINE_SCOPE);
             context.setAttribute("article", new JsDomWrapper(rec.getXml()), ScriptContext.ENGINE_SCOPE);
-            JsProcessing.exec(new File(Config.CONFIG_DIR, "validation.js").getAbsolutePath(), context);
+            JsProcessing.exec(new File(Config.getConfigDir(), "validation.js").getAbsolutePath(), context);
         } catch (ScriptException ex) {
             result = ex.getCause().getMessage();
         } catch (Exception ex) {

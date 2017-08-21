@@ -2,6 +2,9 @@
 
 Create/edit dictionary software for small team.
 
+For install it under Tomcat you need to install Metro first as described on the 
+https://javaee.github.io/metro/download
+
 License
 -------
 This program is free software: you can redistribute it and/or modify

@@ -28,7 +28,7 @@ public class Db {
 
     public static void init() throws Exception {
         Properties props = new Properties();
-        try (InputStream in = new FileInputStream(new File(Config.CONFIG_DIR, "db.properties"))) {
+        try (InputStream in = new FileInputStream(new File(Config.getConfigDir(), "db.properties"))) {
             props.load(in);
         }
 

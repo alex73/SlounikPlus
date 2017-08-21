@@ -24,20 +24,15 @@ import org.slf4j.LoggerFactory;
 public class Config {
     private static final Logger LOG = LoggerFactory.getLogger(Config.class);
 
-    public static final String CONFIG_DIR;
-    static {
-        CONFIG_DIR = System.getProperty("CONFIG_DIR");
-        if (CONFIG_DIR == null) {
-            throw new ExceptionInInitializerError("CONFIG_DIR was not defined");
-        }
-    }
+    private static String CONFIG_DIR;
 
     static private org.im.dc.gen.config.Config config;
 
     static public byte[] articleSchemaSource;
     static public Schema articleSchema;
 
-    public static void load() throws Exception {
+    public static void load(String configDir) throws Exception {
+        CONFIG_DIR = configDir;
         final File CONFIG_FILE = new File(CONFIG_DIR, "config.xml");
         final File ARTICLE_SCHEMA_FILE = new File(CONFIG_DIR, "article.xsd");
 
@@ -73,6 +68,10 @@ public class Config {
 
     public static org.im.dc.gen.config.Config getConfig() {
         return config;
+    }
+
+    public static String getConfigDir() {
+        return CONFIG_DIR;
     }
 
     private static void checkConfig() {
