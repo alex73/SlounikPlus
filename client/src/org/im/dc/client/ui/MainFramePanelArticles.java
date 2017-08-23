@@ -32,6 +32,10 @@ public class MainFramePanelArticles extends javax.swing.JPanel {
         btnSearch = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         tableArticles = new javax.swing.JTable();
+        jPanel1 = new javax.swing.JPanel();
+        btnReassign = new javax.swing.JButton();
+        btnAddArticle = new javax.swing.JButton();
+        btnPreview = new javax.swing.JButton();
 
         setLayout(new java.awt.BorderLayout());
 
@@ -146,10 +150,24 @@ public class MainFramePanelArticles extends javax.swing.JPanel {
         jScrollPane1.setViewportView(tableArticles);
 
         add(jScrollPane1, java.awt.BorderLayout.CENTER);
+
+        btnReassign.setText(bundle.getString("MainFramePanelArticles.btnReassign.text")); // NOI18N
+        jPanel1.add(btnReassign);
+
+        btnAddArticle.setText(bundle.getString("MainFramePanelArticles.btnAddArticle.text")); // NOI18N
+        jPanel1.add(btnAddArticle);
+
+        btnPreview.setText(bundle.getString("MainFramePanelArticles.btnPreview.text")); // NOI18N
+        jPanel1.add(btnPreview);
+
+        add(jPanel1, java.awt.BorderLayout.SOUTH);
     }// </editor-fold>//GEN-END:initComponents
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    public javax.swing.JButton btnAddArticle;
+    public javax.swing.JButton btnPreview;
+    public javax.swing.JButton btnReassign;
     public javax.swing.JButton btnSearch;
     public javax.swing.JComboBox<String> cbState;
     public javax.swing.JComboBox<String> cbUser;
@@ -157,6 +175,7 @@ public class MainFramePanelArticles extends javax.swing.JPanel {
     public javax.swing.JLabel jLabel2;
     public javax.swing.JLabel jLabel3;
     public javax.swing.JLabel jLabel4;
+    public javax.swing.JPanel jPanel1;
     public javax.swing.JPanel jPanel3;
     public javax.swing.JScrollPane jScrollPane1;
     public javax.swing.JLabel labelSelected;

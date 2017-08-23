@@ -19,10 +19,6 @@ public class MainFrame extends javax.swing.JFrame {
     private void initComponents() {
 
         jMenuBar1 = new javax.swing.JMenuBar();
-        jMenu1 = new javax.swing.JMenu();
-        miUsers = new javax.swing.JMenuItem();
-        miAddArticle = new javax.swing.JMenuItem();
-        miPreview = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
         miSettings = new javax.swing.JMenuItem();
         miStat = new javax.swing.JMenuItem();
@@ -33,19 +29,6 @@ public class MainFrame extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("org/im/dc/client/ui/Bundle"); // NOI18N
         setTitle(bundle.getString("MainFrame.title")); // NOI18N
-
-        jMenu1.setText(bundle.getString("MainFrame.jMenu1.text")); // NOI18N
-
-        miUsers.setText(bundle.getString("MainFrame.miUsers.text")); // NOI18N
-        jMenu1.add(miUsers);
-
-        miAddArticle.setText(bundle.getString("MainFrame.miAddArticle.text")); // NOI18N
-        jMenu1.add(miAddArticle);
-
-        miPreview.setText(bundle.getString("MainFrame.miPreview.text")); // NOI18N
-        jMenu1.add(miPreview);
-
-        jMenuBar1.add(jMenu1);
 
         jMenu2.setText(bundle.getString("MainFrame.jMenu2.text")); // NOI18N
 
@@ -107,16 +90,12 @@ public class MainFrame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    public javax.swing.JMenu jMenu1;
     public javax.swing.JMenu jMenu2;
     public javax.swing.JMenuBar jMenuBar1;
-    public javax.swing.JMenuItem miAddArticle;
     public javax.swing.JMenuItem miAddWords;
-    public javax.swing.JMenuItem miPreview;
     public javax.swing.JMenuItem miResetDesk;
     public javax.swing.JMenuItem miSettings;
     public javax.swing.JMenuItem miStat;
-    public javax.swing.JMenuItem miUsers;
     public javax.swing.JMenuItem miValidateFull;
     // End of variables declaration//GEN-END:variables
 }

@@ -214,24 +214,44 @@ public class MainController extends BaseController<MainFrame> {
             }
         });
 
-        window.miAddWords.addActionListener((e) -> new AddWordsController());
-        window.miAddWords.setVisible(initialData.currentUserPermissions.contains(Permission.ADD_WORDS.name()));
+        if (initialData.currentUserPermissions.contains(Permission.ADD_WORDS.name())) {
+            window.miAddWords.addActionListener((e) -> new AddWordsController());
+        } else {
+            window.miAddWords.setVisible(false);
+        }
 
-        window.miAddArticle.addActionListener((e) -> new ArticleEditController());
-        window.miAddArticle.setVisible(initialData.currentUserPermissions.contains(Permission.ADD_ARTICLE.name()));
+        if (initialData.currentUserPermissions.contains(Permission.ADD_ARTICLE.name())) {
+            panelArticles.btnAddArticle.addActionListener((e) -> new ArticleEditController());
+        } else {
+            panelArticles.btnAddArticle.setVisible(false);
+        }
 
-        window.miStat.addActionListener((e) -> todo("Тут будзе статыстыка ў залежнасці ад дазволу"));
-
-        window.miValidateFull
-                .setVisible(initialData.currentUserPermissions.contains(Permission.FULL_VALIDATION.name()));
+        if (initialData.currentUserPermissions.contains(Permission.FULL_STATISTICS.name())) {
+            window.miStat.addActionListener((e) -> todo("Тут будзе статыстыка ў залежнасці ад дазволу"));
+        } else {
+            window.miStat.setVisible(false);
+        }
 
         window.miSettings.addActionListener((e) -> new SettingsController());
 
-        window.miUsers.addActionListener(reassign);
+        if (initialData.currentUserPermissions.contains(Permission.REASSIGN.name())) {
+            panelArticles.btnReassign.addActionListener(reassign);
+        } else {
+            panelArticles.btnReassign.setVisible(false);
+        }
 
-        window.miValidateFull.addActionListener((e) -> validateFull());
+        if (initialData.currentUserPermissions.contains(Permission.FULL_VALIDATION.name())) {
+            window.miValidateFull.addActionListener((e) -> validateFull());
+        } else {
+            window.miValidateFull.setVisible(false);
+        }
 
-        window.miPreview.addActionListener(preview);
+        if (initialData.currentUserPermissions.contains(Permission.VIEW_OUTPUT.name())) {
+            panelArticles.btnPreview.addActionListener(preview);
+        } else {
+            panelArticles.btnPreview.setVisible(false);
+        }
+
         window.miResetDesk.addActionListener(e -> {
             SettingsController.resetPlaces(MainFrame.class);
             SettingsController.resetPlaces(ArticleEditDialog.class);
