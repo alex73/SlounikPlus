@@ -146,6 +146,7 @@
 			<xs:enumeration value="part" />
 			<xs:enumeration value="invar" />
 			<xs:enumeration value="pl" />
+			<xs:enumeration value="prep" />
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:complexType name="stylType">
@@ -155,6 +156,7 @@
 	</xs:complexType>
 	<xs:simpleType name="stylEnum">
 		<xs:restriction base="xs:string">
+			<xs:enumeration value="амер." />
 			<xs:enumeration value="анат." />
 			<xs:enumeration value="англ." />
 			<xs:enumeration value="архіт." />
