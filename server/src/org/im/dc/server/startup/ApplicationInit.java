@@ -1,7 +1,6 @@
 package org.im.dc.server.startup;
 
 import java.io.BufferedInputStream;
-import java.io.File;
 import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.net.URL;
@@ -19,7 +18,6 @@ public class ApplicationInit implements ServletContextListener {
     public void contextInitialized(ServletContextEvent event) {
         try {
             String configDir = event.getServletContext().getInitParameter("CONFIG_DIR");
-            System.setProperty("log4j.configurationFile", new File(configDir, "log4j.xml").getAbsolutePath());
             Config.load(configDir);
             Db.init();
 
