@@ -1,7 +1,7 @@
 out.tag("<b>");
 for(var i=0; i < words.length; i++) {
   if (i > 0) {out.tag(", ");}
-  out.tag(words[i]);
+  out.tag(words[i].replace(/\/([0-9]+)$/, "<sup>$1</sup>"));
 }
 out.tag("</b> ");
 
@@ -12,15 +12,7 @@ if (article.pl) {
 for each (var g in article.gramzah[0].value) {
   out.tag(out.prepare(" <i>", g.textContent, "</i> "));
 }
-if (article.stylzah) {
-  out.tag('<i>');
-  var p = '';
-  for each (var s in article.stylzah) {
-    out.tag(out.prepare(p + " ", s.textContent, ""));
-    p = ',';
-  }
-  out.tag('</i> ');
-}
+styl(article.stylzah);
 if (article.inszah) {
   var t = out.prepare(article.inszah[0].textContent).replace(/{(.+?)}/g, '<i>$1</i>');
   out.tag(t);
@@ -39,9 +31,7 @@ for each (var tlum in article.tlum) {
   for each (var g in tlum.gram[0].value) {
     out.tag(out.prepare(" <i>", g.textContent, "</i> "));
   }
-  for each (var s in tlum.styl) {
-    out.tag(out.prepare(" <i>", s.textContent, "</i> "));
-  }
+  styl(tlum.styl);
 
   var d = out.prepare(tlum.desc[0]);
   d = d.replace(/ м\./g, ' <i>м.</i>');
@@ -93,4 +83,16 @@ for each (var tlum in article.tlum) {
 
 if (article.si[0].textContent === 'true') {
    out.tag(" || -si.");
+}
+
+function styl(styl) {
+    if (styl) {
+        out.tag(' <i>');
+        var p = '';
+        for each (var s in styl) {
+            out.tag(out.prepare(p, s.textContent, ""));
+            p = ', ';
+        }
+        out.tag('</i> ');
+    }
 }
