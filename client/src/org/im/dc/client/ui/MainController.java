@@ -188,8 +188,9 @@ public class MainController extends BaseController<MainFrame> {
         panelArticles.tableArticles.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                ArticleShort a = ((MainFrameArticlesModel) panelArticles.tableArticles.getModel()).articles
-                        .get(panelArticles.tableArticles.rowAtPoint(e.getPoint()));
+                int row = panelArticles.tableArticles.rowAtPoint(e.getPoint());
+                int index = panelArticles.tableArticles.convertRowIndexToModel(row);
+                ArticleShort a = ((MainFrameArticlesModel) panelArticles.tableArticles.getModel()).articles.get(index);
                 new ArticleEditController(a.id);
             }
         });
