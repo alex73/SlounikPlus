@@ -147,6 +147,8 @@
 			<xs:enumeration value="invar" />
 			<xs:enumeration value="pl" />
 			<xs:enumeration value="prep" />
+			<xs:enumeration value="m, pl" />
+			<xs:enumeration value="f, pl" />
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:complexType name="stylType">
@@ -166,6 +168,7 @@
 			<xs:enumeration value="бібл." />
 			<xs:enumeration value="біял." />
 			<xs:enumeration value="буд." />
+			<xs:enumeration value="бухг." />
 			<xs:enumeration value="ваен." />
 			<xs:enumeration value="вайск." />
 			<xs:enumeration value="гандл." />
