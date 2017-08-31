@@ -3,6 +3,7 @@ package org.im.dc.client.ui;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Font;
+import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 import java.awt.Window;
 import java.io.ByteArrayInputStream;
@@ -10,9 +11,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Enumeration;
-import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.SpinnerNumberModel;
@@ -23,12 +24,23 @@ import javax.swing.table.TableColumnModel;
 import com.vlsolutions.swing.docking.DockingDesktop;
 
 public class SettingsController extends BaseController<SettingsDialog> {
+    private static String fontName;
     private static int fontSize;
 
     public SettingsController() {
         super(new SettingsDialog(MainController.instance.window, true), MainController.instance.window);
 
+        String[] fs = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
+        String[] fonts = new String[fs.length + 1];
+        System.arraycopy(fs, 0, fonts, 1, fs.length);
+        fonts[0] = "";
+        window.cbFontName.setModel(new DefaultComboBoxModel<>(fonts));
+        if (fontName != null) {
+            window.cbFontName.setSelectedItem(fontName);
+        }
         window.spFontSize.setValue(fontSize);
+        window.cbFontName.addItemListener(l -> updateTest());
+        window.spFontSize.addChangeListener(c -> updateTest());
 
         // setup default button
         window.getRootPane().setDefaultButton(window.btnOk);
@@ -45,12 +57,26 @@ public class SettingsController extends BaseController<SettingsDialog> {
         displayOnParent();
     }
 
-    private void setup() {
-        int size = ((SpinnerNumberModel) window.spFontSize.getModel()).getNumber().intValue();
+    private void updateTest() {
+        String fontName = (String) window.cbFontName.getSelectedItem();
+        int fontSize = ((SpinnerNumberModel) window.spFontSize.getModel()).getNumber().intValue();
+        Font font;
+        if (fontName != null && !fontName.trim().isEmpty()) {
+            font = new Font(fontName, Font.PLAIN, fontSize);
+        } else {
+            font = window.getFont().deriveFont((float) fontSize);
+        }
+        window.txtTest.setFont(font);
+        window.validate();
+    }
 
-        fontSize = size;
+    private void setup() {
+        fontName = (String) window.cbFontName.getSelectedItem();
+        fontSize = ((SpinnerNumberModel) window.spFontSize.getModel()).getNumber().intValue();
         savePreferences();
         setupFonts();
+        setupFontForWindow(MainController.instance.window);
+        MainController.instance.window.validate();
     }
 
     /**
@@ -65,14 +91,16 @@ public class SettingsController extends BaseController<SettingsDialog> {
      * Чытае запісаныя налады.
      */
     private static void loadPreferences() {
-        fontSize = Preferences.userNodeForPackage(SettingsController.class).getInt("application.font", 12);
+        fontName = Preferences.userNodeForPackage(SettingsController.class).get("application.font.name", null);
+        fontSize = Preferences.userNodeForPackage(SettingsController.class).getInt("application.font.size", 12);
     }
 
     /**
      * Запісвае налады.
      */
     public static void savePreferences() {
-        Preferences.userNodeForPackage(SettingsController.class).putInt("application.font", fontSize);
+        Preferences.userNodeForPackage(SettingsController.class).put("application.font.name", fontName);
+        Preferences.userNodeForPackage(SettingsController.class).putInt("application.font.size", fontSize);
     }
 
     /**
@@ -84,8 +112,13 @@ public class SettingsController extends BaseController<SettingsDialog> {
             Object key = keys.nextElement();
             Object value = UIManager.get(key);
             if (value instanceof FontUIResource) {
-                FontUIResource orig = (FontUIResource) value;
-                Font font = orig.deriveFont((float) fontSize);
+                Font font;
+                if (fontName != null && !fontName.trim().isEmpty()) {
+                    font = new Font(fontName, Font.PLAIN, fontSize);
+                } else {
+                    FontUIResource orig = (FontUIResource) value;
+                    font = orig.deriveFont((float) fontSize);
+                }
                 UIManager.put(key, new FontUIResource(font));
             }
         }

@@ -21,8 +21,10 @@ public class SettingsDialog extends javax.swing.JDialog {
         java.awt.GridBagConstraints gridBagConstraints;
 
         jPanel1 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
+        jPanel3 = new javax.swing.JPanel();
+        cbFontName = new javax.swing.JComboBox<>();
         spFontSize = new javax.swing.JSpinner();
+        txtTest = new javax.swing.JTextField();
         jPanel2 = new javax.swing.JPanel();
         btnOk = new javax.swing.JButton();
         btnCancel = new javax.swing.JButton();
@@ -33,20 +35,25 @@ public class SettingsDialog extends javax.swing.JDialog {
 
         jPanel1.setLayout(new java.awt.GridBagLayout());
 
-        jLabel1.setText(bundle.getString("SettingsDialog.jLabel1.text")); // NOI18N
+        jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("SettingsDialog.jPanel3.border.title"))); // NOI18N
+
+        cbFontName.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jPanel3.add(cbFontName);
+
+        spFontSize.setModel(new javax.swing.SpinnerNumberModel(12, 3, 48, 1));
+        jPanel3.add(spFontSize);
+
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        jPanel1.add(jLabel1, gridBagConstraints);
-
-        spFontSize.setModel(new javax.swing.SpinnerNumberModel(12, 3, 48, 1));
+        jPanel1.add(jPanel3, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        jPanel1.add(spFontSize, gridBagConstraints);
+        jPanel1.add(txtTest, gridBagConstraints);
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
 
@@ -108,9 +115,11 @@ public class SettingsDialog extends javax.swing.JDialog {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public javax.swing.JButton btnCancel;
     public javax.swing.JButton btnOk;
-    public javax.swing.JLabel jLabel1;
+    public javax.swing.JComboBox<String> cbFontName;
     public javax.swing.JPanel jPanel1;
     public javax.swing.JPanel jPanel2;
+    public javax.swing.JPanel jPanel3;
+    public javax.swing.JTextField txtTest;
     public javax.swing.JSpinner spFontSize;
     // End of variables declaration//GEN-END:variables
 }
