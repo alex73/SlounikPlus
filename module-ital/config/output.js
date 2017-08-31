@@ -12,6 +12,9 @@ if (article.pl) {
 for each (var g in article.gramzah[0].value) {
   out.tag(out.prepare(" <i>", g.textContent, "</i> "));
 }
+if (article.movazah) {
+    out.tag(out.prepare(" <i>",article.movazah[0],"</i> "));
+}
 styl(article.stylzah);
 if (article.inszah) {
   var t = out.prepare(article.inszah[0].textContent).replace(/{(.+?)}/g, '<i>$1</i>');
@@ -30,6 +33,9 @@ for each (var tlum in article.tlum) {
   }
   for each (var g in tlum.gram[0].value) {
     out.tag(out.prepare(" <i>", g.textContent, "</i> "));
+  }
+  if (tlum.mova) {
+      out.tag(out.prepare(" <i>",tlum.mova[0],"</i> "));
   }
   styl(tlum.styl);
 

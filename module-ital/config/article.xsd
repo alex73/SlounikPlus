@@ -8,6 +8,7 @@
 			<xs:sequence>
 				<xs:element ref="pl" minOccurs="0" maxOccurs="1" />
 				<xs:element ref="gramzah" minOccurs="1" maxOccurs="1" />
+				<xs:element ref="movazah" minOccurs="0" maxOccurs="1" />
 				<xs:element ref="stylzah" minOccurs="0" maxOccurs="3" />
 				<xs:element ref="inszah" minOccurs="0" maxOccurs="1" />
 				<xs:element ref="tlum" minOccurs="1" maxOccurs="unbounded" />
@@ -23,6 +24,11 @@
 	<xs:element name="gramzah" type="gramType">
 		<xs:annotation>
 			<xs:appinfo>Граматычныя паметы загалоўка{type:check/gramEnum}</xs:appinfo>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="movazah" type="movaEnum">
+		<xs:annotation>
+			<xs:appinfo>Мова загалоўка{type:combo_editable/movaEnum}</xs:appinfo>
 		</xs:annotation>
 	</xs:element>
 	<xs:element name="stylzah" type="stylEnum">
@@ -45,6 +51,11 @@
 				<xs:element name="gram" type="gramType" minOccurs="1" maxOccurs="1">
 					<xs:annotation>
 						<xs:appinfo>Граматычная памета{type:check/gramEnum}</xs:appinfo>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="mova" type="movaEnum" minOccurs="0" maxOccurs="1">
+					<xs:annotation>
+						<xs:appinfo>Мова{type:combo_editable/movaEnum}</xs:appinfo>
 					</xs:annotation>
 				</xs:element>
 				<xs:element name="styl" type="stylEnum" minOccurs="0" maxOccurs="3">
@@ -156,11 +167,18 @@
 			<xs:element name="value" type="stylEnum" minOccurs="0" maxOccurs="3" />
 		</xs:sequence>
 	</xs:complexType>
-	<xs:simpleType name="stylEnum">
+	<xs:simpleType name="movaEnum">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="амер." />
-			<xs:enumeration value="анат." />
 			<xs:enumeration value="англ." />
+			<xs:enumeration value="лац." />
+			<xs:enumeration value="таск." />
+			<xs:enumeration value="фр." />
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="stylEnum">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="анат." />
 			<xs:enumeration value="архіт." />
 			<xs:enumeration value="астр." />
 			<xs:enumeration value="аўт." />
@@ -189,13 +207,13 @@
 			<xs:enumeration value="камп." />
 			<xs:enumeration value="кніжн." />
 			<xs:enumeration value="кул." />
-			<xs:enumeration value="лац." />
 			<xs:enumeration value="лінгв." />
 			<xs:enumeration value="літ." />
 			<xs:enumeration value="мар." />
 			<xs:enumeration value="маст." />
 			<xs:enumeration value="мат." />
 			<xs:enumeration value="мед." />
+			<xs:enumeration value="мінер." />
 			<xs:enumeration value="міф." />
 			<xs:enumeration value="муз." />
 			<xs:enumeration value="нескл." />
@@ -208,7 +226,6 @@
 			<xs:enumeration value="спарт." />
 			<xs:enumeration value="спец." />
 			<xs:enumeration value="спраж." />
-			<xs:enumeration value="таск." />
 			<xs:enumeration value="тэтр." />
 			<xs:enumeration value="тэх." />
 			<xs:enumeration value="уст." />
@@ -216,7 +233,6 @@
 			<xs:enumeration value="фіз." />
 			<xs:enumeration value="філас." />
 			<xs:enumeration value="фін." />
-			<xs:enumeration value="фр." />
 			<xs:enumeration value="хім." />
 			<xs:enumeration value="экал." />
 			<xs:enumeration value="экан." />

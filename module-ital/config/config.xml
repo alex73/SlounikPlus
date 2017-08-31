@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config>
-	<version>20170804</version>
+	<version>20170831</version>
 	<users>
 		<user name="uladz" pass="123" role="галоўны_рэдактар" new-article-state="0" new-article-users="uladz" />
 		<user name="jalyncava" pass="369" role="укладальнік" new-article-state="0" new-article-users="jalyncava" />
@@ -25,22 +25,22 @@
 		</role>
 	</roles>
 	<states>
-		<state id="0" edit_roles="галоўны_рэдактар">
+		<state id="0" edit_roles="укладальнік,галоўны_рэдактар">
 			<change to="Зроблена" roles="укладальнік,галоўны_рэдактар" />
 			<change to="Зроблена з заўвагамі" roles="укладальнік,галоўны_рэдактар" />
 			<change to="Няма" roles="укладальнік,галоўны_рэдактар" />
 		</state>
-		<state id="Зроблена" edit_roles="галоўны_рэдактар">
+		<state id="Зроблена" edit_roles="укладальнік,галоўны_рэдактар">
 			<change to="0" roles="укладальнік,галоўны_рэдактар" />
 			<change to="Зроблена з заўвагамі" roles="укладальнік,галоўны_рэдактар" />
 			<change to="Няма" roles="укладальнік,галоўны_рэдактар" />
 		</state>
-		<state id="Зроблена з заўвагамі" edit_roles="галоўны_рэдактар">
+		<state id="Зроблена з заўвагамі" edit_roles="укладальнік,галоўны_рэдактар">
 			<change to="0" roles="укладальнік,галоўны_рэдактар" />
 			<change to="Зроблена" roles="укладальнік,галоўны_рэдактар" />
 			<change to="Няма" roles="укладальнік,галоўны_рэдактар" />
 		</state>
-		<state id="Няма" edit_roles="галоўны_рэдактар,галоўны_рэдактар">
+		<state id="Няма" edit_roles="укладальнік,галоўны_рэдактар">
 			<change to="0" roles="укладальнік,галоўны_рэдактар" />
 			<change to="Зроблена" roles="укладальнік,галоўны_рэдактар" />
 			<change to="Зроблена з заўвагамі" roles="укладальнік,галоўны_рэдактар" />
