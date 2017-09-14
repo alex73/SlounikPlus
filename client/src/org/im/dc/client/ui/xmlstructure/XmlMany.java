@@ -90,11 +90,12 @@ public class XmlMany extends JPanel {
                 case XSSimpleType.PRIMITIVE_BOOLEAN:
                     p = new XmlEditBoolean(rootPanel, parentPanel, ann, rootPanel.editController);
                     break;
+                case XSSimpleType.PRIMITIVE_DECIMAL:
                 case XSSimpleType.PRIMITIVE_STRING:
                     p = new XmlEditText(rootPanel, parentPanel, ann, rootPanel.editController);
                     break;
                 default:
-                    throw new RuntimeException("Can't creaet editor for simple type: " + type.getName());
+                    throw new RuntimeException("Can't create editor for simple type: " + type.getName());
                 }
                 break;
             default:

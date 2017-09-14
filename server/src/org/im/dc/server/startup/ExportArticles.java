@@ -17,6 +17,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import org.im.dc.server.Config;
 import org.im.dc.server.Db;
 import org.im.dc.server.db.RecArticle;
 
@@ -31,7 +32,7 @@ public class ExportArticles {
             System.exit(1);
         }
 
-        System.setProperty("log4j.configurationFile", new File("config/log4j.xml").getAbsolutePath());
+        Config.load(System.getProperty("CONFIG_DIR"));
         Db.init();
         File out = new File(args[0]);
         if (out.getName().toLowerCase().endsWith(".zip")) {

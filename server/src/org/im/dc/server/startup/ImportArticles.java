@@ -29,7 +29,6 @@ public class ImportArticles {
             System.exit(1);
         }
 
-        System.setProperty("log4j.configurationFile", new File("config/log4j.xml").getAbsolutePath());
         Config.load(System.getProperty("CONFIG_DIR"));
         Db.init();
 

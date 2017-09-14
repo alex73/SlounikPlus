@@ -194,19 +194,23 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
     public String preparePreview(Header header, String[] words, byte[] xml) throws Exception {
         LOG.info(">> preparePreview(" + header.user + ")");
         check(header);
+        try {
+            Validator validator = Config.articleSchema.newValidator();
+            validator.validate(new StreamSource(new ByteArrayInputStream(xml)));
 
-        Validator validator = Config.articleSchema.newValidator();
-        validator.validate(new StreamSource(new ByteArrayInputStream(xml)));
+            HtmlOut out = new HtmlOut();
+            SimpleScriptContext context = new SimpleScriptContext();
+            context.setAttribute("out", out, ScriptContext.ENGINE_SCOPE);
+            context.setAttribute("words", words, ScriptContext.ENGINE_SCOPE);
+            context.setAttribute("article", new JsDomWrapper(xml), ScriptContext.ENGINE_SCOPE);
+            JsProcessing.exec(new File(Config.getConfigDir(), "output.js").getAbsolutePath(), context);
 
-        HtmlOut out = new HtmlOut();
-        SimpleScriptContext context = new SimpleScriptContext();
-        context.setAttribute("out", out, ScriptContext.ENGINE_SCOPE);
-        context.setAttribute("words", words, ScriptContext.ENGINE_SCOPE);
-        context.setAttribute("article", new JsDomWrapper(xml), ScriptContext.ENGINE_SCOPE);
-        JsProcessing.exec(new File(Config.getConfigDir(), "output.js").getAbsolutePath(), context);
-
-        LOG.info("<< preparePreview");
-        return out.toString();
+            LOG.info("<< preparePreview");
+            return out.toString();
+        } catch (Exception ex) {
+            LOG.error("Error in preparePreview", ex);
+            throw ex;
+        }
     }
 
     @Override
