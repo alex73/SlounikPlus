@@ -1,6 +1,9 @@
 package org.im.dc.client.ui;
 
 import java.awt.Font;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
@@ -31,8 +34,8 @@ public class PreviewAllController extends BaseController<PreviewAllDialog> {
         }
         window.output.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, Boolean.TRUE);
         window.output.setFont(BASE_FONT);
-        window.output.getActionMap().put("copy", emptyAction);
-        window.output.getActionMap().put("cut", emptyAction);
+        window.output.getActionMap().put("copy", clipboardAction);
+        window.output.getActionMap().put("cut", clipboardAction);
 
         ((RootPaneContainer) window).getRootPane().registerKeyboardAction(decZoom,
                 KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, InputEvent.CTRL_MASK), JComponent.WHEN_IN_FOCUSED_WINDOW);
@@ -117,8 +120,11 @@ public class PreviewAllController extends BaseController<PreviewAllDialog> {
     };
 
     @SuppressWarnings("serial")
-    AbstractAction emptyAction = new AbstractAction() {
+    AbstractAction clipboardAction = new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
+            StringSelection selection = new StringSelection(window.output.getSelectedText());
+            Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+            clipboard.setContents(selection, selection);
         }
     };
 }
