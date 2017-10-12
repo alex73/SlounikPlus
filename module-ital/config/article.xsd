@@ -129,6 +129,7 @@
 			<xs:enumeration value="-ci" />
 			<xs:enumeration value="-chi" />
 			<xs:enumeration value="-i" />
+			<xs:enumeration value="-ghi" />
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:complexType name="gramType">
@@ -189,6 +190,7 @@
 			<xs:enumeration value="бухг." />
 			<xs:enumeration value="ваен." />
 			<xs:enumeration value="вайск." />
+			<xs:enumeration value="вульг." />
 			<xs:enumeration value="гандл." />
 			<xs:enumeration value="гіст." />
 			<xs:enumeration value="геагр." />
