@@ -21,6 +21,14 @@
 			AND textForSearch LIKE #{filter.likeText}
 		</if>
 	</select>
+	<select id="getArticles" parameterType="ArticlesFilter" resultType="RecArticle" resultMap="RecArticleMap">
+		SELECT *
+		FROM Articles
+		WHERE 1=1
+		<if test="filter.state != null">
+			AND state=#{filter.state}
+		</if>
+	</select>
 	<select id="selectAllIds" resultType="int">
 		SELECT articleId
 		FROM Articles

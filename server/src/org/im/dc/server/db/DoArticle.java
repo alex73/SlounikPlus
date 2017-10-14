@@ -12,6 +12,8 @@ import org.im.dc.service.dto.ArticlesFilter;
 public interface DoArticle {
     List<RecArticle> listArticles(@Param("filter") ArticlesFilter filter);
 
+    List<RecArticle> getArticles(@Param("filter") ArticlesFilter filter);
+
     RecArticle selectArticle(@Param("id") int id);
 
     RecArticle selectArticleForUpdate(@Param("id") int id);

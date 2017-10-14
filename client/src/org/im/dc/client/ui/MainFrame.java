@@ -20,20 +20,19 @@ public class MainFrame extends javax.swing.JFrame {
 
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu2 = new javax.swing.JMenu();
-        miSettings = new javax.swing.JMenuItem();
         miStat = new javax.swing.JMenuItem();
         miAddWords = new javax.swing.JMenuItem();
         miValidateFull = new javax.swing.JMenuItem();
+        miExport = new javax.swing.JMenuItem();
+        jSeparator1 = new javax.swing.JPopupMenu.Separator();
         miResetDesk = new javax.swing.JMenuItem();
+        miSettings = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("org/im/dc/client/ui/Bundle"); // NOI18N
         setTitle(bundle.getString("MainFrame.title")); // NOI18N
 
         jMenu2.setText(bundle.getString("MainFrame.jMenu2.text")); // NOI18N
-
-        miSettings.setText(bundle.getString("MainFrame.miSettings.text")); // NOI18N
-        jMenu2.add(miSettings);
 
         miStat.setText(bundle.getString("MainFrame.miStat.text")); // NOI18N
         jMenu2.add(miStat);
@@ -44,8 +43,15 @@ public class MainFrame extends javax.swing.JFrame {
         miValidateFull.setText(bundle.getString("MainFrame.miValidateFull.text")); // NOI18N
         jMenu2.add(miValidateFull);
 
+        miExport.setText(bundle.getString("MainFrame.miExport.text")); // NOI18N
+        jMenu2.add(miExport);
+        jMenu2.add(jSeparator1);
+
         miResetDesk.setText(bundle.getString("MainFrame.miResetDesk.text")); // NOI18N
         jMenu2.add(miResetDesk);
+
+        miSettings.setText(bundle.getString("MainFrame.miSettings.text")); // NOI18N
+        jMenu2.add(miSettings);
 
         jMenuBar1.add(jMenu2);
 
@@ -92,7 +98,9 @@ public class MainFrame extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public javax.swing.JMenu jMenu2;
     public javax.swing.JMenuBar jMenuBar1;
+    public javax.swing.JPopupMenu.Separator jSeparator1;
     public javax.swing.JMenuItem miAddWords;
+    public javax.swing.JMenuItem miExport;
     public javax.swing.JMenuItem miResetDesk;
     public javax.swing.JMenuItem miSettings;
     public javax.swing.JMenuItem miStat;

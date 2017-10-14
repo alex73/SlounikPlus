@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.jws.WebService;
 
+import org.im.dc.service.dto.ArticlesFilter;
 import org.im.dc.service.dto.Header;
 import org.im.dc.service.dto.InitialData;
 import org.im.dc.service.dto.Related;
@@ -23,6 +24,8 @@ public interface ToolsWebservice {
     void addWords(Header header, String[] users, String[] words, String initialState) throws Exception;
 
     String preparePreview(Header header, String[] words, byte[] xml) throws Exception;
+
+    byte[] previewAll(Header header, ArticlesFilter filter) throws Exception;
 
     List<Related> listIssues(Header header) throws Exception;
 

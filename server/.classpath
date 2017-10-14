@@ -15,5 +15,8 @@
 	<classpathentry kind="lib" path="lib/logging/slf4j-api-1.7.25.jar"/>
 	<classpathentry kind="lib" path="lib/logging/slf4j-jdk14-1.7.25.jar"/>
 	<classpathentry kind="lib" path="lib/mybatis/mybatis-3.4.5.jar"/>
+	<classpathentry kind="lib" path="lib/itext/io-7.0.4.jar" sourcepath="/data/src/io-7.0.4-sources.jar"/>
+	<classpathentry kind="lib" path="lib/itext/kernel-7.0.4.jar" sourcepath="/data/src/kernel-7.0.4-sources.jar"/>
+	<classpathentry kind="lib" path="lib/itext/layout-7.0.4.jar" sourcepath="/data/src/layout-7.0.4-sources.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

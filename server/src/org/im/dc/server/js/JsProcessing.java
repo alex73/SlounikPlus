@@ -18,11 +18,11 @@ public class JsProcessing {
     private static final ScriptEngineManager FACTORY = new ScriptEngineManager();
 
     public static void exec(String scriptFile, ScriptContext context) throws Exception {
-        LOG.info(">> Execute script from " + scriptFile);
+        LOG.debug(">> Execute script from " + scriptFile);
         ScriptEngine engine = FACTORY.getEngineByName("JavaScript");
         try (BufferedReader rd = new BufferedReader(new InputStreamReader(new FileInputStream(scriptFile), "UTF-8"))) {
             engine.eval(rd, context);
         }
-        LOG.info("<< Execute script from " + scriptFile);
+        LOG.debug("<< Execute script from " + scriptFile);
     }
 }

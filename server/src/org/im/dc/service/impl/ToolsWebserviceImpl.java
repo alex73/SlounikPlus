@@ -26,8 +26,10 @@ import org.im.dc.server.db.RecComment;
 import org.im.dc.server.db.RecIssue;
 import org.im.dc.server.js.JsDomWrapper;
 import org.im.dc.server.js.JsProcessing;
+import org.im.dc.server.pdf.PdfCreator;
 import org.im.dc.service.AppConst;
 import org.im.dc.service.ToolsWebservice;
+import org.im.dc.service.dto.ArticlesFilter;
 import org.im.dc.service.dto.Header;
 import org.im.dc.service.dto.InitialData;
 import org.im.dc.service.dto.Related;
@@ -194,6 +196,8 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
     public String preparePreview(Header header, String[] words, byte[] xml) throws Exception {
         LOG.info(">> preparePreview(" + header.user + ")");
         check(header);
+        PermissionChecker.userRequiresPermission(header.user, Permission.VIEW_OUTPUT);
+
         try {
             Validator validator = Config.articleSchema.newValidator();
             validator.validate(new StreamSource(new ByteArrayInputStream(xml)));
@@ -216,6 +220,8 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
     @Override
     public List<Related> listIssues(Header header) throws Exception {
         LOG.info(">> listIssues(" + header.user + ")");
+        check(header);
+
         List<Related> related = new ArrayList<>();
         // заўвагі
         List<RecIssue> list = Db.execAndReturn((api) -> api.getIssueMapper().retrieveUserOpenIssues(header.user));
@@ -231,6 +237,8 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
     @Override
     public List<Related> listNews(Header header) throws Exception {
         LOG.info(">> listNews(" + header.user + ")");
+        check(header);
+
         List<Related> related = new ArrayList<>();
         // заўвагі карыстальніка
         List<RecIssue> list = Db.execAndReturn((api) -> api.getIssueMapper().retrieveAuthorIssues(header.user));
@@ -258,5 +266,41 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
 
         LOG.info("<< listNews");
         return related;
+    }
+
+    @Override
+    public byte[] previewAll(Header header, ArticlesFilter filter) throws Exception {
+        LOG.info(">> previewAll(" + header.user + ")");
+        check(header);
+        PermissionChecker.userRequiresPermission(header.user, Permission.VIEW_OUTPUT);
+
+        List<RecArticle> list = Db.execAndReturn((api) -> api.getArticleMapper().getArticles(filter));
+
+        PdfCreator pdf = new PdfCreator();
+        for (RecArticle a : list) {
+            if (a.getXml() == null || a.getXml().length == 0) {
+                continue; // empty article yet
+            }
+            String html;
+            try {
+                Validator validator = Config.articleSchema.newValidator();
+                validator.validate(new StreamSource(new ByteArrayInputStream(a.getXml())));
+
+                HtmlOut out = new HtmlOut();
+                SimpleScriptContext context = new SimpleScriptContext();
+                context.setAttribute("out", out, ScriptContext.ENGINE_SCOPE);
+                context.setAttribute("words", a.getWords(), ScriptContext.ENGINE_SCOPE);
+                context.setAttribute("article", new JsDomWrapper(a.getXml()), ScriptContext.ENGINE_SCOPE);
+                JsProcessing.exec(new File(Config.getConfigDir(), "output.js").getAbsolutePath(), context);
+                html = out.toString();
+            } catch (Exception ex) {
+                html = "ПАМЫЛКА ў " + Arrays.toString(a.getWords()) + ": " + ex.getMessage();
+            }
+            pdf.addHtmlArticle(html);
+        }
+
+        byte[] out = pdf.finish();
+        LOG.info("<< previewAll");
+        return out;
     }
 }
