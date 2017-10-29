@@ -111,6 +111,9 @@ public class XmlMany extends JPanel {
         case COMBO_EDITABLE:
             p = new XmlEditComboEditable(rootPanel, parentPanel, ann, rootPanel.editController);
             break;
+        case COMBO_DICT_EDITABLE:
+            p = new XmlEditComboDictionaryEditable(rootPanel, parentPanel, ann, rootPanel.editController);
+            break;
         case CUSTOM:
             try {
                 Class<? extends JPanel> editor = (Class<? extends JPanel>) Class.forName(ann.editDetails);

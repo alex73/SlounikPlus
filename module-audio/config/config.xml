@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+	<version>20170831</version>
+	<users>
+		<user name="uladz" pass="123" role="укладальнік" new-article-state="0" new-article-users="uladz" />
+	</users>
+	<roles>
+		<role id="укладальнік">
+			<permission>view_output</permission>
+			<permission>edit_header</permission>
+			<permission>full_validation</permission>
+			<permission>add_words</permission>
+			<permission>reassign</permission>
+		</role>
+		<role id="галоўны_рэдактар">
+			<permission>view_output</permission>
+			<permission>edit_header</permission>
+			<permission>full_validation</permission>
+			<permission>add_words</permission>
+			<permission>reassign</permission>
+		</role>
+	</roles>
+	<states>
+		<state id="0" edit_roles="укладальнік,галоўны_рэдактар">
+			<change to="Зроблена" roles="укладальнік,галоўны_рэдактар" />
+			<change to="Зроблена з заўвагамі" roles="укладальнік,галоўны_рэдактар" />
+			<change to="Няма" roles="укладальнік,галоўны_рэдактар" />
+		</state>
+		<state id="Зроблена" edit_roles="укладальнік,галоўны_рэдактар">
+			<change to="0" roles="укладальнік,галоўны_рэдактар" />
+			<change to="Зроблена з заўвагамі" roles="укладальнік,галоўны_рэдактар" />
+			<change to="Няма" roles="укладальнік,галоўны_рэдактар" />
+		</state>
+		<state id="Зроблена з заўвагамі" edit_roles="укладальнік,галоўны_рэдактар">
+			<change to="0" roles="укладальнік,галоўны_рэдактар" />
+			<change to="Зроблена" roles="укладальнік,галоўны_рэдактар" />
+			<change to="Няма" roles="укладальнік,галоўны_рэдактар" />
+		</state>
+		<state id="Няма" edit_roles="укладальнік,галоўны_рэдактар">
+			<change to="0" roles="укладальнік,галоўны_рэдактар" />
+			<change to="Зроблена" roles="укладальнік,галоўны_рэдактар" />
+			<change to="Зроблена з заўвагамі" roles="укладальнік,галоўны_рэдактар" />
+		</state>
+	</states>
+	<external_links />
+</config>

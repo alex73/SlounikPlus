@@ -2,10 +2,13 @@ package org.im.dc.service.impl;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.TreeMap;
 
 import javax.jws.WebService;
@@ -23,6 +26,7 @@ import org.im.dc.server.PermissionChecker;
 import org.im.dc.server.db.RecArticle;
 import org.im.dc.server.db.RecArticleHistory;
 import org.im.dc.server.db.RecComment;
+import org.im.dc.server.db.RecDictionary;
 import org.im.dc.server.db.RecIssue;
 import org.im.dc.server.js.JsDomWrapper;
 import org.im.dc.server.js.JsProcessing;
@@ -30,6 +34,7 @@ import org.im.dc.server.pdf.PdfCreator;
 import org.im.dc.service.AppConst;
 import org.im.dc.service.ToolsWebservice;
 import org.im.dc.service.dto.ArticlesFilter;
+import org.im.dc.service.dto.Dictionaries;
 import org.im.dc.service.dto.Header;
 import org.im.dc.service.dto.InitialData;
 import org.im.dc.service.dto.Related;
@@ -55,7 +60,9 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
     @Override
     public InitialData getInitialData(Header header) {
         LOG.info(">> getInitialData(" + header.user + ")");
-        header.configVersion = Config.getConfig().getVersion(); // set version for initial client call
+        header.configVersion = Config.getConfig().getVersion(); // set version
+                                                                // for initial
+                                                                // client call
         check(header);
 
         InitialData result = new InitialData();
@@ -302,5 +309,49 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
         byte[] out = pdf.finish();
         LOG.info("<< previewAll");
         return out;
+    }
+
+    @Override
+    public Dictionaries getDictionaries(Header header) throws Exception {
+        LOG.info(">> getDictionaries(" + header.user + ")");
+        check(header);
+
+        Dictionaries result = new Dictionaries();
+        Db.exec((api) -> {
+            for (RecDictionary d : api.getDictionaryMapper().getDictionaries()) {
+                result.add(d.getDict(), d.getVal());
+            }
+        });
+        Collator c = Collator.getInstance(new Locale("be"));
+        for (Dictionaries.Dictionary d : result.dicts.values()) {
+            Collections.sort(d.values, c);
+        }
+
+        LOG.info("<< getDictionaries");
+        return result;
+    }
+
+    @Override
+    public void addDictionaries(Header header, Dictionaries newValues) throws Exception {
+        LOG.info(">> addDictionaries(" + header.user + ")");
+        check(header);
+
+        List<RecDictionary> inserts = new ArrayList<>();
+        for (String d : newValues.dicts.keySet()) {
+            for (String v : newValues.dicts.get(d).values) {
+                RecDictionary r = new RecDictionary();
+                r.setDict(d);
+                r.setVal(v);
+                inserts.add(r);
+            }
+        }
+
+        if (!inserts.isEmpty()) {
+            Db.exec((api) -> {
+                api.getDictionaryMapper().addDictionaries(inserts);
+            });
+        }
+
+        LOG.info("<< addDictionaries");
     }
 }

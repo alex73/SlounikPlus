@@ -34,6 +34,7 @@ import org.im.dc.client.ui.xmlstructure.XmlGroup;
 import org.im.dc.gen.config.Permission;
 import org.im.dc.service.dto.ArticleFull;
 import org.im.dc.service.dto.ArticleFullInfo;
+import org.im.dc.service.dto.Dictionaries;
 import org.im.dc.service.dto.Related;
 import org.im.dc.service.dto.Related.RelatedType;
 
@@ -52,6 +53,8 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
 
     protected volatile ArticleFullInfo article;
     protected volatile boolean wasChanged;
+
+    public Dictionaries dictionaries, newDictionaries;
 
     public ArticlePanelEdit panelEdit = new ArticlePanelEdit();
     public ArticlePanelHistory panelHistory = new ArticlePanelHistory();
@@ -94,6 +97,8 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
         new LongProcess() {
             @Override
             protected void exec() throws Exception {
+                dictionaries = WS.getToolsWebservice().getDictionaries(WS.header);
+                newDictionaries = new Dictionaries();
                 article = WS.getArticleService().getArticleFullInfo(WS.header, articleId);
             }
 
@@ -397,6 +402,8 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
                 article = WS.getArticleService().saveArticle(WS.header, article.article);
                 saved = true;
                 MainController.instance.fireArticleUpdated(article.article);
+
+                WS.getToolsWebservice().addDictionaries(WS.header, newDictionaries);
             }
 
             @Override

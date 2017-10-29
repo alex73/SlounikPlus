@@ -25,15 +25,17 @@
 		</environment>
 	</environments>
 	<mappers>
-		<mapper class="org.im.dc.server.db.DoArticle" />
+        <mapper class="org.im.dc.server.db.DoArticle" />
 		<mapper class="org.im.dc.server.db.DoArticleNote" />
 		<mapper class="org.im.dc.server.db.DoArticleHistory" />
 		<mapper class="org.im.dc.server.db.DoComment" />
+        <mapper class="org.im.dc.server.db.DoDictionary" />
 		<mapper class="org.im.dc.server.db.DoIssue" />
 		<mapper resource="org/im/dc/server/db/Article.xml" />
 		<mapper resource="org/im/dc/server/db/Comment.xml" />
 		<mapper resource="org/im/dc/server/db/Issue.xml" />
 		<mapper resource="org/im/dc/server/db/History.xml" />
+        <mapper resource="org/im/dc/server/db/Dictionary.xml" />
 		<mapper resource="org/im/dc/server/db/Note.xml" />
 	</mappers>
 </configuration>

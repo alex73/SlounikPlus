@@ -18,6 +18,7 @@ DROP TABLE IF EXISTS Comments;
 DROP TABLE IF EXISTS ArticlesHistory;
 DROP TABLE IF EXISTS Articles;
 DROP TABLE IF EXISTS ArticleNotes;
+DROP TABLE IF EXISTS Dictionaries;
 
 CREATE TABLE Articles (
 	articleId SERIAL PRIMARY KEY,
@@ -76,4 +77,9 @@ CREATE TABLE ArticleNotes (
     creator VARCHAR(50) NOT NULL,
     note TEXT NOT NULL,
     PRIMARY KEY (articleId, creator)
+);
+
+CREATE TABLE Dictionaries (
+    dict VARCHAR(50) NOT NULL,
+    val VARCHAR(250) NOT NULL
 );

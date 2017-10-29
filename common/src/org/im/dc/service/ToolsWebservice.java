@@ -5,6 +5,7 @@ import java.util.List;
 import javax.jws.WebService;
 
 import org.im.dc.service.dto.ArticlesFilter;
+import org.im.dc.service.dto.Dictionaries;
 import org.im.dc.service.dto.Header;
 import org.im.dc.service.dto.InitialData;
 import org.im.dc.service.dto.Related;
@@ -30,4 +31,8 @@ public interface ToolsWebservice {
     List<Related> listIssues(Header header) throws Exception;
 
     List<Related> listNews(Header header) throws Exception;
+
+    Dictionaries getDictionaries(Header header) throws Exception;
+
+    void addDictionaries(Header header, Dictionaries newValues) throws Exception;
 }
