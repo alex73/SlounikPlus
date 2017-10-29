@@ -14,6 +14,9 @@
 	<select id="getHistory" resultType="RecArticleHistory" resultMap="RecArticleHistoryMap">
 		SELECT * FROM ArticlesHistory WHERE historyId = #{historyId}
 	</select>
+    <select id="retrieveAllHistory" resultType="RecArticleHistory" resultMap="RecArticleHistoryMap">
+        SELECT * FROM ArticlesHistory ORDER BY historyId
+    </select>
 	<insert id="insertArticleHistory" useGeneratedKeys="true" keyProperty="hist.historyId">
 		INSERT INTO ArticlesHistory (articleId,changed,changer,oldState,newState,oldWords,newWords,oldAssignedUsers,newAssignedUsers,oldXml,newXml)
 		VALUES(#{hist.articleId},#{hist.changed},#{hist.changer},#{hist.oldState},#{hist.newState},#{hist.oldWords,typeHandler=StringArrayTypeHandler},#{hist.newWords,typeHandler=StringArrayTypeHandler},#{hist.oldAssignedUsers,typeHandler=StringArrayTypeHandler},#{hist.newAssignedUsers,typeHandler=StringArrayTypeHandler},#{hist.oldXml},#{hist.newXml})

@@ -18,5 +18,6 @@
 	<classpathentry kind="lib" path="lib/itext/io-7.0.4.jar" sourcepath="/data/src/io-7.0.4-sources.jar"/>
 	<classpathentry kind="lib" path="lib/itext/kernel-7.0.4.jar" sourcepath="/data/src/kernel-7.0.4-sources.jar"/>
 	<classpathentry kind="lib" path="lib/itext/layout-7.0.4.jar" sourcepath="/data/src/layout-7.0.4-sources.jar"/>
+	<classpathentry kind="lib" path="lib/git/org.eclipse.jgit-4.9.0.201710071750-r.jar" sourcepath="/data/src/org.eclipse.jgit-4.9.0.201710071750-r-sources.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
