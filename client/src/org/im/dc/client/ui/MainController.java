@@ -7,9 +7,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
@@ -22,7 +19,6 @@ import javax.swing.table.TableModel;
 
 import org.im.dc.client.SchemaLoader;
 import org.im.dc.client.WS;
-import org.im.dc.client.os.Commands;
 import org.im.dc.gen.config.Permission;
 import org.im.dc.service.dto.ArticleFull;
 import org.im.dc.service.dto.ArticleShort;
@@ -253,10 +249,8 @@ public class MainController extends BaseController<MainFrame> {
 
         if (initialData.currentUserPermissions.contains(Permission.VIEW_OUTPUT.name())) {
             panelArticles.btnPreview.addActionListener(preview);
-            window.miExport.addActionListener((e) -> exportAll());
         } else {
             panelArticles.btnPreview.setVisible(false);
-            window.miExport.setVisible(false);
         }
 
         window.miResetDesk.addActionListener(e -> {
@@ -342,18 +336,6 @@ public class MainController extends BaseController<MainFrame> {
                 JOptionPane.showMessageDialog(window,
                         "Валідацыя прайшла паспяхова. Абнавіце спіс артыкулаў каб бачыць вынікі", "Валідацыя",
                         JOptionPane.INFORMATION_MESSAGE);
-            }
-        };
-    }
-
-    private void exportAll() {
-        new LongProcess() {
-            @Override
-            protected void exec() throws Exception {
-                ArticlesFilter filter = new ArticlesFilter();
-                byte[] pdf = WS.getToolsWebservice().previewAll(WS.header, filter);
-                Files.write(Paths.get("preview.pdf"), pdf);
-                Commands.showPdf("preview.pdf");
             }
         };
     }
