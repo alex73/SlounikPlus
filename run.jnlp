@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jnlp spec="8+">
+	<information>
+		<offline-allowed />
+		<shortcut online="true" install="true">
+			<desktop />
+			<menu submenu="Рэдагаванне італ'янскага слоўніка" />
+		</shortcut>
+	</information>
+	<security>
+		<all-permissions />
+	</security>
+	<resources>
+		<jar href="client-ital.jar" />
+	</resources>
+	<application-desc main-class="org.im.dc.client.ui.ClientStartup">
+		<argument>https://host/ital</argument>
+	</application-desc>
+</jnlp>

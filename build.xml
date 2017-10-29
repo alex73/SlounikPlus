@@ -128,6 +128,7 @@
                 <attribute name="Main-Class" value="org.im.dc.client.ui.ClientStartup" />
             </manifest>
         </jar>
+        <!--signjar jar="dist/client-ital/client-ital.jar" keystore="../My/mykey.keystore" alias="${keyname}" storepass="${keypass}" keypass="${keypass}" /-->
         <copy todir="dist/client-ital/config/">
             <fileset dir="module-ital/config/" />
         </copy>
