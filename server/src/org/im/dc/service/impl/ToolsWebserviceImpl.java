@@ -7,8 +7,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.TreeMap;
 
 import javax.jws.WebService;
@@ -218,6 +220,46 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
             return out.toString();
         } catch (Exception ex) {
             LOG.error("Error in preparePreview", ex);
+            throw ex;
+        }
+    }
+
+    @Override
+    public String[] preparePreviews(Header header, int[] articleIds) throws Exception {
+        LOG.info(">> preparePreviews(" + header.user + ")");
+        check(header);
+        PermissionChecker.userRequiresPermission(header.user, Permission.VIEW_OUTPUT);
+
+        try {
+            Map<Integer, RecArticle> articlesMap = new HashMap<>();
+            Db.exec((api) -> {
+                List<RecArticle> articles = api.getArticleMapper().selectArticles(articleIds);
+                articles.forEach(a -> articlesMap.put(a.getArticleId(), a));
+            });
+
+            String[] result = new String[articleIds.length];
+            for (int i = 0; i < articleIds.length; i++) {
+                RecArticle a = articlesMap.get(articleIds[i]);
+                if (a == null) {
+                    // no such article
+                    continue;
+                }
+                Validator validator = Config.articleSchema.newValidator();
+                validator.validate(new StreamSource(new ByteArrayInputStream(a.getXml())));
+
+                HtmlOut out = new HtmlOut();
+                SimpleScriptContext context = new SimpleScriptContext();
+                context.setAttribute("out", out, ScriptContext.ENGINE_SCOPE);
+                context.setAttribute("words", a.getWords(), ScriptContext.ENGINE_SCOPE);
+                context.setAttribute("article", new JsDomWrapper(a.getXml()), ScriptContext.ENGINE_SCOPE);
+                JsProcessing.exec(new File(Config.getConfigDir(), "output.js").getAbsolutePath(), context);
+                result[i] = out.toString();
+            }
+
+            LOG.info("<< preparePreviews");
+            return result;
+        } catch (Exception ex) {
+            LOG.error("Error in preparePreviews", ex);
             throw ex;
         }
     }

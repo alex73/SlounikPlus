@@ -30,8 +30,8 @@ public class PreviewController extends BaseController<PreviewDialog> {
         }
         window.text.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, Boolean.TRUE);
         window.text.setFont(BASE_FONT);
-        window.text.getActionMap().put("copy", clipboardAction);
-        window.text.getActionMap().put("cut", clipboardAction);
+        //window.text.getActionMap().put("copy", clipboardAction);
+        //window.text.getActionMap().put("cut", clipboardAction);
 
         ((RootPaneContainer) window).getRootPane().registerKeyboardAction(decZoom,
                 KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, InputEvent.CTRL_MASK), JComponent.WHEN_IN_FOCUSED_WINDOW);

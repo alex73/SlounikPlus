@@ -8,7 +8,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
-import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.JComponent;
@@ -19,13 +18,11 @@ import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 
 import org.im.dc.client.WS;
-import org.im.dc.service.dto.ArticleFullInfo;
-import org.im.dc.service.dto.ArticleShort;
 
 public class PreviewAllController extends BaseController<PreviewAllDialog> {
     private static Font BASE_FONT;
 
-    public PreviewAllController(List<ArticleShort> articles) {
+    public PreviewAllController(int[] articleIds) {
         super(new PreviewAllDialog(MainController.instance.window, false), MainController.instance.window);
         setupCloseOnEscape();
 
@@ -34,8 +31,8 @@ public class PreviewAllController extends BaseController<PreviewAllDialog> {
         }
         window.output.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, Boolean.TRUE);
         window.output.setFont(BASE_FONT);
-        window.output.getActionMap().put("copy", clipboardAction);
-        window.output.getActionMap().put("cut", clipboardAction);
+        //window.output.getActionMap().put("copy", clipboardAction);
+        //window.output.getActionMap().put("cut", clipboardAction);
 
         ((RootPaneContainer) window).getRootPane().registerKeyboardAction(decZoom,
                 KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, InputEvent.CTRL_MASK), JComponent.WHEN_IN_FOCUSED_WINDOW);
@@ -55,15 +52,15 @@ public class PreviewAllController extends BaseController<PreviewAllDialog> {
         window.output.addHyperlinkListener(linkListener);
 
         window.btnRefresh.addActionListener(l -> {
-            show(articles);
+            show(articleIds);
         });
 
-        show(articles);
+        show(articleIds);
 
         displayOnParent();
     }
 
-    void show(List<ArticleShort> articles) {
+    void show(int[] articleIds) {
         new LongProcess() {
             StringBuilder out;
 
@@ -71,13 +68,13 @@ public class PreviewAllController extends BaseController<PreviewAllDialog> {
             protected void exec() throws Exception {
                 out = new StringBuilder("<!DOCTYPE html>\n<html><head><meta charset=\"UTF-8\"></head><body>\n");
 
-                for (ArticleShort a : articles) {
-                    ArticleFullInfo info = WS.getArticleService().getArticleFullInfo(WS.header, a.id);
-                    if (info.article.xml == null) {
+                String[] articlesPreview = WS.getToolsWebservice().preparePreviews(WS.header, articleIds);
+                for (int i = 0; i < articleIds.length; i++) {
+                    if (articlesPreview[i] == null) {
                         continue;
                     }
-                    out.append(WS.getToolsWebservice().preparePreview(WS.header, info.article.words, info.article.xml));
-                    out.append(" <a href='" + a.id + "'>рэдагаваць</a>\n");
+                    out.append(articlesPreview[i]);
+                    out.append(" <a href='" + articleIds[i] + "'>рэдагаваць</a>\n");
                     out.append("<hr/>\n");
                 }
                 out.append("\n</body></html>\n");

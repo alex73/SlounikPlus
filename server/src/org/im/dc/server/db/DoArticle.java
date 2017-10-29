@@ -14,6 +14,8 @@ public interface DoArticle {
 
     RecArticle selectArticle(@Param("id") int id);
 
+    List<RecArticle> selectArticles(@Param("ids")  int[] ids);
+
     RecArticle selectArticleForUpdate(@Param("id") int id);
 
     List<RecArticle> selectLinkedTo(@Param("words") String[] words);

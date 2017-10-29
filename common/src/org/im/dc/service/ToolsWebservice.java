@@ -25,6 +25,8 @@ public interface ToolsWebservice {
 
     String preparePreview(Header header, String[] words, byte[] xml) throws Exception;
 
+    String[] preparePreviews(Header header, int[] articleIds) throws Exception;
+
     List<Related> listIssues(Header header) throws Exception;
 
     List<Related> listNews(Header header) throws Exception;

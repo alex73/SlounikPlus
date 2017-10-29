@@ -25,10 +25,15 @@
 		SELECT articleId
 		FROM Articles
 	</select>
-    <select id="selectArticle" parameterType="int" resultType="RecArticle" resultMap="RecArticleMap">
+	<select id="selectArticle" parameterType="int" resultType="RecArticle" resultMap="RecArticleMap">
 		SELECT *
 		FROM Articles
 		WHERE articleId = #{id}
+	</select>
+	<select id="selectArticles" resultType="RecArticle" resultMap="RecArticleMap">
+		SELECT *
+		FROM Articles
+		WHERE articleId  = ANY(#{ids,typeHandler=org.im.dc.server.handlers.IntArrayTypeHandler})
 	</select>
 	<select id="selectArticleForUpdate" parameterType="int" resultType="RecArticle" resultMap="RecArticleMap">
 		SELECT *

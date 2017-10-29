@@ -281,14 +281,15 @@ public class MainController extends BaseController<MainFrame> {
         TableModel m = panelArticles.tableArticles.getModel();
         if (m instanceof MainFrameArticlesModel) {
             MainFrameArticlesModel model = (MainFrameArticlesModel) m;
-            List<ArticleShort> articles = new ArrayList<>();
-            for (int r : panelArticles.tableArticles.getSelectedRows()) {
-                articles.add(model.articles.get(r));
+            int[] selectedRows = panelArticles.tableArticles.getSelectedRows();
+            int[] articleIds = new int[selectedRows.length];
+            for (int i = 0; i < selectedRows.length; i++) {
+                articleIds[i] = model.articles.get(selectedRows[i]).id;
             }
-            if (articles.size() > 100) {
+            if (articleIds.length > 100) {
                 todo("Абрана зашмат артыкулаў");
             } else {
-                new PreviewAllController(articles);
+                new PreviewAllController(articleIds);
             }
         }
     };
