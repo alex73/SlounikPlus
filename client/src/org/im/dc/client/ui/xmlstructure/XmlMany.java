@@ -1,7 +1,6 @@
 package org.im.dc.client.ui.xmlstructure;
 
 import java.awt.Component;
-import java.awt.Container;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
