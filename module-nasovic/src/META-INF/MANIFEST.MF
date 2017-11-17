@@ -1,2 +1,2 @@
 Manifest-Version: 1.0
-DictCreator-init: org.im.dc.client.ui.xmlstructure.nasovic.PluginInit
+SlounikPlus-init: org.im.dc.client.ui.xmlstructure.nasovic.PluginInit

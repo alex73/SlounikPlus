@@ -1,4 +1,4 @@
-# DictCreator
+# SlounikPlus
 
 Create/edit dictionary software for small team.
 
