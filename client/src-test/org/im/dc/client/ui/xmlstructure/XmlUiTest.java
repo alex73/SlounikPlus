@@ -9,10 +9,10 @@ import javax.swing.JScrollPane;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamWriter;
 
-import com.sun.org.apache.xerces.internal.impl.xs.XMLSchemaLoader;
-import com.sun.org.apache.xerces.internal.xs.XSElementDeclaration;
-import com.sun.org.apache.xerces.internal.xs.XSLoader;
-import com.sun.org.apache.xerces.internal.xs.XSModel;
+import org.apache.xerces.impl.xs.XMLSchemaLoader;
+import org.apache.xerces.xs.XSElementDeclaration;
+import org.apache.xerces.xs.XSLoader;
+import org.apache.xerces.xs.XSModel;
 
 public class XmlUiTest {
     static final String ROOT = "root";

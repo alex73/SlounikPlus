@@ -4,7 +4,7 @@ import java.awt.Color;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.sun.org.apache.xerces.internal.xs.XSAnnotation;
+import org.apache.xerces.xs.XSAnnotation;
 
 public class AnnotationInfo {
     private static final Pattern RE_DETAILS = Pattern.compile("(.+)\\{(.+)\\}");

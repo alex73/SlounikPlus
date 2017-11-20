@@ -17,14 +17,13 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.apache.xerces.xs.XSComplexTypeDefinition;
+import org.apache.xerces.xs.XSElementDeclaration;
+import org.apache.xerces.xs.XSModelGroup;
+import org.apache.xerces.xs.XSObjectList;
+import org.apache.xerces.xs.XSParticle;
+import org.apache.xerces.xs.XSTypeDefinition;
 import org.im.dc.client.ui.ArticleEditController;
-
-import com.sun.org.apache.xerces.internal.xs.XSComplexTypeDefinition;
-import com.sun.org.apache.xerces.internal.xs.XSElementDeclaration;
-import com.sun.org.apache.xerces.internal.xs.XSModelGroup;
-import com.sun.org.apache.xerces.internal.xs.XSObjectList;
-import com.sun.org.apache.xerces.internal.xs.XSParticle;
-import com.sun.org.apache.xerces.internal.xs.XSTypeDefinition;
 
 @SuppressWarnings("serial")
 public class XmlGroup extends JPanel implements IXmlElement {

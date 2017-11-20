@@ -5,15 +5,14 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.util.List;
 
+import org.apache.xerces.impl.xs.XMLSchemaLoader;
+import org.apache.xerces.xs.XSElementDeclaration;
+import org.apache.xerces.xs.XSModel;
+import org.apache.xerces.xs.XSSimpleTypeDefinition;
 import org.im.dc.client.ui.ArticleEditController;
 import org.im.dc.client.ui.xmlstructure.AnnotationInfo;
 import org.im.dc.client.ui.xmlstructure.XmlGroup;
 import org.w3c.dom.ls.LSInput;
-
-import com.sun.org.apache.xerces.internal.impl.xs.XMLSchemaLoader;
-import com.sun.org.apache.xerces.internal.xs.XSElementDeclaration;
-import com.sun.org.apache.xerces.internal.xs.XSModel;
-import com.sun.org.apache.xerces.internal.xs.XSSimpleTypeDefinition;
 
 public class SchemaLoader {
     private static XSModel model;

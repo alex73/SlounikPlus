@@ -14,12 +14,11 @@ import javax.swing.JPanel;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.apache.xerces.impl.dv.XSSimpleType;
+import org.apache.xerces.xs.XSElementDeclaration;
+import org.apache.xerces.xs.XSTypeDefinition;
 import org.im.dc.client.ui.ArticleEditController;
 import org.im.dc.client.ui.ArticlePanelEdit;
-
-import com.sun.org.apache.xerces.internal.impl.dv.XSSimpleType;
-import com.sun.org.apache.xerces.internal.xs.XSElementDeclaration;
-import com.sun.org.apache.xerces.internal.xs.XSTypeDefinition;
 
 @SuppressWarnings("serial")
 public class XmlMany extends JPanel {
