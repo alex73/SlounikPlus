@@ -29,8 +29,8 @@ public class DbTestArticleHistory {
         rec1.setNewAssignedUsers(new String[] { "u3", "u4" });
         rec1.setOldState("st1");
         rec1.setNewState("st2");
-        rec1.setOldWords(new String[] { "w1", "w2" });
-        rec1.setNewWords(new String[] { "w3", "w4" });
+        rec1.setOldHeader("w1, w2");
+        rec1.setNewHeader("w3, w4");
         rec1.setOldXml(new byte[] { 1, 2 });
         rec1.setNewXml(new byte[] { 3, 4 });
 
@@ -48,8 +48,8 @@ public class DbTestArticleHistory {
         assertEquals("st1", rec.getOldState());
         assertEquals("st2", rec.getNewState());
 
-        assertArrayEquals(new String[] { "w1", "w2" }, rec.getOldWords());
-        assertArrayEquals(new String[] { "w3", "w4" }, rec.getNewWords());
+        assertEquals("w1, w2", rec.getOldHeader());
+        assertEquals("w3, w4", rec.getNewHeader());
         assertArrayEquals(new byte[] { 1, 2 }, rec.getOldXml());
         assertArrayEquals(new byte[] { 3, 4 }, rec.getNewXml());
     }

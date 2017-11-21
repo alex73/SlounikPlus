@@ -1,6 +1,5 @@
 package org.im.dc.server.db;
 
-import java.util.Arrays;
 import java.util.Date;
 
 import org.im.dc.service.dto.Related;
@@ -9,8 +8,6 @@ public class RecArticleHistory {
     private int historyId;
     // артыкул
     private int articleId;
-    // словы з артыкула
-    private String[] words;
     // калі быў зменены
     private Date changed;
     // хто змяніў
@@ -19,10 +16,10 @@ public class RecArticleHistory {
     private String oldState;
     // новы стан
     private String newState;
-    // старыя загалоўныя словы
-    private String[] oldWords;
-    // новыя загалоўныя словы
-    private String[] newWords;
+    // стары загаловак
+    private String oldHeader;
+    // новы загаловак
+    private String newHeader;
     // стары спіс карыстальнікаў
     private String[] oldAssignedUsers;
     // новы спіс карыстальнікаў
@@ -46,14 +43,6 @@ public class RecArticleHistory {
 
     public void setArticleId(int articleId) {
         this.articleId = articleId;
-    }
-
-    public String[] getWords() {
-        return words;
-    }
-
-    public void setWords(String[] words) {
-        this.words = words;
     }
 
     public Date getChanged() {
@@ -88,20 +77,20 @@ public class RecArticleHistory {
         this.newState = newState;
     }
 
-    public String[] getOldWords() {
-        return oldWords;
+    public String getOldHeader() {
+        return oldHeader;
     }
 
-    public void setOldWords(String[] oldWords) {
-        this.oldWords = oldWords;
+    public void setOldHeader(String oldHeader) {
+        this.oldHeader = oldHeader;
     }
 
-    public String[] getNewWords() {
-        return newWords;
+    public String getNewHeader() {
+        return newHeader;
     }
 
-    public void setNewWords(String[] newWords) {
-        this.newWords = newWords;
+    public void setNewHeader(String newHeader) {
+        this.newHeader = newHeader;
     }
 
     public String[] getOldAssignedUsers() {
@@ -140,7 +129,6 @@ public class RecArticleHistory {
         Related r = new Related();
         r.type = Related.RelatedType.HISTORY;
         r.articleId = articleId;
-        r.words = words;
         r.id = historyId;
         r.articleId = articleId;
         r.when = changed;
@@ -151,8 +139,8 @@ public class RecArticleHistory {
         } else if (newXml != null) {
             r.what = "Тэкст";
             r.sk = "Са";
-        } else if (newWords != null) {
-            r.what = Arrays.toString(oldWords) + " -> " + Arrays.toString(newWords);
+        } else if (newHeader != null) {
+            r.what = "Загаловак";
             r.sk = "Сг";
         }
         return r;

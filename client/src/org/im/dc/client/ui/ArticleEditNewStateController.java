@@ -42,8 +42,8 @@ public class ArticleEditNewStateController extends BaseController<ArticleEditNew
         new LongProcess() {
             @Override
             protected void exec() throws Exception {
-                parent.article = WS.getArticleService().changeState(WS.header, parent.article.article.id, ns,
-                        parent.article.article.lastUpdated);
+                parent.article = WS.getArticleService().changeState(WS.header, parent.article.article.type,
+                        parent.article.article.id, ns, parent.article.article.lastUpdated);
                 MainController.instance.fireArticleUpdated(parent.article.article);
             }
 

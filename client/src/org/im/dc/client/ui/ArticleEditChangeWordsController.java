@@ -1,7 +1,6 @@
 package org.im.dc.client.ui;
 
 import java.awt.event.ActionListener;
-import java.util.Arrays;
 
 import org.im.dc.client.WS;
 
@@ -11,7 +10,7 @@ public class ArticleEditChangeWordsController extends BaseController<ArticleEdit
     public ArticleEditChangeWordsController(ArticleEditController parent) {
         super(new ArticleEditChangeWordsDialog(MainController.instance.window, true), parent.window);
         this.parent = parent;
-        window.txtWords.setText(Arrays.toString(parent.article.article.words).replace("[", "").replace("]", ""));
+        window.txtWords.setText(parent.article.article.header);
 
         window.btnChange.addActionListener(change);
 
@@ -22,12 +21,12 @@ public class ArticleEditChangeWordsController extends BaseController<ArticleEdit
     }
 
     ActionListener change = (e) -> {
-        String words = window.txtWords.getText();
+        String header = window.txtWords.getText();
         new LongProcess() {
             @Override
             protected void exec() throws Exception {
-                parent.article = WS.getArticleService().changeWords(WS.header, parent.article.article.id, words,
-                        parent.article.article.lastUpdated);
+                parent.article = WS.getArticleService().changeHeader(WS.header, parent.article.article.type,
+                        parent.article.article.id, header, parent.article.article.lastUpdated);
             }
 
             @Override

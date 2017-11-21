@@ -2,14 +2,10 @@ package org.im.dc.service.impl;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.text.Collator;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -25,16 +21,14 @@ import org.im.dc.gen.config.User;
 import org.im.dc.server.Config;
 import org.im.dc.server.Db;
 import org.im.dc.server.PermissionChecker;
+import org.im.dc.server.VersionChecker;
 import org.im.dc.server.db.RecArticle;
 import org.im.dc.server.db.RecArticleHistory;
 import org.im.dc.server.db.RecComment;
-import org.im.dc.server.db.RecDictionary;
 import org.im.dc.server.db.RecIssue;
 import org.im.dc.server.js.JsDomWrapper;
 import org.im.dc.server.js.JsProcessing;
-import org.im.dc.service.AppConst;
 import org.im.dc.service.ToolsWebservice;
-import org.im.dc.service.dto.Dictionaries;
 import org.im.dc.service.dto.Header;
 import org.im.dc.service.dto.InitialData;
 import org.im.dc.service.dto.Related;
@@ -45,24 +39,18 @@ import org.slf4j.LoggerFactory;
 public class ToolsWebserviceImpl implements ToolsWebservice {
     private static final Logger LOG = LoggerFactory.getLogger(ToolsWebserviceImpl.class);
 
-    private void check(Header header) {
-        if (header.appVersion != AppConst.APP_VERSION) {
-            LOG.warn("<< getInitialData: version required " + AppConst.APP_VERSION + " but requested "
-                    + header.appVersion);
-            throw new RuntimeException("Wrong app version");
-        }
+    private void check(Header header) throws Exception {
+        VersionChecker.check(header);
         if (!PermissionChecker.checkUser(header.user, header.pass)) {
-            LOG.warn("<< getInitialData: wrong user/pass");
+            LOG.warn("<< check: wrong user/pass");
             throw new RuntimeException("Unknown user");
         }
     }
 
     @Override
-    public InitialData getInitialData(Header header) {
+    public InitialData getInitialData(Header header) throws Exception {
         LOG.info(">> getInitialData(" + header.user + ")");
-        header.configVersion = Config.getConfig().getVersion(); // set version
-                                                                // for initial
-                                                                // client call
+        long startTime = System.currentTimeMillis();
         check(header);
 
         InitialData result = new InitialData();
@@ -81,45 +69,52 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
         result.newArticleState = PermissionChecker.getUserNewArticleState(header.user);
         result.newArticleUsers = PermissionChecker.getUserNewArticleUsers(header.user);
 
-        LOG.info("<< getInitialData");
+        LOG.info("<< getInitialData (" + (System.currentTimeMillis() - startTime) + "ms)");
         return result;
     }
 
     @Override
-    public void getStatistics(Header header) {
+    public void getStatistics(Header header) throws Exception {
     }
 
     @Override
-    public String validate(Header header, int articleId, String[] words, byte[] xml) throws Exception {
+    public String validate(Header header, String articleType, int articleId, String articleHeader, byte[] xml) throws Exception {
         LOG.info(">> validate(" + header.user + ")");
+        long startTime = System.currentTimeMillis();
         check(header);
 
         String err;
         try {
             RecArticle a = new RecArticle();
             a.setArticleId(articleId);
-            a.setWords(words);
+            a.setArticleType(articleType);
+            a.setHeader(articleHeader);
             a.setXml(xml);
             err = ArticleWebserviceImpl.validateArticle(a);
         } catch (Exception ex) {
             throw new RuntimeException("Памылка ў артыкуле #" + articleId);
         }
 
-        LOG.info("<< validate");
+        LOG.info("<< validate (" + (System.currentTimeMillis() - startTime) + "ms)");
         return err;
     }
 
     @Override
-    public void validateAll(Header header) throws Exception {
+    public void validateAll(Header header, String articleType) throws Exception {
         LOG.info(">> validateAll(" + header.user + ")");
+        long startTime = System.currentTimeMillis();
         check(header);
-        PermissionChecker.userRequiresPermission(header.user, Permission.FULL_VALIDATION);
+        PermissionChecker.userRequiresPermission(header.user, articleType, Permission.FULL_VALIDATION);
 
         List<Integer> articleIds = Db.execAndReturn((api) -> api.getArticleMapper().selectAllIds());
 
         for (int id : articleIds) {
             Db.exec((api) -> {
                 RecArticle a = api.getArticleMapper().selectArticleForUpdate(id);
+                if (!articleType.equals(a.getArticleType())) {
+                    LOG.warn("<< validateAll: wrong type/id requested");
+                    throw new RuntimeException("Запыт няправільнага ID для вызначанага тыпу");
+                }
                 String err;
                 try {
                     err = ArticleWebserviceImpl.validateArticle(a);
@@ -137,48 +132,50 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
             });
         }
 
-        LOG.info("<< validateAll");
+        LOG.info("<< validateAll (" + (System.currentTimeMillis() - startTime) + "ms)");
     }
 
     @Override
-    public void reassignUsers(Header header, int[] articleIds, String[] users) throws Exception {
+    public void reassignUsers(Header header, String articleType, int[] articleIds, String[] users) throws Exception {
         LOG.info(">> reassignUsers(" + header.user + ")");
+        long startTime = System.currentTimeMillis();
         check(header);
-        PermissionChecker.userRequiresPermission(header.user, Permission.REASSIGN);
+        PermissionChecker.userRequiresPermission(header.user, articleType, Permission.REASSIGN);
 
         Db.exec((api) -> {
+            for (int articleId : articleIds) {
+                RecArticle a = api.getArticleMapper().selectArticle(articleId);
+                if (!articleType.equals(a.getArticleType())) {
+                    LOG.warn("<< validateAll: wrong type/id requested");
+                    throw new RuntimeException("Запыт няправільнага ID для вызначанага тыпу");
+                }
+            }
             api.getArticleMapper().reassignArticles(articleIds, users);
         });
 
-        LOG.info("<< reassignUsers");
+        LOG.info("<< reassignUsers (" + (System.currentTimeMillis() - startTime) + "ms)");
     }
 
     @Override
-    public void addWords(Header header, String[] users, String[] words, String initialState) throws Exception {
+    public void addHeaders(Header header, String articleType, String[] users, String[] articleHeaders, String initialState) throws Exception {
         LOG.info(">> addWords(" + header.user + ")");
+        long startTime = System.currentTimeMillis();
         check(header);
-        PermissionChecker.userRequiresPermission(header.user, Permission.ADD_WORDS);
+        PermissionChecker.userRequiresPermission(header.user, articleType, Permission.ADD_WORDS);
 
         Date lastUpdated = new Date();
         List<RecArticle> list = new ArrayList<>();
-        List<String> checkWords = new ArrayList<>();
-        for (String w : words) {
-            w = w.trim();
-            if (w.isEmpty()) {
+        List<String> checkHeaders = new ArrayList<>();
+        for (String h : articleHeaders) {
+            h = h.trim();
+            if (h.isEmpty()) {
                 continue;
             }
-            String[] wa = w.split(",");
-            for (int i = 0; i < wa.length; i++) {
-                wa[i] = wa[i].trim();
-                if (wa[i].isEmpty()) {
-                    LOG.warn("<< addWords: wrong words: " + w);
-                    throw new Exception("Wrong words: " + w);
-                }
-                checkWords.add(wa[i]);
-            }
+            checkHeaders.add(h);
             RecArticle r = new RecArticle();
+            r.setArticleType(articleType);
             r.setAssignedUsers(users);
-            r.setWords(wa);
+            r.setHeader(h);
             r.setState(initialState);
             r.setMarkers(new String[0]);
             r.setWatchers(new String[0]);
@@ -188,22 +185,23 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
         }
 
         Db.exec((api) -> {
-            List<RecArticle> existArticles = api.getArticleMapper().getArticlesWithWords(checkWords);
+            List<RecArticle> existArticles = api.getArticleMapper().getArticlesWithHeaders(checkHeaders);
             if (!existArticles.isEmpty()) {
-                LOG.warn("<< addWords: already exist " + Arrays.toString(existArticles.get(0).getWords()));
-                throw new RuntimeException("Словы ўжо ёсьць: " + Arrays.toString(existArticles.get(0).getWords()));
+                LOG.warn("<< addHeaders: already exist: " + existArticles.get(0).getHeader());
+                throw new RuntimeException("Словы ўжо ёсьць: " + existArticles.get(0).getHeader());
             }
             api.getArticleMapper().insertArticles(list);
         });
 
-        LOG.info("<< addWords");
+        LOG.info("<< addWords (" + (System.currentTimeMillis() - startTime) + "ms)");
     }
 
     @Override
-    public String preparePreview(Header header, String[] words, byte[] xml) throws Exception {
+    public String preparePreview(Header header, String articleType, String articleHeader, byte[] xml) throws Exception {
         LOG.info(">> preparePreview(" + header.user + ")");
+        long startTime = System.currentTimeMillis();
         check(header);
-        PermissionChecker.userRequiresPermission(header.user, Permission.VIEW_OUTPUT);
+        PermissionChecker.userRequiresPermission(header.user, articleType, Permission.VIEW_OUTPUT);
 
         try {
             Validator validator = Config.articleSchema.newValidator();
@@ -212,11 +210,11 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
             HtmlOut out = new HtmlOut();
             SimpleScriptContext context = new SimpleScriptContext();
             context.setAttribute("out", out, ScriptContext.ENGINE_SCOPE);
-            context.setAttribute("words", words, ScriptContext.ENGINE_SCOPE);
+            context.setAttribute("header", articleHeader, ScriptContext.ENGINE_SCOPE);
             context.setAttribute("article", new JsDomWrapper(xml), ScriptContext.ENGINE_SCOPE);
             JsProcessing.exec(new File(Config.getConfigDir(), "output.js").getAbsolutePath(), context);
 
-            LOG.info("<< preparePreview");
+            LOG.info("<< preparePreview (" + (System.currentTimeMillis() - startTime) + "ms)");
             return out.toString();
         } catch (Exception ex) {
             LOG.error("Error in preparePreview", ex);
@@ -225,10 +223,11 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
     }
 
     @Override
-    public String[] preparePreviews(Header header, int[] articleIds) throws Exception {
+    public String[] preparePreviews(Header header, String articleType, int[] articleIds) throws Exception {
         LOG.info(">> preparePreviews(" + header.user + ")");
+        long startTime = System.currentTimeMillis();
         check(header);
-        PermissionChecker.userRequiresPermission(header.user, Permission.VIEW_OUTPUT);
+        PermissionChecker.userRequiresPermission(header.user, articleType, Permission.VIEW_OUTPUT);
 
         try {
             Map<Integer, RecArticle> articlesMap = new HashMap<>();
@@ -244,19 +243,23 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
                     // no such article
                     continue;
                 }
+                if (!articleType.equals(a.getArticleType())) {
+                    LOG.warn("<< preparePreviews: wrong type/id requested");
+                    throw new Exception("Запыт няправільнага ID для вызначанага тыпу");
+                }
                 Validator validator = Config.articleSchema.newValidator();
                 validator.validate(new StreamSource(new ByteArrayInputStream(a.getXml())));
 
                 HtmlOut out = new HtmlOut();
                 SimpleScriptContext context = new SimpleScriptContext();
                 context.setAttribute("out", out, ScriptContext.ENGINE_SCOPE);
-                context.setAttribute("words", a.getWords(), ScriptContext.ENGINE_SCOPE);
+                context.setAttribute("header", a.getHeader(), ScriptContext.ENGINE_SCOPE);
                 context.setAttribute("article", new JsDomWrapper(a.getXml()), ScriptContext.ENGINE_SCOPE);
                 JsProcessing.exec(new File(Config.getConfigDir(), "output.js").getAbsolutePath(), context);
                 result[i] = out.toString();
             }
 
-            LOG.info("<< preparePreviews");
+            LOG.info("<< preparePreviews (" + (System.currentTimeMillis() - startTime) + "ms)");
             return result;
         } catch (Exception ex) {
             LOG.error("Error in preparePreviews", ex);
@@ -267,6 +270,7 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
     @Override
     public List<Related> listIssues(Header header) throws Exception {
         LOG.info(">> listIssues(" + header.user + ")");
+        long startTime = System.currentTimeMillis();
         check(header);
 
         List<Related> related = new ArrayList<>();
@@ -277,13 +281,14 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
         }
         Related.sortByTimeDesc(related);
 
-        LOG.info("<< listIssues");
+        LOG.info("<< listIssues (" + (System.currentTimeMillis() - startTime) + "ms)");
         return related;
     }
 
     @Override
     public List<Related> listNews(Header header) throws Exception {
         LOG.info(">> listNews(" + header.user + ")");
+        long startTime = System.currentTimeMillis();
         check(header);
 
         List<Related> related = new ArrayList<>();
@@ -311,51 +316,12 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
         }
         Related.sortByTimeDesc(related);
 
-        LOG.info("<< listNews");
+        LOG.info("<< listNews (" + (System.currentTimeMillis() - startTime) + "ms)");
         return related;
     }
 
     @Override
-    public Dictionaries getDictionaries(Header header) throws Exception {
-        LOG.info(">> getDictionaries(" + header.user + ")");
-        check(header);
-
-        Dictionaries result = new Dictionaries();
-        Db.exec((api) -> {
-            for (RecDictionary d : api.getDictionaryMapper().getDictionaries()) {
-                result.add(d.getDict(), d.getVal());
-            }
-        });
-        Collator c = Collator.getInstance(new Locale("be"));
-        for (Dictionaries.Dictionary d : result.dicts.values()) {
-            Collections.sort(d.values, c);
-        }
-
-        LOG.info("<< getDictionaries");
-        return result;
-    }
-
-    @Override
-    public void addDictionaries(Header header, Dictionaries newValues) throws Exception {
-        LOG.info(">> addDictionaries(" + header.user + ")");
-        check(header);
-
-        List<RecDictionary> inserts = new ArrayList<>();
-        for (String d : newValues.dicts.keySet()) {
-            for (String v : newValues.dicts.get(d).values) {
-                RecDictionary r = new RecDictionary();
-                r.setDict(d);
-                r.setVal(v);
-                inserts.add(r);
-            }
-        }
-
-        if (!inserts.isEmpty()) {
-            Db.exec((api) -> {
-                api.getDictionaryMapper().addDictionaries(inserts);
-            });
-        }
-
-        LOG.info("<< addDictionaries");
+    public List<String> listArticleHeaders(Header header, String articleType) throws Exception {
+        return null;
     }
 }

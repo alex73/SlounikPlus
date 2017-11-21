@@ -18,7 +18,7 @@ public interface DoArticle {
 
     RecArticle selectArticleForUpdate(@Param("id") int id);
 
-    List<RecArticle> selectLinkedTo(@Param("words") String[] words);
+    List<RecArticle> selectLinkedTo(@Param("header") String header);
 
     void insertArticle(@Param("record") RecArticle rec);
 
@@ -40,5 +40,5 @@ public interface DoArticle {
 
     List<Integer> selectAllIds();
 
-    List<RecArticle> getArticlesWithWords(@Param("words") List<String> words);
+    List<RecArticle> getArticlesWithHeaders(@Param("headers") List<String> headers);
 }

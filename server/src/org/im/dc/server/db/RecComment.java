@@ -8,8 +8,6 @@ public class RecComment {
     private int commentId;
     // артыкул
     private int articleId;
-    // словы з артыкула
-    private String[] words;
     // калі быў створаны каментар
     private Date created;
     // хто стварыў каментар
@@ -31,14 +29,6 @@ public class RecComment {
 
     public void setArticleId(int articleId) {
         this.articleId = articleId;
-    }
-
-    public String[] getWords() {
-        return words;
-    }
-
-    public void setWords(String[] words) {
-        this.words = words;
     }
 
     public Date getCreated() {
@@ -69,7 +59,6 @@ public class RecComment {
         Related r = new Related();
         r.type = Related.RelatedType.COMMENT;
         r.articleId = articleId;
-        r.words = words;
         r.id = commentId;
         r.articleId = articleId;
         r.when = created;

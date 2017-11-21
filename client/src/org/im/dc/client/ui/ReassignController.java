@@ -67,7 +67,8 @@ public class ReassignController extends BaseController<ReassignDialog> {
             new LongProcess() {
                 @Override
                 protected void exec() throws Exception {
-                    WS.getToolsWebservice().reassignUsers(WS.header, articleIds, users.toArray(new String[users.size()]));
+                    throw new RuntimeException("Need to implement");
+                    //WS.getToolsWebservice().reassignUsers(WS.header, articleIds, users.toArray(new String[users.size()]));
                 }
 
                 @Override

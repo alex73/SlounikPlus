@@ -36,7 +36,7 @@ public class UpdateArticles {
         for (File f : ls) {
             Matcher m = RE_FILE.matcher(f.getName());
             if (f.isFile() && m.matches()) {
-                String[] words = m.group(1).split(",");
+                String header = m.group(1);
                 int id = Integer.parseInt(m.group(2));
                 byte[] xml = Files.readAllBytes(f.toPath());
 
@@ -51,7 +51,7 @@ public class UpdateArticles {
 
                 RecArticle a = new RecArticle();
                 a.setArticleId(id);
-                a.setWords(words);
+                a.setHeader(header);
                 a.setXml(xml);
                 articles.add(a);
                 Db.exec((api) -> {

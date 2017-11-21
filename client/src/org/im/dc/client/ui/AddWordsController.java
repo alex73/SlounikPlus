@@ -46,9 +46,9 @@ public class AddWordsController extends BaseController<AddWordsDialog> {
             new LongProcess() {
                 @Override
                 protected void exec() throws Exception {
-                    String[] words = w.split("\n");
-                    WS.getToolsWebservice().addWords(WS.header, users.toArray(new String[users.size()]), words,
-                            initialState);
+                    String[] headers = w.split("\n");
+                    WS.getToolsWebservice().addHeaders(WS.header, null, users.toArray(new String[users.size()]),
+                            headers, initialState);
                 }
 
                 @Override

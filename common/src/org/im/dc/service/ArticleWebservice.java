@@ -16,24 +16,27 @@ import org.im.dc.service.dto.Header;
 
 @WebService
 public interface ArticleWebservice {
-    ArticleFullInfo getArticleFullInfo(Header header, int articleId) throws Exception;
+    ArticleFullInfo getArticleFullInfo(Header header, String articleType, int articleId) throws Exception;
 
-    ArticleFullInfo saveArticle(Header header, ArticleFull article) throws Exception;
+    ArticleFullInfo saveArticle(Header header, String articleType, ArticleFull article) throws Exception;
 
-    ArticleFullInfo changeState(Header header, int articleId, String newState, Date lastUpdated) throws Exception;
-
-    ArticleFullInfo changeWords(Header header, int articleId, String newWords, Date lastUpdated) throws Exception;
-
-    ArticleFullInfo addComment(Header header, int articleId, String comment) throws Exception;
-
-    ArticleFullInfo addIssue(Header header, int articleId, String issueText, byte[] proposedXml, Date lastUpdated)
+    ArticleFullInfo changeState(Header header, String articleType, int articleId, String newState, Date lastUpdated)
             throws Exception;
 
-    ArticleFullInfo fixIssue(Header header, int articleId, int issueId, boolean accepted) throws Exception;
+    ArticleFullInfo changeHeader(Header header, String articleType, int articleId, String newHeader, Date lastUpdated)
+            throws Exception;
 
-    void setWatch(Header header, int articleId, boolean watch) throws Exception;
+    ArticleFullInfo addComment(Header header, String articleType, int articleId, String comment) throws Exception;
 
-    List<ArticleShort> listArticles(Header header, ArticlesFilter filter) throws Exception;
+    ArticleFullInfo addIssue(Header header, String articleType, int articleId, String issueText, byte[] proposedXml,
+            Date lastUpdated) throws Exception;
+
+    ArticleFullInfo fixIssue(Header header, String articleType, int articleId, int issueId, boolean accepted)
+            throws Exception;
+
+    void setWatch(Header header, String articleType, int articleId, boolean watch) throws Exception;
+
+    List<ArticleShort> listArticles(Header header, String articleType, ArticlesFilter filter) throws Exception;
 
     ArticleCommentFull getComment(Header header, int commentId) throws Exception;
 

@@ -1,16 +1,12 @@
 package org.im.dc.service.impl;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-
-import org.im.dc.server.Db;
-import org.im.dc.server.db.RecArticle;
 
 public class ValidationHelper {
     private final int currentArticleId;
     private final List<String> links = new ArrayList<>();
-    public String[] newWords;
+    public String newHeader;
 
     public ValidationHelper(int currentArticleId) {
         this.currentArticleId = currentArticleId;
@@ -20,15 +16,15 @@ public class ValidationHelper {
         links.add(link);
     }
 
-    public void replaceWords(String[] newWords) {
-        this.newWords = newWords;
+    public void replaceHeader(String newHeader) {
+        this.newHeader = newHeader;
     }
 
     public String[] getLinks() {
         return links.toArray(new String[0]);
     }
 
-    public boolean checkUniqueWords(String[] words) throws Exception {
+    /*public boolean checkUniqueWords(String[] words) throws Exception {
         List<String> str = new ArrayList<>(words.length);
         for (String w : words) {
             str.add(w);
@@ -51,5 +47,5 @@ public class ValidationHelper {
             List<RecArticle> existArticles = api.getArticleMapper().getArticlesWithWords(Arrays.asList(word));
             return !existArticles.isEmpty();
         });
-    }
+    }*/
 }

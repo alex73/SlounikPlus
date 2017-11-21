@@ -23,7 +23,7 @@ public class ArticleFullInfo {
 
     public static class LinkFrom {
         public int articleId;
-        public String[] words;
+        public String[] headers;
     }
 
     public static class LinkExternal {

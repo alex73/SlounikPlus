@@ -1,14 +1,10 @@
 package org.im.dc.client.ui.xmlstructure;
 
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.im.dc.client.ui.ArticleEditController;
-import org.im.dc.service.dto.Dictionaries;
 
 @SuppressWarnings("serial")
 public class XmlEditComboDictionaryEditable extends XmlEditBase<JFilterComboBox> {
@@ -19,7 +15,7 @@ public class XmlEditComboDictionaryEditable extends XmlEditBase<JFilterComboBox>
 
     @Override
     protected JFilterComboBox createField() {
-        Dictionaries.Dictionary dict = editController.dictionaries.dicts.get(ann.editDetails);
+        /*Dictionaries.Dictionary dict = editController.dictionaries.dicts.get(ann.editDetails);
         if (dict == null) {
             dict = new Dictionaries.Dictionary();
         }
@@ -32,7 +28,8 @@ public class XmlEditComboDictionaryEditable extends XmlEditBase<JFilterComboBox>
                 rootPanel.fireChanged();
             }
         });
-        return fc;
+        return fc;*/
+        return null;
     }
 
     @Override
@@ -46,18 +43,7 @@ public class XmlEditComboDictionaryEditable extends XmlEditBase<JFilterComboBox>
         String text = (String) field.getSelectedItem();
         if (text != null) {
             wr.writeCharacters(text);
-            updateDictionaries(text);
         }
         wr.writeEndElement();
-    }
-
-    void updateDictionaries(String text) {
-        text = text.trim().replaceAll("\\s{2,}", " ");
-        if (text.isEmpty()) {
-            return;
-        }
-        if (!editController.dictionaries.exist(ann.editDetails, text)) {
-            editController.newDictionaries.add(ann.editDetails, text);
-        }
     }
 }

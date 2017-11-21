@@ -19,8 +19,8 @@ public class Related {
 
     // спасылаецца на артыкул
     public int articleId;
-    // загалоўныя словы артыкула (не заўсёды вызначаныя)
-    public String[] words;
+    // загаловак артыкула (не заўсёды вызначаны)
+    public String header;
 
     // калі быў зменены
     public Date when;

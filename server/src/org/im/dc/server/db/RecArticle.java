@@ -7,8 +7,9 @@ import java.util.Date;
  */
 public class RecArticle {
     private int articleId;
-    // загалоўныя словы
-    private String[] words;
+    private String articleType;
+    // загаловак
+    private String header;
     // XML артыкула
     private byte[] xml;
     // імёны прыпісаных карыстальнікаў
@@ -38,12 +39,20 @@ public class RecArticle {
         this.articleId = articleId;
     }
 
-    public String[] getWords() {
-        return words;
+    public String getArticleType() {
+        return articleType;
     }
 
-    public void setWords(String[] words) {
-        this.words = words;
+    public void setArticleType(String articleType) {
+        this.articleType = articleType;
+    }
+
+    public String getHeader() {
+        return header;
+    }
+
+    public void setHeader(String header) {
+        this.header = header;
     }
 
     public byte[] getXml() {

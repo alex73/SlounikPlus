@@ -4,34 +4,31 @@ import java.util.List;
 
 import javax.jws.WebService;
 
-import org.im.dc.service.dto.Dictionaries;
 import org.im.dc.service.dto.Header;
 import org.im.dc.service.dto.InitialData;
 import org.im.dc.service.dto.Related;
 
 @WebService
 public interface ToolsWebservice {
-    InitialData getInitialData(Header header);
+    InitialData getInitialData(Header header) throws Exception;
 
     void getStatistics(Header header) throws Exception;
 
-    String validate(Header header, int articleId, String[] words, byte[] xml) throws Exception;
+    String validate(Header header, String articleType, int articleId, String aticleHeader, byte[] xml) throws Exception;
 
-    void validateAll(Header header) throws Exception;
+    void validateAll(Header header, String articleType) throws Exception;
 
-    void reassignUsers(Header header, int[] articleIds, String[] users) throws Exception;
+    void reassignUsers(Header header, String articleType, int[] articleIds, String[] users) throws Exception;
 
-    void addWords(Header header, String[] users, String[] words, String initialState) throws Exception;
+    void addHeaders(Header header, String articleType, String[] users, String[] articleHeaders, String initialState) throws Exception;
 
-    String preparePreview(Header header, String[] words, byte[] xml) throws Exception;
+    String preparePreview(Header header, String articleType, String articleHeader, byte[] xml) throws Exception;
 
-    String[] preparePreviews(Header header, int[] articleIds) throws Exception;
+    String[] preparePreviews(Header header, String articleType, int[] articleIds) throws Exception;
 
     List<Related> listIssues(Header header) throws Exception;
 
     List<Related> listNews(Header header) throws Exception;
 
-    Dictionaries getDictionaries(Header header) throws Exception;
-
-    void addDictionaries(Header header, Dictionaries newValues) throws Exception;
+    List<String> listArticleHeaders(Header header, String articleType) throws Exception;
 }

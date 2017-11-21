@@ -18,18 +18,18 @@ DROP TABLE IF EXISTS Comments;
 DROP TABLE IF EXISTS ArticlesHistory;
 DROP TABLE IF EXISTS Articles;
 DROP TABLE IF EXISTS ArticleNotes;
-DROP TABLE IF EXISTS Dictionaries;
 
 CREATE TABLE Articles (
 	articleId SERIAL PRIMARY KEY,
-	words VARCHAR(50)[] NOT NULL,
+	articleType VARCHAR(30) NOT NULL,
+	header VARCHAR(250) NOT NULL,
 	xml BYTEA,
 	assignedUsers VARCHAR(50)[] NOT NULL,
 	state VARCHAR(50) NOT NULL,
 	deleted BOOLEAN NOT NULL DEFAULT FALSE,
 	markers VARCHAR(50)[] NOT NULL,
 	watchers VARCHAR(50)[] NOT NULL,
-	linkedTo VARCHAR(50)[] NOT NULL,
+	linkedTo VARCHAR(250)[] NOT NULL,
 	textForSearch TEXT,
 	lettersCount INTEGER NOT NULL,
 	lastUpdated TIMESTAMP WITHOUT TIME ZONE NOT NULL,
@@ -43,8 +43,8 @@ CREATE TABLE ArticlesHistory (
 	changer VARCHAR(50) NOT NULL,
 	oldState VARCHAR(50) NULL,
 	newState VARCHAR(50) NULL,
-	oldWords VARCHAR(50)[] NULL,
-	newWords VARCHAR(50)[] NULL,
+	oldHeader VARCHAR(250) NULL,
+	newHeader VARCHAR(250) NULL,
 	oldAssignedUsers VARCHAR(50)[] NULL,
 	newAssignedUsers VARCHAR(50)[] NULL,
 	oldXml BYTEA,
@@ -77,9 +77,4 @@ CREATE TABLE ArticleNotes (
     creator VARCHAR(50) NOT NULL,
     note TEXT NOT NULL,
     PRIMARY KEY (articleId, creator)
-);
-
-CREATE TABLE Dictionaries (
-    dict VARCHAR(50) NOT NULL,
-    val VARCHAR(250) NOT NULL
 );

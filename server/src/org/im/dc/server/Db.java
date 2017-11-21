@@ -14,7 +14,6 @@ import org.im.dc.server.db.DoArticle;
 import org.im.dc.server.db.DoArticleHistory;
 import org.im.dc.server.db.DoArticleNote;
 import org.im.dc.server.db.DoComment;
-import org.im.dc.server.db.DoDictionary;
 import org.im.dc.server.db.DoIssue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -106,10 +105,6 @@ public class Db {
 
         public DoIssue getIssueMapper() {
             return s.getMapper(DoIssue.class);
-        }
-
-        public DoDictionary getDictionaryMapper() {
-            return s.getMapper(DoDictionary.class);
         }
     }
 }

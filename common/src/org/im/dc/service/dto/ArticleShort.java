@@ -11,7 +11,8 @@ public class ArticleShort {
     static final String[] EMPTY_LIST = new String[0];
 
     public int id;
-    public String[] words = EMPTY_LIST;
+    public String type;
+    public String header;
     public String state;
     public String[] assignedUsers = EMPTY_LIST;
     public String validationError;
@@ -20,17 +21,7 @@ public class ArticleShort {
         Collections.sort(list, new Comparator<ArticleShort>() {
             @Override
             public int compare(ArticleShort a1, ArticleShort a2) {
-                for (int index = 0;; index++) {
-                    if (a1.words.length <= index) {
-                        return -1;
-                    } else if (a2.words.length <= index) {
-                        return 1;
-                    }
-                    int r = BE.compare(a1.words[index].replace("+", ""), a2.words[index].replace("+", ""));
-                    if (r != 0) {
-                        return r;
-                    }
-                }
+                return BE.compare(a1.header.replace("+", ""), a2.header.replace("+", ""));
             }
         });
     }

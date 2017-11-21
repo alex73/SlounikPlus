@@ -34,7 +34,6 @@ import org.im.dc.client.ui.xmlstructure.XmlGroup;
 import org.im.dc.gen.config.Permission;
 import org.im.dc.service.dto.ArticleFull;
 import org.im.dc.service.dto.ArticleFullInfo;
-import org.im.dc.service.dto.Dictionaries;
 import org.im.dc.service.dto.Related;
 import org.im.dc.service.dto.Related.RelatedType;
 
@@ -53,8 +52,6 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
 
     protected volatile ArticleFullInfo article;
     protected volatile boolean wasChanged;
-
-    public Dictionaries dictionaries, newDictionaries;
 
     public ArticlePanelEdit panelEdit = new ArticlePanelEdit();
     public ArticlePanelHistory panelHistory = new ArticlePanelHistory();
@@ -90,16 +87,14 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
     /**
      * Edit exist article.
      */
-    public ArticleEditController(int articleId) {
+    public ArticleEditController(String articleType, int articleId) {
         this(false);
 
         // request article from server
         new LongProcess() {
             @Override
             protected void exec() throws Exception {
-                dictionaries = WS.getToolsWebservice().getDictionaries(WS.header);
-                newDictionaries = new Dictionaries();
-                article = WS.getArticleService().getArticleFullInfo(WS.header, articleId);
+                article = WS.getArticleService().getArticleFullInfo(WS.header, articleType, articleId);
             }
 
             @Override
@@ -244,9 +239,9 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
         displayWatch();
         displayIssue();
 
-        if (article.article.words != null) {
-            window.setTitle(window.getTitle().replaceAll("\\[.*\\]", Arrays.toString(article.article.words)));
-            window.txtWords.setText(Arrays.toString(article.article.words));
+        if (article.article.header != null) {
+            window.setTitle(window.getTitle().replaceAll("\\[.*\\]", article.article.header));
+            window.txtWords.setText(article.article.header);
         }
         window.txtState.setText(article.article.state);
         window.txtUsers.setText(Arrays.toString(article.article.assignedUsers));
@@ -293,7 +288,7 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
             window.panelLinkedFrom.setVisible(true);
             window.panelLinkedFrom.removeAll();
             window.panelLinkedFrom.add(new JLabel("На гэты артыкул спасылаюцца:"));
-            for (ArticleFullInfo.LinkFrom lf : article.linksFrom) {
+            /*for (ArticleFullInfo.LinkFrom lf : article.linksFrom) {
                 JLabel lbl = new JLabel(Arrays.toString(lf.words));
                 lbl.addMouseListener(new MouseAdapter() {
                     @Override
@@ -303,7 +298,7 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
                 });
                 asLink(lbl);
                 window.panelLinkedFrom.add(lbl);
-            }
+            }*/
         }
         if (article.linksExternal.isEmpty()) {
             window.panelLinkedExternal.setVisible(false);
@@ -389,8 +384,8 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
             protected void exec() throws Exception {
                 article.article.xml = extractXml();
 
-                String err = WS.getToolsWebservice().validate(WS.header, article.article.id, article.article.words,
-                        article.article.xml);
+                String err = WS.getToolsWebservice().validate(WS.header, article.article.type, article.article.id,
+                        article.article.header, article.article.xml);
                 if (err != null) {
                     if (JOptionPane.showConfirmDialog(window,
                             "Памылка валідацыі: " + err + "\nЗахоўваць нягледзячы на гэта ?", "Памылка",
@@ -399,11 +394,9 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
                     }
                 }
 
-                article = WS.getArticleService().saveArticle(WS.header, article.article);
+                article = WS.getArticleService().saveArticle(WS.header, article.article.type, article.article);
                 saved = true;
                 MainController.instance.fireArticleUpdated(article.article);
-
-                WS.getToolsWebservice().addDictionaries(WS.header, newDictionaries);
             }
 
             @Override
@@ -419,7 +412,8 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
         new LongProcess() {
             @Override
             protected void exec() throws Exception {
-                article = WS.getArticleService().addComment(WS.header, article.article.id, comment);
+                article = WS.getArticleService().addComment(WS.header, article.article.type, article.article.id,
+                        comment);
             }
 
             @Override
@@ -434,7 +428,8 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
         new LongProcess() {
             @Override
             protected void exec() throws Exception {
-                WS.getArticleService().setWatch(WS.header, article.article.id, !article.youWatched);
+                WS.getArticleService().setWatch(WS.header, article.article.type, article.article.id,
+                        !article.youWatched);
                 article.youWatched = !article.youWatched;
             }
 

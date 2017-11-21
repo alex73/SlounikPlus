@@ -12,7 +12,7 @@ public class RemotePerformanceTest {
     @Test
     void ordered() throws Exception {
         for (int i = 0; i < 100; i++) {
-            ArticleFullInfo a = WS.getArticleService().getArticleFullInfo(WS.header, 1);
+            ArticleFullInfo a = WS.getArticleService().getArticleFullInfo(WS.header, null, 1);
             // System.out.println(a.words);
         }
     }
@@ -23,7 +23,7 @@ public class RemotePerformanceTest {
         for (int i = 0; i < 100; i++) {
             EXEC.execute(() -> {
                 try {
-                    ArticleFullInfo a = WS.getArticleService().getArticleFullInfo(WS.header, 1);
+                    ArticleFullInfo a = WS.getArticleService().getArticleFullInfo(WS.header, null, 1);
                 } catch (Exception ex) {
                     throw new RuntimeException(ex);
                 }

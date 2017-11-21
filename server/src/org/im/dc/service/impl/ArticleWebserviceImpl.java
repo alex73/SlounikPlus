@@ -15,7 +15,6 @@ import javax.script.SimpleScriptContext;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Validator;
 
-import org.apache.commons.lang3.StringUtils;
 import org.im.dc.gen.config.Change;
 import org.im.dc.gen.config.Link;
 import org.im.dc.gen.config.Permission;
@@ -23,6 +22,7 @@ import org.im.dc.gen.config.State;
 import org.im.dc.server.Config;
 import org.im.dc.server.Db;
 import org.im.dc.server.PermissionChecker;
+import org.im.dc.server.VersionChecker;
 import org.im.dc.server.db.RecArticle;
 import org.im.dc.server.db.RecArticleHistory;
 import org.im.dc.server.db.RecArticleNote;
@@ -30,7 +30,6 @@ import org.im.dc.server.db.RecComment;
 import org.im.dc.server.db.RecIssue;
 import org.im.dc.server.js.JsDomWrapper;
 import org.im.dc.server.js.JsProcessing;
-import org.im.dc.service.AppConst;
 import org.im.dc.service.ArticleWebservice;
 import org.im.dc.service.dto.ArticleCommentFull;
 import org.im.dc.service.dto.ArticleFull;
@@ -49,25 +48,17 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
     private static final Logger LOG = LoggerFactory.getLogger(ArticleWebserviceImpl.class);
 
     private void check(Header header) throws Exception {
-        if (header.appVersion != AppConst.APP_VERSION) {
-            LOG.warn("<< getInitialData: version required " + AppConst.APP_VERSION + " but requested "
-                    + header.appVersion);
-            throw new RuntimeException("Wrong app version");
-        }
-        if (!StringUtils.equals(Config.getConfig().getVersion(), header.configVersion)) {
-            LOG.warn("<< getInitialData: config version required " + Config.getConfig().getVersion() + " but requested "
-                    + header.configVersion);
-            throw new RuntimeException("Wrong config version");
-        }
+        VersionChecker.check(header);
         if (!PermissionChecker.checkUser(header.user, header.pass)) {
-            LOG.warn("<< getInitialData: wrong user/pass");
+            LOG.warn("<< check: wrong user/pass");
             throw new RuntimeException("Unknown user");
         }
     }
 
     @Override
-    public ArticleFullInfo getArticleFullInfo(Header header, int articleId) throws Exception {
+    public ArticleFullInfo getArticleFullInfo(Header header, String articleType, int articleId) throws Exception {
         LOG.info(">> getArticleFullInfo(" + header.user + "): " + articleId);
+        long startTime = System.currentTimeMillis();
         check(header);
 
         RecArticle rec = Db.execAndReturn((api) -> api.getArticleMapper().selectArticle(articleId));
@@ -79,7 +70,11 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
         rec.setValidationError(err);
 
         ArticleFullInfo a = getAdditionalArticleInfo(header, rec);
-        LOG.info("<< getArticleFullInfo: " + articleId);
+        if (!articleType.equals(a.article.type)) {
+            LOG.warn("<< getArticleFullInfo: wrong type/id requested");
+            throw new Exception("Запыт няправільнага ID для вызначанага тыпу");
+        }
+        LOG.info("<< getArticleFullInfo: " + articleId + " (" + (System.currentTimeMillis() - startTime) + "ms)");
         return a;
     }
 
@@ -95,7 +90,7 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
 
             SimpleScriptContext context = new SimpleScriptContext();
             context.setAttribute("helper", helper, ScriptContext.ENGINE_SCOPE);
-            context.setAttribute("words", rec.getWords(), ScriptContext.ENGINE_SCOPE);
+            context.setAttribute("header", rec.getHeader(), ScriptContext.ENGINE_SCOPE);
             context.setAttribute("article", new JsDomWrapper(rec.getXml()), ScriptContext.ENGINE_SCOPE);
             JsProcessing.exec(new File(Config.getConfigDir(), "validation.js").getAbsolutePath(), context);
         } catch (ScriptException ex) {
@@ -103,8 +98,8 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
         } catch (Exception ex) {
             return "Памылка валідацыі артыкула: " + ex.getMessage();
         }
-        if (helper.newWords != null) {
-            rec.setWords(helper.newWords);
+        if (helper.newHeader != null) {
+            rec.setHeader(helper.newHeader);
         }
         rec.setLinkedTo(helper.getLinks());
         rec.setTextForSearch(new WordSplitter().parse(rec.getXml()));
@@ -116,7 +111,7 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
         ArticleFullInfo a = new ArticleFullInfo();
         a.article = new ArticleFull();
         a.article.id = rec.getArticleId();
-        a.article.words = rec.getWords();
+        a.article.header = rec.getHeader();
         a.article.xml = rec.getXml();
         a.article.state = rec.getState();
         a.article.markers = rec.getMarkers();
@@ -166,30 +161,20 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
         }
         Related.sortByTimeDesc(a.related);
 
-        for (RecArticle linked : Db.execAndReturn((api) -> api.getArticleMapper().selectLinkedTo(a.article.words))) {
+        /*for (RecArticle linked : Db.execAndReturn((api) -> api.getArticleMapper().selectLinkedTo(a.article.header))) {
             ArticleFullInfo.LinkFrom lf = new ArticleFullInfo.LinkFrom();
             lf.articleId = linked.getArticleId();
-            lf.words = linked.getWords();
+            lf.header = linked.getHeader();
             a.linksFrom.add(lf);
-        }
-
-        if (a.article.words.length > 0) {
-            for (Link link : Config.getConfig().getExternalLinks().getLink()) {
-                ArticleFullInfo.LinkExternal ef = new ArticleFullInfo.LinkExternal();
-                ef.name = link.getName();
-                ef.url = link.getValue();
-                ef.url = ef.url.replace("{}", URLEncoder.encode(a.article.words[0], "UTF-8"));
-                ef.url = ef.url.replace("{-}", URLEncoder.encode(a.article.words[0].replace("+", ""), "UTF-8"));
-                a.linksExternal.add(ef);
-            }
-        }
+        }*/
 
         return a;
     }
 
     @Override
-    public ArticleFullInfo saveArticle(Header header, ArticleFull article) throws Exception {
+    public ArticleFullInfo saveArticle(Header header, String articleType, ArticleFull article) throws Exception {
         LOG.info(">> saveArticle(" + header.user + "): " + article.id);
+        long startTime = System.currentTimeMillis();
         check(header);
 
         RecArticle art = Db.execAndReturn((api) -> {
@@ -207,9 +192,14 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
                     LOG.info("<< saveArticle: lastUpdated was changed");
                     throw new RuntimeException("Possible somebody other updated");
                 }
+                if (!articleType.equals(rec.getArticleType())) {
+                    LOG.warn("<< getArticleFullInfo: wrong type/id requested");
+                    throw new Exception("Запыт няправільнага ID для вызначанага тыпу");
+                }
             } else {
                 // new article
                 rec = new RecArticle();
+                rec.setArticleType(articleType);
                 rec.setState(PermissionChecker.getUserNewArticleState(header.user));
                 rec.setAssignedUsers(PermissionChecker.getUserNewArticleUsers(header.user));
                 rec.setMarkers(new String[0]);
@@ -257,37 +247,34 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
         });
 
         ArticleFullInfo a = getAdditionalArticleInfo(header, art);
-        LOG.info("<< saveArticle");
+        LOG.info("<< saveArticle (" + (System.currentTimeMillis() - startTime) + "ms)");
         return a;
     }
 
     @Override
-    public ArticleFullInfo changeWords(Header header, int articleId, String newWords, Date lastUpdated)
+    public ArticleFullInfo changeHeader(Header header, String articleType, int articleId, String newHeader, Date lastUpdated)
             throws Exception {
-        LOG.info(">> changeWords(" + header.user + ")");
+        LOG.info(">> changeHeader(" + header.user + ")");
+        long startTime = System.currentTimeMillis();
         check(header);
 
+        final String newHeaderConst = newHeader.trim();
+        if (newHeaderConst.isEmpty()) {
+            throw new RuntimeException("Пусты загаловак");
+        }
+
         List<String> ws = new ArrayList<>();
-        for (String w : newWords.split(",")) {
-            w = w.trim();
-            if (!w.isEmpty()) {
-                ws.add(w);
-            }
-        }
+        ws.add(newHeaderConst);
 
-        if (ws.isEmpty()) {
-            throw new RuntimeException("Пустыя словы");
-        }
-
-        PermissionChecker.userRequiresPermission(header.user, Permission.ADD_WORDS);
+        PermissionChecker.userRequiresPermission(header.user, articleType, Permission.ADD_WORDS);
 
         RecArticle art = Db.execAndReturn((api) -> {
-            List<RecArticle> existArticles = api.getArticleMapper().getArticlesWithWords(ws);
+            List<RecArticle> existArticles = api.getArticleMapper().getArticlesWithHeaders(ws);
             for (RecArticle e : existArticles) {
                 if (e.getArticleId() != articleId) {
                     // the same article
-                    LOG.warn("<< changeWords: already exist " + Arrays.toString(e.getWords()));
-                    throw new RuntimeException("Словы ўжо ёсьць: " + Arrays.toString(e.getWords()));
+                    LOG.warn("<< changeHeader: already exist " + e.getHeader());
+                    throw new RuntimeException("Загаловак ўжо ёсць: " + e.getHeader());
                 }
             }
 
@@ -296,27 +283,31 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
 
             RecArticle rec = api.getArticleMapper().selectArticleForUpdate(articleId);
             if (rec == null) {
-                LOG.warn("<< changeWords: no record in db");
+                LOG.warn("<< changeHeader: no record in db");
                 throw new RuntimeException("No record in db");
             }
             if (!rec.getLastUpdated().equals(lastUpdated)) {
-                LOG.info("<< changeWords: lastUpdated was changed");
+                LOG.info("<< changeHeader: lastUpdated was changed");
                 throw new RuntimeException("Possible somebody other updated");
+            }
+            if (!articleType.equals(rec.getArticleType())) {
+                LOG.warn("<< changeHeader: wrong type/id requested");
+                throw new Exception("Запыт няправільнага ID для вызначанага тыпу");
             }
 
             history.setArticleId(rec.getArticleId());
-            history.setOldWords(rec.getWords());
+            history.setOldHeader(rec.getHeader());
 
-            rec.setWords(ws.toArray(new String[ws.size()]));
+            rec.setHeader(newHeaderConst);
             rec.setLastUpdated(currentDate);
 
             int u = api.getArticleMapper().updateWords(rec, lastUpdated);
             if (u != 1) {
-                LOG.info("<< changeWords: db was not updated");
+                LOG.info("<< changeHeader: db was not updated");
                 throw new RuntimeException("No updated. Possible somebody other updated");
             }
 
-            history.setNewWords(rec.getWords());
+            history.setNewHeader(rec.getHeader());
             history.setChanged(currentDate);
             history.setChanger(header.user);
             api.getArticleHistoryMapper().insertArticleHistory(history);
@@ -325,14 +316,15 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
         });
 
         ArticleFullInfo a = getAdditionalArticleInfo(header, art);
-        LOG.info("<< changeWords");
+        LOG.info("<< changeHeader (" + (System.currentTimeMillis() - startTime) + "ms)");
         return a;
     }
 
     @Override
-    public ArticleFullInfo addIssue(Header header, int articleId, String issueText, byte[] proposedXml,
+    public ArticleFullInfo addIssue(Header header, String articleType, int articleId, String issueText, byte[] proposedXml,
             Date lastUpdated) throws Exception {
         LOG.info(">> addIssue(" + header.user + ")");
+        long startTime = System.currentTimeMillis();
         check(header);
 
         RecArticle art = Db.execAndReturn((api) -> {
@@ -344,6 +336,10 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
             if (!rec.getLastUpdated().equals(lastUpdated)) {
                 LOG.info("<< addIssue: lastUpdated was changed");
                 throw new RuntimeException("Possible somebody other updated");
+            }
+            if (!articleType.equals(rec.getArticleType())) {
+                LOG.warn("<< addIssue: wrong type/id requested");
+                throw new Exception("Запыт няправільнага ID для вызначанага тыпу");
             }
 
             RecIssue issue = new RecIssue();
@@ -360,14 +356,15 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
         });
 
         ArticleFullInfo a = getAdditionalArticleInfo(header, art);
-        LOG.info("<< addIssue");
+        LOG.info("<< addIssue (" + (System.currentTimeMillis() - startTime) + "ms)");
         return a;
     }
 
     @Override
-    public ArticleFullInfo changeState(Header header, int articleId, String newState, Date lastUpdated)
+    public ArticleFullInfo changeState(Header header, String articleType, int articleId, String newState, Date lastUpdated)
             throws Exception {
         LOG.info(">> changeState(" + header.user + ")");
+        long startTime = System.currentTimeMillis();
         check(header);
 
         RecArticle art = Db.execAndReturn((api) -> {
@@ -382,6 +379,10 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
             if (!rec.getLastUpdated().equals(lastUpdated)) {
                 LOG.info("<< changeState: lastUpdated was changed");
                 throw new RuntimeException("Possible somebody other updated");
+            }
+            if (!articleType.equals(rec.getArticleType())) {
+                LOG.warn("<< changeState: wrong type/id requested");
+                throw new Exception("Запыт няправільнага ID для вызначанага тыпу");
             }
             PermissionChecker.canUserChangeArticleState(header.user, rec.getState(), newState);
 
@@ -405,16 +406,26 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
         });
 
         ArticleFullInfo a = getAdditionalArticleInfo(header, art);
-        LOG.info("<< changeState");
+        LOG.info("<< changeState (" + (System.currentTimeMillis() - startTime) + "ms)");
         return a;
     }
 
     @Override
-    public ArticleFullInfo addComment(Header header, int articleId, String comment) throws Exception {
+    public ArticleFullInfo addComment(Header header, String articleType, int articleId, String comment) throws Exception {
         LOG.info(">> addComment(" + header.user + ")");
+        long startTime = System.currentTimeMillis();
         check(header);
 
         Db.exec((api) -> {
+            RecArticle reca = api.getArticleMapper().selectArticle(articleId);
+            if (reca == null) {
+                LOG.warn("<< addComment: no record in db");
+                throw new RuntimeException("No record in db");
+            }
+            if (!articleType.equals(reca.getArticleType())) {
+                LOG.warn("<< addComment: wrong type/id requested");
+                throw new RuntimeException("Запыт няправільнага ID для вызначанага тыпу");
+            }
             RecComment rec = new RecComment();
             rec.setArticleId(articleId);
             rec.setCreated(new Date());
@@ -423,29 +434,49 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
             api.getCommentMapper().insertComment(rec);
         });
 
-        LOG.info("<< addComment");
-        return getArticleFullInfo(header, articleId);
+        LOG.info("<< addComment (" + (System.currentTimeMillis() - startTime) + "ms)");
+        return getArticleFullInfo(header, articleType, articleId);
     }
 
     @Override
-    public ArticleFullInfo fixIssue(Header header, int articleId, int issueId, boolean accepted) throws Exception {
+    public ArticleFullInfo fixIssue(Header header, String articleType, int articleId, int issueId, boolean accepted) throws Exception {
         LOG.info(">> fixIssue(" + header.user + ")");
+        long startTime = System.currentTimeMillis();
         check(header);
 
         Db.exec((api) -> {
+            RecArticle reca = api.getArticleMapper().selectArticle(articleId);
+            if (reca == null) {
+                LOG.warn("<< fixIssue: no record in db");
+                throw new RuntimeException("No record in db");
+            }
+            if (!articleType.equals(reca.getArticleType())) {
+                LOG.warn("<< fixIssue: wrong type/id requested");
+                throw new RuntimeException("Запыт няправільнага ID для вызначанага тыпу");
+            }
             api.getIssueMapper().fixIssue(issueId, accepted, header.user, new Date());
         });
 
         LOG.info("<< fixIssue");
-        return getArticleFullInfo(header, articleId);
+        return getArticleFullInfo(header, articleType, articleId);
     }
 
     @Override
-    public void setWatch(Header header, int articleId, boolean watch) throws Exception {
+    public void setWatch(Header header, String articleType, int articleId, boolean watch) throws Exception {
         LOG.info(">> setWatch(" + header.user + ")");
+        long startTime = System.currentTimeMillis();
         check(header);
 
         Db.exec((api) -> {
+            RecArticle reca = api.getArticleMapper().selectArticle(articleId);
+            if (reca == null) {
+                LOG.warn("<< setWatch: no record in db");
+                throw new RuntimeException("No record in db");
+            }
+            if (!articleType.equals(reca.getArticleType())) {
+                LOG.warn("<< setWatch: wrong type/id requested");
+                throw new RuntimeException("Запыт няправільнага ID для вызначанага тыпу");
+            }
             if (watch) {
                 api.getArticleMapper().addWatch(articleId, header.user);
             } else {
@@ -453,12 +484,13 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
             }
         });
 
-        LOG.info("<< setWatch");
+        LOG.info("<< setWatch (" + (System.currentTimeMillis() - startTime) + "ms)");
     }
 
     @Override
-    public List<ArticleShort> listArticles(Header header, ArticlesFilter filter) throws Exception {
+    public List<ArticleShort> listArticles(Header header, String articleType, ArticlesFilter filter) throws Exception {
         LOG.info(">> listArticles(" + header.user + ")");
+        long startTime = System.currentTimeMillis();
         check(header);
 
         List<ArticleShort> result = new ArrayList<>();
@@ -467,20 +499,21 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
             ArticleShort o = new ArticleShort();
             o.id = r.getArticleId();
             o.state = r.getState();
-            o.words = r.getWords();
+            o.header = r.getHeader();
             o.assignedUsers = r.getAssignedUsers();
             o.validationError = r.getValidationError();
             result.add(o);
         }
         ArticleShort.sortById(result);
 
-        LOG.info("<< listArticles");
+        LOG.info("<< listArticles (" + (System.currentTimeMillis() - startTime) + "ms)");
         return result;
     }
 
     @Override
     public ArticleCommentFull getComment(Header header, int commentId) throws Exception {
         LOG.info(">> getComment(" + header.user + ")");
+        long startTime = System.currentTimeMillis();
         check(header);
 
         RecComment rc = Db.execAndReturn((api) -> api.getCommentMapper().getComment(commentId));
@@ -493,13 +526,14 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
             result.who = rc.getAuthor();
             result.when = rc.getCreated();
         }
-        LOG.info("<< getComment");
+        LOG.info("<< getComment (" + (System.currentTimeMillis() - startTime) + "ms)");
         return result;
     }
 
     @Override
     public ArticleIssueFull getIssue(Header header, int issueId) throws Exception {
         LOG.info(">> getIssue(" + header.user + ")");
+        long startTime = System.currentTimeMillis();
         check(header);
 
         RecIssue rc = Db.execAndReturn((api) -> api.getIssueMapper().getIssue(issueId));
@@ -516,13 +550,14 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
             result.fixed = rc.getFixed();
             result.fixer = rc.getFixer();
         }
-        LOG.info("<< getIssue");
+        LOG.info("<< getIssue (" + (System.currentTimeMillis() - startTime) + "ms)");
         return result;
     }
 
     @Override
     public ArticleHistoryFull getHistory(Header header, int historyId) throws Exception {
         LOG.info(">> getHistory(" + header.user + ")");
+        long startTime = System.currentTimeMillis();
         check(header);
 
         RecArticleHistory rc = Db.execAndReturn((api) -> api.getArticleHistoryMapper().getHistory(historyId));
@@ -536,7 +571,7 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
             result.who = rc.getChanger();
             result.when = rc.getChanged();
         }
-        LOG.info("<< getHistory");
+        LOG.info("<< getHistory (" + (System.currentTimeMillis() - startTime) + "ms)");
         return result;
     }
 }

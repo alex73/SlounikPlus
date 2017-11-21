@@ -68,7 +68,7 @@ public class PreviewAllController extends BaseController<PreviewAllDialog> {
             protected void exec() throws Exception {
                 out = new StringBuilder("<!DOCTYPE html>\n<html><head><meta charset=\"UTF-8\"></head><body>\n");
 
-                String[] articlesPreview = WS.getToolsWebservice().preparePreviews(WS.header, articleIds);
+                String[] articlesPreview = WS.getToolsWebservice().preparePreviews(WS.header, null, articleIds);
                 for (int i = 0; i < articleIds.length; i++) {
                     if (articlesPreview[i] == null) {
                         continue;
@@ -98,7 +98,7 @@ public class PreviewAllController extends BaseController<PreviewAllDialog> {
         public void hyperlinkUpdate(HyperlinkEvent e) {
             if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
                 int idx = Integer.parseInt(e.getDescription());
-                new ArticleEditController(idx);
+                new ArticleEditController(null, idx);
             }
         }
     };

@@ -1,6 +1,5 @@
 package org.im.dc.client.ui;
 
-import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.table.DefaultTableModel;
@@ -49,7 +48,7 @@ public class MainFrameArticlesModel extends DefaultTableModel {
         ArticleShort a = articles.get(row);
         switch (column) {
         case 0:
-            return Arrays.toString(a.words);
+            return a.header;
         case 1:
             return a.state;
         case 2:

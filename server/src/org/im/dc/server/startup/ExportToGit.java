@@ -4,7 +4,6 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -33,7 +32,7 @@ public class ExportToGit {
     static File repoPath;
     static Git git;
     static List<RecArticleHistory> history;
-    static Map<Integer, String> words = new HashMap<>();
+    static Map<Integer, String> header = new HashMap<>();
 
     public static void main(String[] args) throws Exception {
         Config.load(System.getProperty("CONFIG_DIR"));
@@ -47,7 +46,7 @@ public class ExportToGit {
 
         Db.exec((api) -> {
             for (RecArticle a : api.getArticleMapper().listArticles(new ArticlesFilter())) {
-                words.put(a.getArticleId(), Arrays.toString(a.getWords()));
+                header.put(a.getArticleId(), a.getHeader());
             }
             history = api.getArticleHistoryMapper().retrieveAllHistory();
         });
@@ -60,8 +59,8 @@ public class ExportToGit {
         });
 
         for (RecArticleHistory h : history) {
-            if (h.getOldWords() != null) {
-                words.put(h.getArticleId(), Arrays.toString(h.getOldWords()));
+            if (h.getOldHeader() != null) {
+                header.put(h.getArticleId(), h.getOldHeader());
             }
         }
 
@@ -73,8 +72,8 @@ public class ExportToGit {
         });
 
         for (RecArticleHistory h : history) {
-            if (h.getNewWords() != null) {
-                words.put(h.getArticleId(), Arrays.toString(h.getNewWords()));
+            if (h.getNewHeader() != null) {
+                header.put(h.getArticleId(), h.getNewHeader());
             }
             if (h.getNewXml() != null) {
                 add(h);
@@ -93,7 +92,7 @@ public class ExportToGit {
             // and then commit the changes
             CommitCommand cc = git.commit();
             PersonIdent pi = new PersonIdent(h.getChanger(), "user@localhost", h.getChanged().getTime(), offset);
-            cc.setCommitter(pi).setMessage(words.get(h.getArticleId())).call();
+            cc.setCommitter(pi).setMessage(header.get(h.getArticleId())).call();
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }

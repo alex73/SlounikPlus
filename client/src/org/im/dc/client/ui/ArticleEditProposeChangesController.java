@@ -33,8 +33,8 @@ public class ArticleEditProposeChangesController extends BaseController<ArticleE
             protected void exec() throws Exception {
                 byte[] proposedXml = parent.wasChanged ? parent.extractXml() : null;
 
-                String err = WS.getToolsWebservice().validate(WS.header, parent.article.article.id,
-                        parent.article.article.words, proposedXml);
+                String err = WS.getToolsWebservice().validate(WS.header, parent.article.article.type,
+                        parent.article.article.id, parent.article.article.header, proposedXml);
                 if (err != null) {
                     if (JOptionPane.showConfirmDialog(window,
                             "Памылка валідацыі: " + err + "\nЗахоўваць нягледзячы на гэта ?", "Памылка",
@@ -43,8 +43,8 @@ public class ArticleEditProposeChangesController extends BaseController<ArticleE
                     }
                 }
 
-                parent.article = WS.getArticleService().addIssue(WS.header, parent.article.article.id, comment,
-                        proposedXml, parent.article.article.lastUpdated);
+                parent.article = WS.getArticleService().addIssue(WS.header, parent.article.article.type,
+                        parent.article.article.id, comment, proposedXml, parent.article.article.lastUpdated);
                 saved = true;
             }
 

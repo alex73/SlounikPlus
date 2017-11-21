@@ -27,7 +27,7 @@ public class DbTestArticle {
         List<RecArticle> list = new ArrayList<>();
         RecArticle r1 = new RecArticle();
         r1.setAssignedUsers(new String[] { "u1", "u2" });
-        r1.setWords(new String[] { "word1" });
+        r1.setHeader("word1");
         r1.setState("Неапрацаванае");
         r1.setMarkers(new String[0]);
         r1.setWatchers(new String[0]);
@@ -36,7 +36,7 @@ public class DbTestArticle {
         list.add(r1);
         RecArticle r2 = new RecArticle();
         r2.setAssignedUsers(new String[] { "u1", "u2" });
-        r2.setWords(new String[] { "word2" });
+        r2.setHeader("word2");
         r2.setState("Неапрацаванае");
         r2.setMarkers(new String[0]);
         r2.setWatchers(new String[0]);
@@ -56,7 +56,7 @@ public class DbTestArticle {
         recSource.setState("initial");
         recSource.setTextForSearch("text1");
         recSource.setWatchers(new String[] { "G", "H" });
-        recSource.setWords(new String[] { "A", "B" });
+        recSource.setHeader("A, B");
         recSource.setXml(new byte[] { 2, 3, 4 });
         recSource.setLastUpdated(new Date(3344));
 
@@ -74,7 +74,7 @@ public class DbTestArticle {
         rec.setState("next");
         rec.setTextForSearch("text2");
         rec.setWatchers(new String[] { "W" });
-        rec.setWords(new String[] { "U" });
+        rec.setHeader("U");
         rec.setXml(new byte[] { 5, 6 });
         rec.setLastUpdated(new Date(5566));
 
@@ -84,7 +84,8 @@ public class DbTestArticle {
         int u = Db.execAndReturn((api) -> api.getArticleMapper().updateArticle(rec, new Date(3344)));
         assertEquals(1, u);
         check2(rec);
-        RecArticle rec2 = Db.execAndReturn((api) -> api.getArticleMapper().selectArticleForUpdate(recSource.getArticleId()));
+        RecArticle rec2 = Db
+                .execAndReturn((api) -> api.getArticleMapper().selectArticleForUpdate(recSource.getArticleId()));
         check2(rec2);
     }
 
@@ -98,7 +99,7 @@ public class DbTestArticle {
 
     @Test
     public void testLinkedTo() throws Exception {
-        Db.execAndReturn((api) -> api.getArticleMapper().selectLinkedTo(new String[] { "A", "L" }));
+        Db.execAndReturn((api) -> api.getArticleMapper().selectLinkedTo("A, L"));
     }
 
     void check1(RecArticle rec) {
@@ -110,7 +111,7 @@ public class DbTestArticle {
         assertEquals("initial", rec.getState());
         assertEquals("text1", rec.getTextForSearch());
         assertArrayEquals(new String[] { "G", "H" }, rec.getWatchers());
-        assertArrayEquals(new String[] { "A", "B" }, rec.getWords());
+        assertEquals("A, B", rec.getHeader());
         assertArrayEquals(new byte[] { 2, 3, 4 }, rec.getXml());
         assertEquals(new Date(3344), rec.getLastUpdated());
     }
@@ -124,7 +125,7 @@ public class DbTestArticle {
         assertEquals("next", rec.getState());
         assertEquals("text2", rec.getTextForSearch());
         assertArrayEquals(new String[] { "W" }, rec.getWatchers());
-        assertArrayEquals(new String[] { "U" }, rec.getWords());
+        assertEquals("U", rec.getHeader());
         assertArrayEquals(new byte[] { 5, 6 }, rec.getXml());
         assertEquals(new Date(5566), rec.getLastUpdated());
     }

@@ -63,7 +63,7 @@ public class ImportArticles {
     }
 
     static void read(String fn, byte[] xml) throws Exception {
-        String[] words = fn.replaceAll("\\.xml$", "").split(",");
+        String header = fn.replaceAll("\\.xml$", "");
 
         try {
             Validator validator = Config.articleSchema.newValidator();
@@ -75,7 +75,7 @@ public class ImportArticles {
         }
 
         RecArticle a = new RecArticle();
-        a.setWords(words);
+        a.setHeader(header);
         a.setXml(xml);
         a.setAssignedUsers(new String[0]);
         a.setState("Неапрацаванае");

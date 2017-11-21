@@ -6,7 +6,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.StringWriter;
 import java.nio.file.Files;
-import java.util.Arrays;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -49,8 +48,7 @@ public class ExportArticles {
                     continue;
                 }
                 try {
-                    String fn = Arrays.toString(a.getWords()).replaceAll("^\\[", "").replaceAll("\\]$", "").replace('/',
-                            '_') + '-' + a.getArticleId() + ".xml";
+                    String fn = a.getHeader().replace('/', '_') + '-' + a.getArticleId() + ".xml";
                     System.err.println(fn);
                     byte[] xml = xml2text(a.getXml()).getBytes("UTF-8");
                     if (zip != null) {

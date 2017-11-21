@@ -62,7 +62,7 @@ public class PermissionChecker {
         return null;
     }
 
-    public static void userRequiresPermission(String user, Permission perm) {
+    public static void userRequiresPermission(String user, String articleType, Permission perm) {
         String userRole = getUserRole(user);
         for (Role r : Config.getConfig().getRoles().getRole()) {
             if (r.getId().equals(userRole)) {

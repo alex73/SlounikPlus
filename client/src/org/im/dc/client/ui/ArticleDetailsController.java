@@ -125,10 +125,12 @@ public class ArticleDetailsController extends BaseController<ArticleDetailsDialo
             protected void exec() throws Exception {
                 if (newXml != null) {
                     parent.article.article.xml = newXml;
-                    ArticleFullInfo ai = WS.getArticleService().saveArticle(WS.header, parent.article.article);
+                    ArticleFullInfo ai = WS.getArticleService().saveArticle(WS.header, parent.article.article.type,
+                            parent.article.article);
                     MainController.instance.fireArticleUpdated(ai.article);
                 }
-                parent.article = WS.getArticleService().fixIssue(WS.header, parent.article.article.id, rel.id, true);
+                parent.article = WS.getArticleService().fixIssue(WS.header, parent.article.article.type,
+                        parent.article.article.id, rel.id, true);
             }
 
             @Override
@@ -143,7 +145,8 @@ public class ArticleDetailsController extends BaseController<ArticleDetailsDialo
         new LongProcess() {
             @Override
             protected void exec() throws Exception {
-                parent.article = WS.getArticleService().fixIssue(WS.header, parent.article.article.id, rel.id, false);
+                parent.article = WS.getArticleService().fixIssue(WS.header, parent.article.article.type,
+                        parent.article.article.id, rel.id, false);
             }
 
             @Override

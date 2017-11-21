@@ -4,7 +4,8 @@ import java.util.Date;
 
 public class ArticleFull {
     public int id;
-    public String[] words;
+    public String type;
+    public String header;
     public byte[] xml;
     public String state;
     public String[] markers;

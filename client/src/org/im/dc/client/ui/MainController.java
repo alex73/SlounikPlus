@@ -191,7 +191,7 @@ public class MainController extends BaseController<MainFrame> {
                 int row = panelArticles.tableArticles.rowAtPoint(e.getPoint());
                 int index = panelArticles.tableArticles.convertRowIndexToModel(row);
                 ArticleShort a = ((MainFrameArticlesModel) panelArticles.tableArticles.getModel()).articles.get(index);
-                new ArticleEditController(a.id);
+                new ArticleEditController(null, a.id);
             }
         });
         panelArticles.tableArticles.getSelectionModel().addListSelectionListener((e) -> {
@@ -203,7 +203,7 @@ public class MainController extends BaseController<MainFrame> {
             public void mouseClicked(MouseEvent e) {
                 Related a = ((MainFrameIssuesModel) panelIssues.tableIssues.getModel()).issues
                         .get(panelIssues.tableIssues.getSelectedRow());
-                new ArticleEditController(a.articleId);
+                new ArticleEditController(null, a.articleId);
             }
         });
         panelNews.tableNews.addMouseListener(new MouseAdapter() {
@@ -211,7 +211,7 @@ public class MainController extends BaseController<MainFrame> {
             public void mouseClicked(MouseEvent e) {
                 Related a = ((MainFrameNewsModel) panelNews.tableNews.getModel()).news
                         .get(panelNews.tableNews.getSelectedRow());
-                new ArticleEditController(a.articleId);
+                new ArticleEditController(null, a.articleId);
             }
         });
 
@@ -308,7 +308,7 @@ public class MainController extends BaseController<MainFrame> {
 
             @Override
             protected void exec() throws Exception {
-                model = new MainFrameArticlesModel(WS.getArticleService().listArticles(WS.header, filter));
+                model = new MainFrameArticlesModel(WS.getArticleService().listArticles(WS.header, null, filter));
                 issuesModel = new MainFrameIssuesModel(WS.getToolsWebservice().listIssues(WS.header));
                 newsModel = new MainFrameNewsModel(WS.getToolsWebservice().listNews(WS.header));
             }
@@ -329,7 +329,7 @@ public class MainController extends BaseController<MainFrame> {
         new LongProcess() {
             @Override
             protected void exec() throws Exception {
-                WS.getToolsWebservice().validateAll(WS.header);
+                WS.getToolsWebservice().validateAll(WS.header, null);
             }
 
             @Override
@@ -349,7 +349,7 @@ public class MainController extends BaseController<MainFrame> {
                     a.assignedUsers = article.assignedUsers;
                     a.state = article.state;
                     a.validationError = article.validationError;
-                    a.words = article.words;
+                    a.header = article.header;
                 }
             }
             model.fireTableDataChanged();
