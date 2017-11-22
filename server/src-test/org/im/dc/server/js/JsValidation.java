@@ -28,17 +28,18 @@ public class JsValidation {
 
         Db.init();
 
-        process(new String[] { "камфара+", "ка+мфара", "камфо+ра" }, "v2.xml",
+        process(new String[] { "камфара+", "ка+мфара", "камфо+ра" }, null, "v2.xml",
                 "Колькасць паметаў загалоўных слоў несупадае з колькасцю слоў");
-        process(new String[] { "камфара+" }, "v2.xml", "Род непазначаны");
-        process(new String[] { "f+" }, "v2.xml", "Няправільныя сімвалы ў загалоўным слове: f+");
-        process(new String[] { "камфара+", "ка+мфара", "камфо+ра" }, "v-kamfara.xml", null);
+        process(new String[] { "камфара+" }, null, "v2.xml", "Род непазначаны");
+        process(new String[] { "f+" }, null, "v2.xml", "Няправільныя сімвалы ў загалоўным слове: f+");
+        process(new String[] { "камфара+", "ка+мфара", "камфо+ра" }, null, "v-kamfara.xml", null);
     }
 
-    private void process(String[] words, String articleFile, String expectedError) throws Exception {
+    private void process(String[] words, String articleType, String articleFile, String expectedError)
+            throws Exception {
         byte[] xml = Files.readAllBytes(Paths.get("src-test/org/im/dc/server/js/" + articleFile));
 
-        Validator validator = Config.articleSchema.newValidator();
+        Validator validator = Config.schemas.get(articleType).xsdSchema.newValidator();
         validator.validate(new StreamSource(new ByteArrayInputStream(xml)));
 
         SimpleScriptContext context = new SimpleScriptContext();

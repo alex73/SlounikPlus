@@ -24,6 +24,8 @@ import javax.xml.namespace.QName;
 @XmlRegistry
 public class ObjectFactory {
 
+    private final static QName _Stress_QNAME = new QName("", "stress");
+    private final static QName _HeaderLocale_QNAME = new QName("", "headerLocale");
     private final static QName _Version_QNAME = new QName("", "version");
 
     /**
@@ -34,27 +36,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Role }
+     * Create an instance of {@link Types }
      * 
      */
-    public Role createRole() {
-        return new Role();
+    public Types createTypes() {
+        return new Types();
     }
 
     /**
-     * Create an instance of {@link ExternalLinks }
+     * Create an instance of {@link Permissions }
      * 
      */
-    public ExternalLinks createExternalLinks() {
-        return new ExternalLinks();
-    }
-
-    /**
-     * Create an instance of {@link Link }
-     * 
-     */
-    public Link createLink() {
-        return new Link();
+    public Permissions createPermissions() {
+        return new Permissions();
     }
 
     /**
@@ -111,6 +105,24 @@ public class ObjectFactory {
      */
     public States createStates() {
         return new States();
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link String }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "", name = "stress")
+    public JAXBElement<String> createStress(String value) {
+        return new JAXBElement<String>(_Stress_QNAME, String.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link String }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "", name = "headerLocale")
+    public JAXBElement<String> createHeaderLocale(String value) {
+        return new JAXBElement<String>(_HeaderLocale_QNAME, String.class, null, value);
     }
 
     /**

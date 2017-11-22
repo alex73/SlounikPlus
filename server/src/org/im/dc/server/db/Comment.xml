@@ -13,7 +13,7 @@
 		WHERE articleId = #{articleId}
 	</select>
 	<select id="retrieveUserComments" resultType="RecComment" resultMap="RecCommentMap">
-		SELECT Comments.*, Articles.words
+		SELECT Comments.*, Articles.header
 		FROM Comments, Articles
 		WHERE Comments.articleId = Articles.articleId AND
 			(Articles.assignedUsers @> ARRAY[#{user}]::varchar[][] OR Articles.watchers @> ARRAY[#{user}]::varchar[][])
@@ -25,6 +25,5 @@
 
 	<resultMap id="RecCommentMap" type="RecComment">
 		<id property="commentId" column="commentId" />
-		<result property="words" column="words" typeHandler="StringArrayTypeHandler" />
 	</resultMap>
 </mapper>

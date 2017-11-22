@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
@@ -20,9 +20,8 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element ref="{}state" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="type" type="{http://www.w3.org/2001/XMLSchema}string" maxOccurs="unbounded"/>
  *       &lt;/sequence>
- *       &lt;attribute name="type" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -32,66 +31,41 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "state"
+    "type"
 })
-@XmlRootElement(name = "states")
-public class States {
+@XmlRootElement(name = "types")
+public class Types {
 
-    protected List<State> state;
-    @XmlAttribute(name = "type", required = true)
-    protected String type;
+    @XmlElement(required = true)
+    protected List<String> type;
 
     /**
-     * Gets the value of the state property.
+     * Gets the value of the type property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the state property.
+     * This is why there is not a <CODE>set</CODE> method for the type property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getState().add(newItem);
+     *    getType().add(newItem);
      * </pre>
      * 
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link State }
+     * {@link String }
      * 
      * 
      */
-    public List<State> getState() {
-        if (state == null) {
-            state = new ArrayList<State>();
+    public List<String> getType() {
+        if (type == null) {
+            type = new ArrayList<String>();
         }
-        return this.state;
-    }
-
-    /**
-     * Gets the value of the type property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getType() {
-        return type;
-    }
-
-    /**
-     * Sets the value of the type property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setType(String value) {
-        this.type = value;
+        return this.type;
     }
 
 }

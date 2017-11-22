@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
@@ -19,7 +20,7 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element ref="{}role" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="role" type="{http://www.w3.org/2001/XMLSchema}string" maxOccurs="unbounded"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -35,7 +36,8 @@ import javax.xml.bind.annotation.XmlType;
 @XmlRootElement(name = "roles")
 public class Roles {
 
-    protected List<Role> role;
+    @XmlElement(required = true)
+    protected List<String> role;
 
     /**
      * Gets the value of the role property.
@@ -55,13 +57,13 @@ public class Roles {
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link Role }
+     * {@link String }
      * 
      * 
      */
-    public List<Role> getRole() {
+    public List<String> getRole() {
         if (role == null) {
-            role = new ArrayList<Role>();
+            role = new ArrayList<String>();
         }
         return this.role;
     }

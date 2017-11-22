@@ -1,6 +1,8 @@
 
 package org.im.dc.gen.config;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -19,10 +21,13 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
  *         &lt;element ref="{}version"/>
+ *         &lt;element ref="{}headerLocale"/>
+ *         &lt;element ref="{}stress"/>
  *         &lt;element ref="{}users"/>
+ *         &lt;element ref="{}types"/>
  *         &lt;element ref="{}roles"/>
- *         &lt;element ref="{}states"/>
- *         &lt;element ref="{}external_links"/>
+ *         &lt;element ref="{}permissions" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element ref="{}states" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -34,10 +39,13 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
     "version",
+    "headerLocale",
+    "stress",
     "users",
+    "types",
     "roles",
-    "states",
-    "externalLinks"
+    "permissions",
+    "states"
 })
 @XmlRootElement(name = "config")
 public class Config {
@@ -45,13 +53,17 @@ public class Config {
     @XmlElement(required = true)
     protected String version;
     @XmlElement(required = true)
+    protected String headerLocale;
+    @XmlElement(required = true)
+    protected String stress;
+    @XmlElement(required = true)
     protected Users users;
     @XmlElement(required = true)
-    protected Roles roles;
+    protected Types types;
     @XmlElement(required = true)
-    protected States states;
-    @XmlElement(name = "external_links", required = true)
-    protected ExternalLinks externalLinks;
+    protected Roles roles;
+    protected List<Permissions> permissions;
+    protected List<States> states;
 
     /**
      * Gets the value of the version property.
@@ -75,6 +87,54 @@ public class Config {
      */
     public void setVersion(String value) {
         this.version = value;
+    }
+
+    /**
+     * Gets the value of the headerLocale property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getHeaderLocale() {
+        return headerLocale;
+    }
+
+    /**
+     * Sets the value of the headerLocale property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setHeaderLocale(String value) {
+        this.headerLocale = value;
+    }
+
+    /**
+     * Gets the value of the stress property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getStress() {
+        return stress;
+    }
+
+    /**
+     * Sets the value of the stress property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setStress(String value) {
+        this.stress = value;
     }
 
     /**
@@ -102,6 +162,30 @@ public class Config {
     }
 
     /**
+     * Gets the value of the types property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Types }
+     *     
+     */
+    public Types getTypes() {
+        return types;
+    }
+
+    /**
+     * Sets the value of the types property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Types }
+     *     
+     */
+    public void setTypes(Types value) {
+        this.types = value;
+    }
+
+    /**
      * Gets the value of the roles property.
      * 
      * @return
@@ -126,51 +210,61 @@ public class Config {
     }
 
     /**
+     * Gets the value of the permissions property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the permissions property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getPermissions().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link Permissions }
+     * 
+     * 
+     */
+    public List<Permissions> getPermissions() {
+        if (permissions == null) {
+            permissions = new ArrayList<Permissions>();
+        }
+        return this.permissions;
+    }
+
+    /**
      * Gets the value of the states property.
      * 
-     * @return
-     *     possible object is
-     *     {@link States }
-     *     
-     */
-    public States getStates() {
-        return states;
-    }
-
-    /**
-     * Sets the value of the states property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the states property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link States }
-     *     
-     */
-    public void setStates(States value) {
-        this.states = value;
-    }
-
-    /**
-     * Gets the value of the externalLinks property.
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getStates().add(newItem);
+     * </pre>
      * 
-     * @return
-     *     possible object is
-     *     {@link ExternalLinks }
-     *     
-     */
-    public ExternalLinks getExternalLinks() {
-        return externalLinks;
-    }
-
-    /**
-     * Sets the value of the externalLinks property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link ExternalLinks }
-     *     
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link States }
+     * 
+     * 
      */
-    public void setExternalLinks(ExternalLinks value) {
-        this.externalLinks = value;
+    public List<States> getStates() {
+        if (states == null) {
+            states = new ArrayList<States>();
+        }
+        return this.states;
     }
 
 }

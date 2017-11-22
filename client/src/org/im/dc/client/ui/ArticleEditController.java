@@ -48,6 +48,7 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
     public static XMLInputFactory READER_FACTORY = XMLInputFactory.newInstance();
     public static XMLOutputFactory WRITER_FACTORY = XMLOutputFactory.newInstance();
 
+    private final String articleType;
     private XmlGroup editorUI;
 
     protected volatile ArticleFullInfo article;
@@ -57,8 +58,9 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
     public ArticlePanelHistory panelHistory = new ArticlePanelHistory();
     public ArticlePanelNotes panelNotes = new ArticlePanelNotes();
 
-    private ArticleEditController(boolean isnew) {
+    private ArticleEditController(boolean isnew, String articleType) {
         super(new ArticleEditDialog(MainController.instance.window, false), MainController.instance.window);
+        this.articleType = articleType;
         initDocking();
         setupCloseOnEscape();
         displayOnParent();
@@ -72,8 +74,8 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
     /**
      * New article.
      */
-    public ArticleEditController() {
-        this(true);
+    public ArticleEditController(String articleType) {
+        this(true, articleType);
 
         article = new ArticleFullInfo();
         article.youCanEdit = true;
@@ -88,7 +90,7 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
      * Edit exist article.
      */
     public ArticleEditController(String articleType, int articleId) {
-        this(false);
+        this(false, articleType);
 
         // request article from server
         new LongProcess() {
@@ -184,8 +186,8 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
                 changeWatch();
             }
         });
-        window.lblPreview
-                .setVisible(MainController.initialData.currentUserPermissions.contains(Permission.VIEW_OUTPUT.name()));
+        window.lblPreview.setVisible(MainController.initialData.articleTypes.get(articleType).currentUserPermissions
+                .contains(Permission.VIEW_OUTPUT.name()));
         window.lblPreview.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {

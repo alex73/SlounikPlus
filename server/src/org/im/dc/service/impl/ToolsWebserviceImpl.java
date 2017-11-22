@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import javax.jws.WebService;
@@ -16,7 +17,7 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Validator;
 
 import org.im.dc.gen.config.Permission;
-import org.im.dc.gen.config.State;
+import org.im.dc.gen.config.States;
 import org.im.dc.gen.config.User;
 import org.im.dc.server.Config;
 import org.im.dc.server.Db;
@@ -55,17 +56,28 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
 
         InitialData result = new InitialData();
         result.configVersion = Config.getConfig().getVersion();
-        result.articleSchema = Config.articleSchemaSource;
-        result.states = new ArrayList<>();
-        for (State st : Config.getConfig().getStates().getState()) {
-            result.states.add(st.getId());
+        result.headerLocale = Config.getConfig().getHeaderLocale();
+        result.stress = Config.getConfig().getStress();
+        result.articleTypes = new TreeMap<>();
+        for (String type : Config.getConfig().getTypes().getType()) {
+            InitialData.TypeInfo ti = new InitialData.TypeInfo();
+            result.articleTypes.put(type, ti);
+            ti.articleSchema = Config.schemas.get(type).source;
+        }
+        Map<String, Set<String>> ps = PermissionChecker.getUserPermissions(header.user);
+        for (String type : Config.getConfig().getTypes().getType()) {
+            result.articleTypes.get(type).currentUserPermissions = ps.get(type);
+        }
+        for (States sts : Config.getConfig().getStates()) {
+            InitialData.TypeInfo ti = result.articleTypes.get(sts.getType());
+            ti.states = new ArrayList<>();
+            sts.getState().forEach(st -> ti.states.add(st.getId()));
         }
         result.allUsers = new TreeMap<>();
         for (User u : Config.getConfig().getUsers().getUser()) {
             result.allUsers.put(u.getName(), u.getRole());
         }
         result.currentUserRole = PermissionChecker.getUserRole(header.user);
-        result.currentUserPermissions = PermissionChecker.getUserPermissions(header.user);
         result.newArticleState = PermissionChecker.getUserNewArticleState(header.user);
         result.newArticleUsers = PermissionChecker.getUserNewArticleUsers(header.user);
 
@@ -78,7 +90,8 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
     }
 
     @Override
-    public String validate(Header header, String articleType, int articleId, String articleHeader, byte[] xml) throws Exception {
+    public String validate(Header header, String articleType, int articleId, String articleHeader, byte[] xml)
+            throws Exception {
         LOG.info(">> validate(" + header.user + ")");
         long startTime = System.currentTimeMillis();
         check(header);
@@ -157,7 +170,8 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
     }
 
     @Override
-    public void addHeaders(Header header, String articleType, String[] users, String[] articleHeaders, String initialState) throws Exception {
+    public void addHeaders(Header header, String articleType, String[] users, String[] articleHeaders,
+            String initialState) throws Exception {
         LOG.info(">> addWords(" + header.user + ")");
         long startTime = System.currentTimeMillis();
         check(header);
@@ -204,7 +218,7 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
         PermissionChecker.userRequiresPermission(header.user, articleType, Permission.VIEW_OUTPUT);
 
         try {
-            Validator validator = Config.articleSchema.newValidator();
+            Validator validator = Config.schemas.get(articleType).xsdSchema.newValidator();
             validator.validate(new StreamSource(new ByteArrayInputStream(xml)));
 
             HtmlOut out = new HtmlOut();
@@ -247,7 +261,7 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
                     LOG.warn("<< preparePreviews: wrong type/id requested");
                     throw new Exception("Запыт няправільнага ID для вызначанага тыпу");
                 }
-                Validator validator = Config.articleSchema.newValidator();
+                Validator validator = Config.schemas.get(articleType).xsdSchema.newValidator();
                 validator.validate(new StreamSource(new ByteArrayInputStream(a.getXml())));
 
                 HtmlOut out = new HtmlOut();

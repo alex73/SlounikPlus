@@ -21,12 +21,14 @@ import javax.xml.ws.handler.MessageContext;
 
 import org.im.dc.service.AppConst;
 import org.im.dc.service.ArticleWebservice;
+import org.im.dc.service.InitWebservice;
 import org.im.dc.service.ToolsWebservice;
 import org.im.dc.service.dto.Header;
 
 public class WS {
     private static ArticleWebservice articleService;
     private static ToolsWebservice toolsWebservice;
+    private static InitWebservice initWebservice;
     public static Header header;
 
     public static void init(String urlPrefix, String user, String pass) throws Exception {
@@ -43,6 +45,11 @@ public class WS {
                 new QName("http://impl.service.dc.im.org/", "ToolsWebserviceImplService"));
         toolsWebservice = service.getPort(ToolsWebservice.class);
         setupCompression((BindingProvider) toolsWebservice);
+
+        service = Service.create(new URL(urlPrefix + "/init?wsdl"),
+                new QName("http://impl.service.dc.im.org/", "InitWebserviceImplService"));
+        initWebservice = service.getPort(InitWebservice.class);
+        setupCompression((BindingProvider) initWebservice);
 
         header = new Header();
         header.user = user;
@@ -94,5 +101,9 @@ public class WS {
 
     public static ToolsWebservice getToolsWebservice() {
         return toolsWebservice;
+    }
+
+    public static InitWebservice getInitWebservice() {
+        return initWebservice;
     }
 }

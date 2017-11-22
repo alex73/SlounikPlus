@@ -8,6 +8,8 @@ public class RecArticleHistory {
     private int historyId;
     // артыкул
     private int articleId;
+    // загаловак артыкула
+    private String header;
     // калі быў зменены
     private Date changed;
     // хто змяніў
@@ -43,6 +45,14 @@ public class RecArticleHistory {
 
     public void setArticleId(int articleId) {
         this.articleId = articleId;
+    }
+
+    public String getHeader() {
+        return header;
+    }
+
+    public void setHeader(String header) {
+        this.header = header;
     }
 
     public Date getChanged() {
@@ -129,6 +139,7 @@ public class RecArticleHistory {
         Related r = new Related();
         r.type = Related.RelatedType.HISTORY;
         r.articleId = articleId;
+        r.header = header;
         r.id = historyId;
         r.articleId = articleId;
         r.when = changed;

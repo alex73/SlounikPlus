@@ -7,11 +7,18 @@ import java.util.TreeSet;
 
 public class InitialData {
     public String configVersion;
-    public byte[] articleSchema;
-    public List<String> states;
-    public Map<String, String> allUsers; // map: key=user, value=role
+    public String headerLocale;
+    public String stress;
+    public Map<String, TypeInfo> articleTypes;
+    // map: key=user, value=role
+    public Map<String, String> allUsers;
     public String currentUserRole;
-    public Set<String> currentUserPermissions = new TreeSet<>();
     public String newArticleState;
     public String[] newArticleUsers;
+
+    public static class TypeInfo {
+        public byte[] articleSchema;
+        public List<String> states;
+        public Set<String> currentUserPermissions = new TreeSet<>();
+    }
 }

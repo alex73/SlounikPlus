@@ -60,7 +60,7 @@ public class MainFrameIssuesModel extends DefaultTableModel {
         case 2:
             return a.getDescription();
         case 3:
-            return Arrays.toString(a.words);
+            return a.header;
         default:
             return null;
         }

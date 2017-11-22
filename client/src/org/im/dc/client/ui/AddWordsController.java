@@ -14,14 +14,15 @@ import javax.swing.JOptionPane;
 import org.im.dc.client.WS;
 
 public class AddWordsController extends BaseController<AddWordsDialog> {
-    public AddWordsController() {
+    public AddWordsController(String articleType) {
         super(new AddWordsDialog(MainController.instance.window, true), MainController.instance.window);
         setupCloseOnEscape();
 
         window.btnOk.addActionListener(ok);
         window.btnCancel.addActionListener((e) -> window.dispose());
 
-        window.cbInitialState.setModel(new DefaultComboBoxModel<>(new Vector<>(MainController.initialData.states)));
+        if (true) throw new RuntimeException();
+        //window.cbInitialState.setModel(new DefaultComboBoxModel<>(new Vector<>(MainController.initialData.states.get(null))));
         for (Map.Entry<String, String> en : MainController.initialData.allUsers.entrySet()) {
             JCheckBox cb = new JCheckBox(en.getKey() + " (" + en.getValue() + ')');
             cb.setName(en.getKey());

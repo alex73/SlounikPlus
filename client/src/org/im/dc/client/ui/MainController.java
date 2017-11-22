@@ -158,10 +158,10 @@ public class MainController extends BaseController<MainFrame> {
             @Override
             protected void exec() throws Exception {
                 WS.init(addr, username, pass);
+                WS.header.configVersion = WS.getInitWebservice().getConfigVersion(WS.header.appVersion);
                 initialData = WS.getToolsWebservice().getInitialData(WS.header);
-                WS.header.configVersion = initialData.configVersion;
 
-                SchemaLoader.init(initialData.articleSchema);
+                SchemaLoader.init(initialData.articleTypes);
 
                 issuesModel = new MainFrameIssuesModel(WS.getToolsWebservice().listIssues(WS.header));
                 newsModel = new MainFrameNewsModel(WS.getToolsWebservice().listNews(WS.header));
@@ -182,7 +182,7 @@ public class MainController extends BaseController<MainFrame> {
         panelArticles.cbUser.setModel(new DefaultComboBoxModel<>(users));
         Vector<String> states = new Vector<>();
         states.add(null);
-        states.addAll(initialData.states);
+        states.addAll(initialData.articleTypes.get(null).states);
         panelArticles.cbState.setModel(new DefaultComboBoxModel<>(states));
         panelArticles.btnSearch.addActionListener((e) -> search());
         panelArticles.tableArticles.addMouseListener(new MouseAdapter() {
@@ -215,19 +215,19 @@ public class MainController extends BaseController<MainFrame> {
             }
         });
 
-        if (initialData.currentUserPermissions.contains(Permission.ADD_WORDS.name())) {
-            window.miAddWords.addActionListener((e) -> new AddWordsController());
+        if (initialData.articleTypes.get(null).currentUserPermissions.contains(Permission.ADD_WORDS.name())) {
+            window.miAddWords.addActionListener((e) -> new AddWordsController(null));
         } else {
             window.miAddWords.setVisible(false);
         }
 
-        if (initialData.currentUserPermissions.contains(Permission.ADD_ARTICLE.name())) {
-            panelArticles.btnAddArticle.addActionListener((e) -> new ArticleEditController());
+        if (initialData.articleTypes.get(null).currentUserPermissions.contains(Permission.ADD_ARTICLE.name())) {
+            panelArticles.btnAddArticle.addActionListener((e) -> new ArticleEditController(null));
         } else {
             panelArticles.btnAddArticle.setVisible(false);
         }
 
-        if (initialData.currentUserPermissions.contains(Permission.FULL_STATISTICS.name())) {
+        if (initialData.articleTypes.get(null).currentUserPermissions.contains(Permission.FULL_STATISTICS.name())) {
             window.miStat.addActionListener((e) -> todo("Тут будзе статыстыка ў залежнасці ад дазволу"));
         } else {
             window.miStat.setVisible(false);
@@ -235,19 +235,19 @@ public class MainController extends BaseController<MainFrame> {
 
         window.miSettings.addActionListener((e) -> new SettingsController());
 
-        if (initialData.currentUserPermissions.contains(Permission.REASSIGN.name())) {
+        if (initialData.articleTypes.get(null).currentUserPermissions.contains(Permission.REASSIGN.name())) {
             panelArticles.btnReassign.addActionListener(reassign);
         } else {
             panelArticles.btnReassign.setVisible(false);
         }
 
-        if (initialData.currentUserPermissions.contains(Permission.FULL_VALIDATION.name())) {
+        if (initialData.articleTypes.get(null).currentUserPermissions.contains(Permission.FULL_VALIDATION.name())) {
             window.miValidateFull.addActionListener((e) -> validateFull());
         } else {
             window.miValidateFull.setVisible(false);
         }
 
-        if (initialData.currentUserPermissions.contains(Permission.VIEW_OUTPUT.name())) {
+        if (initialData.articleTypes.get(null).currentUserPermissions.contains(Permission.VIEW_OUTPUT.name())) {
             panelArticles.btnPreview.addActionListener(preview);
         } else {
             panelArticles.btnPreview.setVisible(false);

@@ -2,7 +2,6 @@ package org.im.dc.service.impl;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -16,7 +15,6 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Validator;
 
 import org.im.dc.gen.config.Change;
-import org.im.dc.gen.config.Link;
 import org.im.dc.gen.config.Permission;
 import org.im.dc.gen.config.State;
 import org.im.dc.server.Config;
@@ -83,7 +81,7 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
             return null;
         }
         String result = null;
-        Validator validator = Config.articleSchema.newValidator();
+        Validator validator = Config.schemas.get(rec.getArticleType()).xsdSchema.newValidator();
         ValidationHelper helper = new ValidationHelper(rec.getArticleId());
         try {
             validator.validate(new StreamSource(new ByteArrayInputStream(rec.getXml())));
@@ -111,6 +109,7 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
         ArticleFullInfo a = new ArticleFullInfo();
         a.article = new ArticleFull();
         a.article.id = rec.getArticleId();
+        a.article.type = rec.getArticleType();
         a.article.header = rec.getHeader();
         a.article.xml = rec.getXml();
         a.article.state = rec.getState();
@@ -120,7 +119,7 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
         a.article.validationError = rec.getValidationError();
 
         String userRole = PermissionChecker.getUserRole(header.user);
-        State state = Config.getStateByName(rec.getState());
+        State state = Config.getStateByName(rec.getArticleType(), rec.getState());
         if (state == null) {
             a.youCanEdit = false;
         } else {
@@ -205,7 +204,7 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
                 rec.setMarkers(new String[0]);
                 rec.setWatchers(new String[0]);
             }
-            PermissionChecker.canUserEditArticle(header.user, rec.getState());
+            PermissionChecker.canUserEditArticle(header.user,rec.getArticleType(), rec.getState());
 
             history.setOldXml(rec.getXml());
 
@@ -384,7 +383,7 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
                 LOG.warn("<< changeState: wrong type/id requested");
                 throw new Exception("Запыт няправільнага ID для вызначанага тыпу");
             }
-            PermissionChecker.canUserChangeArticleState(header.user, rec.getState(), newState);
+            PermissionChecker.canUserChangeArticleState(header.user, rec.getArticleType(), rec.getState(), newState);
 
             history.setArticleId(rec.getArticleId());
             history.setOldState(rec.getState());

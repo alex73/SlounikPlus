@@ -4,14 +4,19 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="version" />
+				<xs:element ref="headerLocale" />
+				<xs:element ref="stress" />
 				<xs:element ref="users" />
+				<xs:element ref="types" />
 				<xs:element ref="roles" />
-				<xs:element ref="states" />
-				<xs:element ref="external_links" />
+				<xs:element ref="permissions" maxOccurs="unbounded" minOccurs="0" />
+				<xs:element ref="states" maxOccurs="unbounded" minOccurs="0" />
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="version" type="xs:string" />
+	<xs:element name="headerLocale" type="xs:string" />
+	<xs:element name="stress" type="xs:string" />
 	<xs:element name="users">
 		<xs:complexType>
 			<xs:sequence>
@@ -24,23 +29,31 @@
 			<xs:attribute name="name" type="xs:string" use="required" />
 			<xs:attribute name="pass" type="xs:string" use="required" />
 			<xs:attribute name="role" type="xs:string" use="required" />
-			<xs:attribute name="new-article-state" type="xs:string" use="optional" />
-			<xs:attribute name="new-article-users" type="xs:string" use="optional" />
+			<xs:attribute name="new-article-state" type="xs:string" use="optional" /> <!-- TODO: remove ? -->
+			<xs:attribute name="new-article-users" type="xs:string" use="optional" /> <!-- TODO: remove ? -->
 		</xs:complexType>
 	</xs:element>
+	<xs:element name="types">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="type" type="xs:string" maxOccurs="unbounded" minOccurs="1" />
+			</xs:sequence>
+		</xs:complexType>
+    </xs:element>
 	<xs:element name="roles">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="role" maxOccurs="unbounded" minOccurs="0" />
+				<xs:element name="role" type="xs:string" maxOccurs="unbounded" minOccurs="1" />
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="role">
+	<xs:element name="permissions">
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element name="permission" type="permission" maxOccurs="unbounded" minOccurs="0" />
 			</xs:sequence>
-			<xs:attribute name="id" type="xs:string" use="required" />
+			<xs:attribute name="role" type="xs:string" use="required" />
+			<xs:attribute name="type" type="xs:string" use="required" />
 		</xs:complexType>
 	</xs:element>
 	<xs:simpleType name="permission">
@@ -87,6 +100,7 @@
 			<xs:sequence>
 				<xs:element ref="state" maxOccurs="unbounded" minOccurs="0" />
 			</xs:sequence>
+			<xs:attribute name="type" type="xs:string" use="required" />
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="state">
@@ -104,18 +118,4 @@
 			<xs:attribute name="roles" type="xs:string" use="required" />
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="external_links">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element name="link" type="link" maxOccurs="unbounded" minOccurs="0" />
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
-	<xs:complexType name="link">
-		<xs:simpleContent>
-			<xs:extension base="xs:string">
-				<xs:attribute name="name" type="xs:string" use="required" />
-			</xs:extension>
-		</xs:simpleContent>
-	</xs:complexType>
 </xs:schema>

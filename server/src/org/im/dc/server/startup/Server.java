@@ -13,6 +13,7 @@ import javax.xml.ws.Endpoint;
 import org.im.dc.server.Config;
 import org.im.dc.server.Db;
 import org.im.dc.service.impl.ArticleWebserviceImpl;
+import org.im.dc.service.impl.InitWebserviceImpl;
 import org.im.dc.service.impl.ToolsWebserviceImpl;
 
 /**
@@ -31,6 +32,7 @@ public class Server {
 
         initPlugins();
 
+        Endpoint.publish(args[0] + "/init", new InitWebserviceImpl());
         Endpoint.publish(args[0] + "/articles", new ArticleWebserviceImpl());
         Endpoint.publish(args[0] + "/tools", new ToolsWebserviceImpl());
         System.out.println("Server started");

@@ -40,7 +40,7 @@ public class ImportArticles {
             try (ZipInputStream zip = new ZipInputStream(new BufferedInputStream(new FileInputStream(in)))) {
                 for (ZipEntry en = zip.getNextEntry(); en != null; en = zip.getNextEntry()) {
                     if (en.getName().toLowerCase().endsWith(".xml")) {
-                        read(en.getName().toLowerCase(), IOUtils.toByteArray(zip));
+                        read(en.getName().toLowerCase(), null, IOUtils.toByteArray(zip));
                     }
                     zip.closeEntry();
                 }
@@ -52,7 +52,7 @@ public class ImportArticles {
             }
             for (File f : ls) {
                 if (f.isFile() && f.getName().toLowerCase().endsWith(".xml")) {
-                    read(f.getName().toLowerCase(), FileUtils.readFileToByteArray(f));
+                    read(f.getName().toLowerCase(), null, FileUtils.readFileToByteArray(f));
                 }
             }
         }
@@ -62,11 +62,11 @@ public class ImportArticles {
         });
     }
 
-    static void read(String fn, byte[] xml) throws Exception {
+    static void read(String articleType, String fn, byte[] xml) throws Exception {
         String header = fn.replaceAll("\\.xml$", "");
 
         try {
-            Validator validator = Config.articleSchema.newValidator();
+            Validator validator = Config.schemas.get(articleType).xsdSchema.newValidator();
             validator.validate(new StreamSource(new ByteArrayInputStream(xml)));
         } catch (Exception ex) {
             System.err.println("Error xml validation from " + fn);

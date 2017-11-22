@@ -8,6 +8,8 @@ public class RecIssue {
     private int issueId;
     // артыкул
     private int articleId;
+    // загаловак артыкула
+    private String header;
     // калі быў створаны каментар
     private Date created;
     // хто стварыў каментар
@@ -39,6 +41,14 @@ public class RecIssue {
 
     public void setArticleId(int articleId) {
         this.articleId = articleId;
+    }
+
+    public String getHeader() {
+        return header;
+    }
+
+    public void setHeader(String header) {
+        this.header = header;
     }
 
     public Date getCreated() {
@@ -109,6 +119,7 @@ public class RecIssue {
         Related r = new Related();
         r.type = Related.RelatedType.ISSUE;
         r.articleId = articleId;
+        r.header = header;
         r.id = issueId;
         r.articleId = articleId;
         if (fixed != null) {
