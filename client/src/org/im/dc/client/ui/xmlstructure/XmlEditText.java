@@ -6,17 +6,11 @@ import javax.swing.BorderFactory;
 import javax.swing.JTextArea;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLStreamWriter;
-
-import org.im.dc.client.ui.ArticleEditController;
 
 @SuppressWarnings("serial")
-public class XmlEditText extends XmlEditBase<JTextArea> {
-    public XmlEditText(XmlGroup rootPanel, XmlGroup parentPanel, AnnotationInfo ann,
-            ArticleEditController editController) {
-        super(rootPanel, parentPanel, ann, editController);
+public class XmlEditText extends XmlEditBase<JTextArea> implements IXmlSimpleElement {
+    public XmlEditText(ArticleUIContext context, XmlGroup parentPanel, AnnotationInfo ann, boolean parentWritable) {
+        super(context, parentPanel, ann,  parentWritable);
     }
 
     @Override
@@ -28,31 +22,31 @@ public class XmlEditText extends XmlEditBase<JTextArea> {
         f.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void removeUpdate(DocumentEvent e) {
-                rootPanel.fireChanged();
+                context.fireChanged();
             }
 
             @Override
             public void insertUpdate(DocumentEvent e) {
-                rootPanel.fireChanged();
+                context.fireChanged();
             }
 
             @Override
             public void changedUpdate(DocumentEvent e) {
-                rootPanel.fireChanged();
+                context.fireChanged();
             }
         });
+        f.setEditable(writable);
         return f;
     }
 
     @Override
-    public void insertData(XMLStreamReader rd) throws Exception {
-        field.setText(rd.getElementText());
+    public void setData(String data) throws Exception {
+        field.setText(data != null ? data : "");
     }
 
     @Override
-    public void extractData(String tag, XMLStreamWriter wr) throws XMLStreamException {
-        wr.writeStartElement(tag);
-        wr.writeCharacters(field.getText());
-        wr.writeEndElement();
+    public String getData() throws Exception {
+        String text = field.getText().trim();
+        return text.isEmpty() ? null : text;
     }
 }

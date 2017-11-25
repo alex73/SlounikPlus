@@ -7,22 +7,25 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.BufferedInputStream;
+import java.io.InputStream;
+import java.lang.reflect.Method;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
-import java.util.Vector;
+import java.util.jar.Manifest;
 
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
-import javax.swing.table.TableModel;
+import javax.swing.SwingWorker;
+import javax.swing.Timer;
 
 import org.im.dc.client.SchemaLoader;
 import org.im.dc.client.WS;
-import org.im.dc.gen.config.Permission;
+import org.im.dc.gen.config.CommonPermission;
 import org.im.dc.service.dto.ArticleFull;
-import org.im.dc.service.dto.ArticleShort;
-import org.im.dc.service.dto.ArticlesFilter;
 import org.im.dc.service.dto.InitialData;
 import org.im.dc.service.dto.Related;
 
@@ -42,31 +45,20 @@ public class MainController extends BaseController<MainFrame> {
     private MainFrameIssuesModel issuesModel;
     private MainFrameNewsModel newsModel;
 
-    private MainFramePanelArticles panelArticles = new MainFramePanelArticles();
+    private List<MainControllerArticleType> panelArticleTypes = new ArrayList<>();
     private MainFramePanelIssues panelIssues = new MainFramePanelIssues();
     private MainFramePanelNews panelNews = new MainFramePanelNews();
 
     public MainController(String addr) {
         super(new MainFrame(), null);
-        initDocking();
         this.addr = addr;
         instance = this;
     }
 
     void initDocking() {
-        Dockable articles = new Dockable() {
-            DockKey key = new DockKey("articlesList", "Артыкулы");
-
-            @Override
-            public DockKey getDockKey() {
-                return key;
-            }
-
-            @Override
-            public Component getComponent() {
-                return panelArticles;
-            }
-        };
+        for (InitialData.TypeInfo ti : initialData.articleTypes) {
+            panelArticleTypes.add(new MainControllerArticleType(ti));
+        }
         Dockable issues = new Dockable() {
             DockKey key = new DockKey("issuesList", "Заўвагі");
 
@@ -93,22 +85,37 @@ public class MainController extends BaseController<MainFrame> {
                 return panelNews;
             }
         };
+
+        SettingsController.articleDockables = new ArrayList<>();
+        panelArticleTypes.forEach(pc -> SettingsController.articleDockables.add(pc.dock));
+
         desk = new DockingDesktop();
         window.getContentPane().add(desk);
-        desk.registerDockable(articles);
+        panelArticleTypes.forEach(pc -> desk.registerDockable(pc.dock));
         desk.registerDockable(news);
         desk.registerDockable(issues);
-        SettingsController.loadDocking(window, desk);
+        SettingsController.initializeDockingLayour(window, desk);
     }
 
-    public void start() throws Exception {
+    @Override
+    boolean closing() {
+        SettingsController.savePlacesForWindow(window, desk);
+        System.exit(0);
+        return true;
+    }
+
+    public void start() {
+        window.setSize(400, 300);
+        window.setLocationRelativeTo(null);
         window.setVisible(true);
 
         showProgress();
         askPassword();
     }
 
-    public void startWithUser(String username, String pass) throws Exception {
+    public void startWithUser(String username, String pass) {
+        window.setSize(400, 300);
+        window.setLocationRelativeTo(null);
         window.setVisible(true);
 
         login(username, pass);
@@ -162,42 +169,24 @@ public class MainController extends BaseController<MainFrame> {
                 initialData = WS.getToolsWebservice().getInitialData(WS.header);
 
                 SchemaLoader.init(initialData.articleTypes);
-
-                issuesModel = new MainFrameIssuesModel(WS.getToolsWebservice().listIssues(WS.header));
-                newsModel = new MainFrameNewsModel(WS.getToolsWebservice().listNews(WS.header));
             }
 
             @Override
             protected void ok() {
                 window.setTitle(window.getTitle() + " : " + username);
+                initDocking();
                 init();
+                initPlugins();
+            }
+
+            @Override
+            protected void error() {
+                System.exit(1);
             }
         };
     }
 
     private void init() {
-        Vector<String> users = new Vector<>();
-        users.add(null);
-        users.addAll(initialData.allUsers.keySet());
-        panelArticles.cbUser.setModel(new DefaultComboBoxModel<>(users));
-        Vector<String> states = new Vector<>();
-        states.add(null);
-        states.addAll(initialData.articleTypes.get(null).states);
-        panelArticles.cbState.setModel(new DefaultComboBoxModel<>(states));
-        panelArticles.btnSearch.addActionListener((e) -> search());
-        panelArticles.tableArticles.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                int row = panelArticles.tableArticles.rowAtPoint(e.getPoint());
-                int index = panelArticles.tableArticles.convertRowIndexToModel(row);
-                ArticleShort a = ((MainFrameArticlesModel) panelArticles.tableArticles.getModel()).articles.get(index);
-                new ArticleEditController(null, a.id);
-            }
-        });
-        panelArticles.tableArticles.getSelectionModel().addListSelectionListener((e) -> {
-            panelArticles.labelSelected.setText("Пазначана: " + panelArticles.tableArticles.getSelectedRows().length);
-        });
-        panelArticles.tableArticles.setAutoCreateRowSorter(true);
         panelIssues.tableIssues.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -215,121 +204,59 @@ public class MainController extends BaseController<MainFrame> {
             }
         });
 
-        if (initialData.articleTypes.get(null).currentUserPermissions.contains(Permission.ADD_WORDS.name())) {
-            window.miAddWords.addActionListener((e) -> new AddWordsController(null));
-        } else {
-            window.miAddWords.setVisible(false);
-        }
-
-        if (initialData.articleTypes.get(null).currentUserPermissions.contains(Permission.ADD_ARTICLE.name())) {
-            panelArticles.btnAddArticle.addActionListener((e) -> new ArticleEditController(null));
-        } else {
-            panelArticles.btnAddArticle.setVisible(false);
-        }
-
-        if (initialData.articleTypes.get(null).currentUserPermissions.contains(Permission.FULL_STATISTICS.name())) {
-            window.miStat.addActionListener((e) -> todo("Тут будзе статыстыка ў залежнасці ад дазволу"));
-        } else {
-            window.miStat.setVisible(false);
-        }
-
         window.miSettings.addActionListener((e) -> new SettingsController());
-
-        if (initialData.articleTypes.get(null).currentUserPermissions.contains(Permission.REASSIGN.name())) {
-            panelArticles.btnReassign.addActionListener(reassign);
-        } else {
-            panelArticles.btnReassign.setVisible(false);
-        }
-
-        if (initialData.articleTypes.get(null).currentUserPermissions.contains(Permission.FULL_VALIDATION.name())) {
-            window.miValidateFull.addActionListener((e) -> validateFull());
-        } else {
-            window.miValidateFull.setVisible(false);
-        }
-
-        if (initialData.articleTypes.get(null).currentUserPermissions.contains(Permission.VIEW_OUTPUT.name())) {
-            panelArticles.btnPreview.addActionListener(preview);
-        } else {
-            panelArticles.btnPreview.setVisible(false);
-        }
 
         window.miResetDesk.addActionListener(e -> {
             SettingsController.resetPlaces(MainFrame.class);
             SettingsController.resetPlaces(ArticleEditDialog.class);
             SettingsController.loadPlacesForWindow(window, desk);
+            SettingsController.initializeDockingLayour(window, desk);
         });
 
-        SettingsController.savePlacesForWindow(window, desk);
-        panelIssues.tableIssues.setModel(issuesModel);
-        panelNews.tableNews.setModel(newsModel);
-        SettingsController.loadPlacesForWindow(window, desk);
+        if (initialData.currentUserPermissions.contains(CommonPermission.FULL_STATISTICS.name())) {
+            window.miStat.addActionListener((e) -> todo("Тут будзе статыстыка ў залежнасці ад дазволу"));
+        } else {
+            window.miStat.setVisible(false);
+        }
+
+        if (initialData.currentUserPermissions.contains(CommonPermission.FULL_VALIDATION.name())) {
+            window.miValidateFull.addActionListener((e) -> validateFull());
+        } else {
+            window.miValidateFull.setVisible(false);
+        }
+
+        showIssiesAndNews();
     }
 
-    ActionListener reassign = (e) -> {
-        TableModel m = panelArticles.tableArticles.getModel();
-        if (m instanceof MainFrameArticlesModel) {
-            MainFrameArticlesModel model = (MainFrameArticlesModel) m;
-            List<ArticleShort> articles = new ArrayList<>();
-            for (int r : panelArticles.tableArticles.getSelectedRows()) {
-                articles.add(model.articles.get(r));
-            }
+    public MainFrame getMainFrame() {
+        return window;
+    }
 
-            new ReassignController(articles);
+    private void initPlugins() {
+        try {
+            Enumeration<URL> mfs = MainController.class.getClassLoader().getResources("META-INF/MANIFEST.MF");
+            while (mfs.hasMoreElements()) {
+                URL url = mfs.nextElement();
+                try (InputStream in = new BufferedInputStream(url.openStream())) {
+                    Manifest m = new Manifest(in);
+                    String initClass = m.getMainAttributes().getValue("SlounikPlusClient-init");
+                    if (initClass != null) {
+                        Class<?> c = Class.forName(initClass);
+                        Method me = c.getMethod("clientStarted");
+                        me.invoke(c);
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
-    };
-    ActionListener preview = (e) -> {
-        TableModel m = panelArticles.tableArticles.getModel();
-        if (m instanceof MainFrameArticlesModel) {
-            MainFrameArticlesModel model = (MainFrameArticlesModel) m;
-            int[] selectedRows = panelArticles.tableArticles.getSelectedRows();
-            int[] articleIds = new int[selectedRows.length];
-            for (int i = 0; i < selectedRows.length; i++) {
-                articleIds[i] = model.articles.get(selectedRows[i]).id;
-            }
-            if (articleIds.length > 100) {
-                todo("Абрана зашмат артыкулаў");
-            } else {
-                new PreviewAllController(articleIds);
-            }
-        }
-    };
-
-    /**
-     * Search articles by filter.
-     */
-    private void search() {
-        ArticlesFilter filter = new ArticlesFilter();
-        filter.user = (String) panelArticles.cbUser.getSelectedItem();
-        filter.state = (String) panelArticles.cbState.getSelectedItem();
-        filter.word = panelArticles.txtWord.getText().trim().isEmpty() ? null : panelArticles.txtWord.getText().trim();
-        filter.text = panelArticles.txtText.getText().trim().isEmpty() ? null : panelArticles.txtText.getText().trim();
-        new LongProcess() {
-            MainFrameArticlesModel model;
-
-            @Override
-            protected void exec() throws Exception {
-                model = new MainFrameArticlesModel(WS.getArticleService().listArticles(WS.header, null, filter));
-                issuesModel = new MainFrameIssuesModel(WS.getToolsWebservice().listIssues(WS.header));
-                newsModel = new MainFrameNewsModel(WS.getToolsWebservice().listNews(WS.header));
-            }
-
-            @Override
-            protected void ok() {
-                SettingsController.savePlacesForWindow(window, desk);
-                panelArticles.tableArticles.setModel(model);
-                panelIssues.tableIssues.setModel(issuesModel);
-                panelNews.tableNews.setModel(newsModel);
-                panelArticles.labelSelected.setText("Знойдзена: " + model.getRowCount());
-                SettingsController.loadPlacesForWindow(window, desk);
-            }
-        };
     }
 
     private void validateFull() {
         new LongProcess() {
             @Override
             protected void exec() throws Exception {
-                WS.getToolsWebservice().validateAll(WS.header, null);
+                WS.getToolsWebservice().validateAll(WS.header);
             }
 
             @Override
@@ -342,17 +269,39 @@ public class MainController extends BaseController<MainFrame> {
     }
 
     public void fireArticleUpdated(ArticleFull article) {
-        if (panelArticles.tableArticles.getModel() instanceof MainFrameArticlesModel) {
-            MainFrameArticlesModel model = (MainFrameArticlesModel) panelArticles.tableArticles.getModel();
-            for (ArticleShort a : model.articles) {
-                if (a.id == article.id) {
-                    a.assignedUsers = article.assignedUsers;
-                    a.state = article.state;
-                    a.validationError = article.validationError;
-                    a.header = article.header;
-                }
+        for (MainControllerArticleType ac : panelArticleTypes) {
+            if (ac.getArticleTypeId().equals(article.type)) {
+                ac.fireArticleUpdated(article);
             }
-            model.fireTableDataChanged();
         }
+    }
+
+    /**
+     * Shows issues and news tables every 2 minutes.
+     */
+    public void showIssiesAndNews() {
+        new SwingWorker<Void, Void>() {
+            @Override
+            protected Void doInBackground() throws Exception {
+                issuesModel = new MainFrameIssuesModel(WS.getToolsWebservice().listIssues(WS.header));
+                newsModel = new MainFrameNewsModel(WS.getToolsWebservice().listNews(WS.header));
+                return null;
+            }
+
+            protected void done() {
+                try {
+                    get();
+                    SettingsController.replaceModel(panelIssues.tableIssues, issuesModel);
+                    SettingsController.replaceModel(panelNews.tableNews, newsModel);
+                } catch (Throwable ex) {
+                    ex.printStackTrace();
+                }
+                Timer timer = new Timer(2 * 60 * 1000, a -> {
+                    showIssiesAndNews();
+                });
+                timer.setRepeats(false);
+                timer.start();
+            }
+        }.execute();
     }
 }

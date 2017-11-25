@@ -156,6 +156,7 @@
             <arg value="org.im.dc.gen.config"/>
             <arg value="server/src/org/im/dc/xsd/config.xsd"/>
         </exec>
-        <copy file="server/src-gen/org/im/dc/gen/config/Permission.java" tofile="client/src-gen/org/im/dc/gen/config/Permission.java"/>
+        <copy file="server/src-gen/org/im/dc/gen/config/CommonPermission.java" tofile="client/src-gen/org/im/dc/gen/config/CommonPermission.java"/>
+        <copy file="server/src-gen/org/im/dc/gen/config/TypePermission.java" tofile="client/src-gen/org/im/dc/gen/config/TypePermission.java"/>
     </target>
 </project>

@@ -18,12 +18,9 @@ import org.im.dc.service.dto.Header;
 public interface ArticleWebservice {
     ArticleFullInfo getArticleFullInfo(Header header, String articleType, int articleId) throws Exception;
 
-    ArticleFullInfo saveArticle(Header header, String articleType, ArticleFull article) throws Exception;
+    ArticleFullInfo saveArticle(Header header, ArticleFull article) throws Exception;
 
     ArticleFullInfo changeState(Header header, String articleType, int articleId, String newState, Date lastUpdated)
-            throws Exception;
-
-    ArticleFullInfo changeHeader(Header header, String articleType, int articleId, String newHeader, Date lastUpdated)
             throws Exception;
 
     ArticleFullInfo addComment(Header header, String articleType, int articleId, String comment) throws Exception;

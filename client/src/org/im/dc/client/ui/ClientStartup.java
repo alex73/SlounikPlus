@@ -1,7 +1,7 @@
 package org.im.dc.client.ui;
 
 public class ClientStartup {
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         if (args.length < 1) {
             System.err.println("ClientStartup <addr>, where addr~=http://localhost:9081/myapp");
             System.exit(1);

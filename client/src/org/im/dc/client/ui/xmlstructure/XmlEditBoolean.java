@@ -1,17 +1,11 @@
 package org.im.dc.client.ui.xmlstructure;
 
 import javax.swing.JCheckBox;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLStreamWriter;
-
-import org.im.dc.client.ui.ArticleEditController;
 
 @SuppressWarnings("serial")
-public class XmlEditBoolean extends XmlEditBase<JCheckBox> {
-    public XmlEditBoolean(XmlGroup rootPanel, XmlGroup parentPanel, AnnotationInfo ann,
-            ArticleEditController editController) {
-        super(rootPanel, parentPanel, ann, editController);
+public class XmlEditBoolean extends XmlEditBase<JCheckBox> implements IXmlSimpleElement {
+    public XmlEditBoolean(ArticleUIContext context, XmlGroup parentPanel, AnnotationInfo ann, boolean parentWritable) {
+        super(context, parentPanel, ann, parentWritable);
     }
 
     @Override
@@ -19,20 +13,19 @@ public class XmlEditBoolean extends XmlEditBase<JCheckBox> {
         JCheckBox f = new JCheckBox();
         f.setOpaque(false);
         f.addItemListener(c -> {
-            rootPanel.fireChanged();
+            context.fireChanged();
         });
+        f.setEnabled(writable);
         return f;
     }
 
     @Override
-    public void insertData(XMLStreamReader rd) throws Exception {
-        field.setSelected(Boolean.parseBoolean(rd.getElementText()));
+    public void setData(String data) throws Exception {
+        field.setSelected(Boolean.parseBoolean(data));
     }
 
     @Override
-    public void extractData(String tag, XMLStreamWriter wr) throws XMLStreamException {
-        wr.writeStartElement(tag);
-        wr.writeCharacters(field.isSelected() ? "true" : "false");
-        wr.writeEndElement();
+    public String getData() throws Exception {
+        return field.isSelected() ? "true" : "false";
     }
 }

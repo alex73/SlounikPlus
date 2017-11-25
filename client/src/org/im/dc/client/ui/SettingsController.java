@@ -11,21 +11,28 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.prefs.Preferences;
 
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.UIManager;
 import javax.swing.plaf.FontUIResource;
 import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
 
+import com.vlsolutions.swing.docking.Dockable;
+import com.vlsolutions.swing.docking.DockableState;
+import com.vlsolutions.swing.docking.DockableState.Location;
 import com.vlsolutions.swing.docking.DockingDesktop;
+import com.vlsolutions.swing.docking.TabbedDockableContainer;
 
 public class SettingsController extends BaseController<SettingsDialog> {
     private static String fontName;
     private static int fontSize;
+
+    public static List<Dockable> articleDockables;
 
     public SettingsController() {
         super(new SettingsDialog(MainController.instance.window, true), MainController.instance.window);
@@ -171,11 +178,6 @@ public class SettingsController extends BaseController<SettingsDialog> {
             if (cc instanceof Container) {
                 loadPlacesForWindow((Container) cc, prefs, prefix);
             }
-            if (cc instanceof JSplitPane) {
-                JSplitPane sp = (JSplitPane) cc;
-                int location = prefs.getInt(prefix + "JSplitPane." + sp.getName(), sp.getDividerLocation());
-                sp.setDividerLocation(location);
-            }
             if (cc instanceof JTable) {
                 JTable tab = (JTable) cc;
                 TableColumnModel cm = tab.getColumnModel();
@@ -200,9 +202,54 @@ public class SettingsController extends BaseController<SettingsDialog> {
                 try (InputStream in = root.getClass().getResourceAsStream(xmlName)) {
                     desk.readXML(in);
                 }
+                TabbedDockableContainer c = findTabbedDockableContainer(desk);
+                if (c != null && articleDockables != null) {
+                    for (Dockable d : articleDockables) {
+                        desk.getContext().setDockableState(d, new DockableState(desk, d, Location.DOCKED));
+                        d.getDockKey().setLocation(Location.DOCKED);
+                        c.addDockable(d, c.getTabCount());
+                    }
+                }
             }
         } catch (Exception ex) {
         }
+    }
+
+    public static void initializeDockingLayour(Window root, DockingDesktop desk) {
+        try {
+            String xmlName = root.getClass().getSimpleName() + ".desk";
+            try (InputStream in = root.getClass().getResourceAsStream(xmlName)) {
+                desk.readXML(in);
+            }
+            TabbedDockableContainer c = findTabbedDockableContainer(desk);
+            if (c != null && articleDockables != null) {
+                for (Dockable d : articleDockables) {
+                    desk.getContext().setDockableState(d, new DockableState(desk, d, Location.DOCKED));
+                    d.getDockKey().setLocation(Location.DOCKED);
+                    c.addDockable(d, c.getTabCount());
+                }
+            }
+        } catch (Exception ex) {
+        }
+    }
+
+    public static TabbedDockableContainer findTabbedDockableContainer(Container parent) {
+        for (int i = 0; i < parent.getComponentCount(); i++) {
+            Component c = parent.getComponent(i);
+            if (c instanceof TabbedDockableContainer) {
+                return (TabbedDockableContainer) c;
+            }
+        }
+        for (int i = 0; i < parent.getComponentCount(); i++) {
+            Component c = parent.getComponent(i);
+            if (c instanceof Container) {
+                TabbedDockableContainer r = findTabbedDockableContainer((Container) c);
+                if (r != null) {
+                    return r;
+                }
+            }
+        }
+        return null;
     }
 
     /**
@@ -217,14 +264,17 @@ public class SettingsController extends BaseController<SettingsDialog> {
         prefs.putInt(prefix + "w", rect.width);
         prefs.putInt(prefix + "h", rect.height);
         savePlacesForWindow(root, prefs, prefix);
+
         if (desk != null) {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             try {
                 desk.writeXML(out);
                 prefs.putByteArray(prefix + "desk", out.toByteArray());
             } catch (IOException ex) {
+                ex.printStackTrace();
             }
         }
+
     }
 
     private static void savePlacesForWindow(Container c, Preferences prefs, String prefix) {
@@ -233,10 +283,6 @@ public class SettingsController extends BaseController<SettingsDialog> {
             if (cc instanceof Container) {
                 savePlacesForWindow((Container) cc, prefs, prefix);
             }
-            if (cc instanceof JSplitPane) {
-                JSplitPane sp = (JSplitPane) cc;
-                prefs.putInt(prefix + "JSplitPane." + sp.getName(), sp.getDividerLocation());
-            }
             if (cc instanceof JTable) {
                 JTable tab = (JTable) cc;
                 TableColumnModel cm = tab.getColumnModel();
@@ -244,6 +290,24 @@ public class SettingsController extends BaseController<SettingsDialog> {
                     prefs.putInt(prefix + "JTable." + tab.getName() + '[' + j + ']', cm.getColumn(j).getWidth());
                 }
             }
+        }
+    }
+
+    /**
+     * This method replaces model and save/restore column width.
+     */
+    public static void replaceModel(JTable table, TableModel model) {
+        TableColumnModel cm = table.getColumnModel();
+        int[] widths = new int[cm.getColumnCount()];
+        for (int j = 0; j < cm.getColumnCount(); j++) {
+            widths[j] = cm.getColumn(j).getWidth();
+        }
+
+        table.setModel(model);
+
+        cm = table.getColumnModel();
+        for (int j = 0; j < Math.min(cm.getColumnCount(), widths.length); j++) {
+            cm.getColumn(j).setPreferredWidth(widths[j]);
         }
     }
 }

@@ -3,21 +3,19 @@
 
 <mapper namespace="org.im.dc.server.db.DoArticle">
 	<select id="listArticles" parameterType="ArticlesFilter" resultType="RecArticle" resultMap="RecArticleMap">
-		SELECT articleId, words, state, assignedUsers, validationError
+		SELECT articleId, articleType, header, state, assignedUsers, validationError
 		FROM Articles
-		WHERE 1=1
+		WHERE articleType = #{articleType}
 		<if test="filter.state != null">
 			AND state=#{filter.state}
 		</if>
 		<if test="filter.user != null">
 			AND assignedUsers @> ARRAY[#{filter.user}]::varchar[][]
 		</if>
-		<if test="filter.word != null">
-			AND articleId IN (SELECT articleId FROM (SELECT articleId,
-			unnest(words) w FROM Articles) AS L WHERE w LIKE
-			#{filter.likeWord})
+		<if test="filter.partHeader != null">
+			AND header LIKE	#{filter.likeHeader})
 		</if>
-		<if test="filter.text != null">
+		<if test="filter.partText != null">
 			AND textForSearch LIKE #{filter.likeText}
 		</if>
 	</select>
@@ -40,12 +38,12 @@
 		FROM Articles
 		WHERE articleId = #{id} FOR UPDATE
 	</select>
-	<select id="selectLinkedTo" resultType="RecArticle" resultMap="RecArticleMap">
-		SELECT articleId, words
+	<select id="--selectLinkedTo" resultType="RecArticle" resultMap="RecArticleMap">
+		SELECT articleId, header
 		FROM Articles
 		WHERE linkedTo &amp;&amp; ARRAY[#{words,typeHandler=StringArrayTypeHandler}]::varchar[][]
 	</select>
-	<select id="getArticlesWithWords" parameterType="java.util.List" resultType="RecArticle" resultMap="RecArticleMap">
+	<select id="--getArticlesWithWords" parameterType="java.util.List" resultType="RecArticle" resultMap="RecArticleMap">
 		SELECT *
 		FROM Articles
 		WHERE
@@ -55,10 +53,11 @@
 	</select>
 	<insert id="insertArticles" parameterType="java.util.List">
 		INSERT INTO Articles
-		(words,xml,assignedUsers,state,markers,watchers,linkedTo,textForSearch,lettersCount,lastUpdated,validationError)
+		(header,articleType,xml,assignedUsers,state,markers,watchers,linkedTo,textForSearch,lettersCount,lastUpdated,validationError)
 		VALUES
 		<foreach collection="records" item="item" index="index" separator=",">
-			(#{item.words,typeHandler=StringArrayTypeHandler},
+			(#{item.header},
+			#{item.articleType},
 			#{item.xml},
 			#{item.assignedUsers,typeHandler=StringArrayTypeHandler},
 			#{item.state},
@@ -74,13 +73,13 @@
 	<insert id="insertArticle" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="record.articleId">
 		INSERT INTO
 		Articles
-		(words,xml,assignedUsers,state,markers,watchers,linkedTo,textForSearch,lettersCount,lastUpdated,validationError)
-		VALUES(#{record.words,typeHandler=StringArrayTypeHandler},#{record.xml},#{record.assignedUsers,typeHandler=StringArrayTypeHandler},#{record.state},#{record.markers,typeHandler=StringArrayTypeHandler},#{record.watchers,typeHandler=StringArrayTypeHandler},#{record.linkedTo,typeHandler=StringArrayTypeHandler},#{record.textForSearch},#{record.lettersCount},#{record.lastUpdated},#{record.validationError})
+		(header,articleType,xml,assignedUsers,state,markers,watchers,linkedTo,textForSearch,lettersCount,lastUpdated,validationError)
+		VALUES(#{record.header},#{record.articleType},#{record.xml},#{record.assignedUsers,typeHandler=StringArrayTypeHandler},#{record.state},#{record.markers,typeHandler=StringArrayTypeHandler},#{record.watchers,typeHandler=StringArrayTypeHandler},#{record.linkedTo,typeHandler=StringArrayTypeHandler},#{record.textForSearch},#{record.lettersCount},#{record.lastUpdated},#{record.validationError})
 	</insert>
 	<update id="updateArticle">
 		UPDATE Articles
 		SET xml = #{record.xml},
-			words = #{record.words,typeHandler=StringArrayTypeHandler},
+			header = #{record.header},
 			assignedUsers = #{record.assignedUsers,typeHandler=StringArrayTypeHandler},
 			state = #{record.state},
 			markers = #{record.markers,typeHandler=StringArrayTypeHandler},
@@ -92,15 +91,15 @@
 			validationError = #{record.validationError}
 		WHERE articleId = #{record.articleId} AND lastUpdated = #{prevLastUpdated}
 	</update>
-	<update id="updateArticleWordsXml">
+	<update id="updateArticleHeaderXml??lastUpdated?">
 		UPDATE Articles
 		SET xml = #{record.xml},
-		words = #{record.words,typeHandler=StringArrayTypeHandler}
+			header = #{record.header}
 		WHERE articleId = #{record.articleId}
 	</update>
-	<update id="updateWords">
+	<update id="updateArticleHeader">
 		UPDATE Articles
-		SET words = #{record.words,typeHandler=StringArrayTypeHandler},
+		SET header = #{record.header},
 			lastUpdated = #{record.lastUpdated}
 		WHERE articleId = #{record.articleId} AND lastUpdated = #{prevLastUpdated}
 	</update>
@@ -132,7 +131,8 @@
 
 	<resultMap id="RecArticleMap" type="RecArticle">
 		<id property="articleId" column="articleId" />
-		<result property="words" column="words" typeHandler="StringArrayTypeHandler" />
+		<result property="articleType" column="articleType" />
+		<result property="header" column="header" />
 		<result property="xml" column="xml" />
 		<result property="assignedUsers" column="assignedUsers" typeHandler="StringArrayTypeHandler" />
 		<result property="state" column="state" />

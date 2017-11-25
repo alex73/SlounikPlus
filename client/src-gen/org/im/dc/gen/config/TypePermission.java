@@ -7,18 +7,15 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for permission.
+ * <p>Java class for typePermission.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * <p>
  * <pre>
- * &lt;simpleType name="permission">
+ * &lt;simpleType name="typePermission">
  *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *     &lt;enumeration value="edit_header"/>
- *     &lt;enumeration value="full_statistics"/>
  *     &lt;enumeration value="view_output"/>
- *     &lt;enumeration value="full_validation"/>
- *     &lt;enumeration value="add_words"/>
+ *     &lt;enumeration value="add_articles"/>
  *     &lt;enumeration value="add_article"/>
  *     &lt;enumeration value="reassign"/>
  *   &lt;/restriction>
@@ -26,24 +23,10 @@ import javax.xml.bind.annotation.XmlType;
  * </pre>
  * 
  */
-@XmlType(name = "permission")
+@XmlType(name = "typePermission")
 @XmlEnum
-public enum Permission {
+public enum TypePermission {
 
-
-    /**
-     * Ці можа карыстальнік мяняць загалоўныя словы
-     * 
-     */
-    @XmlEnumValue("edit_header")
-    EDIT_HEADER("edit_header"),
-
-    /**
-     * Ці можа карыстальнік глядзець статыстыку па ўсіх
-     * 
-     */
-    @XmlEnumValue("full_statistics")
-    FULL_STATISTICS("full_statistics"),
 
     /**
      * Ці можа карыстальнік глядзець як будзе выглядае артыкул на паперы
@@ -53,21 +36,14 @@ public enum Permission {
     VIEW_OUTPUT("view_output"),
 
     /**
-     * Ці можа карыстальнік правяраць ўвесь слоўнік
+     * Ці можа карыстальнік дадаваць новыя артыкулы праз адмысловую форму
      * 
      */
-    @XmlEnumValue("full_validation")
-    FULL_VALIDATION("full_validation"),
+    @XmlEnumValue("add_articles")
+    ADD_ARTICLES("add_articles"),
 
     /**
-     * Ці можа карыстальнік дадаваць новыя словы
-     * 
-     */
-    @XmlEnumValue("add_words")
-    ADD_WORDS("add_words"),
-
-    /**
-     * Ці можа карыстальнік дадаваць артыкул
+     * Ці можа карыстальнік дадаваць адзін артыкул праз рэдагаванне
      * 
      */
     @XmlEnumValue("add_article")
@@ -81,7 +57,7 @@ public enum Permission {
     REASSIGN("reassign");
     private final String value;
 
-    Permission(String v) {
+    TypePermission(String v) {
         value = v;
     }
 
@@ -89,8 +65,8 @@ public enum Permission {
         return value;
     }
 
-    public static Permission fromValue(String v) {
-        for (Permission c: Permission.values()) {
+    public static TypePermission fromValue(String v) {
+        for (TypePermission c: TypePermission.values()) {
             if (c.value.equals(v)) {
                 return c;
             }

@@ -15,31 +15,59 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.xerces.impl.dv.XSSimpleType;
+import org.apache.xerces.xs.XSAnnotation;
+import org.apache.xerces.xs.XSAttributeDeclaration;
+import org.apache.xerces.xs.XSAttributeUse;
+import org.apache.xerces.xs.XSConstants;
 import org.apache.xerces.xs.XSElementDeclaration;
+import org.apache.xerces.xs.XSObject;
+import org.apache.xerces.xs.XSParticle;
 import org.apache.xerces.xs.XSTypeDefinition;
 import org.im.dc.client.ui.ArticleEditController;
 import org.im.dc.client.ui.ArticlePanelEdit;
 
+/**
+ * Container for equal elements depends on their min/max occurs.
+ */
 @SuppressWarnings("serial")
 public class XmlMany extends JPanel {
     private static final Insets INSETS = new Insets(3, 3, 3, 3);
 
-    private final XmlGroup rootPanel, parentPanel;
+    private final ArticleUIContext context;
+    private final XmlGroup parentPanel;
     protected final String tag;
-    private XSElementDeclaration obj;
+    private final XSObject obj;
     private AnnotationInfo ann;
     private int minOccurs, maxOccurs;
+    private final boolean writable;
 
     private XmlAdd add;
 
-    public XmlMany(XmlGroup rootPanel, XmlGroup parentPanel, XSElementDeclaration obj, int minOccurs, int maxOccurs) {
-        this.rootPanel = rootPanel;
+    public XmlMany(ArticleUIContext context, XmlGroup parentPanel, XSParticle obj, boolean parentWritable) {
+        this(context, parentPanel, obj.getTerm(), ((XSElementDeclaration) obj.getTerm()).getAnnotation(),
+                parentWritable);
+        this.minOccurs = obj.getMinOccurs();
+        this.maxOccurs = obj.getMaxOccurs() < 0 ? Integer.MAX_VALUE : obj.getMaxOccurs();
+
+        initOccurs();
+    }
+
+    public XmlMany(ArticleUIContext context, XmlGroup parentPanel, XSAttributeUse obj, boolean parentWritable) {
+        this(context, parentPanel, obj.getAttrDeclaration(), obj.getAttrDeclaration().getAnnotation(), parentWritable);
+        minOccurs = obj.getRequired() ? 1 : 0;
+        maxOccurs = 1;
+
+        initOccurs();
+    }
+
+    protected XmlMany(ArticleUIContext context, XmlGroup parentPanel, XSObject obj, XSAnnotation annotation,
+            boolean parentWritable) {
+        this.context = context;
         this.parentPanel = parentPanel;
         this.tag = obj.getName();
         this.obj = obj;
-        this.ann = new AnnotationInfo(obj.getAnnotation());
-        this.minOccurs = minOccurs;
-        this.maxOccurs = maxOccurs < 0 ? Integer.MAX_VALUE : maxOccurs;
+
+        this.ann = new AnnotationInfo(annotation, obj.getName());
 
         setLayout(new VerticalListLayout(INSETS));
 
@@ -54,21 +82,22 @@ public class XmlMany extends JPanel {
         } else {
             setForeground(parentPanel.getForeground());
         }
-//        if (ann.fgColor != null) {
-//            add.setForeground(ann.fgColor);
-//        } else {
-//            add.setForeground(parentPanel.getForeground());
-//        }
         add.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 addElement();
-                rootPanel.fireChanged();
+                context.fireChanged();
             }
         });
         add(add);
 
-        for (int i = 0; i < this.minOccurs; i++) {
+        writable = context.getWritable(parentWritable, ann);
+
+        add.setVisible(writable);
+    }
+
+    private void initOccurs() {
+        for (int i = 0; i < minOccurs; i++) {
             addElement();
         }
     }
@@ -76,48 +105,62 @@ public class XmlMany extends JPanel {
     private void addElement() {
         JPanel p;
 
+        XSTypeDefinition type;
+        switch (obj.getType()) {
+        case XSConstants.ELEMENT_DECLARATION:
+            type = ((XSElementDeclaration) obj).getTypeDefinition();
+            break;
+        case XSConstants.ATTRIBUTE_DECLARATION:
+            type = ((XSAttributeDeclaration) obj).getTypeDefinition();
+            break;
+        default:
+            throw new RuntimeException("Unknown XSD type");
+        }
         switch (ann.editType) {
         case DEFAULT:
-            switch (obj.getTypeDefinition().getTypeCategory()) {
+            switch (type.getTypeCategory()) {
             case XSTypeDefinition.COMPLEX_TYPE:
-                p = new XmlGroup(rootPanel, parentPanel, obj, ann, rootPanel.editController);
+                p = new XmlGroup(context, parentPanel, (XSElementDeclaration) obj, ann, writable);
                 break;
             case XSTypeDefinition.SIMPLE_TYPE:
-                XSSimpleType type = (XSSimpleType) obj.getTypeDefinition();
-                switch (type.getPrimitiveKind()) {
+                XSSimpleType simpleType = (XSSimpleType) type;
+                switch (simpleType.getPrimitiveKind()) {
                 case XSSimpleType.PRIMITIVE_BOOLEAN:
-                    p = new XmlEditBoolean(rootPanel, parentPanel, ann, rootPanel.editController);
+                    p = new XmlEditBoolean(context, parentPanel, ann,writable);
                     break;
                 case XSSimpleType.PRIMITIVE_DECIMAL:
                 case XSSimpleType.PRIMITIVE_STRING:
-                    p = new XmlEditText(rootPanel, parentPanel, ann, rootPanel.editController);
+                    p = new XmlEditText(context, parentPanel, ann,writable);
                     break;
                 default:
                     throw new RuntimeException("Can't create editor for simple type: " + type.getName());
                 }
                 break;
             default:
-                throw new RuntimeException("Unknown schema type: " + obj.getTypeDefinition().getTypeCategory());
+                throw new RuntimeException("Unknown schema type: " + type.getTypeCategory());
             }
             break;
         case CHECK:
-            p = new XmlEditCheck(rootPanel, parentPanel, ann, rootPanel.editController);
+            p = new XmlEditCheck(context, parentPanel, ann,writable);
             break;
         case RADIO:
-            p = new XmlEditRadio(rootPanel, parentPanel, ann, rootPanel.editController);
+            p = new XmlEditRadio(context, parentPanel, ann,writable);
             break;
         case COMBO_EDITABLE:
-            p = new XmlEditComboEditable(rootPanel, parentPanel, ann, rootPanel.editController);
+            p = new XmlEditComboEditable(context, parentPanel, ann,writable);
             break;
         case COMBO_DICT_EDITABLE:
-            p = new XmlEditComboDictionaryEditable(rootPanel, parentPanel, ann, rootPanel.editController);
+            p = new XmlEditComboDictionaryEditable(context, parentPanel, ann,writable);
+            break;
+        case ARTICLES_LIST:
+            p = new XmlEditArticlesList(context, parentPanel, ann,writable);
             break;
         case CUSTOM:
             try {
                 Class<? extends JPanel> editor = (Class<? extends JPanel>) Class.forName(ann.editDetails);
                 Constructor<? extends JPanel> c = editor.getConstructor(XmlGroup.class, XmlGroup.class,
                         AnnotationInfo.class, ArticleEditController.class);
-                p = c.newInstance(rootPanel, parentPanel, ann, rootPanel.editController);
+                p = c.newInstance(context, parentPanel, ann);
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
@@ -145,8 +188,8 @@ public class XmlMany extends JPanel {
 
             private void checkPopup(MouseEvent e) {
                 if (e.isPopupTrigger()) {
-                    ArticlePanelEdit panelEdit = rootPanel.editController.panelEdit;
-                    List<IXmlElement> allElements=getElements();
+                    ArticlePanelEdit panelEdit = context.editController.panelEdit;
+                    List<IXmlElement> allElements = getElements();
                     int idx = allElements.indexOf(p);
                     panelEdit.cmMoveUp.setEnabled(idx > 0);
                     panelEdit.cmMoveDown.setEnabled(idx < allElements.size() - 1);
@@ -160,13 +203,13 @@ public class XmlMany extends JPanel {
                     panelEdit.cmMoveUp.addActionListener(l -> {
                         XmlMany.this.remove(idx);
                         XmlMany.this.add(p, idx - 1);
-                        rootPanel.fireChanged();
+                        context.fireChanged();
                         revalidate();
                     });
                     panelEdit.cmMoveDown.addActionListener(l -> {
                         XmlMany.this.remove(idx);
                         XmlMany.this.add(p, idx + 1);
-                        rootPanel.fireChanged();
+                        context.fireChanged();
                         revalidate();
                     });
                 }
@@ -200,8 +243,24 @@ public class XmlMany extends JPanel {
         if (pos >= getComponentCount() - 1) {
             addElement();
         }
-        IXmlElement e = (IXmlElement) getComponent(pos);
-        e.insertData(rd);
+
+        if (getComponent(pos) instanceof IXmlComplexElement) {
+            IXmlComplexElement e = (IXmlComplexElement) getComponent(pos);
+            e.insertData(rd);
+        } else if (getComponent(pos) instanceof IXmlSimpleElement) {
+            IXmlSimpleElement e = (IXmlSimpleElement) getComponent(pos);
+            e.setData(rd.getElementText());
+        } else {
+            throw new RuntimeException("Unknown XSD type");
+        }
+    }
+
+    public void setSimpleDataTo(String value) throws Exception {
+        if (getComponentCount() <= 1) {
+            addElement();
+        }
+        IXmlSimpleElement e = (IXmlSimpleElement) getComponent(0);
+        e.setData(value);
     }
 
     public void displayed() {
@@ -219,8 +278,29 @@ public class XmlMany extends JPanel {
             if (c == add) {
                 continue;
             }
-            IXmlElement e = (IXmlElement) c;
-            e.extractData(tag, wr);
+            if (c instanceof IXmlComplexElement) {
+                IXmlComplexElement e = (IXmlComplexElement) c;
+                e.extractData(tag, wr);
+            } else if (c instanceof IXmlSimpleElement) {
+                IXmlSimpleElement e = (IXmlSimpleElement) c;
+                String value = e.getData();
+                if (value != null) {
+                    switch (obj.getType()) {
+                    case XSConstants.ELEMENT_DECLARATION:
+                        wr.writeStartElement(tag);
+                        wr.writeCharacters(value);
+                        wr.writeEndElement();
+                        break;
+                    case XSConstants.ATTRIBUTE_DECLARATION:
+                        wr.writeAttribute(tag, value);
+                        break;
+                    default:
+                        throw new RuntimeException("Unknown XSD type");
+                    }
+                }
+            } else {
+                throw new RuntimeException("Unknown XSD type");
+            }
         }
     }
 
@@ -246,5 +326,9 @@ public class XmlMany extends JPanel {
         for (int i = 0; i < getComponentCount() - 1;) {
             remove(i);
         }
+    }
+
+    public String toString() {
+        return this.getClass().getName() + " tag=" + tag;
     }
 }

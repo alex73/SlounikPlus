@@ -1,10 +1,7 @@
 
 package org.im.dc.gen.config;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.XmlElementDecl;
 import javax.xml.bind.annotation.XmlRegistry;
-import javax.xml.namespace.QName;
 
 
 /**
@@ -24,9 +21,6 @@ import javax.xml.namespace.QName;
 @XmlRegistry
 public class ObjectFactory {
 
-    private final static QName _Stress_QNAME = new QName("", "stress");
-    private final static QName _HeaderLocale_QNAME = new QName("", "headerLocale");
-    private final static QName _Version_QNAME = new QName("", "version");
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: org.im.dc.gen.config
@@ -44,19 +38,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Permissions }
+     * Create an instance of {@link Type }
      * 
      */
-    public Permissions createPermissions() {
-        return new Permissions();
+    public Type createType() {
+        return new Type();
     }
 
     /**
-     * Create an instance of {@link Roles }
+     * Create an instance of {@link State }
      * 
      */
-    public Roles createRoles() {
-        return new Roles();
+    public State createState() {
+        return new State();
     }
 
     /**
@@ -68,11 +62,27 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link State }
+     * Create an instance of {@link Permissions }
      * 
      */
-    public State createState() {
-        return new State();
+    public Permissions createPermissions() {
+        return new Permissions();
+    }
+
+    /**
+     * Create an instance of {@link Role }
+     * 
+     */
+    public Role createRole() {
+        return new Role();
+    }
+
+    /**
+     * Create an instance of {@link Roles }
+     * 
+     */
+    public Roles createRoles() {
+        return new Roles();
     }
 
     /**
@@ -105,33 +115,6 @@ public class ObjectFactory {
      */
     public States createStates() {
         return new States();
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link String }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "", name = "stress")
-    public JAXBElement<String> createStress(String value) {
-        return new JAXBElement<String>(_Stress_QNAME, String.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link String }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "", name = "headerLocale")
-    public JAXBElement<String> createHeaderLocale(String value) {
-        return new JAXBElement<String>(_HeaderLocale_QNAME, String.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link String }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "", name = "version")
-    public JAXBElement<String> createVersion(String value) {
-        return new JAXBElement<String>(_Version_QNAME, String.class, null, value);
     }
 
 }

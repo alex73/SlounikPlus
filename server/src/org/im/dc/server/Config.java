@@ -18,8 +18,9 @@ import javax.xml.validation.Validator;
 
 import org.im.dc.gen.config.Change;
 import org.im.dc.gen.config.Permissions;
+import org.im.dc.gen.config.Role;
 import org.im.dc.gen.config.State;
-import org.im.dc.gen.config.States;
+import org.im.dc.gen.config.Type;
 import org.im.dc.gen.config.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,27 +54,14 @@ public class Config {
         }
 
         schemas = new TreeMap<>();
-        for (String t : config.getTypes().getType()) {
+        for (Type t : config.getTypes().getType()) {
             ArticleSchema as = new ArticleSchema();
-            as.source = Files.readAllBytes(new File(CONFIG_DIR, t + ".xsd").toPath());
+            as.source = Files.readAllBytes(new File(CONFIG_DIR, t.getId() + ".xsd").toPath());
             as.xsdSchema = schemaFactory.newSchema(new StreamSource(new ByteArrayInputStream(as.source)));
-            schemas.put(t, as);
+            schemas.put(t.getId(), as);
         }
 
         LOG.info("Config loading finished");
-    }
-
-    public static State getStateByName(String articleType, String state) {
-        for (States sts : config.getStates()) {
-            if (sts.getType().equals(articleType)) {
-                for (State s : sts.getState()) {
-                    if (s.getId().equals(state)) {
-                        return s;
-                    }
-                }
-            }
-        }
-        return null;
     }
 
     public static org.im.dc.gen.config.Config getConfig() {
@@ -85,32 +73,40 @@ public class Config {
     }
 
     private static void checkConfig() {
-        Set<String> types = new TreeSet<>();
-        for (String t : config.getTypes().getType()) {
-            if (!types.add(t)) {
-                throw new RuntimeException("Duplicate type in config: " + t);
-            }
-        }
         Set<String> roles = new TreeSet<>();
-        for (String r : config.getRoles().getRole()) {
-            if (!roles.add(r)) {
-                throw new RuntimeException("Duplicate role in config: " + r);
+        for (Role r : config.getRoles().getRole()) {
+            if (!roles.add(r.getName())) {
+                throw new RuntimeException("Duplicate role in config: " + r.getName());
             }
         }
-        Set<String> permissions = new TreeSet<>();
-        for (Permissions ps : config.getPermissions()) {
-            if (!permissions.add(ps.getType() + '/' + ps.getRole())) {
-                throw new RuntimeException(
-                        "Duplicate permission in config: type=" + ps.getType() + " role=" + ps.getRole());
-            }
-        }
+        Set<String> users = new TreeSet<>();
         for (User u : config.getUsers().getUser()) {
+            if (!users.add(u.getName())) {
+                throw new RuntimeException("Duplicate user in config: " + u.getName());
+            }
             if (!roles.contains(u.getRole())) {
-                throw new RuntimeException("There is no specified role:: " + u.getRole());
+                throw new RuntimeException("There is no specified role: " + u.getRole());
             }
         }
-        for (States sts : config.getStates()) {
-            for (State st : sts.getState()) {
+        Set<String> states = new TreeSet<>();
+        for (String st : config.getStates().getState()) {
+            if (!states.add(st)) {
+                throw new RuntimeException("Duplicate state in config: " + st);
+            }
+        }
+        Set<String> typeIds = new TreeSet<>();
+        Set<String> typeNames = new TreeSet<>();
+        for (Type t : config.getTypes().getType()) {
+            if (!typeIds.add(t.getId())) {
+                throw new RuntimeException("Duplicate type in config: " + t.getId());
+            }
+            if (!typeNames.add(t.getName())) {
+                throw new RuntimeException("Duplicate type in config: " + t.getName());
+            }
+            if (!states.contains(t.getNewArticleState())) {
+                throw new RuntimeException("There is no specified state: " + t.getNewArticleState());
+            }
+            for (State st : t.getState()) {
                 if (st.getEditRoles() != null) {
                     for (String r : st.getEditRoles().split(",")) {
                         if (!roles.contains(r)) {
@@ -126,24 +122,9 @@ public class Config {
                     }
                 }
             }
-        }
-
-        Set<String> typeStates = new TreeSet<>();
-        for (States sts : config.getStates()) {
-            if (!typeStates.add(sts.getType())) {
-                throw new RuntimeException("Duplicate state/type in config: " + sts.getType());
-            }
-            Set<String> states = new TreeSet<>();
-            for (State st : sts.getState()) {
-                if (!states.add(st.getId())) {
-                    throw new RuntimeException("Duplicate state in config: " + st.getId());
-                }
-            }
-            for (State st : sts.getState()) {
-                for (Change ch : st.getChange()) {
-                    if (!states.contains(ch.getTo())) {
-                        throw new RuntimeException("There is no specified state:: " + ch.getTo());
-                    }
+            for (Permissions ps : t.getPermissions()) {
+                if (!roles.contains(ps.getRole())) {
+                    throw new RuntimeException("There is no specified role: " + ps.getRole());
                 }
             }
         }

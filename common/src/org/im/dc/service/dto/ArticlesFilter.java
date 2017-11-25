@@ -3,20 +3,20 @@ package org.im.dc.service.dto;
 public class ArticlesFilter {
     public String state;
     public String user;
-    public String word;
-    public String text;
+    public String partHeader;
+    public String partText;
 
     public String getLikeText() {
-        if (text == null) {
+        if (partText == null) {
             return null;
         }
-        return "% " + text.replace('*', '%') + " %";
+        return "% " + partText.replace('*', '%') + " %";
     }
 
-    public String getLikeWord() {
-        if (word == null) {
+    public String getLikeHeader() {
+        if (partHeader == null) {
             return null;
         }
-        return word.replace('*', '%');
+        return "%" + partHeader.replace('*', '%') + "%";
     }
 }

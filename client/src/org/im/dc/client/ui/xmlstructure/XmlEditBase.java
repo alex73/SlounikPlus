@@ -6,32 +6,26 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.xml.stream.XMLStreamConstants;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
 
 import org.im.dc.client.ui.ArticleEditController;
 
 @SuppressWarnings("serial")
-public abstract class XmlEditBase<T extends JComponent> extends JPanel implements IXmlElement {
-    protected final XmlGroup rootPanel;
+public abstract class XmlEditBase<T extends JComponent> extends JPanel {
+    protected final ArticleUIContext context;
     protected final AnnotationInfo ann;
-    protected final ArticleEditController editController;
+    protected final boolean writable;
     public T field;
     private JButton closable;
 
-    public XmlEditBase(XmlGroup rootPanel, XmlGroup parentPanel, AnnotationInfo ann,
-            ArticleEditController editController) {
-        this.rootPanel = rootPanel;
+    public XmlEditBase(ArticleUIContext context, XmlGroup parentPanel, AnnotationInfo ann, boolean parentWritable) {
+        this.context = context;
         this.ann = ann;
-        this.editController = editController;
+        writable = context.getWritable(parentWritable, ann);
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
@@ -76,42 +70,20 @@ public abstract class XmlEditBase<T extends JComponent> extends JPanel implement
                 Container parent = XmlEditBase.this.getParent();
                 parent.remove(XmlEditBase.this);
                 parent.revalidate();
-                rootPanel.fireChanged();
+                context.fireChanged();
             }
         });
     }
 
     protected abstract T createField();
 
-    @Override
     public void setClosableVisible(boolean visible) {
         this.closable.setVisible(visible);
     }
 
-    List<String> readValuesList(XMLStreamReader rd) throws XMLStreamException {
-        List<String> r = new ArrayList<>();
-        while (rd.hasNext()) {
-            int type = rd.next();
-            switch (type) {
-            case XMLStreamConstants.START_ELEMENT:
-                if ("value".equals(rd.getLocalName())) {
-                    r.add(rd.getElementText());
-                }
-                break;
-            case XMLStreamConstants.END_ELEMENT:
-                return r;
-            default:
-                throw new RuntimeException();
-            }
-        }
-        return r;
-    }
-
-    @Override
     public void setIndex(Integer index) {
     }
 
-    @Override
     public void displayed() {
     }
 }

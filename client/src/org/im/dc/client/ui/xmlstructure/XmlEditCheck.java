@@ -3,22 +3,22 @@ package org.im.dc.client.ui.xmlstructure;
 import java.awt.FlowLayout;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
+import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.im.dc.client.SchemaLoader;
-import org.im.dc.client.ui.ArticleEditController;
 
 @SuppressWarnings("serial")
-public class XmlEditCheck extends XmlEditBase<JPanel> {
-    public XmlEditCheck(XmlGroup rootPanel, XmlGroup parentPanel, AnnotationInfo ann,
-            ArticleEditController editController) {
-        super(rootPanel, parentPanel, ann, editController);
+public class XmlEditCheck extends XmlEditBase<JPanel> implements IXmlComplexElement {
+    public XmlEditCheck(ArticleUIContext context, XmlGroup parentPanel, AnnotationInfo ann, boolean parentWritable) {
+        super(context, parentPanel, ann, parentWritable);
     }
 
     @Override
@@ -27,18 +27,20 @@ public class XmlEditCheck extends XmlEditBase<JPanel> {
         layout.setAlignment(FlowLayout.LEFT);
         JPanel field = new JPanel(layout);
         field.setOpaque(false);
-        for (String v : SchemaLoader.getSimpleTypeEnumeration(ann.editDetails)) {
+        for (String v : SchemaLoader.getSimpleTypeEnumeration(ann.editDetails,
+                context.editController.getArticleTypeId())) {
             JCheckBox cb = new JCheckBox(v);
             cb.setOpaque(false);
-            cb.setFont(rootPanel.getFont());
+            cb.setFont(context.getFont());
             field.add(cb);
             cb.addItemListener(new ItemListener() {
                 @Override
                 public void itemStateChanged(ItemEvent e) {
-                    rootPanel.fireChanged();
+                    context.fireChanged();
                 }
             });
         }
+        field.setEnabled(writable);
         return field;
     }
 
@@ -65,5 +67,24 @@ public class XmlEditCheck extends XmlEditBase<JPanel> {
             }
         }
         wr.writeEndElement();
+    }
+
+    List<String> readValuesList(XMLStreamReader rd) throws XMLStreamException {
+        List<String> r = new ArrayList<>();
+        while (rd.hasNext()) {
+            int type = rd.next();
+            switch (type) {
+            case XMLStreamConstants.START_ELEMENT:
+                if ("value".equals(rd.getLocalName())) {
+                    r.add(rd.getElementText());
+                }
+                break;
+            case XMLStreamConstants.END_ELEMENT:
+                return r;
+            default:
+                throw new RuntimeException();
+            }
+        }
+        return r;
     }
 }

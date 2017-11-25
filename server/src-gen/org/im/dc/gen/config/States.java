@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
@@ -20,9 +20,8 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element ref="{}state" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="state" type="{http://www.w3.org/2001/XMLSchema}string" maxOccurs="unbounded"/>
  *       &lt;/sequence>
- *       &lt;attribute name="type" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -37,9 +36,8 @@ import javax.xml.bind.annotation.XmlType;
 @XmlRootElement(name = "states")
 public class States {
 
-    protected List<State> state;
-    @XmlAttribute(name = "type", required = true)
-    protected String type;
+    @XmlElement(required = true)
+    protected List<String> state;
 
     /**
      * Gets the value of the state property.
@@ -59,39 +57,15 @@ public class States {
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link State }
+     * {@link String }
      * 
      * 
      */
-    public List<State> getState() {
+    public List<String> getState() {
         if (state == null) {
-            state = new ArrayList<State>();
+            state = new ArrayList<String>();
         }
         return this.state;
-    }
-
-    /**
-     * Gets the value of the type property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getType() {
-        return type;
-    }
-
-    /**
-     * Sets the value of the type property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setType(String value) {
-        this.type = value;
     }
 
 }

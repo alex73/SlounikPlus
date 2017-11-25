@@ -19,35 +19,31 @@ public class MainFrame extends javax.swing.JFrame {
     private void initComponents() {
 
         jMenuBar1 = new javax.swing.JMenuBar();
-        jMenu2 = new javax.swing.JMenu();
+        menuCommon = new javax.swing.JMenu();
         miSettings = new javax.swing.JMenuItem();
         miStat = new javax.swing.JMenuItem();
-        miAddWords = new javax.swing.JMenuItem();
         miValidateFull = new javax.swing.JMenuItem();
         miResetDesk = new javax.swing.JMenuItem();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("org/im/dc/client/ui/Bundle"); // NOI18N
         setTitle(bundle.getString("MainFrame.title")); // NOI18N
 
-        jMenu2.setText(bundle.getString("MainFrame.jMenu2.text")); // NOI18N
+        menuCommon.setText(bundle.getString("MainFrame.menuCommon.text")); // NOI18N
 
         miSettings.setText(bundle.getString("MainFrame.miSettings.text")); // NOI18N
-        jMenu2.add(miSettings);
+        menuCommon.add(miSettings);
 
         miStat.setText(bundle.getString("MainFrame.miStat.text")); // NOI18N
-        jMenu2.add(miStat);
-
-        miAddWords.setText(bundle.getString("MainFrame.miAddWords.text")); // NOI18N
-        jMenu2.add(miAddWords);
+        menuCommon.add(miStat);
 
         miValidateFull.setText(bundle.getString("MainFrame.miValidateFull.text")); // NOI18N
-        jMenu2.add(miValidateFull);
+        menuCommon.add(miValidateFull);
 
         miResetDesk.setText(bundle.getString("MainFrame.miResetDesk.text")); // NOI18N
-        jMenu2.add(miResetDesk);
+        menuCommon.add(miResetDesk);
 
-        jMenuBar1.add(jMenu2);
+        jMenuBar1.add(menuCommon);
 
         setJMenuBar(jMenuBar1);
 
@@ -90,9 +86,8 @@ public class MainFrame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    public javax.swing.JMenu jMenu2;
     public javax.swing.JMenuBar jMenuBar1;
-    public javax.swing.JMenuItem miAddWords;
+    public javax.swing.JMenu menuCommon;
     public javax.swing.JMenuItem miResetDesk;
     public javax.swing.JMenuItem miSettings;
     public javax.swing.JMenuItem miStat;

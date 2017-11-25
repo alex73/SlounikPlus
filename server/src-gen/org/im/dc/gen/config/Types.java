@@ -20,7 +20,7 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="type" type="{http://www.w3.org/2001/XMLSchema}string" maxOccurs="unbounded"/>
+ *         &lt;element ref="{}type" maxOccurs="unbounded"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -37,7 +37,7 @@ import javax.xml.bind.annotation.XmlType;
 public class Types {
 
     @XmlElement(required = true)
-    protected List<String> type;
+    protected List<Type> type;
 
     /**
      * Gets the value of the type property.
@@ -57,13 +57,13 @@ public class Types {
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link String }
+     * {@link Type }
      * 
      * 
      */
-    public List<String> getType() {
+    public List<Type> getType() {
         if (type == null) {
-            type = new ArrayList<String>();
+            type = new ArrayList<Type>();
         }
         return this.type;
     }

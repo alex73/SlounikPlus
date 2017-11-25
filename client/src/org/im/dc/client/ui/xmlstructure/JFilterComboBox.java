@@ -12,7 +12,7 @@ import javax.swing.SwingUtilities;
 
 @SuppressWarnings("serial")
 public class JFilterComboBox extends JComboBox<String> {
-    private List<String> array;
+    protected List<String> array;
     private int currentCaretPosition = 0;
 
     public JFilterComboBox(List<String> array) {
@@ -33,7 +33,6 @@ public class JFilterComboBox extends JComboBox<String> {
                     }
                 });
             }
-
         });
     }
 

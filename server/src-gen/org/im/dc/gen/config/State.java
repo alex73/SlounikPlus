@@ -22,8 +22,8 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;sequence>
  *         &lt;element ref="{}change" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
- *       &lt;attribute name="id" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="edit_roles" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="name" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="edit-roles" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -39,9 +39,9 @@ import javax.xml.bind.annotation.XmlType;
 public class State {
 
     protected List<Change> change;
-    @XmlAttribute(name = "id", required = true)
-    protected String id;
-    @XmlAttribute(name = "edit_roles")
+    @XmlAttribute(name = "name", required = true)
+    protected String name;
+    @XmlAttribute(name = "edit-roles")
     protected String editRoles;
 
     /**
@@ -74,27 +74,27 @@ public class State {
     }
 
     /**
-     * Gets the value of the id property.
+     * Gets the value of the name property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getId() {
-        return id;
+    public String getName() {
+        return name;
     }
 
     /**
-     * Sets the value of the id property.
+     * Sets the value of the name property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setId(String value) {
-        this.id = value;
+    public void setName(String value) {
+        this.name = value;
     }
 
     /**

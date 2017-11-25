@@ -21,10 +21,9 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="permission" type="{}permission" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="permission" type="{}typePermission" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *       &lt;attribute name="role" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="type" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -40,11 +39,9 @@ import javax.xml.bind.annotation.XmlType;
 public class Permissions {
 
     @XmlSchemaType(name = "string")
-    protected List<Permission> permission;
+    protected List<TypePermission> permission;
     @XmlAttribute(name = "role", required = true)
     protected String role;
-    @XmlAttribute(name = "type", required = true)
-    protected String type;
 
     /**
      * Gets the value of the permission property.
@@ -64,13 +61,13 @@ public class Permissions {
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link Permission }
+     * {@link TypePermission }
      * 
      * 
      */
-    public List<Permission> getPermission() {
+    public List<TypePermission> getPermission() {
         if (permission == null) {
-            permission = new ArrayList<Permission>();
+            permission = new ArrayList<TypePermission>();
         }
         return this.permission;
     }
@@ -97,30 +94,6 @@ public class Permissions {
      */
     public void setRole(String value) {
         this.role = value;
-    }
-
-    /**
-     * Gets the value of the type property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getType() {
-        return type;
-    }
-
-    /**
-     * Sets the value of the type property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setType(String value) {
-        this.type = value;
     }
 
 }

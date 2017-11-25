@@ -1,7 +1,6 @@
 package org.im.dc.client.ui;
 
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.table.DefaultTableModel;

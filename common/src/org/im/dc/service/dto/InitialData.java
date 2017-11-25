@@ -1,5 +1,6 @@
 package org.im.dc.service.dto;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -9,16 +10,28 @@ public class InitialData {
     public String configVersion;
     public String headerLocale;
     public String stress;
-    public Map<String, TypeInfo> articleTypes;
+    public List<TypeInfo> articleTypes = new ArrayList<>();
     // map: key=user, value=role
     public Map<String, String> allUsers;
     public String currentUserRole;
-    public String newArticleState;
     public String[] newArticleUsers;
+    public List<String> states = new ArrayList<>();
+    public Set<String> currentUserPermissions = new TreeSet<>();
 
     public static class TypeInfo {
+        public String typeId;
+        public String typeName;
+        public String newArticleState;
         public byte[] articleSchema;
-        public List<String> states;
-        public Set<String> currentUserPermissions = new TreeSet<>();
+        public Set<String> currentUserTypePermissions = new TreeSet<>();
+    }
+
+    public TypeInfo getTypeInfo(String articleTypeId) {
+        for (TypeInfo ti : articleTypes) {
+            if (ti.typeId.equals(articleTypeId)) {
+                return ti;
+            }
+        }
+        return null;
     }
 }

@@ -21,9 +21,9 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="permission" type="{}permission" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="permission" type="{}commonPermission" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
- *       &lt;attribute name="id" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="name" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -39,9 +39,9 @@ import javax.xml.bind.annotation.XmlType;
 public class Role {
 
     @XmlSchemaType(name = "string")
-    protected List<Permission> permission;
-    @XmlAttribute(name = "id", required = true)
-    protected String id;
+    protected List<CommonPermission> permission;
+    @XmlAttribute(name = "name", required = true)
+    protected String name;
 
     /**
      * Gets the value of the permission property.
@@ -61,39 +61,39 @@ public class Role {
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link Permission }
+     * {@link CommonPermission }
      * 
      * 
      */
-    public List<Permission> getPermission() {
+    public List<CommonPermission> getPermission() {
         if (permission == null) {
-            permission = new ArrayList<Permission>();
+            permission = new ArrayList<CommonPermission>();
         }
         return this.permission;
     }
 
     /**
-     * Gets the value of the id property.
+     * Gets the value of the name property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getId() {
-        return id;
+    public String getName() {
+        return name;
     }
 
     /**
-     * Sets the value of the id property.
+     * Sets the value of the name property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setId(String value) {
-        this.id = value;
+    public void setName(String value) {
+        this.name = value;
     }
 
 }

@@ -7,18 +7,14 @@ import java.awt.event.ItemListener;
 import javax.swing.ButtonGroup;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLStreamWriter;
 
 import org.im.dc.client.SchemaLoader;
 import org.im.dc.client.ui.ArticleEditController;
 
 @SuppressWarnings("serial")
-public class XmlEditRadio extends XmlEditBase<JPanel> {
-    public XmlEditRadio(XmlGroup rootPanel, XmlGroup parentPanel, AnnotationInfo ann,
-            ArticleEditController editController) {
-        super(rootPanel, parentPanel, ann, editController);
+public class XmlEditRadio extends XmlEditBase<JPanel> implements IXmlSimpleElement {
+    public XmlEditRadio(ArticleUIContext context,XmlGroup parentPanel, AnnotationInfo ann, boolean parentWritable) {
+        super(context, parentPanel, ann,  parentWritable);
     }
 
     @Override
@@ -28,42 +24,42 @@ public class XmlEditRadio extends XmlEditBase<JPanel> {
         JPanel field = new JPanel(layout);
         field.setOpaque(false);
         ButtonGroup gr = new ButtonGroup();
-        for (String v : SchemaLoader.getSimpleTypeEnumeration(ann.editDetails)) {
+        for (String v : SchemaLoader.getSimpleTypeEnumeration(ann.editDetails,
+                context.getArticleTypeId())) {
             JRadioButton rb = new JRadioButton(v);
-            rb.setFont(rootPanel.getFont());
+            rb.setFont(context.getFont());
             gr.add(rb);
             rb.setOpaque(false);
             field.add(rb);
             rb.addItemListener(new ItemListener() {
                 @Override
                 public void itemStateChanged(ItemEvent e) {
-                    rootPanel.fireChanged();
+                    context.fireChanged();
                 }
             });
         }
+        field.setEnabled(writable);
         return field;
     }
 
     @Override
-    public void insertData(XMLStreamReader rd) throws Exception {
-        String v = rd.getElementText();
+    public void setData(String data) throws Exception {
         for (int i = 0; i < field.getComponentCount(); i++) {
             JRadioButton rb = (JRadioButton) field.getComponent(i);
-            if (v.equals(rb.getText())) {
+            if (rb.getText().equals(data)) {
                 rb.setSelected(true);
             }
         }
     }
 
     @Override
-    public void extractData(String tag, XMLStreamWriter wr) throws XMLStreamException {
-        wr.writeStartElement(tag);
+    public String getData() throws Exception {
         for (int i = 0; i < field.getComponentCount(); i++) {
             JRadioButton rb = (JRadioButton) field.getComponent(i);
             if (rb.isSelected()) {
-                wr.writeCharacters(rb.getText());
+                return rb.getText();
             }
         }
-        wr.writeEndElement();
+        return null;
     }
 }

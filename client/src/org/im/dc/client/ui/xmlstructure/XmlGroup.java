@@ -17,28 +17,31 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.apache.xerces.xs.XSAttributeUse;
 import org.apache.xerces.xs.XSComplexTypeDefinition;
 import org.apache.xerces.xs.XSElementDeclaration;
 import org.apache.xerces.xs.XSModelGroup;
+import org.apache.xerces.xs.XSObject;
 import org.apache.xerces.xs.XSObjectList;
 import org.apache.xerces.xs.XSParticle;
 import org.apache.xerces.xs.XSTypeDefinition;
-import org.im.dc.client.ui.ArticleEditController;
 
+/**
+ * Container for subelements.
+ */
 @SuppressWarnings("serial")
-public class XmlGroup extends JPanel implements IXmlElement {
-    private final XmlGroup rootPanel;
-    protected final ArticleEditController editController;
+public class XmlGroup extends JPanel implements IXmlComplexElement {
+    private final ArticleUIContext context;
     private GridBagConstraints gbc = new GridBagConstraints();
     private JPanel gr;
     private JButton closable;
     private TitledBorder border;
     private String borderTitle;
+    private final boolean writable;
 
-    public XmlGroup(XmlGroup rootPanel, XmlGroup parentPanel, XSElementDeclaration obj, AnnotationInfo ann,
-            ArticleEditController editController) {
-        this.rootPanel = rootPanel != null ? rootPanel : this;
-        this.editController = editController;
+    public XmlGroup(ArticleUIContext context, XmlGroup parentPanel, XSElementDeclaration obj, AnnotationInfo ann, boolean parentWritable) {
+        this.context = context;
+        writable = context.getWritable(parentWritable, ann);
         setLayout(new GridBagLayout());
 
         gr = new JPanel();
@@ -92,9 +95,13 @@ public class XmlGroup extends JPanel implements IXmlElement {
                 Container parent = XmlGroup.this.getParent();
                 parent.remove(XmlGroup.this);
                 parent.revalidate();
-                rootPanel.fireChanged();
+                context.fireChanged();
             }
         });
+    }
+
+    public boolean isWritable() {
+        return writable;
     }
 
     void p2(XSElementDeclaration objElem) {
@@ -103,24 +110,50 @@ public class XmlGroup extends JPanel implements IXmlElement {
             throw new RuntimeException("Not a group");
         }
         XSComplexTypeDefinition elemTypeComplex = (XSComplexTypeDefinition) elemType;
+        XSObjectList attrList = elemTypeComplex.getAttributeUses();
+        for (int i = 0; i < attrList.getLength(); i++) {
+            XSObject o = attrList.item(i);
+            if (o instanceof XSAttributeUse) {
+                gr.add(new XmlMany(context, this, (XSAttributeUse) o, writable), gbc);
+                gbc.gridy++;
+            } else {
+                throw new RuntimeException("Unknown attribute declaration");
+            }
+        }
         XSParticle pa1 = elemTypeComplex.getParticle();
-        XSModelGroup group = (XSModelGroup) pa1.getTerm();
-        XSObjectList list = group.getParticles();
-        for (int i = 0; i < list.getLength(); i++) {
-            XSParticle o = (XSParticle) list.item(i);
-            XSElementDeclaration grElem = (XSElementDeclaration) o.getTerm();
-            gr.add(new XmlMany(rootPanel, this, grElem, o.getMinOccurs(), o.getMaxOccurs()), gbc);
-            gbc.gridy++;
+        if (pa1 != null) {
+            XSModelGroup group = (XSModelGroup) pa1.getTerm();
+            XSObjectList list = group.getParticles();
+            for (int i = 0; i < list.getLength(); i++) {
+                gr.add(new XmlMany(context, this, (XSParticle) list.item(i),writable), gbc);
+                gbc.gridy++;
+            }
         }
     }
 
     @Override
     public void setClosableVisible(boolean visible) {
-        this.closable.setVisible(visible);
+        this.closable.setVisible(visible && writable);
     }
 
     @Override
     public void insertData(XMLStreamReader rd) throws Exception {
+        for (int i = 0; i < rd.getAttributeCount(); i++) {
+            String attrName = rd.getAttributeLocalName(i);
+            String attrValue = rd.getAttributeValue(i);
+            boolean done = false;
+            for (int groupIndex = 0; groupIndex < gr.getComponentCount(); groupIndex++) {
+                XmlMany many = (XmlMany) gr.getComponent(groupIndex);
+                if (many.tag.equals(attrName)) {
+                    many.setSimpleDataTo(attrValue);
+                    done = true;
+                    break;
+                }
+            }
+            if (!done) {
+                throw new RuntimeException("Attribute not found");
+            }
+        }
         int groupIndex = 0;
         int indexInGroup = 0;
         while (rd.hasNext()) {
@@ -208,5 +241,9 @@ public class XmlGroup extends JPanel implements IXmlElement {
         for (ChangeListener cl : listenerList.getListeners(ChangeListener.class)) {
             cl.stateChanged(null);
         }
+    }
+
+    public String toString() {
+        return this.getClass().getName();
     }
 }

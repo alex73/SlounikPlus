@@ -18,13 +18,11 @@
         SELECT * FROM ArticlesHistory ORDER BY historyId
     </select>
 	<insert id="insertArticleHistory" useGeneratedKeys="true" keyProperty="hist.historyId">
-		INSERT INTO ArticlesHistory (articleId,changed,changer,oldState,newState,oldWords,newWords,oldAssignedUsers,newAssignedUsers,oldXml,newXml)
-		VALUES(#{hist.articleId},#{hist.changed},#{hist.changer},#{hist.oldState},#{hist.newState},#{hist.oldWords,typeHandler=StringArrayTypeHandler},#{hist.newWords,typeHandler=StringArrayTypeHandler},#{hist.oldAssignedUsers,typeHandler=StringArrayTypeHandler},#{hist.newAssignedUsers,typeHandler=StringArrayTypeHandler},#{hist.oldXml},#{hist.newXml})
+		INSERT INTO ArticlesHistory (articleId,changed,changer,oldState,newState,oldHeader,newHeader,oldAssignedUsers,newAssignedUsers,oldXml,newXml)
+		VALUES(#{hist.articleId},#{hist.changed},#{hist.changer},#{hist.oldState},#{hist.newState},#{hist.oldHeader},#{hist.newHeader},#{hist.oldAssignedUsers,typeHandler=StringArrayTypeHandler},#{hist.newAssignedUsers,typeHandler=StringArrayTypeHandler},#{hist.oldXml},#{hist.newXml})
 	</insert>
 
 	<resultMap id="RecArticleHistoryMap" type="RecArticleHistory">
 		<id property="historyId" column="historyId" />
-		<result property="oldWords" column="oldWords" typeHandler="StringArrayTypeHandler" />
-		<result property="newWords" column="newWords" typeHandler="StringArrayTypeHandler" />
 	</resultMap>
 </mapper>

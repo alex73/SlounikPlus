@@ -77,6 +77,11 @@ public class XmlEditParadygmy extends XmlEditBase<JTextArea> {
     }
 
     @Override
+    public boolean isEmpty() {
+        return false;
+    }
+
+    @Override
     public void extractData(String tag, XMLStreamWriter wr) throws Exception {
         Marshaller m = GrammarDB2.getContext().createMarshaller();
         m.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);

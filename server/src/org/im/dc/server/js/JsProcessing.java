@@ -19,10 +19,11 @@ public class JsProcessing {
 
     public static void exec(String scriptFile, ScriptContext context) throws Exception {
         LOG.info(">> Execute script from " + scriptFile);
+        long startTime = System.currentTimeMillis();
         ScriptEngine engine = FACTORY.getEngineByName("JavaScript");
         try (BufferedReader rd = new BufferedReader(new InputStreamReader(new FileInputStream(scriptFile), "UTF-8"))) {
             engine.eval(rd, context);
         }
-        LOG.info("<< Execute script from " + scriptFile);
+        LOG.info("<< Execute script from " + scriptFile + " (" + (System.currentTimeMillis() - startTime) + "ms)");
     }
 }

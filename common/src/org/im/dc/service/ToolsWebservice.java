@@ -16,11 +16,11 @@ public interface ToolsWebservice {
 
     String validate(Header header, String articleType, int articleId, String aticleHeader, byte[] xml) throws Exception;
 
-    void validateAll(Header header, String articleType) throws Exception;
+    void validateAll(Header header) throws Exception;
 
     void reassignUsers(Header header, String articleType, int[] articleIds, String[] users) throws Exception;
 
-    void addHeaders(Header header, String articleType, String[] users, String[] articleHeaders, String initialState) throws Exception;
+    void addArticles(Header header, String articleType, String[] users, String[] articleHeaders, byte[][] xmls) throws Exception;
 
     String preparePreview(Header header, String articleType, String articleHeader, byte[] xml) throws Exception;
 
@@ -29,6 +29,4 @@ public interface ToolsWebservice {
     List<Related> listIssues(Header header) throws Exception;
 
     List<Related> listNews(Header header) throws Exception;
-
-    List<String> listArticleHeaders(Header header, String articleType) throws Exception;
 }

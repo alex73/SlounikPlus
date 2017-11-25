@@ -18,10 +18,10 @@ public class ArticleEditDialog extends javax.swing.JDialog {
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
+        java.awt.GridBagConstraints gridBagConstraints;
 
         jPanel5 = new javax.swing.JPanel();
         jPanel6 = new javax.swing.JPanel();
-        txtWords = new javax.swing.JTextField();
         txtState = new javax.swing.JTextField();
         txtUsers = new javax.swing.JTextField();
         jPanel7 = new javax.swing.JPanel();
@@ -46,17 +46,28 @@ public class ArticleEditDialog extends javax.swing.JDialog {
 
         jPanel5.setLayout(new java.awt.BorderLayout());
 
-        txtWords.setEditable(false);
-        txtWords.setToolTipText(bundle.getString("ArticleEditDialog.txtWords.toolTipText")); // NOI18N
-        jPanel6.add(txtWords);
+        jPanel6.setLayout(new java.awt.GridBagLayout());
 
         txtState.setEditable(false);
+        txtState.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         txtState.setToolTipText(bundle.getString("ArticleEditDialog.txtState.toolTipText")); // NOI18N
-        jPanel6.add(txtState);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.ipadx = 50;
+        gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
+        jPanel6.add(txtState, gridBagConstraints);
 
         txtUsers.setEditable(false);
+        txtUsers.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         txtUsers.setToolTipText(bundle.getString("ArticleEditDialog.txtUsers.toolTipText")); // NOI18N
-        jPanel6.add(txtUsers);
+        txtUsers.setMinimumSize(new java.awt.Dimension(60, 10));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.ipadx = 50;
+        gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
+        jPanel6.add(txtUsers, gridBagConstraints);
 
         jPanel5.add(jPanel6, java.awt.BorderLayout.WEST);
 
@@ -171,6 +182,5 @@ public class ArticleEditDialog extends javax.swing.JDialog {
     public javax.swing.JPanel panelLinkedFrom;
     public javax.swing.JTextField txtState;
     public javax.swing.JTextField txtUsers;
-    public javax.swing.JTextField txtWords;
     // End of variables declaration//GEN-END:variables
 }

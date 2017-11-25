@@ -92,9 +92,9 @@ public class DbTestArticle {
     @Test
     public void testList() throws Exception {
         ArticlesFilter filter = new ArticlesFilter();
-        List<RecArticle> list = Db.execAndReturn((api) -> api.getArticleMapper().listArticles(filter));
+        List<RecArticle> list = Db.execAndReturn((api) -> api.getArticleMapper().listArticles(null, filter));
         filter.state = "state";
-        Db.exec((api) -> api.getArticleMapper().listArticles(filter));
+        Db.exec((api) -> api.getArticleMapper().listArticles(null, filter));
     }
 
     @Test

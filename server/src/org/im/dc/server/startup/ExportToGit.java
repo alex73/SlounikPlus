@@ -45,7 +45,7 @@ public class ExportToGit {
         git = Git.init().setDirectory(repoPath).call();
 
         Db.exec((api) -> {
-            for (RecArticle a : api.getArticleMapper().listArticles(new ArticlesFilter())) {
+            for (RecArticle a : api.getArticleMapper().listArticles(null, new ArticlesFilter())) {
                 header.put(a.getArticleId(), a.getHeader());
             }
             history = api.getArticleHistoryMapper().retrieveAllHistory();

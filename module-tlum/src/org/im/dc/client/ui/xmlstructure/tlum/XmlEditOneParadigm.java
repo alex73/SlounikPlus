@@ -156,6 +156,11 @@ public class XmlEditOneParadigm extends XmlEditBase<XmlEditOneParadigmPanel> {
     }
 
     @Override
+    public boolean isEmpty() {
+        return false;
+    }
+
+    @Override
     public void extractData(String tag, XMLStreamWriter wr) throws Exception {
         Marshaller m = CONTEXT.createMarshaller();
         m.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);

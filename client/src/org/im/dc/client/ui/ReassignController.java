@@ -9,7 +9,6 @@ import java.util.Map;
 import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
 
-import org.im.dc.client.WS;
 import org.im.dc.service.dto.ArticleShort;
 
 public class ReassignController extends BaseController<ReassignDialog> {

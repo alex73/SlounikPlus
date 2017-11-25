@@ -12,14 +12,23 @@ import java.awt.font.TextAttribute;
 import java.io.ByteArrayInputStream;
 import java.io.StringWriter;
 import java.net.URI;
+import java.text.Collator;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.TreeMap;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
+import javax.swing.Timer;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.xml.stream.XMLInputFactory;
@@ -30,10 +39,14 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.im.dc.client.SchemaLoader;
 import org.im.dc.client.WS;
+import org.im.dc.client.ui.xmlstructure.ArticleUIContext;
 import org.im.dc.client.ui.xmlstructure.XmlGroup;
-import org.im.dc.gen.config.Permission;
+import org.im.dc.gen.config.TypePermission;
 import org.im.dc.service.dto.ArticleFull;
 import org.im.dc.service.dto.ArticleFullInfo;
+import org.im.dc.service.dto.ArticleShort;
+import org.im.dc.service.dto.ArticlesFilter;
+import org.im.dc.service.dto.InitialData;
 import org.im.dc.service.dto.Related;
 import org.im.dc.service.dto.Related.RelatedType;
 
@@ -48,7 +61,7 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
     public static XMLInputFactory READER_FACTORY = XMLInputFactory.newInstance();
     public static XMLOutputFactory WRITER_FACTORY = XMLOutputFactory.newInstance();
 
-    private final String articleType;
+    private final InitialData.TypeInfo typeInfo;
     private XmlGroup editorUI;
 
     protected volatile ArticleFullInfo article;
@@ -58,12 +71,18 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
     public ArticlePanelHistory panelHistory = new ArticlePanelHistory();
     public ArticlePanelNotes panelNotes = new ArticlePanelNotes();
 
-    private ArticleEditController(boolean isnew, String articleType) {
+    protected Map<String, List<String>> articleHeaders = new TreeMap<>();
+
+    private ArticleEditController(boolean isnew, InitialData.TypeInfo typeInfo) {
         super(new ArticleEditDialog(MainController.instance.window, false), MainController.instance.window);
-        this.articleType = articleType;
+        this.typeInfo = typeInfo;
         initDocking();
         setupCloseOnEscape();
         displayOnParent();
+    }
+
+    public String getArticleTypeId() {
+        return typeInfo.typeId;
     }
 
     @Override
@@ -74,13 +93,14 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
     /**
      * New article.
      */
-    public ArticleEditController(String articleType) {
-        this(true, articleType);
+    public ArticleEditController(InitialData.TypeInfo typeInfo) {
+        this(true, typeInfo);
 
         article = new ArticleFullInfo();
         article.youCanEdit = true;
         article.article = new ArticleFull();
-        article.article.state = MainController.initialData.newArticleState;
+        article.article.type = typeInfo.typeId;
+        article.article.state = typeInfo.newArticleState;
         article.article.assignedUsers = MainController.initialData.newArticleUsers;
         init();
         show();
@@ -89,14 +109,14 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
     /**
      * Edit exist article.
      */
-    public ArticleEditController(String articleType, int articleId) {
-        this(false, articleType);
+    public ArticleEditController(InitialData.TypeInfo typeInfo, int articleId) {
+        this(false, typeInfo);
 
         // request article from server
         new LongProcess() {
             @Override
             protected void exec() throws Exception {
-                article = WS.getArticleService().getArticleFullInfo(WS.header, articleType, articleId);
+                article = WS.getArticleService().getArticleFullInfo(WS.header, typeInfo.typeId, articleId);
             }
 
             @Override
@@ -186,18 +206,11 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
                 changeWatch();
             }
         });
-        window.lblPreview.setVisible(MainController.initialData.articleTypes.get(articleType).currentUserPermissions
-                .contains(Permission.VIEW_OUTPUT.name()));
+        window.lblPreview.setVisible(typeInfo.currentUserTypePermissions.contains(TypePermission.VIEW_OUTPUT.name()));
         window.lblPreview.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 new PreviewController(window, ArticleEditController.this);
-            }
-        });
-        window.txtWords.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                askWords();
             }
         });
         panelNotes.txtNotes.getDocument().addDocumentListener(new DocumentListener() {
@@ -243,9 +256,9 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
 
         if (article.article.header != null) {
             window.setTitle(window.getTitle().replaceAll("\\[.*\\]", article.article.header));
-            window.txtWords.setText(article.article.header);
         }
         window.txtState.setText(article.article.state);
+        window.txtUsers.setVisible(article.article.assignedUsers != null);
         window.txtUsers.setText(Arrays.toString(article.article.assignedUsers));
         if (article.article.notes != null) {
             panelNotes.txtNotes.setText(article.article.notes);
@@ -253,10 +266,13 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
         window.lblValidationError
                 .setText(article.article.validationError != null ? article.article.validationError : " ");
 
-        wasChanged = false;
-        updateIssueButton();
+        ArticleUIContext editContext = new ArticleUIContext();
+        resetChanged();
         try {
-            editorUI = SchemaLoader.createUI(this);
+            editContext.editController = this;
+            editContext.userRole = MainController.initialData.currentUserRole;
+            editContext.articleState = article.article.state;
+            editorUI = SchemaLoader.createUI(editContext);
             if (article.article.xml != null) {
                 XMLStreamReader rd = READER_FACTORY
                         .createXMLStreamReader(new ByteArrayInputStream(article.article.xml));
@@ -264,11 +280,7 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
                 editorUI.insertData(rd);
                 editorUI.displayed();
             }
-            editorUI.addChangeListener((e) -> {
-                wasChanged = true;
-                window.btnSave.setEnabled(true);
-                updateIssueButton();
-            });
+            resetChanged();
         } catch (Throwable ex) {
             editorUI = null;
             ex.printStackTrace();
@@ -276,13 +288,10 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
                     JOptionPane.ERROR_MESSAGE);
         }
         panelEdit.panelEditor.setViewportView(editorUI);
-        window.btnSave.setEnabled(false);
 
         Related.sortByTimeDesc(article.related);
 
-        SettingsController.savePlacesForWindow(window, desk);
         panelHistory.tableHistory.setModel(new ArticleEditRelatedModel(article.related));
-        SettingsController.loadPlacesForWindow(window, desk);
 
         if (article.linksFrom.isEmpty()) {
             window.panelLinkedFrom.setVisible(false);
@@ -290,17 +299,13 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
             window.panelLinkedFrom.setVisible(true);
             window.panelLinkedFrom.removeAll();
             window.panelLinkedFrom.add(new JLabel("На гэты артыкул спасылаюцца:"));
-            /*for (ArticleFullInfo.LinkFrom lf : article.linksFrom) {
-                JLabel lbl = new JLabel(Arrays.toString(lf.words));
-                lbl.addMouseListener(new MouseAdapter() {
-                    @Override
-                    public void mouseClicked(MouseEvent e) {
-                        new ArticleEditController(lf.articleId);
-                    }
-                });
-                asLink(lbl);
-                window.panelLinkedFrom.add(lbl);
-            }*/
+            /*
+             * for (ArticleFullInfo.LinkFrom lf : article.linksFrom) { JLabel lbl = new
+             * JLabel(Arrays.toString(lf.words)); lbl.addMouseListener(new MouseAdapter() {
+             * 
+             * @Override public void mouseClicked(MouseEvent e) { new ArticleEditController(lf.articleId); } });
+             * asLink(lbl); window.panelLinkedFrom.add(lbl); }
+             */
         }
         if (article.linksExternal.isEmpty()) {
             window.panelLinkedExternal.setVisible(false);
@@ -326,6 +331,49 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
         }
     }
 
+    public List<String> getHeaders(String articleTypeId) {
+        synchronized (articleHeaders) {
+            return articleHeaders.get(articleTypeId);
+        }
+    }
+
+    /**
+     * Retrieve article headers.
+     */
+    public void requestRetrieveHeaders(String articleTypeId) {
+        synchronized (articleHeaders) {
+            if (articleHeaders.containsKey(articleTypeId)) {
+                // already requested
+                return;
+            }
+            articleHeaders.put(articleTypeId, null);
+            new SwingWorker<Void, Void>() {
+                List<String> headers = new ArrayList<>();
+
+                @Override
+                protected Void doInBackground() throws Exception {
+                    List<ArticleShort> articles = WS.getArticleService().listArticles(WS.header, articleTypeId,
+                            new ArticlesFilter());
+                    articles.forEach(a -> headers.add(a.header));
+                    Collator collator = Collator.getInstance(new Locale(MainController.initialData.headerLocale));
+                    Collections.sort(headers, collator);
+                    return null;
+                }
+
+                protected void done() {
+                    try {
+                        get();
+                        synchronized (articleHeaders) {
+                            articleHeaders.put(articleTypeId, headers);
+                        }
+                    } catch (Throwable ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            }.execute();
+        }
+    }
+
     public static XMLStreamReader getReader(byte[] xml) throws Exception {
         XMLStreamReader rd = READER_FACTORY.createXMLStreamReader(new ByteArrayInputStream(xml));
         while (rd.hasNext()) {
@@ -335,6 +383,16 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
             }
         }
         return rd;
+    }
+
+    public void resetChanged() {
+        wasChanged = false;
+        SwingUtilities.invokeLater(() -> updateIssueButton());
+    }
+
+    public void setChanged() {
+        wasChanged = true;
+        SwingUtilities.invokeLater(() -> updateIssueButton());
     }
 
     private void asLink(JLabel label) {
@@ -369,7 +427,7 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
     protected byte[] extractXml() throws Exception {
         StringWriter w = new StringWriter();
         XMLStreamWriter wr = WRITER_FACTORY.createXMLStreamWriter(w);
-        editorUI.extractData("root", wr);
+        editorUI.extractData(typeInfo.typeId, wr);
         wr.flush();
         return w.toString().getBytes("UTF-8");
     }
@@ -396,7 +454,7 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
                     }
                 }
 
-                article = WS.getArticleService().saveArticle(WS.header, article.article.type, article.article);
+                article = WS.getArticleService().saveArticle(WS.header, article.article);
                 saved = true;
                 MainController.instance.fireArticleUpdated(article.article);
             }
@@ -477,14 +535,8 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
         askComment.setVisible(true);
     }
 
-    private void askWords() {
-        if (askSave()) {
-            return;
-        }
-        new ArticleEditChangeWordsController(this);
-    }
-
     private void updateIssueButton() {
+        window.btnSave.setEnabled(wasChanged);
         window.btnAddIssue.setText(wasChanged ? "Прапанаваць змены" : "Дадаць заўвагу");
     }
 

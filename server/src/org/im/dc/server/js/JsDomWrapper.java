@@ -39,7 +39,19 @@ public class JsDomWrapper implements Map<String, Object> {
 
     @Override
     public boolean containsKey(Object key) {
-        throw new RuntimeException("Not implemented");
+        if (el.hasAttribute(key.toString())) {
+            return true;
+        }
+
+        List<JsDomWrapper> r = new ArrayList<>();
+        for (Node n = el.getFirstChild(); n != null; n = n.getNextSibling()) {
+            if (n.getNodeType() == Node.ELEMENT_NODE) {
+                if (n.getNodeName().equals(key)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     @Override

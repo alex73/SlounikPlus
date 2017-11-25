@@ -10,11 +10,11 @@ import org.im.dc.service.dto.ArticlesFilter;
  * Interface for declare DB access statements.
  */
 public interface DoArticle {
-    List<RecArticle> listArticles(@Param("filter") ArticlesFilter filter);
+    List<RecArticle> listArticles(@Param("articleType") String articleType, @Param("filter") ArticlesFilter filter);
 
     RecArticle selectArticle(@Param("id") int id);
 
-    List<RecArticle> selectArticles(@Param("ids")  int[] ids);
+    List<RecArticle> selectArticles(@Param("ids") int[] ids);
 
     RecArticle selectArticleForUpdate(@Param("id") int id);
 
@@ -29,8 +29,6 @@ public interface DoArticle {
     int updateArticleWordsXml(@Param("record") RecArticle rec);
 
     void reassignArticles(@Param("articleIds") int[] articleIds, @Param("users") String[] users);
-
-    int updateWords(@Param("record") RecArticle rec, @Param("prevLastUpdated") Date prevLastUpdated);
 
     int updateArticleState(@Param("record") RecArticle rec, @Param("prevLastUpdated") Date prevLastUpdated);
 

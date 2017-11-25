@@ -1,8 +1,6 @@
 
 package org.im.dc.gen.config;
 
-import java.util.ArrayList;
-import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -20,14 +18,13 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element ref="{}version"/>
- *         &lt;element ref="{}headerLocale"/>
- *         &lt;element ref="{}stress"/>
- *         &lt;element ref="{}users"/>
- *         &lt;element ref="{}types"/>
+ *         &lt;element name="version" type="{http://www.w3.org/2001/XMLSchema}string"/>
+ *         &lt;element name="headerLocale" type="{http://www.w3.org/2001/XMLSchema}string"/>
+ *         &lt;element name="stress" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *         &lt;element ref="{}roles"/>
- *         &lt;element ref="{}permissions" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element ref="{}states" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element ref="{}users"/>
+ *         &lt;element ref="{}states"/>
+ *         &lt;element ref="{}types"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -41,11 +38,10 @@ import javax.xml.bind.annotation.XmlType;
     "version",
     "headerLocale",
     "stress",
-    "users",
-    "types",
     "roles",
-    "permissions",
-    "states"
+    "users",
+    "states",
+    "types"
 })
 @XmlRootElement(name = "config")
 public class Config {
@@ -57,13 +53,13 @@ public class Config {
     @XmlElement(required = true)
     protected String stress;
     @XmlElement(required = true)
+    protected Roles roles;
+    @XmlElement(required = true)
     protected Users users;
     @XmlElement(required = true)
-    protected Types types;
+    protected States states;
     @XmlElement(required = true)
-    protected Roles roles;
-    protected List<Permissions> permissions;
-    protected List<States> states;
+    protected Types types;
 
     /**
      * Gets the value of the version property.
@@ -138,54 +134,6 @@ public class Config {
     }
 
     /**
-     * Gets the value of the users property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Users }
-     *     
-     */
-    public Users getUsers() {
-        return users;
-    }
-
-    /**
-     * Sets the value of the users property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Users }
-     *     
-     */
-    public void setUsers(Users value) {
-        this.users = value;
-    }
-
-    /**
-     * Gets the value of the types property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Types }
-     *     
-     */
-    public Types getTypes() {
-        return types;
-    }
-
-    /**
-     * Sets the value of the types property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Types }
-     *     
-     */
-    public void setTypes(Types value) {
-        this.types = value;
-    }
-
-    /**
      * Gets the value of the roles property.
      * 
      * @return
@@ -210,61 +158,75 @@ public class Config {
     }
 
     /**
-     * Gets the value of the permissions property.
+     * Gets the value of the users property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the permissions property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getPermissions().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link Permissions }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link Users }
+     *     
      */
-    public List<Permissions> getPermissions() {
-        if (permissions == null) {
-            permissions = new ArrayList<Permissions>();
-        }
-        return this.permissions;
+    public Users getUsers() {
+        return users;
+    }
+
+    /**
+     * Sets the value of the users property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Users }
+     *     
+     */
+    public void setUsers(Users value) {
+        this.users = value;
     }
 
     /**
      * Gets the value of the states property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the states property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getStates().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link States }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link States }
+     *     
      */
-    public List<States> getStates() {
-        if (states == null) {
-            states = new ArrayList<States>();
-        }
-        return this.states;
+    public States getStates() {
+        return states;
+    }
+
+    /**
+     * Sets the value of the states property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link States }
+     *     
+     */
+    public void setStates(States value) {
+        this.states = value;
+    }
+
+    /**
+     * Gets the value of the types property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Types }
+     *     
+     */
+    public Types getTypes() {
+        return types;
+    }
+
+    /**
+     * Sets the value of the types property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Types }
+     *     
+     */
+    public void setTypes(Types value) {
+        this.types = value;
     }
 
 }

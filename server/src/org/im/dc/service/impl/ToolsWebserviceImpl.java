@@ -16,8 +16,9 @@ import javax.script.SimpleScriptContext;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Validator;
 
-import org.im.dc.gen.config.Permission;
-import org.im.dc.gen.config.States;
+import org.im.dc.gen.config.CommonPermission;
+import org.im.dc.gen.config.Type;
+import org.im.dc.gen.config.TypePermission;
 import org.im.dc.gen.config.User;
 import org.im.dc.server.Config;
 import org.im.dc.server.Db;
@@ -58,28 +59,28 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
         result.configVersion = Config.getConfig().getVersion();
         result.headerLocale = Config.getConfig().getHeaderLocale();
         result.stress = Config.getConfig().getStress();
-        result.articleTypes = new TreeMap<>();
-        for (String type : Config.getConfig().getTypes().getType()) {
+        for (Type type : Config.getConfig().getTypes().getType()) {
             InitialData.TypeInfo ti = new InitialData.TypeInfo();
-            result.articleTypes.put(type, ti);
-            ti.articleSchema = Config.schemas.get(type).source;
+            ti.typeId = type.getId();
+            ti.typeName = type.getName();
+            ti.newArticleState = PermissionChecker.getNewArticleState(ti.typeId);
+            ti.articleSchema = Config.schemas.get(type.getId()).source;
+            result.articleTypes.add(ti);
         }
-        Map<String, Set<String>> ps = PermissionChecker.getUserPermissions(header.user);
-        for (String type : Config.getConfig().getTypes().getType()) {
-            result.articleTypes.get(type).currentUserPermissions = ps.get(type);
+        result.currentUserPermissions = PermissionChecker.getUserPermissions(header.user);
+        Map<String, Set<String>> ps = PermissionChecker.getUserPermissionsByType(header.user);
+        for (Type type : Config.getConfig().getTypes().getType()) {
+            Set<String> permissionsList = ps.get(type.getId());
+            if (permissionsList != null) {
+                result.getTypeInfo(type.getId()).currentUserTypePermissions.addAll(permissionsList);
+            }
         }
-        for (States sts : Config.getConfig().getStates()) {
-            InitialData.TypeInfo ti = result.articleTypes.get(sts.getType());
-            ti.states = new ArrayList<>();
-            sts.getState().forEach(st -> ti.states.add(st.getId()));
-        }
+        result.states.addAll(Config.getConfig().getStates().getState());
         result.allUsers = new TreeMap<>();
         for (User u : Config.getConfig().getUsers().getUser()) {
             result.allUsers.put(u.getName(), u.getRole());
         }
         result.currentUserRole = PermissionChecker.getUserRole(header.user);
-        result.newArticleState = PermissionChecker.getUserNewArticleState(header.user);
-        result.newArticleUsers = PermissionChecker.getUserNewArticleUsers(header.user);
 
         LOG.info("<< getInitialData (" + (System.currentTimeMillis() - startTime) + "ms)");
         return result;
@@ -113,21 +114,17 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
     }
 
     @Override
-    public void validateAll(Header header, String articleType) throws Exception {
+    public void validateAll(Header header) throws Exception {
         LOG.info(">> validateAll(" + header.user + ")");
         long startTime = System.currentTimeMillis();
         check(header);
-        PermissionChecker.userRequiresPermission(header.user, articleType, Permission.FULL_VALIDATION);
+        PermissionChecker.userRequiresCommonPermission(header.user, CommonPermission.FULL_VALIDATION);
 
         List<Integer> articleIds = Db.execAndReturn((api) -> api.getArticleMapper().selectAllIds());
 
         for (int id : articleIds) {
             Db.exec((api) -> {
                 RecArticle a = api.getArticleMapper().selectArticleForUpdate(id);
-                if (!articleType.equals(a.getArticleType())) {
-                    LOG.warn("<< validateAll: wrong type/id requested");
-                    throw new RuntimeException("Запыт няправільнага ID для вызначанага тыпу");
-                }
                 String err;
                 try {
                     err = ArticleWebserviceImpl.validateArticle(a);
@@ -153,7 +150,7 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
         LOG.info(">> reassignUsers(" + header.user + ")");
         long startTime = System.currentTimeMillis();
         check(header);
-        PermissionChecker.userRequiresPermission(header.user, articleType, Permission.REASSIGN);
+        PermissionChecker.userRequiresTypePermission(header.user, articleType, TypePermission.REASSIGN);
 
         Db.exec((api) -> {
             for (int articleId : articleIds) {
@@ -170,27 +167,29 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
     }
 
     @Override
-    public void addHeaders(Header header, String articleType, String[] users, String[] articleHeaders,
-            String initialState) throws Exception {
-        LOG.info(">> addWords(" + header.user + ")");
+    public void addArticles(Header header, String articleType, String[] users, String[] articleHeaders,
+            byte[][] xmls) throws Exception {
+        LOG.info(">> addArticles(" + header.user + ")");
         long startTime = System.currentTimeMillis();
         check(header);
-        PermissionChecker.userRequiresPermission(header.user, articleType, Permission.ADD_WORDS);
-
+        PermissionChecker.userRequiresTypePermission(header.user, articleType, TypePermission.ADD_ARTICLES);
+        if (articleHeaders.length!=xmls.length) {
+            LOG.warn("<< addArticles: count of headers and data are not correct");
+            throw new RuntimeException("Несупадае колькасць");
+        }
         Date lastUpdated = new Date();
         List<RecArticle> list = new ArrayList<>();
         List<String> checkHeaders = new ArrayList<>();
-        for (String h : articleHeaders) {
-            h = h.trim();
-            if (h.isEmpty()) {
-                continue;
-            }
+        String initialState = PermissionChecker.getNewArticleState(articleType);
+        for (int i=0;i<articleHeaders.length; i++) {
+            String h = articleHeaders[i].trim();
             checkHeaders.add(h);
             RecArticle r = new RecArticle();
             r.setArticleType(articleType);
             r.setAssignedUsers(users);
             r.setHeader(h);
             r.setState(initialState);
+            r.setXml(xmls[i]);
             r.setMarkers(new String[0]);
             r.setWatchers(new String[0]);
             r.setLinkedTo(new String[0]);
@@ -201,13 +200,13 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
         Db.exec((api) -> {
             List<RecArticle> existArticles = api.getArticleMapper().getArticlesWithHeaders(checkHeaders);
             if (!existArticles.isEmpty()) {
-                LOG.warn("<< addHeaders: already exist: " + existArticles.get(0).getHeader());
-                throw new RuntimeException("Словы ўжо ёсьць: " + existArticles.get(0).getHeader());
+                LOG.warn("<< addArticles: already exist: " + existArticles.get(0).getHeader());
+                throw new RuntimeException("Артыкулы ўжо ёсьць: " + existArticles.get(0).getHeader());
             }
             api.getArticleMapper().insertArticles(list);
         });
 
-        LOG.info("<< addWords (" + (System.currentTimeMillis() - startTime) + "ms)");
+        LOG.info("<< addArticles (" + (System.currentTimeMillis() - startTime) + "ms)");
     }
 
     @Override
@@ -215,7 +214,7 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
         LOG.info(">> preparePreview(" + header.user + ")");
         long startTime = System.currentTimeMillis();
         check(header);
-        PermissionChecker.userRequiresPermission(header.user, articleType, Permission.VIEW_OUTPUT);
+        PermissionChecker.userRequiresTypePermission(header.user, articleType, TypePermission.VIEW_OUTPUT);
 
         try {
             Validator validator = Config.schemas.get(articleType).xsdSchema.newValidator();
@@ -241,7 +240,7 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
         LOG.info(">> preparePreviews(" + header.user + ")");
         long startTime = System.currentTimeMillis();
         check(header);
-        PermissionChecker.userRequiresPermission(header.user, articleType, Permission.VIEW_OUTPUT);
+        PermissionChecker.userRequiresTypePermission(header.user, articleType, TypePermission.VIEW_OUTPUT);
 
         try {
             Map<Integer, RecArticle> articlesMap = new HashMap<>();
@@ -332,10 +331,5 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
 
         LOG.info("<< listNews (" + (System.currentTimeMillis() - startTime) + "ms)");
         return related;
-    }
-
-    @Override
-    public List<String> listArticleHeaders(Header header, String articleType) throws Exception {
-        return null;
     }
 }

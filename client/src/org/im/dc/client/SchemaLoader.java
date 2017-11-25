@@ -11,8 +11,8 @@ import org.apache.xerces.impl.xs.XMLSchemaLoader;
 import org.apache.xerces.xs.XSElementDeclaration;
 import org.apache.xerces.xs.XSModel;
 import org.apache.xerces.xs.XSSimpleTypeDefinition;
-import org.im.dc.client.ui.ArticleEditController;
 import org.im.dc.client.ui.xmlstructure.AnnotationInfo;
+import org.im.dc.client.ui.xmlstructure.ArticleUIContext;
 import org.im.dc.client.ui.xmlstructure.XmlGroup;
 import org.im.dc.service.dto.InitialData;
 import org.w3c.dom.ls.LSInput;
@@ -20,12 +20,12 @@ import org.w3c.dom.ls.LSInput;
 public class SchemaLoader {
     private static Map<String, XSModel> models;
 
-    public static void init(Map<String, InitialData.TypeInfo> articleTypes) {
+    public static void init(List<InitialData.TypeInfo> articleTypes) {
         models = new TreeMap<>();
-        for (Map.Entry<String, InitialData.TypeInfo> en : articleTypes.entrySet()) {
+        for (InitialData.TypeInfo ti : articleTypes) {
             XMLSchemaLoader schemaLoader = new XMLSchemaLoader();
 
-            models.put(en.getKey(), schemaLoader.load(new LSInput() {
+            models.put(ti.typeId, schemaLoader.load(new LSInput() {
                 @Override
                 public void setSystemId(String systemId) {
                 }
@@ -90,7 +90,7 @@ public class SchemaLoader {
 
                 @Override
                 public InputStream getByteStream() {
-                    return new ByteArrayInputStream(en.getValue().articleSchema);
+                    return new ByteArrayInputStream(ti.articleSchema);
                 }
 
                 @Override
@@ -101,13 +101,15 @@ public class SchemaLoader {
         }
     }
 
-    public static XmlGroup createUI(ArticleEditController editor) {
-        XSElementDeclaration root = models.get(null).getElementDeclaration("root", null);
-        return new XmlGroup(null, null, root, new AnnotationInfo(root.getAnnotation()), editor);
+    public static XmlGroup createUI(ArticleUIContext context) {
+        XSElementDeclaration root = models.get(context.getArticleTypeId())
+                .getElementDeclaration(context.getArticleTypeId(), null);
+        return new XmlGroup(context, null, root, new AnnotationInfo(root.getAnnotation(), root.getName()), true);
     }
 
-    public static List<String> getSimpleTypeEnumeration(String typeName) {
-        XSSimpleTypeDefinition type = (XSSimpleTypeDefinition) models.get(null).getTypeDefinition(typeName, null);
+    public static List<String> getSimpleTypeEnumeration(String typeName, String articleTypeId) {
+        XSSimpleTypeDefinition type = (XSSimpleTypeDefinition) models.get(articleTypeId).getTypeDefinition(typeName,
+                null);
         if (type == null) {
             return null;
         }

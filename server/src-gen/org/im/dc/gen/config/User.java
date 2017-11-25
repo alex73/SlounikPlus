@@ -20,8 +20,6 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;attribute name="name" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
  *       &lt;attribute name="pass" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
  *       &lt;attribute name="role" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="new-article-state" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="new-article-users" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -40,10 +38,6 @@ public class User {
     protected String pass;
     @XmlAttribute(name = "role", required = true)
     protected String role;
-    @XmlAttribute(name = "new-article-state")
-    protected String newArticleState;
-    @XmlAttribute(name = "new-article-users")
-    protected String newArticleUsers;
 
     /**
      * Gets the value of the name property.
@@ -115,54 +109,6 @@ public class User {
      */
     public void setRole(String value) {
         this.role = value;
-    }
-
-    /**
-     * Gets the value of the newArticleState property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getNewArticleState() {
-        return newArticleState;
-    }
-
-    /**
-     * Sets the value of the newArticleState property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setNewArticleState(String value) {
-        this.newArticleState = value;
-    }
-
-    /**
-     * Gets the value of the newArticleUsers property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getNewArticleUsers() {
-        return newArticleUsers;
-    }
-
-    /**
-     * Sets the value of the newArticleUsers property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setNewArticleUsers(String value) {
-        this.newArticleUsers = value;
     }
 
 }

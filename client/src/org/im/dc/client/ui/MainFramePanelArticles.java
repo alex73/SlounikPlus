@@ -33,8 +33,8 @@ public class MainFramePanelArticles extends javax.swing.JPanel {
         jScrollPane1 = new javax.swing.JScrollPane();
         tableArticles = new javax.swing.JTable();
         jPanel1 = new javax.swing.JPanel();
-        btnReassign = new javax.swing.JButton();
         btnAddArticle = new javax.swing.JButton();
+        btnReassign = new javax.swing.JButton();
         btnPreview = new javax.swing.JButton();
 
         setLayout(new java.awt.BorderLayout());
@@ -151,11 +151,11 @@ public class MainFramePanelArticles extends javax.swing.JPanel {
 
         add(jScrollPane1, java.awt.BorderLayout.CENTER);
 
-        btnReassign.setText(bundle.getString("MainFramePanelArticles.btnReassign.text")); // NOI18N
-        jPanel1.add(btnReassign);
-
         btnAddArticle.setText(bundle.getString("MainFramePanelArticles.btnAddArticle.text")); // NOI18N
         jPanel1.add(btnAddArticle);
+
+        btnReassign.setText(bundle.getString("MainFramePanelArticles.btnReassign.text")); // NOI18N
+        jPanel1.add(btnReassign);
 
         btnPreview.setText(bundle.getString("MainFramePanelArticles.btnPreview.text")); // NOI18N
         jPanel1.add(btnPreview);
