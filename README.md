@@ -1,9 +1,6 @@
 # SlounikPlus
 
-Create/edit dictionary software for small team.
-
-For install it under Tomcat you need to install Metro first as described on the 
-https://javaee.github.io/metro/download
+Collaborative software for dictionary creation.
 
 License
 -------
@@ -19,3 +16,9 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+Tomcat installation
+-------------------
+For install it under Tomcat you need to install Metro first as described on the 
+https://javaee.github.io/metro/download
+
