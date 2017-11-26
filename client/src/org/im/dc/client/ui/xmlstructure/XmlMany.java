@@ -126,11 +126,11 @@ public class XmlMany extends JPanel {
                 XSSimpleType simpleType = (XSSimpleType) type;
                 switch (simpleType.getPrimitiveKind()) {
                 case XSSimpleType.PRIMITIVE_BOOLEAN:
-                    p = new XmlEditBoolean(context, parentPanel, ann,writable);
+                    p = new XmlEditBoolean(context, parentPanel, ann, writable);
                     break;
                 case XSSimpleType.PRIMITIVE_DECIMAL:
                 case XSSimpleType.PRIMITIVE_STRING:
-                    p = new XmlEditText(context, parentPanel, ann,writable);
+                    p = new XmlEditText(context, parentPanel, ann, writable);
                     break;
                 default:
                     throw new RuntimeException("Can't create editor for simple type: " + type.getName());
@@ -141,19 +141,19 @@ public class XmlMany extends JPanel {
             }
             break;
         case CHECK:
-            p = new XmlEditCheck(context, parentPanel, ann,writable);
+            p = new XmlEditCheck(context, parentPanel, ann, writable);
             break;
         case RADIO:
-            p = new XmlEditRadio(context, parentPanel, ann,writable);
+            p = new XmlEditRadio(context, parentPanel, ann, writable);
+            break;
+        case COMBO:
+            p = new XmlEditCombo(context, parentPanel, ann, writable);
             break;
         case COMBO_EDITABLE:
-            p = new XmlEditComboEditable(context, parentPanel, ann,writable);
-            break;
-        case COMBO_DICT_EDITABLE:
-            p = new XmlEditComboDictionaryEditable(context, parentPanel, ann,writable);
+            p = new XmlEditComboEditable(context, parentPanel, ann, writable);
             break;
         case ARTICLES_LIST:
-            p = new XmlEditArticlesList(context, parentPanel, ann,writable);
+            p = new XmlEditArticlesList(context, parentPanel, ann, writable);
             break;
         case CUSTOM:
             try {
@@ -219,7 +219,7 @@ public class XmlMany extends JPanel {
 
     @Override
     public void revalidate() {
-        if (add != null) {
+        if (add != null && writable) {
             add.setVisible(getComponentCount() - 1 < maxOccurs);
         }
 

@@ -137,7 +137,7 @@
         </war>
     </target>
 
-    <target name="all" depends="clean, xjc, server, client-tlum, client-nasovic, client" />
+    <target name="all" depends="clean, xjc, server, client" />
 
     <target name="clean">
         <delete dir="dist" failonerror="false" />

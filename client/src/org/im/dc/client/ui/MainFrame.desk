@@ -2,7 +2,7 @@
 <VLDocking version="2.1">
     <DockingDesktop name="">
         <DockingPanel x="266" y="75" width="1260" height="700">
-            <Split orientation="1" location="0.65">
+            <Split orientation="1" location="0.7">
                 <TabbedDockable>
                     <!--Dockable>
                         <Key dockName="articlesList-interview" />

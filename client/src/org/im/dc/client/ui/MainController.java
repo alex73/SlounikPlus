@@ -37,7 +37,7 @@ import com.vlsolutions.swing.docking.DockingDesktop;
  * Controls main window.
  */
 public class MainController extends BaseController<MainFrame> {
-    static InitialData initialData;
+    public static InitialData initialData;
     public static MainController instance;
     int fontSize;
 

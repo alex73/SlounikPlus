@@ -5,6 +5,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -31,6 +32,7 @@ import org.im.dc.server.db.RecIssue;
 import org.im.dc.server.js.JsDomWrapper;
 import org.im.dc.server.js.JsProcessing;
 import org.im.dc.service.ToolsWebservice;
+import org.im.dc.service.dto.ArticlesFilter;
 import org.im.dc.service.dto.Header;
 import org.im.dc.service.dto.InitialData;
 import org.im.dc.service.dto.Related;
@@ -179,11 +181,11 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
         }
         Date lastUpdated = new Date();
         List<RecArticle> list = new ArrayList<>();
-        List<String> checkHeaders = new ArrayList<>();
+        Set<String> newHeaders = new HashSet<>();
         String initialState = PermissionChecker.getNewArticleState(articleType);
         for (int i=0;i<articleHeaders.length; i++) {
             String h = articleHeaders[i].trim();
-            checkHeaders.add(h);
+            newHeaders.add(h);
             RecArticle r = new RecArticle();
             r.setArticleType(articleType);
             r.setAssignedUsers(users);
@@ -198,10 +200,12 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
         }
 
         Db.exec((api) -> {
-            List<RecArticle> existArticles = api.getArticleMapper().getArticlesWithHeaders(checkHeaders);
-            if (!existArticles.isEmpty()) {
-                LOG.warn("<< addArticles: already exist: " + existArticles.get(0).getHeader());
-                throw new RuntimeException("Артыкулы ўжо ёсьць: " + existArticles.get(0).getHeader());
+            List<RecArticle> existArticles = api.getArticleMapper().listArticles(articleType, new ArticlesFilter());
+            for(RecArticle a:existArticles) {
+                if (newHeaders.contains(a.getHeader())) {
+                    LOG.warn("<< addArticles: already exist: " + a.getHeader());
+                    throw new RuntimeException("Артыкул ўжо існуе: " + a.getHeader());
+                }
             }
             api.getArticleMapper().insertArticles(list);
         });

@@ -37,6 +37,4 @@ public interface DoArticle {
     void removeWatch(@Param("articleId") int articleId, @Param("user") String user);
 
     List<Integer> selectAllIds();
-
-    List<RecArticle> getArticlesWithHeaders(@Param("headers") List<String> headers);
 }
