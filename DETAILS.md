@@ -15,7 +15,7 @@ In the Jakub Kolas Institute for Linguistics, we made a specific dictionary crea
 Typical process of dictionary creation with the help of *SloŭnikPlus* is quite traditional: articles writers prepare articles, editors correct articles and export them for printing. But writers and editors work using special software.
 A dictionary (as a list of articles) is stored in a **central server**. It requires an Internet connection if you want to work from home or other places, but it’s not an issue today. Traffic for server is very low, i.e. mobile connection will be enough for work. If necessary, software can be improved for git usage to support full offline work with occasional synchronization. In this case, you may even not need a central server, you will be able to use any git repository instead.
 
-![Central server interaction](doc/image1.png?format=raw "Central server interaction")
+![Central server interaction](./doc/image1.png?format=raw "Central server interaction")
 
 ![Possible Git repository interaction](doc/image2.png?format=raw "Possible Git repository interaction")
 
