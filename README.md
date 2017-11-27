@@ -1,8 +1,10 @@
-# SlounikPlus
+# SloŭnikPlus
 
 Collaborative software for dictionary creation.
 
-You can email to authors: Aleś Bułojčyk <alex73mail@gmail.com>, Uladź Koščanka <koshul@gmail.com>
+You can email to authors: Aleś Bułojčyk (alex73mail@gmail.com), Uladź Koščanka (koshul@gmail.com)
+
+See [Article about SloŭnikPlus](DETAILS.md) for details description.
 
 License
 -------
