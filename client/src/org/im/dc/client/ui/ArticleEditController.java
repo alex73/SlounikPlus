@@ -339,7 +339,7 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
     /**
      * Retrieve article headers.
      */
-    public void requestRetrieveHeaders(String articleTypeId) {
+    public void requestRetrieveHeaders(String articleTypeId, Runnable after) {
         synchronized (articleHeaders) {
             if (articleHeaders.containsKey(articleTypeId)) {
                 // already requested
@@ -365,11 +365,21 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
                         synchronized (articleHeaders) {
                             articleHeaders.put(articleTypeId, headers);
                         }
+                        if (after != null) {
+                            after.run();
+                        }
                     } catch (Throwable ex) {
                         ex.printStackTrace();
                     }
                 }
             }.execute();
+        }
+    }
+
+    public void requestForceRetrieveHeaders(String articleTypeId, Runnable after) {
+        synchronized (articleHeaders) {
+            articleHeaders.remove(articleTypeId);
+            requestRetrieveHeaders(articleTypeId, after);
         }
     }
 
@@ -404,14 +414,14 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
 
     private void displayWatch() {
         window.lblWatched.setIcon(new ImageIcon(
-                getClass().getResource(article.youWatched ? "images/watch-on.png" : "images/watch-off.png")));
+                ArticleEditController.class.getResource(article.youWatched ? "images/watch-on.png" : "images/watch-off.png")));
     }
 
     private void displayIssue() {
         boolean hasIssue = getOpenIssue() != null;
 
         window.lblHasProposedChanges.setIcon(
-                new ImageIcon(getClass().getResource(hasIssue ? "images/proposed-on.png" : "images/proposed-off.png")));
+                new ImageIcon(ArticleEditController.class.getResource(hasIssue ? "images/proposed-on.png" : "images/proposed-off.png")));
     }
 
     private Related getOpenIssue() {
@@ -432,7 +442,7 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
     }
 
     /**
-     * Захоўвае змены на серверы.
+     * Save changes to server.
      */
     private void save() {
         article.article.notes = panelNotes.txtNotes.getText();
@@ -462,9 +472,16 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
             protected void ok() {
                 if (saved) {
                     show();
+                    afterSave(article.article);
                 }
             }
         };
+    }
+
+    /**
+     * Method can be overrided by caller for check article changes.
+     */
+    protected void afterSave(ArticleFull article) {
     }
 
     private void saveComment(String comment, Runnable ok) {

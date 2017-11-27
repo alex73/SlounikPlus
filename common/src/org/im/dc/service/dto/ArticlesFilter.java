@@ -3,6 +3,7 @@ package org.im.dc.service.dto;
 public class ArticlesFilter {
     public String state;
     public String user;
+    public String exactHeader;
     public String partHeader;
     public String partText;
 

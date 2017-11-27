@@ -46,6 +46,7 @@ public class MainController extends BaseController<MainFrame> {
     private MainFrameNewsModel newsModel;
 
     private List<MainControllerArticleType> panelArticleTypes = new ArrayList<>();
+    private List<IArticleUpdatedListener> articleUpdatedListeners = new ArrayList();
     private MainFramePanelIssues panelIssues = new MainFramePanelIssues();
     private MainFramePanelNews panelNews = new MainFramePanelNews();
 
@@ -268,10 +269,22 @@ public class MainController extends BaseController<MainFrame> {
         };
     }
 
+    public void addArticleUpdatedListener(IArticleUpdatedListener listener) {
+        synchronized (articleUpdatedListeners) {
+            articleUpdatedListeners.add(listener);
+        }
+    }
+
+    public void removeArticleUpdatedListener(IArticleUpdatedListener listener) {
+        synchronized (articleUpdatedListeners) {
+            articleUpdatedListeners.remove(listener);
+        }
+    }
+
     public void fireArticleUpdated(ArticleFull article) {
-        for (MainControllerArticleType ac : panelArticleTypes) {
-            if (ac.getArticleTypeId().equals(article.type)) {
-                ac.fireArticleUpdated(article);
+        synchronized (articleUpdatedListeners) {
+            for(IArticleUpdatedListener listener:articleUpdatedListeners) {
+                listener.onArticleUpdated(article);
             }
         }
     }

@@ -21,7 +21,7 @@ import org.im.dc.service.dto.InitialData;
 import com.vlsolutions.swing.docking.DockKey;
 import com.vlsolutions.swing.docking.Dockable;
 
-public class MainControllerArticleType {
+public class MainControllerArticleType implements IArticleUpdatedListener {
     private final InitialData.TypeInfo typeInfo;
     private final MainFramePanelArticles panelArticles = new MainFramePanelArticles();
     protected final Dockable dock;
@@ -42,6 +42,8 @@ public class MainControllerArticleType {
             }
         };
         init();
+
+        MainController.instance.addArticleUpdatedListener(this);
     }
 
     public String getArticleTypeId() {
@@ -127,14 +129,17 @@ public class MainControllerArticleType {
         ArticlesFilter filter = new ArticlesFilter();
         filter.user = (String) panelArticles.cbUser.getSelectedItem();
         filter.state = (String) panelArticles.cbState.getSelectedItem();
-        filter.partHeader = panelArticles.txtWord.getText().trim().isEmpty() ? null : panelArticles.txtWord.getText().trim();
-        filter.partText = panelArticles.txtText.getText().trim().isEmpty() ? null : panelArticles.txtText.getText().trim();
+        filter.partHeader = panelArticles.txtWord.getText().trim().isEmpty() ? null
+                : panelArticles.txtWord.getText().trim();
+        filter.partText = panelArticles.txtText.getText().trim().isEmpty() ? null
+                : panelArticles.txtText.getText().trim();
         MainController.instance.new LongProcess() {
             MainFrameArticlesModel model;
 
             @Override
             protected void exec() throws Exception {
-                model = new MainFrameArticlesModel(WS.getArticleService().listArticles(WS.header, typeInfo.typeId, filter));
+                model = new MainFrameArticlesModel(
+                        WS.getArticleService().listArticles(WS.header, typeInfo.typeId, filter));
             }
 
             @Override
@@ -145,18 +150,27 @@ public class MainControllerArticleType {
         };
     }
 
-    public void fireArticleUpdated(ArticleFull article) {
+    @Override
+    public void onArticleUpdated(ArticleFull article) {
+        if (!getArticleTypeId().equals(article.type)) {
+            return;
+        }
+
         if (panelArticles.tableArticles.getModel() instanceof MainFrameArticlesModel) {
             MainFrameArticlesModel model = (MainFrameArticlesModel) panelArticles.tableArticles.getModel();
+            boolean needUpdate = false;
             for (ArticleShort a : model.articles) {
                 if (a.id == article.id) {
                     a.assignedUsers = article.assignedUsers;
                     a.state = article.state;
                     a.validationError = article.validationError;
                     a.header = article.header;
+                    needUpdate = true;
                 }
             }
-            model.fireTableDataChanged();
+            if (needUpdate) {
+                model.fireTableDataChanged();
+            }
         }
     }
 }

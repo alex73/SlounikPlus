@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.jws.WebService;
 
+import org.im.dc.service.dto.ArticleFull;
 import org.im.dc.service.dto.Header;
 import org.im.dc.service.dto.InitialData;
 import org.im.dc.service.dto.Related;
@@ -20,7 +21,7 @@ public interface ToolsWebservice {
 
     void reassignUsers(Header header, String articleType, int[] articleIds, String[] users) throws Exception;
 
-    void addArticles(Header header, String articleType, String[] users, String[] articleHeaders, byte[][] xmls) throws Exception;
+    void addArticles(Header header, String articleType, ArticleFull[] articles) throws Exception;
 
     String preparePreview(Header header, String articleType, String articleHeader, byte[] xml) throws Exception;
 

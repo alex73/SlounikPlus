@@ -32,6 +32,7 @@ import org.im.dc.server.db.RecIssue;
 import org.im.dc.server.js.JsDomWrapper;
 import org.im.dc.server.js.JsProcessing;
 import org.im.dc.service.ToolsWebservice;
+import org.im.dc.service.dto.ArticleFull;
 import org.im.dc.service.dto.ArticlesFilter;
 import org.im.dc.service.dto.Header;
 import org.im.dc.service.dto.InitialData;
@@ -169,29 +170,23 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
     }
 
     @Override
-    public void addArticles(Header header, String articleType, String[] users, String[] articleHeaders,
-            byte[][] xmls) throws Exception {
+    public void addArticles(Header header, String articleType, ArticleFull[] articles) throws Exception {
         LOG.info(">> addArticles(" + header.user + ")");
         long startTime = System.currentTimeMillis();
         check(header);
         PermissionChecker.userRequiresTypePermission(header.user, articleType, TypePermission.ADD_ARTICLES);
-        if (articleHeaders.length!=xmls.length) {
-            LOG.warn("<< addArticles: count of headers and data are not correct");
-            throw new RuntimeException("Несупадае колькасць");
-        }
         Date lastUpdated = new Date();
         List<RecArticle> list = new ArrayList<>();
         Set<String> newHeaders = new HashSet<>();
         String initialState = PermissionChecker.getNewArticleState(articleType);
-        for (int i=0;i<articleHeaders.length; i++) {
-            String h = articleHeaders[i].trim();
-            newHeaders.add(h);
+        for (ArticleFull a : articles) {
+            newHeaders.add(a.header);
             RecArticle r = new RecArticle();
             r.setArticleType(articleType);
-            r.setAssignedUsers(users);
-            r.setHeader(h);
+            r.setAssignedUsers(a.assignedUsers);
+            r.setHeader(a.header);
             r.setState(initialState);
-            r.setXml(xmls[i]);
+            r.setXml(a.xml);
             r.setMarkers(new String[0]);
             r.setWatchers(new String[0]);
             r.setLinkedTo(new String[0]);
@@ -201,7 +196,7 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
 
         Db.exec((api) -> {
             List<RecArticle> existArticles = api.getArticleMapper().listArticles(articleType, new ArticlesFilter());
-            for(RecArticle a:existArticles) {
+            for (RecArticle a : existArticles) {
                 if (newHeaders.contains(a.getHeader())) {
                     LOG.warn("<< addArticles: already exist: " + a.getHeader());
                     throw new RuntimeException("Артыкул ўжо існуе: " + a.getHeader());
