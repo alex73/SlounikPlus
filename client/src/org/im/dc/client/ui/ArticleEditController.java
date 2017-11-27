@@ -61,7 +61,7 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
     public static XMLOutputFactory WRITER_FACTORY = XMLOutputFactory.newInstance();
 
     private final InitialData.TypeInfo typeInfo;
-    private XmlGroup editorUI;
+    public XmlGroup editorUI;
 
     protected volatile ArticleFullInfo article;
     protected volatile boolean wasChanged;

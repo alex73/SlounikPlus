@@ -12,8 +12,6 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.im.dc.client.ui.ArticleEditController;
-
 @SuppressWarnings("serial")
 public abstract class XmlEditBase<T extends JComponent> extends JPanel {
     protected final ArticleUIContext context;

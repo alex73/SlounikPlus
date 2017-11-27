@@ -5,6 +5,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -36,7 +37,7 @@ public class ExportArticles {
         File out = new File(args[0]);
         if (out.getName().toLowerCase().endsWith(".zip")) {
             out.getParentFile().mkdirs();
-            zip = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(out), 256 * 1024));
+            zip = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(out), 256 * 1024), StandardCharsets.UTF_8);
         } else {
             out.mkdirs();
         }
@@ -48,7 +49,8 @@ public class ExportArticles {
                     continue;
                 }
                 try {
-                    String fn = a.getHeader().replace('/', '_') + '-' + a.getArticleId() + ".xml";
+                    String fn = a.getArticleType() + '/' + a.getHeader().replace('/', '_') + '-' + a.getArticleId()
+                            + ".xml";
                     System.err.println(fn);
                     byte[] xml = xml2text(a.getXml()).getBytes("UTF-8");
                     if (zip != null) {

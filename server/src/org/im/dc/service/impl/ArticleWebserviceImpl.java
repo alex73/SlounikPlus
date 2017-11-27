@@ -191,6 +191,7 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
             }
 
             history.setOldXml(rec.getXml());
+            history.setOldHeader(rec.getHeader());
 
             rec.setXml(article.xml);
             rec.setLastUpdated(currentDate);
@@ -218,6 +219,7 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
             }
 
             history.setArticleId(rec.getArticleId());
+            history.setNewHeader(rec.getHeader());
             history.setNewXml(rec.getXml());
             history.setChanged(currentDate);
             history.setChanger(header.user);

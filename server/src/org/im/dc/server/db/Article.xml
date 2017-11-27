@@ -4,8 +4,10 @@
 <mapper namespace="org.im.dc.server.db.DoArticle">
 	<select id="listArticles" parameterType="ArticlesFilter" resultType="RecArticle" resultMap="RecArticleMap">
 		SELECT articleId, articleType, header, state, assignedUsers, validationError
-		FROM Articles
-		WHERE articleType = #{articleType}
+		FROM Articles WHERE 1=1
+		<if test="articleType != null">
+			AND articleType = #{articleType}
+		</if>
 		<if test="filter.state != null">
 			AND state=#{filter.state}
 		</if>

@@ -19,6 +19,7 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jgit.api.CommitCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.PersonIdent;
@@ -32,7 +33,8 @@ public class ExportToGit {
     static File repoPath;
     static Git git;
     static List<RecArticleHistory> history;
-    static Map<Integer, String> header = new HashMap<>();
+    static Map<Integer, String> headers = new HashMap<>();
+    static Map<Integer, String> articleTypes = new HashMap<>();
 
     public static void main(String[] args) throws Exception {
         Config.load(System.getProperty("CONFIG_DIR"));
@@ -46,7 +48,8 @@ public class ExportToGit {
 
         Db.exec((api) -> {
             for (RecArticle a : api.getArticleMapper().listArticles(null, new ArticlesFilter())) {
-                header.put(a.getArticleId(), a.getHeader());
+                headers.put(a.getArticleId(), a.getHeader());
+                articleTypes.put(a.getArticleId(), a.getArticleType());
             }
             history = api.getArticleHistoryMapper().retrieveAllHistory();
         });
@@ -60,7 +63,7 @@ public class ExportToGit {
 
         for (RecArticleHistory h : history) {
             if (h.getOldHeader() != null) {
-                header.put(h.getArticleId(), h.getOldHeader());
+                headers.put(h.getArticleId(), h.getOldHeader());
             }
         }
 
@@ -72,27 +75,39 @@ public class ExportToGit {
         });
 
         for (RecArticleHistory h : history) {
+            String oldHeader = StringUtils.equals(h.getOldHeader(), h.getNewHeader()) ? null : h.getOldHeader();
             if (h.getNewHeader() != null) {
-                header.put(h.getArticleId(), h.getNewHeader());
+                headers.put(h.getArticleId(), h.getNewHeader());
             }
             if (h.getNewXml() != null) {
-                add(h);
+                add(h, oldHeader);
             }
         }
     }
 
-    static void add(RecArticleHistory h) {
+    static void add(RecArticleHistory h, String oldHeader) {
         try {
+            String articleType = articleTypes.get(h.getArticleId());
+            String header = headers.get(h.getArticleId());
+            if (header == null) {
+                header = "change";
+            }
+            if (oldHeader != null) {
+                String oldFile = articleType + '/' + oldHeader + '-' + h.getArticleId() + ".xml";
+                new File(repoPath, oldFile).delete();
+                git.rm().addFilepattern(oldFile).call();
+            }
+            String newFile = articleType + '/' + header + '-' + h.getArticleId() + ".xml";
             String xml = xml2text(h.getNewXml());
-            FileUtils.writeStringToFile(new File(repoPath, h.getArticleId() + ".xml"), xml, StandardCharsets.UTF_8);
-            git.add().addFilepattern(h.getArticleId() + ".xml").call();
+            FileUtils.writeStringToFile(new File(repoPath, newFile), xml, StandardCharsets.UTF_8);
+            git.add().addFilepattern(newFile).call();
 
             int offset = TimeZone.getDefault().getOffset(h.getChanged().getTime());
 
             // and then commit the changes
             CommitCommand cc = git.commit();
             PersonIdent pi = new PersonIdent(h.getChanger(), "user@localhost", h.getChanged().getTime(), offset);
-            cc.setCommitter(pi).setMessage(header.get(h.getArticleId())).call();
+            cc.setCommitter(pi).setMessage(header).call();
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
