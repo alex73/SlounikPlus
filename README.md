@@ -2,6 +2,8 @@
 
 Collaborative software for dictionary creation.
 
+You can email to authors: Aleś Bułojčyk <alex73mail@gmail.com>, Uladź Koščanka <koshul@gmail.com>
+
 License
 -------
 This program is free software: you can redistribute it and/or modify
