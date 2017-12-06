@@ -57,7 +57,9 @@ public class XmlEditArticlesList extends XmlEditBase<JPanel> implements IXmlSimp
         ImageIcon addIcon = new ImageIcon(XmlEditArticlesList.class.getResource("add.png"));
         ImageIcon editIcon = new ImageIcon(XmlEditArticlesList.class.getResource("edit.png"));
         JButton add = new JButton(addIcon);
+        add.setToolTipText("Дадаць у спіс");
         JButton edit = new JButton(editIcon);
+        edit.setToolTipText("Выправіць дэталі абранага");
 
         add.addActionListener(l -> openEdit(null));
         edit.addActionListener(l -> openEdit(getData()));
