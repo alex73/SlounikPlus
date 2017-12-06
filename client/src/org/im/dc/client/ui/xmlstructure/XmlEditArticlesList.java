@@ -15,7 +15,6 @@ import javax.swing.JPanel;
 
 import org.im.dc.client.WS;
 import org.im.dc.client.ui.ArticleEditController;
-import org.im.dc.client.ui.IArticleUpdatedListener;
 import org.im.dc.client.ui.MainController;
 import org.im.dc.service.dto.ArticleFull;
 import org.im.dc.service.dto.ArticleShort;

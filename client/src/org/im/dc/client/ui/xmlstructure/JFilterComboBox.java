@@ -43,8 +43,12 @@ public class JFilterComboBox extends JComboBox<String> {
 
         List<String> filterArray = new ArrayList<String>();
         for (int i = 0; i < array.size(); i++) {
-            if (array.get(i).toLowerCase().contains(enteredText.toLowerCase())) {
+            if (array.get(i).toLowerCase().replace("\u0301", "").contains(enteredText.toLowerCase())) {
                 filterArray.add(array.get(i));
+            }
+            if (filterArray.size() > 500) {
+                filterArray.add("...");
+                break;
             }
         }
         if (filterArray.size() > 0) {

@@ -202,7 +202,11 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
                     throw new RuntimeException("Артыкул ўжо існуе: " + a.getHeader());
                 }
             }
-            api.getArticleMapper().insertArticles(list);
+            // insert by 1000 records chunks
+            for (int fromIndex = 0; fromIndex < list.size(); fromIndex += 1000) {
+                int toIndex = Math.min(fromIndex + 1000, list.size());
+                api.getArticleMapper().insertArticles(list.subList(fromIndex, toIndex));
+            }
         });
 
         LOG.info("<< addArticles (" + (System.currentTimeMillis() - startTime) + "ms)");

@@ -223,7 +223,7 @@ public class XmlMany extends JPanel {
             add.setVisible(getComponentCount() - 1 < maxOccurs);
         }
 
-        boolean canCloseSomeone = getComponentCount() - 1 > minOccurs;
+        boolean canCloseSomeone = writable && (getComponentCount() - 1 > minOccurs);
         for (Component c : getComponents()) {
             if (c == add) {
                 continue;
