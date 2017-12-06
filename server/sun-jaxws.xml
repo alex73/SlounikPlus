@@ -7,4 +7,7 @@
     <endpoint name='ToolsWebservice'
             implementation='org.im.dc.service.impl.ToolsWebserviceImpl'
             url-pattern='/tools'/>
+    <endpoint name='InitWebservice'
+            implementation='org.im.dc.service.impl.InitWebserviceImpl'
+            url-pattern='/init'/>
 </endpoints>

@@ -11,9 +11,10 @@
 	</classpathentry>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/SlounikPlus-common"/>
 	<classpathentry exported="true" kind="lib" path="lib/vldocking-3.0.5.jar" sourcepath="/data/src/vldocking-master.zip"/>
-	<classpathentry exported="true" kind="lib" path="lib/logging/slf4j-api-1.7.25.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/logging/slf4j-jdk14-1.7.25.jar"/>
-	<classpathentry kind="lib" path="/SlounikPlus-common/lib-test/hamcrest-core-1.3.jar"/>
-	<classpathentry kind="lib" path="/SlounikPlus-common/lib-test/junit-4.12.jar"/>
+	<classpathentry kind="lib" path="lib/slf4j-api-1.7.25.jar"/>
+	<classpathentry kind="lib" path="lib/slf4j-jdk14-1.7.25.jar"/>
+	<classpathentry kind="lib" path="lib/xercesImpl.jar"/>
+	<classpathentry kind="lib" path="lib/xml-apis.jar"/>
+	<classpathentry kind="lib" path="lib-test/junit-4.12.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

@@ -3,137 +3,57 @@
     <property name="ant.build.javac.source" value="1.8"/>
     <property name="ant.build.javac.target" value="1.8"/>
 
-    <fileset dir="." id="server-jars-fileset">
-        <include name="server/lib/**/*.jar" />
-        <include name="common/lib/**/*.jar" />
-    </fileset>
-    <fileset dir="." id="server-jars-compile-fileset">
-        <include name="server/lib-compile/**/*.jar" />
-    </fileset>
-    <pathconvert pathsep=" " property="server-jars-path" refid="server-jars-fileset">
-        <chainedmapper>
-            <flattenmapper />
-            <globmapper from="*" to="*" />
-        </chainedmapper>
-    </pathconvert>
-    <fileset dir="." id="client-jars-fileset">
-        <include name="client/lib/**/*.jar" />
-        <include name="common/lib/**/*.jar" />
-    </fileset>
-    <fileset dir="." id="client-tlum-jars-fileset">
-        <include name="module-tlum/lib/**/*.jar" />
-        <include name="client/lib/**/*.jar" />
-        <include name="common/lib/**/*.jar" />
-    </fileset>
-    <fileset dir="." id="client-nasovic-jars-fileset">
-        <include name="module-nasovic/lib/**/*.jar" />
-        <include name="client/lib/**/*.jar" />
-        <include name="common/lib/**/*.jar" />
-    </fileset>
-
     <target name="client">
         <mkdir dir="client/build" />
         <javac srcdir="client/src:client/src-gen:common/src" includes="**" encoding="utf-8" destdir="client/build"  debug="true" debuglevel="lines,vars,source">
             <classpath>
-                <fileset refid="client-jars-fileset"/>
+                <fileset dir="client/lib/" includes="**/*.jar" />
             </classpath>
         </javac>
         <copy todir="client/build">
             <fileset dir="client/src" />
+            <fileset dir="client/src-gen" />
             <fileset dir="common/src" />
         </copy>
 
-        <mkdir dir="dist" />
+        <mkdir dir="dist/client/lib/" />
         <!--signjar jar="dist/client-ital/client-ital.jar" keystore="../My/mykey.keystore" alias="${keyname}" storepass="${keypass}" keypass="${keypass}" /-->
+        <copy todir="dist/client/lib/" flatten="true">
+            <fileset dir="client/lib/" includes="**/*.jar" />
+        </copy>
+        <manifestclasspath property="manifest_cp" jarfile="dist/client/client.jar">
+        	<classpath>
+        		<fileset dir="dist/client/lib/" includes="**/*.jar" />
+        	</classpath>
+        </manifestclasspath>
         <jar destfile="dist/client/client.jar">
             <fileset dir="client/build" />
-            <zipgroupfileset refid="client-jars-fileset" />
             <manifest>
                 <attribute name="Main-Class" value="org.im.dc.client.ui.ClientStartup" />
+                <attribute name="Class-Path" value="${manifest_cp}"/>
             </manifest>
         </jar>
-    </target>
-
-    <target name="client-tlum">
-        <mkdir dir="module-tlum/build" />
-        <javac srcdir="module-tlum/src:client/src:client/src-gen:common/src" includes="**" encoding="utf-8" destdir="module-tlum/build"  debug="true" debuglevel="lines,vars,source">
-            <classpath>
-                <fileset refid="client-tlum-jars-fileset"/>
-            </classpath>
-        </javac>
-        <copy todir="module-tlum/build">
-            <fileset dir="module-tlum/src" />
-            <fileset dir="client/src" />
-            <fileset dir="common/src" />
-        </copy>
-
-        <mkdir dir="dist" />
-        <jar destfile="dist/client-tlum/client-tlum.jar">
-            <fileset dir="module-tlum/build" />
-            <zipgroupfileset refid="client-tlum-jars-fileset" />
-            <manifest>
-                <attribute name="Main-Class" value="org.im.dc.client.ui.ClientStartup" />
-            </manifest>
-        </jar>
-        <copy todir="dist/client-tlum/config/">
-            <fileset dir="module-tlum/config/" />
-        </copy>
-    </target>
-
-    <target name="client-nasovic">
-        <mkdir dir="module-nasovic/build" />
-        <javac srcdir="module-nasovic/src:client/src:client/src-gen:common/src" includes="**" encoding="utf-8" destdir="module-nasovic/build"  debug="true" debuglevel="lines,vars,source">
-            <classpath>
-                <fileset refid="client-nasovic-jars-fileset"/>
-            </classpath>
-        </javac>
-        <copy todir="module-nasovic/build">
-            <fileset dir="module-nasovic/src" />
-            <fileset dir="client/src" />
-            <fileset dir="common/src" />
-        </copy>
-
-        <mkdir dir="dist" />
-        <jar destfile="dist/client-nasovic/client-nasovic.jar">
-            <fileset dir="module-nasovic/build" />
-            <zipgroupfileset refid="client-nasovic-jars-fileset" />
-            <manifest>
-                <attribute name="Main-Class" value="org.im.dc.client.ui.ClientStartup" />
-            </manifest>
-        </jar>
-        <copy todir="dist/client-nasovic/config/">
-            <fileset dir="module-nasovic/config/" />
-        </copy>
     </target>
 
     <target name="server">
         <mkdir dir="server/build" />
         <javac srcdir="server/src:server/src-gen:common/src" includes="**" encoding="utf-8" destdir="server/build"  debug="true" debuglevel="lines,vars,source">
             <classpath>
-                <fileset refid="server-jars-fileset"/>
-                <fileset refid="server-jars-compile-fileset"/>
+                <fileset dir="server/lib/" includes="**/*.jar"/>
+                <fileset dir="server/lib-compile/" includes="**/*.jar"/>
             </classpath>
         </javac>
         <copy todir="server/build">
             <fileset dir="server/src" />
+            <fileset dir="server/src-gen" />
             <fileset dir="common/src" />
         </copy>
 
-        <mkdir dir="dist/server" />
-        <jar destfile="dist/server/server.jar">
-            <fileset dir="server/build" />
-            <manifest>
-                <attribute name="Main-Class" value="org.im.dc.server.startup.Server" />
-                <attribute name="Class-Path" value="${server-jars-path}" />
-            </manifest>
-        </jar>
-        <copy todir="dist/server/" flatten="true">
-            <fileset refid="server-jars-fileset"/>
-        </copy>
+        <mkdir dir="dist/" />
         <war destfile="dist/server.war" webxml="server/web.xml">
             <webinf file="server/sun-jaxws.xml" />
             <classes dir="server/build" />
-            <lib dir="dist/server/" />
+            <lib dir="server/lib/" includes="**/*.jar" />
         </war>
     </target>
 
@@ -143,8 +63,6 @@
         <delete dir="dist" failonerror="false" />
         <delete dir="client/build" failonerror="false" />
         <delete dir="server/build" failonerror="false" />
-        <delete dir="module-tlum/build" failonerror="false" />
-        <delete dir="module-nasovic/build" failonerror="false" />
     </target>
 
     <target name="xjc">
