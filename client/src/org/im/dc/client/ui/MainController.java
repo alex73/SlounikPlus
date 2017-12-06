@@ -210,6 +210,7 @@ public class MainController extends BaseController<MainFrame> {
         window.miResetDesk.addActionListener(e -> {
             SettingsController.resetPlaces(MainFrame.class);
             SettingsController.resetPlaces(ArticleEditDialog.class);
+            SettingsController.resetPlaces(SettingsDialog.class);
             SettingsController.loadPlacesForWindow(window, desk);
             SettingsController.initializeDockingLayour(window, desk);
         });

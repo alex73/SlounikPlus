@@ -54,8 +54,8 @@ public class XmlEditArticlesList extends XmlEditBase<JPanel> implements IXmlSimp
         });
         combo.setEditable(writable);
 
-        ImageIcon addIcon = new ImageIcon(XmlEditArticlesList.class.getResource("../images/add.png"));
-        ImageIcon editIcon = new ImageIcon(XmlEditArticlesList.class.getResource("../images/edit.png"));
+        ImageIcon addIcon = new ImageIcon(XmlEditArticlesList.class.getResource("add.png"));
+        ImageIcon editIcon = new ImageIcon(XmlEditArticlesList.class.getResource("edit.png"));
         JButton add = new JButton(addIcon);
         JButton edit = new JButton(editIcon);
 
