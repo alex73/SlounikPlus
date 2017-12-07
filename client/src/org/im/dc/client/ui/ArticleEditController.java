@@ -271,6 +271,7 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
             editContext.editController = this;
             editContext.userRole = MainController.initialData.currentUserRole;
             editContext.articleState = article.article.state;
+            //TODO SchemaLoader.createUI2(editContext);
             editorUI = SchemaLoader.createUI(editContext);
             if (article.article.xml != null) {
                 XMLStreamReader rd = READER_FACTORY

@@ -13,6 +13,7 @@ import org.apache.xerces.xs.XSModel;
 import org.apache.xerces.xs.XSSimpleTypeDefinition;
 import org.im.dc.client.ui.xmlstructure.AnnotationInfo;
 import org.im.dc.client.ui.xmlstructure.ArticleUIContext;
+import org.im.dc.client.ui.xmlstructure.XSContainersFactory;
 import org.im.dc.client.ui.xmlstructure.XmlGroup;
 import org.im.dc.service.dto.InitialData;
 import org.w3c.dom.ls.LSInput;
@@ -108,6 +109,15 @@ public class SchemaLoader {
             throw new RuntimeException("Element '" + context.getArticleTypeId() + "' is not defined in XSD.");
         }
         return new XmlGroup(context, null, root, new AnnotationInfo(root.getAnnotation(), root.getName()), true);
+    }
+
+    public static void createUI2(ArticleUIContext context) {
+        XSElementDeclaration root = models.get(context.getArticleTypeId())
+                .getElementDeclaration(context.getArticleTypeId(), null);
+        if (root == null) {
+            throw new RuntimeException("Element '" + context.getArticleTypeId() + "' is not defined in XSD.");
+        }
+        XSContainersFactory.createUI(context,null, root);
     }
 
     public static List<String> getSimpleTypeEnumeration(String typeName, String articleTypeId) {
