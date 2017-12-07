@@ -104,6 +104,9 @@ public class SchemaLoader {
     public static XmlGroup createUI(ArticleUIContext context) {
         XSElementDeclaration root = models.get(context.getArticleTypeId())
                 .getElementDeclaration(context.getArticleTypeId(), null);
+        if (root == null) {
+            throw new RuntimeException("Element '" + context.getArticleTypeId() + "' is not defined in XSD.");
+        }
         return new XmlGroup(context, null, root, new AnnotationInfo(root.getAnnotation(), root.getName()), true);
     }
 

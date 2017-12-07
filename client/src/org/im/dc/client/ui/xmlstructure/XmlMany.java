@@ -158,9 +158,9 @@ public class XmlMany extends JPanel {
         case CUSTOM:
             try {
                 Class<? extends JPanel> editor = (Class<? extends JPanel>) Class.forName(ann.editDetails);
-                Constructor<? extends JPanel> c = editor.getConstructor(XmlGroup.class, XmlGroup.class,
-                        AnnotationInfo.class, ArticleEditController.class);
-                p = c.newInstance(context, parentPanel, ann);
+                Constructor<? extends JPanel> c = editor.getConstructor(ArticleUIContext.class, XmlGroup.class,
+                        AnnotationInfo.class, boolean.class);
+                p = c.newInstance(context, parentPanel, ann, writable);
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
