@@ -78,7 +78,7 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
             return null;
         }
         String result = null;
-        Validator validator = Config.schemas.get(rec.getArticleType()).xsdSchema.newValidator();
+        Validator validator = Config.schemas.get(rec.getArticleType()).newValidator();
         ValidationHelper helper = new ValidationHelper(rec.getArticleId());
         try {
             validator.validate(new StreamSource(new ByteArrayInputStream(rec.getXml())));

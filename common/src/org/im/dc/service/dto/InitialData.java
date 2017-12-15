@@ -17,12 +17,12 @@ public class InitialData {
     public String[] newArticleUsers;
     public List<String> states = new ArrayList<>();
     public Set<String> currentUserPermissions = new TreeSet<>();
+    public Map<String, byte[]> xsds;
 
     public static class TypeInfo {
         public String typeId;
         public String typeName;
         public String newArticleState;
-        public byte[] articleSchema;
         public Set<String> currentUserTypePermissions = new TreeSet<>();
     }
 

@@ -39,7 +39,7 @@ public class JsValidation {
             throws Exception {
         byte[] xml = Files.readAllBytes(Paths.get("src-test/org/im/dc/server/js/" + articleFile));
 
-        Validator validator = Config.schemas.get(articleType).xsdSchema.newValidator();
+        Validator validator = Config.schemas.get(articleType).newValidator();
         validator.validate(new StreamSource(new ByteArrayInputStream(xml)));
 
         SimpleScriptContext context = new SimpleScriptContext();

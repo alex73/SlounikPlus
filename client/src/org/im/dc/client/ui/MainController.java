@@ -169,7 +169,7 @@ public class MainController extends BaseController<MainFrame> {
                 WS.header.configVersion = WS.getInitWebservice().getConfigVersion(WS.header.appVersion);
                 initialData = WS.getToolsWebservice().getInitialData(WS.header);
 
-                SchemaLoader.init(initialData.articleTypes);
+                SchemaLoader.init(initialData);
             }
 
             @Override

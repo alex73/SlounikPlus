@@ -15,6 +15,7 @@ import java.net.URI;
 import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -38,8 +39,8 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.im.dc.client.SchemaLoader;
 import org.im.dc.client.WS;
-import org.im.dc.client.ui.xmlstructure.ArticleUIContext;
-import org.im.dc.client.ui.xmlstructure.XmlGroup;
+import org.im.dc.client.ui.struct.ArticleUIContext;
+import org.im.dc.client.ui.struct.IXSContainer;
 import org.im.dc.gen.config.TypePermission;
 import org.im.dc.service.dto.ArticleFull;
 import org.im.dc.service.dto.ArticleFullInfo;
@@ -61,7 +62,7 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
     public static XMLOutputFactory WRITER_FACTORY = XMLOutputFactory.newInstance();
 
     private final InitialData.TypeInfo typeInfo;
-    public XmlGroup editorUI;
+    public IXSContainer editorUI;
 
     protected volatile ArticleFullInfo article;
     protected volatile boolean wasChanged;
@@ -271,14 +272,12 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
             editContext.editController = this;
             editContext.userRole = MainController.initialData.currentUserRole;
             editContext.articleState = article.article.state;
-            //TODO SchemaLoader.createUI2(editContext);
             editorUI = SchemaLoader.createUI(editContext);
             if (article.article.xml != null) {
                 XMLStreamReader rd = READER_FACTORY
                         .createXMLStreamReader(new ByteArrayInputStream(article.article.xml));
                 rd.nextTag();
                 editorUI.insertData(rd);
-                editorUI.displayed();
             }
             resetChanged();
         } catch (Throwable ex) {
@@ -287,7 +286,7 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
             JOptionPane.showMessageDialog(window, "Памылка чытання XML артыкула: " + ex.getMessage(), "Памылка",
                     JOptionPane.ERROR_MESSAGE);
         }
-        panelEdit.panelEditor.setViewportView(editorUI);
+        panelEdit.panelEditor.setViewportView(editorUI.getUIComponent());
 
         Related.sortByTimeDesc(article.related);
 
@@ -437,7 +436,7 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
     protected byte[] extractXml() throws Exception {
         StringWriter w = new StringWriter();
         XMLStreamWriter wr = WRITER_FACTORY.createXMLStreamWriter(w);
-        editorUI.extractData(typeInfo.typeId, wr);
+        editorUI.extractData(wr);
         wr.flush();
         return w.toString().getBytes("UTF-8");
     }
@@ -570,6 +569,27 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
             return false;
         } else {
             return true;
+        }
+    }
+
+    public <T extends IXSContainer> List<T> findSubcontainers(Class<T> containerClass, String tag) {
+        List<T> result = new ArrayList<>();
+        findSubcontainers(editorUI, containerClass, tag, result);
+        return result;
+    }
+
+    protected <T extends IXSContainer> void findSubcontainers(IXSContainer child, Class<T> containerClass, String tag,
+            List<T> result) {
+        if (containerClass.isAssignableFrom(child.getClass()) && tag.equals(child.getTag())) {
+            result.add((T) child);
+            return;
+        }
+        Collection<IXSContainer> children = child.children();
+        if (children == null) {
+            return;
+        }
+        for (IXSContainer ch : child.children()) {
+            findSubcontainers(ch, containerClass, tag, result);
         }
     }
 }

@@ -62,12 +62,12 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
         result.configVersion = Config.getConfig().getVersion();
         result.headerLocale = Config.getConfig().getHeaderLocale();
         result.stress = Config.getConfig().getStress();
+        result.xsds = Config.schemaSources;
         for (Type type : Config.getConfig().getTypes().getType()) {
             InitialData.TypeInfo ti = new InitialData.TypeInfo();
             ti.typeId = type.getId();
             ti.typeName = type.getName();
             ti.newArticleState = PermissionChecker.getNewArticleState(ti.typeId);
-            ti.articleSchema = Config.schemas.get(type.getId()).source;
             result.articleTypes.add(ti);
         }
         result.currentUserPermissions = PermissionChecker.getUserPermissions(header.user);
@@ -220,7 +220,7 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
         PermissionChecker.userRequiresTypePermission(header.user, articleType, TypePermission.VIEW_OUTPUT);
 
         try {
-            Validator validator = Config.schemas.get(articleType).xsdSchema.newValidator();
+            Validator validator = Config.schemas.get(articleType).newValidator();
             validator.validate(new StreamSource(new ByteArrayInputStream(xml)));
 
             HtmlOut out = new HtmlOut();
@@ -263,7 +263,7 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
                     LOG.warn("<< preparePreviews: wrong type/id requested");
                     throw new Exception("Запыт няправільнага ID для вызначанага тыпу");
                 }
-                Validator validator = Config.schemas.get(articleType).xsdSchema.newValidator();
+                Validator validator = Config.schemas.get(articleType).newValidator();
                 validator.validate(new StreamSource(new ByteArrayInputStream(a.getXml())));
 
                 HtmlOut out = new HtmlOut();

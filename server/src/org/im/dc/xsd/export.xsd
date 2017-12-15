@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:element name="Articles">
+		<xs:complexType>
+            <xs:attribute name="articleId" type="xs:long" use="required" />
+            <xs:attribute name="articleType" type="xs:string" use="required" />
+            <xs:attribute name="header" type="xs:string" use="required" />
+            <xs:attribute name="assignedUsers" type="xs:string" use="optional" />
+            <xs:attribute name="state" type="xs:string" use="required" />
+            <xs:attribute name="deleted" type="xs:boolean" default="false" use="optional" />
+            <xs:attribute name="markers" type="xs:string" use="optional" />
+            <xs:attribute name="watchers" type="xs:string" use="optional" />
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="ArticlesHistory">
+        <xs:complexType>
+            <xs:attribute name="articleId" type="xs:long" use="required" />
+            <xs:attribute name="articleType" type="xs:string" use="required" />
+            <xs:attribute name="header" type="xs:string" use="required" />
+            <xs:attribute name="assignedUsers" type="xs:string" use="optional" />
+            <xs:attribute name="state" type="xs:string" use="required" />
+            <xs:attribute name="deleted" type="xs:boolean" default="false" use="optional" />
+            <xs:attribute name="markers" type="xs:string" use="optional" />
+            <xs:attribute name="watchers" type="xs:string" use="optional" />
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

@@ -66,7 +66,7 @@ public class ImportArticles {
         String header = fn.replaceAll("\\.xml$", "");
 
         try {
-            Validator validator = Config.schemas.get(articleType).xsdSchema.newValidator();
+            Validator validator = Config.schemas.get(articleType).newValidator();
             validator.validate(new StreamSource(new ByteArrayInputStream(xml)));
         } catch (Exception ex) {
             System.err.println("Error xml validation from " + fn);

@@ -41,7 +41,7 @@ public class UpdateArticles {
                 byte[] xml = Files.readAllBytes(f.toPath());
 
                 try {
-                    Validator validator = Config.schemas.get(null).xsdSchema.newValidator();
+                    Validator validator = Config.schemas.get(null).newValidator();
                     validator.validate(new StreamSource(new ByteArrayInputStream(xml)));
                 } catch (Exception ex) {
                     System.err.println("Error xml validation from " + f);
