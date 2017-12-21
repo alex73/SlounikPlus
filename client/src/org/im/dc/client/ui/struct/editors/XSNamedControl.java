@@ -31,7 +31,6 @@ public abstract class XSNamedControl<T extends JComponent> extends JPanel {
         add(label, BorderLayout.WEST);
 
         initEditor();
-        ann.applyColors(editor, parentContainer.getParentContainer());
         add(editor, BorderLayout.CENTER);
     }
 

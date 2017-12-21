@@ -24,8 +24,8 @@ public class XSEditText extends XSNamedControl<JTextArea> implements IXSEdit {
         editor = new JTextArea();
         editor.setLineWrap(true);
         editor.setWrapStyleWord(true);
-        Border insideBorder = BorderFactory.createLineBorder(Color.BLACK);
-        Border outsideBorder = BorderFactory.createEmptyBorder(3, 0, 3, 0);
+        Border outsideBorder = BorderFactory.createLineBorder(Color.BLACK);
+        Border insideBorder = BorderFactory.createEmptyBorder(3, 0, 3, 0);
         editor.setBorder(BorderFactory.createCompoundBorder(outsideBorder, insideBorder));
         editor.getDocument().addDocumentListener(new DocumentListener() {
             @Override

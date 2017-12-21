@@ -30,7 +30,7 @@ import com.vlsolutions.swing.docking.TabbedDockableContainer;
 
 public class SettingsController extends BaseController<SettingsDialog> {
     private static String fontName;
-    private static int fontSize;
+    private static int fontSize = 12;
 
     public static List<Dockable> articleDockables;
 
