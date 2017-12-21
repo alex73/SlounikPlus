@@ -40,6 +40,8 @@ public class ArticlePanelEdit extends javax.swing.JPanel {
         contextMenu.add(cmMoveDown);
 
         setLayout(new java.awt.BorderLayout());
+
+        panelEditor.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         add(panelEditor, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 

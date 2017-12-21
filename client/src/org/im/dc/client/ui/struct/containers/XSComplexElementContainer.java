@@ -44,9 +44,15 @@ public class XSComplexElementContainer extends XSBaseContainer<XSComplexTypeDefi
         if (ann.customImpl != null) {
             // custom implementation
             try {
-                Constructor<?> c = ann.customImpl.getConstructor(ArticleUIContext.class, IXSContainer.class,
-                        XSElementDeclaration.class, AnnotationInfo.class);
-                customContainer = (IXSContainer) c.newInstance(context, this, elem, ann);
+                try {
+                    Constructor<?> c = ann.customImpl.getConstructor(ArticleUIContext.class, IXSContainer.class,
+                            XSElementDeclaration.class, AnnotationInfo.class);
+                    customContainer = (IXSContainer) c.newInstance(context, this, elem, ann);
+                } catch (NoSuchMethodException ex) {
+                    Constructor<?> c = ann.customImpl.getConstructor(ArticleUIContext.class, XSComplexElementContainer.class,
+                            AnnotationInfo.class);
+                    customContainer = (IXSContainer) c.newInstance(context, this, ann);
+                }
             } catch (Exception ex) {
                 throw new RuntimeException("Error create custom control from " + ann.customImpl.getName(), ex);
             }

@@ -5,6 +5,8 @@ import java.awt.Component;
 import java.awt.Desktop;
 import java.awt.Font;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -238,6 +240,17 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
                     return;
                 }
                 new ArticleDetailsController(ArticleEditController.this, rel);
+            }
+        });
+
+        panelEdit.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                Component c = panelEdit.panelEditor.getViewport().getView();
+                if (c != null) {
+                    c.setSize(panelEdit.getWidth(), c.getHeight());
+                    c.validate();
+                }
             }
         });
     }

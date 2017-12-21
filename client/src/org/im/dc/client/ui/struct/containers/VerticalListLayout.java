@@ -6,6 +6,8 @@ import java.awt.Dimension;
 import java.awt.Insets;
 import java.awt.LayoutManager;
 
+import javax.swing.JComponent;
+
 public class VerticalListLayout implements LayoutManager {
     private final Insets insets;
 
@@ -23,7 +25,8 @@ public class VerticalListLayout implements LayoutManager {
 
     @Override
     public Dimension preferredLayoutSize(Container parent) {
-        Dimension dim = new Dimension(100, 0);
+        Insets border = ((JComponent) parent).getInsets();
+        Dimension dim = new Dimension(100, border.top + border.bottom);
         synchronized (parent.getTreeLock()) {
             for (Component c : parent.getComponents()) {
                 if (c.isVisible()) {
@@ -42,14 +45,15 @@ public class VerticalListLayout implements LayoutManager {
 
     @Override
     public void layoutContainer(Container parent) {
-        int y = 0;
+        Insets border = ((JComponent) parent).getInsets();
+        int y = border.top;
         synchronized (parent.getTreeLock()) {
             for (Component c : parent.getComponents()) {
                 if (c.isVisible()) {
                     Dimension d = c.getPreferredSize();
-                    d.width = parent.getWidth() - insets.left - insets.right;
+                    d.width = parent.getWidth() - insets.left - insets.right - border.left - border.right;
                     c.setSize(d);
-                    c.setLocation(insets.left, y + insets.top);
+                    c.setLocation(border.left + insets.left, y + insets.top);
                     y += d.height + insets.top + insets.bottom;
                 }
             }
