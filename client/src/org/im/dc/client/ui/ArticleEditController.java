@@ -5,6 +5,8 @@ import java.awt.Component;
 import java.awt.Desktop;
 import java.awt.Font;
 import java.awt.event.ActionListener;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
@@ -243,16 +245,26 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
             }
         });
 
+        panelEdit.panelEditor.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {
+            @Override
+            public void adjustmentValueChanged(AdjustmentEvent arg0) {
+                resizeEditor();
+            }
+        });
         panelEdit.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
-                Component c = panelEdit.panelEditor.getViewport().getView();
-                if (c != null) {
-                    c.setSize(panelEdit.getWidth(), c.getHeight());
-                    c.validate();
-                }
+                resizeEditor();
             }
         });
+    }
+
+    private void resizeEditor() {
+        Component c = panelEdit.panelEditor.getViewport().getView();
+        if (c != null) {
+            c.setSize(panelEdit.panelEditor.getViewport().getWidth(), c.getHeight());
+            c.validate();
+        }
     }
 
     public boolean isNew() {
@@ -426,15 +438,15 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
     }
 
     private void displayWatch() {
-        window.lblWatched.setIcon(new ImageIcon(
-                ArticleEditController.class.getResource(article.youWatched ? "images/watch-on.png" : "images/watch-off.png")));
+        window.lblWatched.setIcon(new ImageIcon(ArticleEditController.class
+                .getResource(article.youWatched ? "images/watch-on.png" : "images/watch-off.png")));
     }
 
     private void displayIssue() {
         boolean hasIssue = getOpenIssue() != null;
 
-        window.lblHasProposedChanges.setIcon(
-                new ImageIcon(ArticleEditController.class.getResource(hasIssue ? "images/proposed-on.png" : "images/proposed-off.png")));
+        window.lblHasProposedChanges.setIcon(new ImageIcon(ArticleEditController.class
+                .getResource(hasIssue ? "images/proposed-on.png" : "images/proposed-off.png")));
     }
 
     private Related getOpenIssue() {
