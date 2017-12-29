@@ -12,7 +12,7 @@ import javax.script.SimpleScriptContext;
 
 import org.im.dc.server.Config;
 import org.im.dc.server.Db;
-import org.im.dc.service.impl.HtmlOut;
+import org.im.dc.service.js.HtmlOut;
 import org.junit.Before;
 import org.junit.Test;
 
