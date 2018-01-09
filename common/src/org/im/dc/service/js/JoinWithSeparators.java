@@ -49,6 +49,18 @@ public class JoinWithSeparators implements IHtmlPart {
         children.clear();
     }
 
+    public JoinWithSeparators clearEmptyChildren() {
+        for (int i = 0; i < children.size(); i++) {
+            if (children.get(i).isEmpty()) {
+                children.remove(i);
+                i--;
+            } else if (children.get(i) instanceof JoinWithSeparators) {
+                ((JoinWithSeparators) children.get(i)).clearEmptyChildren();
+            }
+        }
+        return this;
+    }
+
     @Override
     public boolean isEmpty() {
         for (IHtmlPart p : children) {
@@ -81,6 +93,12 @@ public class JoinWithSeparators implements IHtmlPart {
         }
     }
 
+    public String out() {
+        StringBuilder o = new StringBuilder();
+        out(o);
+        return o.toString();
+    }
+
     static class Text implements IHtmlPart {
         private final String text;
 
@@ -100,7 +118,7 @@ public class JoinWithSeparators implements IHtmlPart {
 
         @Override
         public boolean isEmpty() {
-            return !text.isEmpty();
+            return text.isEmpty();
         }
 
         @Override
@@ -123,7 +141,7 @@ public class JoinWithSeparators implements IHtmlPart {
 
         @Override
         public boolean isEmpty() {
-            return !tag.isEmpty();
+            return tag.isEmpty();
         }
 
         @Override
