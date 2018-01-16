@@ -16,7 +16,7 @@ import javax.xml.validation.Validator;
 
 import org.im.dc.server.Config;
 import org.im.dc.server.Db;
-import org.im.dc.service.impl.ValidationHelper;
+import org.im.dc.service.ValidationHelper;
 import org.junit.Test;
 
 public class JsValidation {

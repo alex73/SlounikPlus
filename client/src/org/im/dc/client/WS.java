@@ -19,6 +19,9 @@ import javax.xml.ws.BindingProvider;
 import javax.xml.ws.Service;
 import javax.xml.ws.handler.MessageContext;
 
+import org.im.dc.git.services.ArticleWebserviceGitImpl;
+import org.im.dc.git.services.InitWebserviceGitImpl;
+import org.im.dc.git.services.ToolsWebserviceGitImpl;
 import org.im.dc.service.AppConst;
 import org.im.dc.service.ArticleWebservice;
 import org.im.dc.service.InitWebservice;
@@ -31,7 +34,7 @@ public class WS {
     private static InitWebservice initWebservice;
     public static Header header;
 
-    public static void init(String urlPrefix, String user, String pass) throws Exception {
+    public static void initWS(String urlPrefix, String user, String pass) throws Exception {
         Service service;
 
         disableSSL();
@@ -55,6 +58,17 @@ public class WS {
         header.user = user;
         header.pass = pass;
         header.appVersion = AppConst.APP_VERSION;
+    }
+
+    public static void initGit(String url, String user) throws Exception {
+        header = new Header();
+        header.user = user;
+        header.appVersion = AppConst.APP_VERSION;
+
+        GitProc.INSTANCE = new GitProc(GitProc.REPO_DIR, url);
+        articleService = new ArticleWebserviceGitImpl();
+        toolsWebservice = new ToolsWebserviceGitImpl();
+        initWebservice = new InitWebserviceGitImpl();
     }
 
     private static void setupCompression(BindingProvider provider) {

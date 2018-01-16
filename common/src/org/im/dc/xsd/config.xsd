@@ -3,6 +3,7 @@
 	<xs:element name="config">
 		<xs:complexType>
 			<xs:sequence>
+				<xs:element name="appVersion" type="xs:string" />
 				<xs:element name="version" type="xs:string" />
 				<xs:element name="headerLocale" type="xs:string" />
 				<xs:element name="stress" type="xs:string" />
@@ -38,7 +39,7 @@
 	<xs:element name="user">
 		<xs:complexType>
 			<xs:attribute name="name" type="xs:string" use="required" />
-			<xs:attribute name="pass" type="xs:string" use="required" />
+			<xs:attribute name="pass" type="xs:string" use="optional" />
 			<xs:attribute name="role" type="xs:string" use="required" />
 		</xs:complexType>
 	</xs:element>

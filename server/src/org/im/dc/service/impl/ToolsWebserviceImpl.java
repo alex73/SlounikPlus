@@ -9,7 +9,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 
 import javax.jws.WebService;
 import javax.script.ScriptContext;
@@ -17,13 +16,12 @@ import javax.script.SimpleScriptContext;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Validator;
 
+import org.im.dc.config.ConfigLoad;
+import org.im.dc.config.PermissionChecker;
 import org.im.dc.gen.config.CommonPermission;
-import org.im.dc.gen.config.Type;
 import org.im.dc.gen.config.TypePermission;
-import org.im.dc.gen.config.User;
 import org.im.dc.server.Config;
 import org.im.dc.server.Db;
-import org.im.dc.server.PermissionChecker;
 import org.im.dc.server.VersionChecker;
 import org.im.dc.server.db.RecArticle;
 import org.im.dc.server.db.RecArticleHistory;
@@ -47,7 +45,7 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
 
     private void check(Header header) throws Exception {
         VersionChecker.check(header);
-        if (!PermissionChecker.checkUser(header.user, header.pass)) {
+        if (!PermissionChecker.checkUser(Config.getConfig(), header.user, header.pass)) {
             LOG.warn("<< check: wrong user/pass");
             throw new RuntimeException("Unknown user");
         }
@@ -59,32 +57,7 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
         long startTime = System.currentTimeMillis();
         check(header);
 
-        InitialData result = new InitialData();
-        result.configVersion = Config.getConfig().getVersion();
-        result.headerLocale = Config.getConfig().getHeaderLocale();
-        result.stress = Config.getConfig().getStress();
-        result.xsds = Config.schemaSources;
-        for (Type type : Config.getConfig().getTypes().getType()) {
-            InitialData.TypeInfo ti = new InitialData.TypeInfo();
-            ti.typeId = type.getId();
-            ti.typeName = type.getName();
-            ti.newArticleState = PermissionChecker.getNewArticleState(ti.typeId);
-            result.articleTypes.add(ti);
-        }
-        result.currentUserPermissions = PermissionChecker.getUserPermissions(header.user);
-        Map<String, Set<String>> ps = PermissionChecker.getUserPermissionsByType(header.user);
-        for (Type type : Config.getConfig().getTypes().getType()) {
-            Set<String> permissionsList = ps.get(type.getId());
-            if (permissionsList != null) {
-                result.getTypeInfo(type.getId()).currentUserTypePermissions.addAll(permissionsList);
-            }
-        }
-        result.states.addAll(Config.getConfig().getStates().getState());
-        result.allUsers = new TreeMap<>();
-        for (User u : Config.getConfig().getUsers().getUser()) {
-            result.allUsers.put(u.getName(), u.getRole());
-        }
-        result.currentUserRole = PermissionChecker.getUserRole(header.user);
+        InitialData result = ConfigLoad.config2initialData(Config.getConfig(), header.user, Config.schemaSources);
 
         LOG.info("<< getInitialData (" + (System.currentTimeMillis() - startTime) + "ms)");
         return result;
@@ -122,7 +95,7 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
         LOG.info(">> validateAll(" + header.user + ")");
         long startTime = System.currentTimeMillis();
         check(header);
-        PermissionChecker.userRequiresCommonPermission(header.user, CommonPermission.FULL_VALIDATION);
+        PermissionChecker.userRequiresCommonPermission(Config.getConfig(), header.user, CommonPermission.FULL_VALIDATION);
 
         List<Integer> articleIds = Db.execAndReturn((api) -> api.getArticleMapper().selectAllIds());
 
@@ -154,7 +127,7 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
         LOG.info(">> reassignUsers(" + header.user + ")");
         long startTime = System.currentTimeMillis();
         check(header);
-        PermissionChecker.userRequiresTypePermission(header.user, articleType, TypePermission.REASSIGN);
+        PermissionChecker.userRequiresTypePermission(Config.getConfig(), header.user, articleType, TypePermission.REASSIGN);
 
         Db.exec((api) -> {
             for (int articleId : articleIds) {
@@ -175,11 +148,11 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
         LOG.info(">> addArticles(" + header.user + ")");
         long startTime = System.currentTimeMillis();
         check(header);
-        PermissionChecker.userRequiresTypePermission(header.user, articleType, TypePermission.ADD_ARTICLES);
+        PermissionChecker.userRequiresTypePermission(Config.getConfig(), header.user, articleType, TypePermission.ADD_ARTICLES);
         Date lastUpdated = new Date();
         List<RecArticle> list = new ArrayList<>();
         Set<String> newHeaders = new HashSet<>();
-        String initialState = PermissionChecker.getNewArticleState(articleType);
+        String initialState = PermissionChecker.getNewArticleState(Config.getConfig(), articleType);
         for (ArticleFull a : articles) {
             newHeaders.add(a.header);
             RecArticle r = new RecArticle();
@@ -218,7 +191,7 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
         LOG.info(">> preparePreview(" + header.user + ")");
         long startTime = System.currentTimeMillis();
         check(header);
-        PermissionChecker.userRequiresTypePermission(header.user, articleType, TypePermission.VIEW_OUTPUT);
+        PermissionChecker.userRequiresTypePermission(Config.getConfig(), header.user, articleType, TypePermission.VIEW_OUTPUT);
 
         try {
             Validator validator = Config.schemas.get(articleType).newValidator();
@@ -244,7 +217,7 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
         LOG.info(">> preparePreviews(" + header.user + ")");
         long startTime = System.currentTimeMillis();
         check(header);
-        PermissionChecker.userRequiresTypePermission(header.user, articleType, TypePermission.VIEW_OUTPUT);
+        PermissionChecker.userRequiresTypePermission(Config.getConfig(), header.user, articleType, TypePermission.VIEW_OUTPUT);
 
         try {
             Map<Integer, RecArticle> articlesMap = new HashMap<>();

@@ -165,7 +165,11 @@ public class MainController extends BaseController<MainFrame> {
         new LongProcess() {
             @Override
             protected void exec() throws Exception {
-                WS.init(addr, username, pass);
+                if (addr.startsWith("http://")|| addr.startsWith("https://")) {
+                    WS.initWS(addr, username, pass);
+                } else {
+                    WS.initGit(addr, username);
+                }
                 WS.header.configVersion = WS.getInitWebservice().getConfigVersion(WS.header.appVersion);
                 initialData = WS.getToolsWebservice().getInitialData(WS.header);
 

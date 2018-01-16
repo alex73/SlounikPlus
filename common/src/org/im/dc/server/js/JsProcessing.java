@@ -8,22 +8,14 @@ import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 
-import org.im.dc.server.Config;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class JsProcessing {
-    private static final Logger LOG = LoggerFactory.getLogger(Config.class);
 
     private static final ScriptEngineManager FACTORY = new ScriptEngineManager();
 
     public static void exec(String scriptFile, ScriptContext context) throws Exception {
-        LOG.info(">> Execute script from " + scriptFile);
-        long startTime = System.currentTimeMillis();
         ScriptEngine engine = FACTORY.getEngineByName("JavaScript");
         try (BufferedReader rd = new BufferedReader(new InputStreamReader(new FileInputStream(scriptFile), "UTF-8"))) {
             engine.eval(rd, context);
         }
-        LOG.info("<< Execute script from " + scriptFile + " (" + (System.currentTimeMillis() - startTime) + "ms)");
     }
 }

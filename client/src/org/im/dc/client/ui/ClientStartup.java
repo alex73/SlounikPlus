@@ -10,10 +10,19 @@ public class ClientStartup {
         SettingsController.initialize();
 
         MainController co = new MainController(args[0]);
-        if (args.length == 3) {
-            co.startWithUser(args[1], args[2]);
+        if (args[0].startsWith("http://") || args[0].startsWith("https://")) {
+            if (args.length == 3) {
+                co.startWithUser(args[1], args[2]);
+            } else {
+                co.start();
+            }
         } else {
-            co.start();
+            if (args.length == 2) {
+                co.startWithUser(args[1], null);
+            } else {
+                System.err.println("ClientStartup <git addr> <app user>");
+                System.exit(1);
+            }
         }
     }
 }

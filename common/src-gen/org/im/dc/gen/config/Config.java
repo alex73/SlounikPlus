@@ -18,6 +18,7 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
+ *         &lt;element name="appVersion" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *         &lt;element name="version" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *         &lt;element name="headerLocale" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *         &lt;element name="stress" type="{http://www.w3.org/2001/XMLSchema}string"/>
@@ -35,6 +36,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
+    "appVersion",
     "version",
     "headerLocale",
     "stress",
@@ -46,6 +48,8 @@ import javax.xml.bind.annotation.XmlType;
 @XmlRootElement(name = "config")
 public class Config {
 
+    @XmlElement(required = true)
+    protected String appVersion;
     @XmlElement(required = true)
     protected String version;
     @XmlElement(required = true)
@@ -60,6 +64,30 @@ public class Config {
     protected States states;
     @XmlElement(required = true)
     protected Types types;
+
+    /**
+     * Gets the value of the appVersion property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getAppVersion() {
+        return appVersion;
+    }
+
+    /**
+     * Sets the value of the appVersion property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setAppVersion(String value) {
+        this.appVersion = value;
+    }
 
     /**
      * Gets the value of the version property.

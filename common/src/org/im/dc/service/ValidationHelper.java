@@ -1,4 +1,4 @@
-package org.im.dc.service.impl;
+package org.im.dc.service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,6 +7,7 @@ public class ValidationHelper {
     private final int currentArticleId;
     private final List<String> links = new ArrayList<>();
     public String newHeader;
+    public String error;
 
     public ValidationHelper(int currentArticleId) {
         this.currentArticleId = currentArticleId;
