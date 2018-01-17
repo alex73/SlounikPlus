@@ -18,7 +18,7 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;attribute name="name" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="pass" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="pass" type="{http://www.w3.org/2001/XMLSchema}string" />
  *       &lt;attribute name="role" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -34,7 +34,7 @@ public class User {
 
     @XmlAttribute(name = "name", required = true)
     protected String name;
-    @XmlAttribute(name = "pass", required = true)
+    @XmlAttribute(name = "pass")
     protected String pass;
     @XmlAttribute(name = "role", required = true)
     protected String role;
