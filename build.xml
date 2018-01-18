@@ -5,14 +5,14 @@
 
     <target name="client">
         <mkdir dir="client/build" />
-        <javac srcdir="client/src:client/src-gen:common/src" includes="**" encoding="utf-8" destdir="client/build"  debug="true" debuglevel="lines,vars,source">
+        <javac srcdir="client/src:common/src-gen:common/src" includes="**" encoding="utf-8" destdir="client/build"  debug="true" debuglevel="lines,vars,source">
             <classpath>
                 <fileset dir="client/lib/" includes="**/*.jar" />
             </classpath>
         </javac>
         <copy todir="client/build">
             <fileset dir="client/src" />
-            <fileset dir="client/src-gen" />
+            <fileset dir="common/src-gen" />
             <fileset dir="common/src" />
         </copy>
 
@@ -37,7 +37,7 @@
 
     <target name="server">
         <mkdir dir="server/build" />
-        <javac srcdir="server/src:common/src:common/src-gen" includes="**" encoding="utf-8" destdir="server/build"  debug="true" debuglevel="lines,vars,source">
+        <javac srcdir="server/src:common/src-gen:common/src" includes="**" encoding="utf-8" destdir="server/build"  debug="true" debuglevel="lines,vars,source">
             <classpath>
                 <fileset dir="server/lib/" includes="**/*.jar"/>
                 <fileset dir="server/lib-compile/" includes="**/*.jar"/>
