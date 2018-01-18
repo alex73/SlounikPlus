@@ -52,6 +52,7 @@ public class MainController extends BaseController<MainFrame> {
 
     public MainController(String addr) {
         super(new MainFrame(), null);
+        setTitle(null);
         this.addr = addr;
         instance = this;
     }
@@ -178,7 +179,7 @@ public class MainController extends BaseController<MainFrame> {
 
             @Override
             protected void ok() {
-                window.setTitle(window.getTitle() + " : " + username);
+                setTitle(username);
                 initDocking();
                 init();
                 initPlugins();
@@ -292,6 +293,33 @@ public class MainController extends BaseController<MainFrame> {
                 listener.onArticleUpdated(article);
             }
         }
+    }
+
+    private void setTitle(String user) {
+        String t = "Рэдагаванне слоўніка";
+        if (user != null) {
+            t += ": " + user;
+        }
+        String buildtime = null;
+        try {
+            Enumeration<URL> mfs = MainController.class.getClassLoader().getResources("META-INF/MANIFEST.MF");
+            while (mfs.hasMoreElements()) {
+                URL url = mfs.nextElement();
+                try (InputStream in = new BufferedInputStream(url.openStream())) {
+                    Manifest m = new Manifest(in);
+                    buildtime = m.getMainAttributes().getValue("SlounikPlus-buildtime");
+                    if (buildtime != null) {
+                        break;
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        if (buildtime != null) {
+            t += " [" + buildtime + "]";
+        }
+        window.setTitle(t);
     }
 
     /**

@@ -26,11 +26,15 @@
         		<fileset dir="dist/client/lib/" includes="**/*.jar" />
         	</classpath>
         </manifestclasspath>
+        <tstamp>
+            <format property="manifest_buildtime" pattern="yyyy-MM-dd HH:mm" />
+        </tstamp>
         <jar destfile="dist/client/client.jar">
             <fileset dir="client/build" />
             <manifest>
                 <attribute name="Main-Class" value="org.im.dc.client.ui.ClientStartup" />
                 <attribute name="Class-Path" value="${manifest_cp}"/>
+                <attribute name="SlounikPlus-buildtime" value="${manifest_buildtime}"/>
             </manifest>
         </jar>
     </target>
