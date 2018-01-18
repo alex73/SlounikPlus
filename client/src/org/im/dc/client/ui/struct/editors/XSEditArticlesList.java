@@ -47,7 +47,6 @@ public class XSEditArticlesList extends XSNamedControl<JPanel> implements IXSEdi
                 super.comboFilter(enteredText);
             }
         };
-        combo.setFont(context.getFont());
         combo.setSelectedItem("");
         combo.addItemListener(new ItemListener() {
             @Override

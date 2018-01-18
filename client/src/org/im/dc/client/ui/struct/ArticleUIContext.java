@@ -1,14 +1,17 @@
 package org.im.dc.client.ui.struct;
 
-import java.awt.Font;
-
 import org.im.dc.client.ui.ArticleEditController;
 import org.im.dc.client.ui.struct.AnnotationInfo.RORW;
 
 public class ArticleUIContext {
+    public final String articleTypeId;
     public String userRole;
     public String articleState;
     public ArticleEditController editController;
+
+    public ArticleUIContext(String articleTypeId) {
+        this.articleTypeId = articleTypeId;
+    }
 
     public boolean getWritable(boolean parentWritable, AnnotationInfo ann) {
         Boolean wr = null;
@@ -25,12 +28,8 @@ public class ArticleUIContext {
         return wr;
     }
 
-    public Font getFont() {
-        return editController.panelEdit.getFont();
-    }
-
     public String getArticleTypeId() {
-        return editController.getArticleTypeId();
+        return articleTypeId;
     }
 
     public void resetChanged() {

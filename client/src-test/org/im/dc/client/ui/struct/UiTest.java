@@ -4,15 +4,10 @@ import java.awt.Font;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.StringWriter;
 import java.util.TreeMap;
 
-import javax.swing.JFrame;
-import javax.swing.JScrollPane;
-import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.commons.io.FileUtils;
@@ -40,24 +35,14 @@ public class UiTest {
         id.articleTypes.add(ti);
         SchemaLoader.init(id);
 
-        new MainController("");
-        ArticleUIContext context = new ArticleUIContext() {
-            @Override
-            public String getArticleTypeId() {
-                return ti.typeId;
-            }
-
+        new MainController("").window.setVisible(true);
+        ArticleUIContext context = new ArticleUIContext("article") {
             @Override
             public void resetChanged() {
             }
 
             @Override
             public void fireChanged() {
-            }
-
-            @Override
-            public Font getFont() {
-                return MainController.instance.window.getFont();
             }
         };
         MainController.initialData=new InitialData();

@@ -29,7 +29,6 @@ public class XSEditRadio extends XSNamedControl<JPanel> implements IXSEdit {
         ButtonGroup gr = new ButtonGroup();
         for (String v : SchemaLoader.getSimpleTypeEnumeration(ann.editDetails, context.getArticleTypeId())) {
             JRadioButton rb = new JRadioButton(v);
-            rb.setFont(context.getFont());
             gr.add(rb);
             rb.setOpaque(false);
             editor.add(rb);

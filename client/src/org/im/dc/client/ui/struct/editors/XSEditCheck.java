@@ -49,7 +49,6 @@ public class XSEditCheck extends XSNamedControl<JPanel> implements IXSContainer 
         for (String v : SchemaLoader.getSimpleTypeEnumeration(ann.editDetails, context.getArticleTypeId())) {
             JCheckBox cb = new JCheckBox(v);
             cb.setOpaque(false);
-            cb.setFont(context.getFont());
             editor.add(cb);
             cb.addItemListener(new ItemListener() {
                 @Override

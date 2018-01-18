@@ -291,12 +291,9 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
         window.lblValidationError
                 .setText(article.article.validationError != null ? article.article.validationError : " ");
 
-        ArticleUIContext editContext = new ArticleUIContext();
+        ArticleUIContext editContext = new ArticleUIContext(typeInfo.typeId);
         resetChanged();
         try {
-            editContext.editController = this;
-            editContext.userRole = MainController.initialData.currentUserRole;
-            editContext.articleState = article.article.state;
             editorUI = SchemaLoader.createUI(editContext);
             if (article.article.xml != null) {
                 XMLStreamReader rd = READER_FACTORY
@@ -304,6 +301,9 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
                 rd.nextTag();
                 editorUI.insertData(rd);
             }
+            editContext.editController = this;
+            editContext.userRole = MainController.initialData.currentUserRole;
+            editContext.articleState = article.article.state;
             resetChanged();
         } catch (Throwable ex) {
             editorUI = null;
@@ -311,6 +311,7 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
             JOptionPane.showMessageDialog(window, "Памылка чытання XML артыкула: " + ex.getMessage(), "Памылка",
                     JOptionPane.ERROR_MESSAGE);
         }
+        applyFont(editorUI.getUIComponent());
         panelEdit.panelEditor.setViewportView(editorUI.getUIComponent());
 
         Related.sortByTimeDesc(article.related);
@@ -351,6 +352,16 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
                 });
                 asLink(lbl);
                 window.panelLinkedExternal.add(lbl);
+            }
+        }
+    }
+
+    private void applyFont(JComponent comp) {
+        comp.setFont(panelEdit.getFont());
+        for (int i = 0; i < comp.getComponentCount(); i++) {
+            Component c = comp.getComponent(i);
+            if (c instanceof JComponent) {
+                applyFont((JComponent) c);
             }
         }
     }

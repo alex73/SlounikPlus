@@ -23,7 +23,6 @@ public class XSEditCombo extends XSNamedControl<JComboBox<String>> implements IX
                 SchemaLoader.getSimpleTypeEnumeration(ann.editDetails, context.getArticleTypeId()));
         values.add(0, "");
         editor = new JComboBox<>(values);
-        editor.setFont(context.getFont());
         editor.setSelectedItem("");
         editor.addItemListener(new ItemListener() {
             @Override

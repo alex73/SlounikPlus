@@ -47,23 +47,13 @@ public class XMLZipTest {
         ti.typeId = "root";
         types.add(ti);
     //    SchemaLoader.init(types);
-        ArticleUIContext context = new ArticleUIContext() {
-            @Override
-            public String getArticleTypeId() {
-                return ti.typeId;
-            }
-
+        ArticleUIContext context = new ArticleUIContext(ti.typeId) {
             @Override
             public void resetChanged() {
             }
 
             @Override
             public void fireChanged() {
-            }
-
-            @Override
-            public Font getFont() {
-                return new Font("System", 0, 10);
             }
         };
 

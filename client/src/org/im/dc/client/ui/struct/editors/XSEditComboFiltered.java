@@ -18,7 +18,6 @@ public class XSEditComboFiltered extends XSNamedControl<JFilterComboBox> impleme
     protected void initEditor() {
         editor = new JFilterComboBox(
                 SchemaLoader.getSimpleTypeEnumeration(ann.editDetails, context.getArticleTypeId()));
-        editor.setFont(context.getFont());
         editor.setSelectedItem("");
         editor.addItemListener(new ItemListener() {
             @Override
