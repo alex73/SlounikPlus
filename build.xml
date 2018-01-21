@@ -34,6 +34,8 @@
             <manifest>
                 <attribute name="Main-Class" value="org.im.dc.client.ui.ClientStartup" />
                 <attribute name="Class-Path" value="${manifest_cp}"/>
+                <attribute name="Application-Name" value="SlounikPlus"/>
+                <attribute name="Permissions" value="all-permissions"/>
                 <attribute name="SlounikPlus-buildtime" value="${manifest_buildtime}"/>
             </manifest>
         </jar>
