@@ -295,13 +295,13 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
         resetChanged();
         try {
             editorUI = SchemaLoader.createUI(editContext);
+            editContext.editController = this;
             if (article.article.xml != null) {
                 XMLStreamReader rd = READER_FACTORY
                         .createXMLStreamReader(new ByteArrayInputStream(article.article.xml));
                 rd.nextTag();
                 editorUI.insertData(rd);
             }
-            editContext.editController = this;
             editContext.userRole = MainController.initialData.currentUserRole;
             editContext.articleState = article.article.state;
             resetChanged();

@@ -1,5 +1,5 @@
 package org.im.dc.service;
 
 public class AppConst {
-    public static final int APP_VERSION = 11;
+    public static final int APP_VERSION = 12;
 }
