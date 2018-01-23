@@ -310,6 +310,8 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
             ex.printStackTrace();
             JOptionPane.showMessageDialog(window, "Памылка чытання XML артыкула: " + ex.getMessage(), "Памылка",
                     JOptionPane.ERROR_MESSAGE);
+            window.dispose();
+            return;
         }
         applyFont(editorUI.getUIComponent());
         panelEdit.panelEditor.setViewportView(editorUI.getUIComponent());

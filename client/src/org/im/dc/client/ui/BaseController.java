@@ -144,7 +144,12 @@ public abstract class BaseController<T extends Window> {
                 error();
             } catch (ExecutionException e) {
                 Throwable ex = e.getCause();
-                if (ex instanceof SOAPFaultException) {
+                if (ex instanceof Error) {
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(window, "Error " + ex.getClass().getName() + ": " + ex.getMessage(),
+                            "Памылка", JOptionPane.ERROR_MESSAGE);
+                    error();
+                } else if (ex instanceof SOAPFaultException) {
                     ex.printStackTrace();
                     JOptionPane.showMessageDialog(window,
                             "Remote error: " + ((SOAPFaultException) ex).getFault().getFaultString(), "Памылка",
@@ -152,8 +157,8 @@ public abstract class BaseController<T extends Window> {
                     error();
                 } else {
                     ex.printStackTrace();
-                    JOptionPane.showMessageDialog(window, "Error: " + ex.getMessage(), "Памылка",
-                            JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(window, "Error " + ex.getClass().getName() + ": " + ex.getMessage(),
+                            "Памылка", JOptionPane.ERROR_MESSAGE);
                     error();
                 }
             }
