@@ -35,6 +35,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamConstants;
@@ -53,6 +55,8 @@ import org.im.dc.service.dto.ArticlesFilter;
 import org.im.dc.service.dto.InitialData;
 import org.im.dc.service.dto.Related;
 import org.im.dc.service.dto.Related.RelatedType;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import com.vlsolutions.swing.docking.DockKey;
 import com.vlsolutions.swing.docking.Dockable;
@@ -62,8 +66,9 @@ import com.vlsolutions.swing.docking.DockingDesktop;
  * Controls article editor.
  */
 public class ArticleEditController extends BaseController<ArticleEditDialog> {
-    public static XMLInputFactory READER_FACTORY = XMLInputFactory.newInstance();
-    public static XMLOutputFactory WRITER_FACTORY = XMLOutputFactory.newInstance();
+    public static final XMLInputFactory READER_FACTORY = XMLInputFactory.newInstance();
+    public static final XMLOutputFactory WRITER_FACTORY = XMLOutputFactory.newInstance();
+    public static final DocumentBuilderFactory DOC_FACTORY = DocumentBuilderFactory.newInstance();
 
     private final InitialData.TypeInfo typeInfo;
     public IXSContainer editorUI;
@@ -106,6 +111,17 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
         article.article.type = typeInfo.typeId;
         article.article.state = typeInfo.newArticleState;
         article.article.assignedUsers = MainController.initialData.newArticleUsers;
+        init();
+        show();
+    }
+
+    /**
+     * New article for UI testing.
+     */
+    protected ArticleEditController(InitialData.TypeInfo typeInfo, ArticleFullInfo article) {
+        this(true, typeInfo);
+
+        this.article = article;
         init();
         show();
     }
@@ -297,10 +313,9 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
             editorUI = SchemaLoader.createUI(editContext);
             editContext.editController = this;
             if (article.article.xml != null) {
-                XMLStreamReader rd = READER_FACTORY
-                        .createXMLStreamReader(new ByteArrayInputStream(article.article.xml));
-                rd.nextTag();
-                editorUI.insertData(rd);
+                DocumentBuilder builder = DOC_FACTORY.newDocumentBuilder();
+                Document doc = builder.parse(new ByteArrayInputStream(article.article.xml));
+                editorUI.insertData((Element) doc.getFirstChild());
             }
             editContext.userRole = MainController.initialData.currentUserRole;
             editContext.articleState = article.article.state;

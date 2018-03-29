@@ -1,10 +1,11 @@
-package org.im.dc.client.ui.struct;
+package org.im.dc.client.ui;
 
-import java.awt.Font;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.StringWriter;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.TreeMap;
 
 import javax.xml.stream.XMLOutputFactory;
@@ -12,18 +13,19 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.commons.io.FileUtils;
 import org.im.dc.client.SchemaLoader;
-import org.im.dc.client.ui.ArticleEditController;
-import org.im.dc.client.ui.MainController;
+import org.im.dc.client.ui.struct.ArticleUIContext;
+import org.im.dc.service.dto.ArticleFull;
+import org.im.dc.service.dto.ArticleFullInfo;
 import org.im.dc.service.dto.InitialData;
 
 public class UiTest {
 
     public static void main(String[] args) throws Exception {
-       // JFrame f = new JFrame();
-        //f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        //f.setBounds(100, 100, 600, 700);
-        //f.setVisible(true);
-        
+        // JFrame f = new JFrame();
+        // f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        // f.setBounds(100, 100, 600, 700);
+        // f.setVisible(true);
+
         InitialData id = new InitialData();
         id.xsds = new TreeMap<>();
         InitialData.TypeInfo ti = new InitialData.TypeInfo();
@@ -45,20 +47,23 @@ public class UiTest {
             public void fireChanged() {
             }
         };
-        MainController.initialData=new InitialData();
-        context.editController = new ArticleEditController(ti);
+        MainController.initialData = new InitialData();
+        if (args.length > 0) {
+            context.editController = new ArticleEditController(ti, loadArticle(ti, args[0]));
+        } else {
+            context.editController = new ArticleEditController(ti);
+        }
         context.articleState = "0";
         context.userRole = "укладальнік";
-        
 
-        //IXSContainer c = SchemaLoader.createUI(context);
-        //System.out.println(c.dump(""));
-        //f.getContentPane().add(new JScrollPane(c.getUIComponent()));
-        //f.validate();
+        // IXSContainer c = SchemaLoader.createUI(context);
+        // System.out.println(c.dump(""));
+        // f.getContentPane().add(new JScrollPane(c.getUIComponent()));
+        // f.validate();
 
-//        XMLStreamReader rd = XMLInputFactory.newInstance().createXMLStreamReader(
-//                new FileInputStream("/data/gits/My/Projects/SlounikPlus/ital/config/root-test.xml"));
-//        rd.nextTag();
+        // XMLStreamReader rd = XMLInputFactory.newInstance().createXMLStreamReader(
+        // new FileInputStream("/data/gits/My/Projects/SlounikPlus/ital/config/root-test.xml"));
+        // rd.nextTag();
 
         context.editController.window.addWindowListener(new WindowAdapter() {
             @Override
@@ -75,5 +80,17 @@ public class UiTest {
                 System.exit(1);
             }
         });
+    }
+
+    private static ArticleFullInfo loadArticle(InitialData.TypeInfo typeInfo, String file) throws Exception {
+        ArticleFullInfo article = new ArticleFullInfo();
+        article.youCanEdit = true;
+        article.article = new ArticleFull();
+        article.article.type = typeInfo.typeId;
+        article.article.state = typeInfo.newArticleState;
+        article.article.assignedUsers = MainController.initialData.newArticleUsers;
+        article.article.xml = Files.readAllBytes(Paths.get(file));
+
+        return article;
     }
 }

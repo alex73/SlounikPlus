@@ -8,7 +8,6 @@ import java.util.List;
 
 import javax.swing.JComponent;
 import javax.swing.JPanel;
-import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.xerces.xs.XSModelGroup;
@@ -17,6 +16,8 @@ import org.apache.xerces.xs.XSObjectList;
 import org.im.dc.client.ui.struct.ArticleUIContext;
 import org.im.dc.client.ui.struct.IXSContainer;
 import org.im.dc.client.ui.struct.XSContainersFactory;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 public class XSGroupSequenceContainer extends XSBaseContainer<XSModelGroup> {
     private List<IXSContainer> children = new ArrayList<>();
@@ -60,17 +61,21 @@ public class XSGroupSequenceContainer extends XSBaseContainer<XSModelGroup> {
         return null;
     }
 
-    @Override
-    public void insertData(XMLStreamReader rd) throws Exception {
+    public void insertData(Element node) throws Exception {
         boolean found = false;
-        for (IXSContainer ci : children) {
-            if (rd.getLocalName().equals(ci.getTag())) {
-                ci.insertData(rd);
-                found = true;
+        for (Node ch = node.getFirstChild(); ch != null; ch = ch.getNextSibling()) {
+            if (ch.getNodeType() != Node.ELEMENT_NODE) {
+                continue;
+            }
+            for (IXSContainer ci : children) {
+                if (ch.getNodeName().equals(ci.getTag())) {
+                    ci.insertData((Element) ch);
+                    found = true;
+                }
             }
         }
         if (!found) {
-            throw new Exception("Child not found for tag " + rd.getLocalName());
+            throw new Exception("Child not found for tag " + node.getNodeName());
         }
     }
 

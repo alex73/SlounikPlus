@@ -19,6 +19,8 @@ import org.im.dc.client.SchemaLoader;
 import org.im.dc.client.ui.struct.AnnotationInfo;
 import org.im.dc.client.ui.struct.ArticleUIContext;
 import org.im.dc.client.ui.struct.IXSContainer;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 @SuppressWarnings("serial")
 public class XSEditCheck extends XSNamedControl<JPanel> implements IXSContainer {
@@ -66,8 +68,8 @@ public class XSEditCheck extends XSNamedControl<JPanel> implements IXSContainer 
     }
 
     @Override
-    public void insertData(XMLStreamReader rd) throws XMLStreamException {
-        List<String> values = readValuesList(rd);
+    public void insertData(Element node) throws Exception {
+        List<String> values = readValuesList(node);
         for (int i = 0; i < editor.getComponentCount(); i++) {
             JCheckBox cb = (JCheckBox) editor.getComponent(i);
             if (values.contains(cb.getText())) {
@@ -110,6 +112,19 @@ public class XSEditCheck extends XSNamedControl<JPanel> implements IXSContainer 
                 throw new RuntimeException();
             }
         }
+    }
+
+    List<String> readValuesList(Node node) throws XMLStreamException {
+        List<String> r = new ArrayList<>();
+        for (Node ch = node.getFirstChild(); ch != null; ch = ch.getNextSibling()) {
+            if (ch.getNodeType() == Node.ELEMENT_NODE) {
+                if (!"value".equals(ch.getNodeName())) {
+                    throw new RuntimeException("Wrong tag inside check list: " + ch.getNodeName());
+                }
+                r.add(ch.getTextContent());
+            }
+        }
+        return r;
     }
 
     @Override

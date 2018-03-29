@@ -20,6 +20,7 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.xerces.xs.XSConstants;
 import org.apache.xerces.xs.XSElementDeclaration;
+import org.apache.xerces.xs.XSModelGroup;
 import org.apache.xerces.xs.XSParticle;
 import org.apache.xerces.xs.XSTerm;
 import org.apache.xerces.xs.XSWildcard;
@@ -28,12 +29,15 @@ import org.im.dc.client.ui.struct.AnnotationInfo;
 import org.im.dc.client.ui.struct.ArticleUIContext;
 import org.im.dc.client.ui.struct.IXSContainer;
 import org.im.dc.client.ui.struct.XSContainersFactory;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 public class XSParticleContainer extends XSBaseContainer<XSParticle> {
     private static final Insets INSETS = new Insets(3, 0, 3, 0);
     private List<ChildInfo> children = new ArrayList<>();
+    private int readedCount = 0;
     private JPanel panel;
-    public final int minOccurs, maxOccurs;
+    public int minOccurs, maxOccurs;
     private JButton addButton;
     private boolean writable = true;
 
@@ -43,22 +47,31 @@ public class XSParticleContainer extends XSBaseContainer<XSParticle> {
         panel = new JPanel(new VerticalListLayout(INSETS));
         panel.setOpaque(false);
 
+        XSTerm term = obj.getTerm();
+        AnnotationInfo childAnn;
+        switch (term.getType()) {
+        case XSConstants.ELEMENT_DECLARATION:
+            childAnn = new AnnotationInfo(((XSElementDeclaration) obj.getTerm()).getAnnotation());
+            break;
+        case XSConstants.WILDCARD:
+            childAnn = new AnnotationInfo(((XSWildcard) obj.getTerm()).getAnnotation());
+            break;
+        case XSConstants.MODEL_GROUP:
+            childAnn = new AnnotationInfo(((XSModelGroup) obj.getTerm()).getAnnotation());
+            break;
+        default:
+            throw new RuntimeException("Unknown child in the particle: " + term.getName() + " type: " + term.getType());
+        }
+
         minOccurs = obj.getMinOccurs();
         maxOccurs = obj.getMaxOccursUnbounded() ? Integer.MAX_VALUE - 10 : obj.getMaxOccurs();
-
+        if (childAnn.overrideMinOccurs >= 0) {
+            minOccurs = childAnn.overrideMinOccurs;
+        }
+        if (childAnn.overrideMaxOccurs >= 0) {
+            maxOccurs = childAnn.overrideMaxOccurs;
+        }
         if (minOccurs < maxOccurs) {
-            XSTerm term = obj.getTerm();
-            AnnotationInfo childAnn;
-            switch (term.getType()) {
-            case XSConstants.ELEMENT_DECLARATION:
-                childAnn = new AnnotationInfo(((XSElementDeclaration) obj.getTerm()).getAnnotation());
-                break;
-            case XSConstants.WILDCARD:
-                childAnn = new AnnotationInfo(((XSWildcard) obj.getTerm()).getAnnotation());
-                break;
-            default:
-                throw new RuntimeException("Unknown child in the particle: " + term.getName());
-            }
             createAddButton(childAnn);
         } else {
             createAddButton(null);
@@ -222,26 +235,22 @@ public class XSParticleContainer extends XSBaseContainer<XSParticle> {
     }
 
     @Override
-    public void insertData(XMLStreamReader rd) throws Exception {
+    public void insertData(Element node) throws Exception {
         if (obj.getTerm().getName() == null) {
             // non-named particle, should be 1:1
             if (minOccurs != 1 || maxOccurs != 1) {
                 throw new Exception("Unsupported particle");
             }
-            children.get(0).element.insertData(rd);
+            children.get(0).element.insertData(node);
         } else {
-            for (int pos = 0;; pos++) {
-                if (rd.getLocalName().equals(obj.getTerm().getName())) {
-                    if (children.size() <= pos) {
-                        addElement();
-                    }
-                    children.get(pos).element.insertData(rd);
-                } else {
-                    break;
+            if (node.getNodeName().equals(obj.getTerm().getName())) {
+                if (children.size() <= readedCount) {
+                    addElement();
                 }
-                if (rd.nextTag() == XMLStreamConstants.END_ELEMENT) {
-                    break;
-                }
+                children.get(readedCount).element.insertData(node);
+                readedCount++;
+            } else {
+                throw new Exception("Wrong element: " + node.getNodeName());
             }
         }
         revalidate();

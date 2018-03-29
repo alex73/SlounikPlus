@@ -79,7 +79,7 @@ public class XMLZipTest {
                 IXSContainer c = SchemaLoader.createUI(context);
                 XMLStreamReader rd = XMLInputFactory.newInstance().createXMLStreamReader(new ByteArrayInputStream(xml));
                 rd.nextTag();
-                c.insertData(rd);
+               //TODO c.insertData(rd);
 
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
                 XMLStreamWriter wr = XMLOutputFactory.newInstance().createXMLStreamWriter(out);

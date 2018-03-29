@@ -23,6 +23,8 @@ import org.im.dc.client.ui.struct.ArticleUIContext;
 import org.im.dc.client.ui.struct.IXSContainer;
 import org.im.dc.client.ui.struct.XSContainersFactory;
 import org.im.dc.client.ui.struct.editors.FlowLayoutFullHeight;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 public class XSGroupChoiceContainer extends XSBaseContainer<XSModelGroup> {
     private List<IXSContainer> children = new ArrayList<>();
@@ -120,25 +122,33 @@ public class XSGroupChoiceContainer extends XSBaseContainer<XSModelGroup> {
     }
 
     @Override
-    public void insertData(XMLStreamReader rd) throws Exception {
+    public void insertData(Element node) throws Exception {
         for (IXSContainer ci : children) {
             ci.getUIComponent().setVisible(false);
         }
-        for (int i = 0; i < children.size(); i++) {
-            IXSContainer ci = children.get(i);
-            if (rd.getLocalName().equals(ci.getTag())) {
-                ci.insertData(rd);
-                ci.getUIComponent().setVisible(true);
-                ((JRadioButton) pRadio.getComponent(i)).setSelected(true);
-                break;
+        for (Node ch = node.getFirstChild(); ch != null; ch = ch.getNextSibling()) {
+            if (ch.getNodeType()!=Node.ELEMENT_NODE) {
+                continue;
+            }
+            for (int i = 0; i < children.size(); i++) {
+                IXSContainer ci = children.get(i);
+                if (ch.getNodeName().equals(ci.getTag())) {
+                    ci.insertData((Element)ch);
+                    ci.getUIComponent().setVisible(true);
+                    ((JRadioButton) pRadio.getComponent(i)).setSelected(true);
+                    break;
+                }
             }
         }
     }
 
     @Override
     public void extractData(XMLStreamWriter wr) throws Exception {
-        IXSContainer ci = children.get(getSelected());
-        ci.extractData(wr);
+        int sel = getSelected();
+        if (sel >= 0) {
+            IXSContainer ci = children.get(sel);
+            ci.extractData(wr);
+        }
     }
 
     public String dump(String prefix) {

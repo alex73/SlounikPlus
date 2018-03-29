@@ -18,6 +18,9 @@ import org.im.dc.client.ui.struct.editors.XSEditCombo;
 import org.im.dc.client.ui.struct.editors.XSEditComboFiltered;
 import org.im.dc.client.ui.struct.editors.XSEditRadio;
 import org.im.dc.client.ui.struct.editors.XSEditText;
+import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
 
 public class XSAttributeContainer extends XSBaseContainer<XSAttributeDeclaration> {
     private boolean required;
@@ -68,6 +71,10 @@ public class XSAttributeContainer extends XSBaseContainer<XSAttributeDeclaration
         return editor.getUIComponent();
     }
 
+    public IXSEdit getEditor() {
+        return editor;
+    }
+
     @Override
     public Collection<IXSContainer> children() {
         return null;
@@ -79,14 +86,15 @@ public class XSAttributeContainer extends XSBaseContainer<XSAttributeDeclaration
     }
 
     @Override
-    public void insertData(XMLStreamReader rd) throws Exception {
-        for (int i = 0; i < rd.getAttributeCount(); i++) {
-            String attrName = rd.getAttributeLocalName(i);
-            String attrValue = rd.getAttributeValue(i);
-            if (attrName.equals(obj.getName())) {
-                editor.setData(attrValue);
-            }
-        }
+    public void insertData(Element node) throws Exception {
+        NamedNodeMap attrs=  node.getAttributes();
+      for( int i=0;i<attrs.getLength();i++  ) {
+          String attrName =   attrs.item(i).getNodeName();
+          String attrValue =   attrs.item(i).getTextContent();
+          if (attrName.equals(obj.getName())) {
+              editor.setData(attrValue);
+          }
+      }
     }
 
     @Override

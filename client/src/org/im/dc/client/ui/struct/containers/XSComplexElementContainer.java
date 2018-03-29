@@ -26,6 +26,7 @@ import org.im.dc.client.ui.struct.ArticleUIContext;
 import org.im.dc.client.ui.struct.IXSContainer;
 import org.im.dc.client.ui.struct.XSContainersFactory;
 import org.im.dc.client.ui.struct.editors.XSEditCheck;
+import org.w3c.dom.Element;
 
 public class XSComplexElementContainer extends XSBaseContainer<XSComplexTypeDefinition> {
     protected XSElementDeclaration elem;
@@ -122,27 +123,21 @@ public class XSComplexElementContainer extends XSBaseContainer<XSComplexTypeDefi
     }
 
     @Override
-    public void insertData(XMLStreamReader rd) throws Exception {
-        if (!rd.getLocalName().equals(elem.getName())) {
+    public void insertData(Element node) throws Exception {
+        if (!node.getNodeName().equals(elem.getName())) {
             throw new Exception("Wrong tag for reading");
         }
         if (customContainer != null) {
-            customContainer.insertData(rd);
+            customContainer.insertData(node);
         } else {
             for (XSAttributeContainer ac : attributeChildren) {
-                ac.insertData(rd);
+                ac.insertData(node);
             }
-            int nt = rd.nextTag();
-            if (nt == XMLStreamConstants.START_ELEMENT) {
-                if (particleChild != null) {
-                    particleChild.insertData(rd);
-                } else {
-                    throw new Exception("Particle child not allowed");
-                }
+            if (particleChild != null) {
+                particleChild.insertData(node);
+            } else {
+                throw new Exception("Particle child not allowed");
             }
-        }
-        if (!rd.isEndElement() || !rd.getLocalName().equals(elem.getName())) {
-            throw new Exception("Wrong tag for reading: " + rd.getLocalName());
         }
     }
 

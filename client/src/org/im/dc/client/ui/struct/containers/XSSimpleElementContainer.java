@@ -21,6 +21,8 @@ import org.im.dc.client.ui.struct.editors.XSEditCombo;
 import org.im.dc.client.ui.struct.editors.XSEditComboFiltered;
 import org.im.dc.client.ui.struct.editors.XSEditRadio;
 import org.im.dc.client.ui.struct.editors.XSEditText;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 public class XSSimpleElementContainer extends XSBaseContainer<XSSimpleTypeDefinition> {
     protected XSElementDeclaration elem;
@@ -37,7 +39,7 @@ public class XSSimpleElementContainer extends XSBaseContainer<XSSimpleTypeDefini
             // custom implementation
             try {
                 Constructor<?> c = ann.customImpl.getConstructor(ArticleUIContext.class, IXSContainer.class,
-                        AnnotationInfo.class);
+                        XSElementDeclaration.class, AnnotationInfo.class);
                 editor = (IXSEdit) c.newInstance(context, this, elem, ann);
             } catch (Exception ex) {
                 throw new RuntimeException("Error create custom control from " + ann.customImpl.getName(), ex);
@@ -99,14 +101,11 @@ public class XSSimpleElementContainer extends XSBaseContainer<XSSimpleTypeDefini
     }
 
     @Override
-    public void insertData(XMLStreamReader rd) throws Exception {
-        if (!rd.getLocalName().equals(elem.getName())) {
+    public void insertData(Element node) throws Exception {
+        if (!node.getNodeName().equals(elem.getName())) {
             throw new Exception("Wrong parsing");
         }
-        editor.setData(rd.getElementText());
-        if (rd.getEventType() != XMLStreamConstants.END_ELEMENT) {
-            throw new Exception("Wrong parsing");
-        }
+        editor.setData(node.getTextContent());
     }
 
     @Override

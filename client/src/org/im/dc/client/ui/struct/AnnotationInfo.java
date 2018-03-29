@@ -27,6 +27,8 @@ public class AnnotationInfo {
     public String editDetails;
     public Class<?> customImpl;
     public List<RORW> enables = new ArrayList<>();
+    public int overrideMinOccurs = -1;
+    public int overrideMaxOccurs = -1;
 
     public AnnotationInfo(XSAnnotation ann) {
         if (ann != null) {
@@ -64,6 +66,12 @@ public class AnnotationInfo {
             }
             r.role = value.substring(0, p);
             r.state = value.substring(p + 1);
+            break;
+        case "overrideMinOccurs":
+            overrideMinOccurs = Integer.parseInt(value);
+            break;
+        case "overrideMaxOccurs":
+            overrideMaxOccurs = Integer.parseInt(value);
             break;
         case "custom":
             try {

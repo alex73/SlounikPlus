@@ -24,8 +24,8 @@ public class ImportArticles {
     static List<RecArticle> articles;
 
     public static void main(String[] args) throws Exception {
-        if (args.length != 1) {
-            System.err.println("ImportArticles <dir|zip>");
+        if (args.length != 2) {
+            System.err.println("ImportArticles <dir|zip> <article_type>");
             System.exit(1);
         }
 
@@ -40,7 +40,7 @@ public class ImportArticles {
             try (ZipInputStream zip = new ZipInputStream(new BufferedInputStream(new FileInputStream(in)))) {
                 for (ZipEntry en = zip.getNextEntry(); en != null; en = zip.getNextEntry()) {
                     if (en.getName().toLowerCase().endsWith(".xml")) {
-                        read(en.getName().toLowerCase(), null, IOUtils.toByteArray(zip));
+                        read(args[1], en.getName().toLowerCase(), IOUtils.toByteArray(zip));
                     }
                     zip.closeEntry();
                 }
@@ -52,13 +52,16 @@ public class ImportArticles {
             }
             for (File f : ls) {
                 if (f.isFile() && f.getName().toLowerCase().endsWith(".xml")) {
-                    read(f.getName().toLowerCase(), null, FileUtils.readFileToByteArray(f));
+                    read(args[1], f.getName().toLowerCase(), FileUtils.readFileToByteArray(f));
                 }
             }
         }
 
         Db.exec((api) -> {
-            api.getArticleMapper().insertArticles(articles);
+            for (int i = 0; i < articles.size(); i += 1000) {
+                System.out.println("Load from " + i + " to " + (i + 1000) + " from " + articles.size());
+                api.getArticleMapper().insertArticles(articles.subList(i, Math.min(i + 1000, articles.size())));
+            }
         });
     }
 
@@ -76,6 +79,7 @@ public class ImportArticles {
 
         RecArticle a = new RecArticle();
         a.setHeader(header);
+        a.setArticleType(articleType);
         a.setXml(xml);
         a.setAssignedUsers(new String[0]);
         a.setState("Неапрацаванае");
