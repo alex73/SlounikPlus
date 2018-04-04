@@ -47,6 +47,9 @@ import org.im.dc.client.SchemaLoader;
 import org.im.dc.client.WS;
 import org.im.dc.client.ui.struct.ArticleUIContext;
 import org.im.dc.client.ui.struct.IXSContainer;
+import org.im.dc.client.ui.struct.containers.XSAttributeContainer;
+import org.im.dc.client.ui.struct.containers.XSSimpleElementContainer;
+import org.im.dc.client.ui.struct.editors.IXSEdit;
 import org.im.dc.gen.config.TypePermission;
 import org.im.dc.service.dto.ArticleFull;
 import org.im.dc.service.dto.ArticleFullInfo;
@@ -631,6 +634,12 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
         return result;
     }
 
+    public <T extends IXSEdit> List<T> findEditors(Class<T> editorClass, String tag) {
+        List<T> result = new ArrayList<>();
+        findEditors(editorUI, editorClass, tag, result);
+        return result;
+    }
+
     protected <T extends IXSContainer> void findSubcontainers(IXSContainer child, Class<T> containerClass, String tag,
             List<T> result) {
         if (containerClass.isAssignableFrom(child.getClass()) && tag.equals(child.getTag())) {
@@ -643,6 +652,28 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
         }
         for (IXSContainer ch : child.children()) {
             findSubcontainers(ch, containerClass, tag, result);
+        }
+    }
+
+    protected <T extends IXSEdit> void findEditors(IXSContainer child, Class<T> editorClass, String tag,
+            List<T> result) {
+        if (XSAttributeContainer.class.isAssignableFrom(child.getClass()) && tag.equals(child.getTag())) {
+            IXSEdit editor = ((XSAttributeContainer) child).getEditor();
+            if (editorClass.isAssignableFrom(editor.getClass())) {
+                result.add((T) editor);
+            }
+        } else if (XSSimpleElementContainer.class.isAssignableFrom(child.getClass()) && tag.equals(child.getTag())) {
+            IXSEdit editor = ((XSSimpleElementContainer) child).getEditor();
+            if (editorClass.isAssignableFrom(editor.getClass())) {
+                result.add((T) editor);
+            }
+        }
+        Collection<IXSContainer> children = child.children();
+        if (children == null) {
+            return;
+        }
+        for (IXSContainer ch : child.children()) {
+            findEditors(ch, editorClass, tag, result);
         }
     }
 }
