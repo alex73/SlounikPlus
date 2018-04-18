@@ -13,12 +13,17 @@ public class JoinWithSeparators implements IHtmlPart {
     }
 
     public JoinWithSeparators text(String text) {
-        children.add(new Text(text));
+        children.add(new Text(text, true));
+        return this;
+    }
+
+    public JoinWithSeparators requiredTag(String tag) {
+        children.add(new Tag(tag, true));
         return this;
     }
 
     public JoinWithSeparators tag(String tag) {
-        children.add(new Tag(tag));
+        children.add(new Tag(tag, false));
         return this;
     }
 
@@ -49,16 +54,19 @@ public class JoinWithSeparators implements IHtmlPart {
         children.clear();
     }
 
-    public JoinWithSeparators clearEmptyChildren() {
+    /**
+     * It removes child levels if there is no required texts.
+     */
+    public void normalize() {
         for (int i = 0; i < children.size(); i++) {
-            if (children.get(i).isEmpty()) {
-                children.remove(i);
-                i--;
-            } else if (children.get(i) instanceof JoinWithSeparators) {
-                ((JoinWithSeparators) children.get(i)).clearEmptyChildren();
+            if (children.get(i) instanceof JoinWithSeparators) {
+                ((JoinWithSeparators) children.get(i)).normalize();
+                if (children.get(i).isEmpty()) {
+                    children.remove(i);
+                    i--;
+                }
             }
         }
-        return this;
     }
 
     @Override
@@ -99,11 +107,23 @@ public class JoinWithSeparators implements IHtmlPart {
         return o.toString();
     }
 
+    public void dump(String prefix) {
+        System.err.println(prefix+"== join");
+        for(IHtmlPart ch:children) {
+            ch.dump(prefix+"  ");
+        }
+    }
+
     static class Text implements IHtmlPart {
         private final String text;
+        private final boolean required;
 
-        public Text(String text) {
+        public Text(String text, boolean required) {
+            if (text == null) {
+                throw new NullPointerException();
+            }
             this.text = text;
+            this.required = required;
         }
 
         @Override
@@ -118,20 +138,27 @@ public class JoinWithSeparators implements IHtmlPart {
 
         @Override
         public boolean isEmpty() {
-            return text.isEmpty();
+            return !required;
         }
 
         @Override
         public boolean notEmpty() {
             return !isEmpty();
         }
+
+        @Override
+        public void dump(String prefix) {
+            System.err.println(prefix + "== text: " + text);
+        }
     }
 
     static class Tag implements IHtmlPart {
         private final String tag;
+        private final boolean required;
 
-        public Tag(String tag) {
+        public Tag(String tag, boolean required) {
             this.tag = tag;
+            this.required = required;
         }
 
         @Override
@@ -141,12 +168,16 @@ public class JoinWithSeparators implements IHtmlPart {
 
         @Override
         public boolean isEmpty() {
-            return tag.isEmpty();
+            return !required;
         }
 
         @Override
         public boolean notEmpty() {
             return !isEmpty();
+        }
+        @Override
+        public void dump(String prefix) {
+            System.err.println(prefix + "== tag: " + tag);
         }
     }
 }

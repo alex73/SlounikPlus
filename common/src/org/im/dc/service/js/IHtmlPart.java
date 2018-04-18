@@ -6,4 +6,6 @@ public interface IHtmlPart {
     boolean isEmpty();
 
     boolean notEmpty();
+
+    void dump(String prefix);
 }
