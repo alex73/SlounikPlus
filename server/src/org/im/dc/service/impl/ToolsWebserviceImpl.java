@@ -38,6 +38,7 @@ import org.im.dc.service.dto.Related;
 import org.im.dc.service.js.HtmlOut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
 
 @WebService(endpointInterface = "org.im.dc.service.ToolsWebservice")
 public class ToolsWebserviceImpl implements ToolsWebservice {
@@ -201,9 +202,11 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
             SimpleScriptContext context = new SimpleScriptContext();
             context.setAttribute("out", out, ScriptContext.ENGINE_SCOPE);
             context.setAttribute("header", articleHeader, ScriptContext.ENGINE_SCOPE);
-            context.setAttribute("article", new JsDomWrapper(xml), ScriptContext.ENGINE_SCOPE);
+            Document doc = JsDomWrapper.parseDoc(xml);
+            context.setAttribute("articleDoc", doc, ScriptContext.ENGINE_SCOPE);
+            context.setAttribute("article", new JsDomWrapper(doc.getDocumentElement()), ScriptContext.ENGINE_SCOPE);
             JsProcessing.exec(new File(Config.getConfigDir(), "output.js").getAbsolutePath(), context);
-
+            out.normalize();
             LOG.info("<< preparePreview (" + (System.currentTimeMillis() - startTime) + "ms)");
             return out.toString();
         } catch (Exception ex) {
@@ -244,8 +247,11 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
                 SimpleScriptContext context = new SimpleScriptContext();
                 context.setAttribute("out", out, ScriptContext.ENGINE_SCOPE);
                 context.setAttribute("header", a.getHeader(), ScriptContext.ENGINE_SCOPE);
-                context.setAttribute("article", new JsDomWrapper(a.getXml()), ScriptContext.ENGINE_SCOPE);
+                Document doc = JsDomWrapper.parseDoc(a.getXml());
+                context.setAttribute("articleDoc", doc, ScriptContext.ENGINE_SCOPE);
+                context.setAttribute("article", new JsDomWrapper(doc.getDocumentElement()), ScriptContext.ENGINE_SCOPE);
                 JsProcessing.exec(new File(Config.getConfigDir(), "output.js").getAbsolutePath(), context);
+                out.normalize();
                 result[i] = out.toString();
             }
 

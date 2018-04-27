@@ -20,5 +20,6 @@
 	<classpathentry kind="lib" path="lib-test/hamcrest-core-1.3.jar"/>
 	<classpathentry kind="lib" path="lib-test/junit-4.12.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/SlounikPlus-common"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/SlounikPlus-slounik-tlum"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

@@ -17,7 +17,7 @@ import org.im.dc.service.impl.InitWebserviceImpl;
 import org.im.dc.service.impl.ToolsWebserviceImpl;
 
 /**
- * Server startup and initialization class.
+ * Server startup from command line.
  */
 public class Server {
     public static void main(String[] args) throws Exception {
@@ -47,7 +47,7 @@ public class Server {
                 String initClass = m.getMainAttributes().getValue("SlounikPlus-init");
                 if (initClass != null) {
                     Class<?> c = Class.forName(initClass);
-                    Method me = c.getMethod("serverInit");
+                    Method me = c.getMethod("serverStarted");
                     me.invoke(c);
                 }
             }

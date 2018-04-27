@@ -13,6 +13,9 @@ import javax.servlet.ServletContextListener;
 import org.im.dc.server.Config;
 import org.im.dc.server.Db;
 
+/**
+ * Start/stop listener from web server.
+ */
 public class ApplicationInit implements ServletContextListener {
     @Override
     public void contextInitialized(ServletContextEvent event) {
@@ -40,7 +43,7 @@ public class ApplicationInit implements ServletContextListener {
                 String initClass = m.getMainAttributes().getValue("SlounikPlus-init");
                 if (initClass != null) {
                     Class<?> c = Class.forName(initClass);
-                    Method me = c.getMethod("serverInit");
+                    Method me = c.getMethod("serverStarted");
                     me.invoke(c);
                 }
             }

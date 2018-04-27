@@ -10,6 +10,7 @@ import java.util.Set;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
@@ -18,12 +19,12 @@ public class JsDomWrapper implements Map<String, Object> {
 
     private final Element el;
 
-    public JsDomWrapper(byte[] xml) throws Exception {
+    public static Document parseDoc(byte[] xml) throws Exception {
         DocumentBuilder builder = factory.newDocumentBuilder();
-        el = builder.parse(new ByteArrayInputStream(xml)).getDocumentElement();
+        return builder.parse(new ByteArrayInputStream(xml));
     }
 
-    private JsDomWrapper(Element el) {
+    public JsDomWrapper(Element el) {
         this.el = el;
     }
 

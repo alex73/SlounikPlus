@@ -38,6 +38,7 @@ import org.im.dc.service.dto.Header;
 import org.im.dc.service.dto.Related;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
 
 @WebService(endpointInterface = "org.im.dc.service.ArticleWebservice")
 public class ArticleWebserviceImpl implements ArticleWebservice {
@@ -87,7 +88,9 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
             SimpleScriptContext context = new SimpleScriptContext();
             context.setAttribute("helper", helper, ScriptContext.ENGINE_SCOPE);
             context.setAttribute("header", rec.getHeader(), ScriptContext.ENGINE_SCOPE);
-            context.setAttribute("article", new JsDomWrapper(rec.getXml()), ScriptContext.ENGINE_SCOPE);
+            Document doc = JsDomWrapper.parseDoc(rec.getXml());
+            context.setAttribute("articleDoc", doc, ScriptContext.ENGINE_SCOPE);
+            context.setAttribute("article", new JsDomWrapper(doc.getDocumentElement()), ScriptContext.ENGINE_SCOPE);
             JsProcessing.exec(new File(Config.getConfigDir(), rec.getArticleType() + "-validate.js").getAbsolutePath(),
                     context);
         } catch (ScriptException ex) {

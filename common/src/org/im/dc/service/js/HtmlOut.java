@@ -16,6 +16,10 @@ public class HtmlOut extends JoinWithSeparators {
         return out.toString();
     }
 
+    public void log(String msg) {
+        System.err.println(msg);
+    }
+
     public void dump() {
         System.err.println("============================");
         dump("");

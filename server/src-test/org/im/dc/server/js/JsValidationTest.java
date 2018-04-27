@@ -19,7 +19,7 @@ import org.im.dc.server.Db;
 import org.im.dc.service.ValidationHelper;
 import org.junit.Test;
 
-public class JsValidation {
+public class JsValidationTest {
 
     @Test
     public void tests() throws Exception {
@@ -46,7 +46,7 @@ public class JsValidation {
         ValidationHelper helper = new ValidationHelper(-1);
         context.setAttribute("helper", helper, ScriptContext.ENGINE_SCOPE);
         context.setAttribute("words", words, ScriptContext.ENGINE_SCOPE);
-        context.setAttribute("article", new JsDomWrapper(xml), ScriptContext.ENGINE_SCOPE);
+        context.setAttribute("article", new JsDomWrapper(JsDomWrapper.parseDoc(xml).getDocumentElement()), ScriptContext.ENGINE_SCOPE);
         try {
             JsProcessing.exec("config/validation.js", context);
             if (expectedError != null) {
@@ -62,11 +62,12 @@ public class JsValidation {
         Config.load(System.getProperty("CONFIG_DIR"));
         Db.init();
 
+        byte[] xml = Files.readAllBytes(Paths.get("src-test/org/im/dc/server/js/test-article.xml"));
+
         SimpleScriptContext context = new SimpleScriptContext();
         context.setAttribute("helper", new ValidationHelper(-1), ScriptContext.ENGINE_SCOPE);
         context.setAttribute("words", new String[] { "хадзіць" }, ScriptContext.ENGINE_SCOPE);
-        context.setAttribute("article",
-                new JsDomWrapper(Files.readAllBytes(Paths.get("src-test/org/im/dc/server/js/test-article.xml"))),
+        context.setAttribute("article", new JsDomWrapper(JsDomWrapper.parseDoc(xml).getDocumentElement()),
                 ScriptContext.ENGINE_SCOPE);
         JsProcessing.exec("config/validation.js", context);
     }

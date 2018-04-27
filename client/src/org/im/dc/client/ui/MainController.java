@@ -246,7 +246,7 @@ public class MainController extends BaseController<MainFrame> {
                 URL url = mfs.nextElement();
                 try (InputStream in = new BufferedInputStream(url.openStream())) {
                     Manifest m = new Manifest(in);
-                    String initClass = m.getMainAttributes().getValue("SlounikPlusClient-init");
+                    String initClass = m.getMainAttributes().getValue("SlounikPlus-init");
                     if (initClass != null) {
                         Class<?> c = Class.forName(initClass);
                         Method me = c.getMethod("clientStarted");

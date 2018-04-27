@@ -28,6 +28,9 @@ public class JoinWithSeparators implements IHtmlPart {
     }
 
     public JoinWithSeparators add(IHtmlPart part) {
+        if (part == null) {
+            throw new RuntimeException("Part can't be null");
+        }
         children.add(part);
         return this;
     }

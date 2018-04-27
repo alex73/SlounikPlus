@@ -28,6 +28,7 @@ import org.im.dc.service.dto.ArticleIssueFull;
 import org.im.dc.service.dto.ArticleShort;
 import org.im.dc.service.dto.ArticlesFilter;
 import org.im.dc.service.dto.Header;
+import org.w3c.dom.Document;
 
 public class ArticleWebserviceGitImpl implements ArticleWebservice {
     @Override
@@ -173,7 +174,9 @@ public class ArticleWebserviceGitImpl implements ArticleWebservice {
 
             SimpleScriptContext context = new SimpleScriptContext();
             context.setAttribute("helper", helper, ScriptContext.ENGINE_SCOPE);
-            context.setAttribute("article", new JsDomWrapper(xml), ScriptContext.ENGINE_SCOPE);
+            Document doc = JsDomWrapper.parseDoc(xml);
+            context.setAttribute("articleDoc", doc, ScriptContext.ENGINE_SCOPE);
+            context.setAttribute("article", new JsDomWrapper(doc.getDocumentElement()), ScriptContext.ENGINE_SCOPE);
             JsProcessing.exec(GitProc.getInstance().getLocalDir().resolve(articleTypeId + "-validate.js").toString(),
                     context);
         } catch (ScriptException ex) {
