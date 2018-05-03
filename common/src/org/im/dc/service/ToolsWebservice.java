@@ -21,6 +21,8 @@ public interface ToolsWebservice {
 
     void reassignUsers(Header header, String articleType, int[] articleIds, String[] users) throws Exception;
 
+    List<ArticleFull> getAllArticles(Header header, String articleType) throws Exception;
+
     void addArticles(Header header, String articleType, ArticleFull[] articles) throws Exception;
 
     String preparePreview(Header header, String articleType, String articleHeader, byte[] xml) throws Exception;

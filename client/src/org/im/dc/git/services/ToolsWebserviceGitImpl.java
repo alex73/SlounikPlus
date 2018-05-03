@@ -57,6 +57,11 @@ public class ToolsWebserviceGitImpl implements ToolsWebservice {
     }
 
     @Override
+    public List<ArticleFull> getAllArticles(Header header, String articleType) throws Exception {
+        throw new Exception("Not implemented for git version");
+    }
+
+    @Override
     public void addArticles(Header header, String articleType, ArticleFull[] articles) throws Exception {
         throw new Exception("Not implemented for git version");
     }

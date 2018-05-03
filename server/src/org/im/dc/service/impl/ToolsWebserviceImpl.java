@@ -144,6 +144,33 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
         LOG.info("<< reassignUsers (" + (System.currentTimeMillis() - startTime) + "ms)");
     }
 
+    public List<ArticleFull> getAllArticles(Header header, String articleType) throws Exception {
+        LOG.info(">> getAllArticles(" + header.user + ")");
+        long startTime = System.currentTimeMillis();
+        check(header);
+
+        List<ArticleFull> result = new ArrayList<>();
+        Db.exec((api) -> {
+            List<RecArticle> existArticles = api.getArticleMapper().getAllArticles(articleType);
+            for (RecArticle a : existArticles) {
+                ArticleFull r = new ArticleFull();
+                r.id = a.getArticleId();
+                r.type = a.getArticleType();
+                r.header = a.getHeader();
+                r.xml = a.getXml();
+                r.state = a.getState();
+                r.markers = a.getMarkers();
+                r.assignedUsers = a.getAssignedUsers();
+                r.lastUpdated = a.getLastUpdated();
+                r.validationError = a.getValidationError();
+                result.add(r);
+            }
+        });
+
+        LOG.info("<< getAllArticles (" + (System.currentTimeMillis() - startTime) + "ms)");
+        return result;
+    }
+
     @Override
     public void addArticles(Header header, String articleType, ArticleFull[] articles) throws Exception {
         LOG.info(">> addArticles(" + header.user + ")");
