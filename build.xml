@@ -71,8 +71,9 @@
         <delete dir="server/build" failonerror="false" />
     </target>
 
+    <property environment="env"/>
     <target name="xjc">
-        <exec executable="xjc">
+        <exec executable="${env.JAVA_HOME}/bin/xjc">
             <arg value="-no-header"/>
             <arg value="-d"/>
             <arg value="common/src-gen/"/>

@@ -15,7 +15,7 @@
 			AND assignedUsers @> ARRAY[#{filter.user}]::varchar[][]
 		</if>
 		<if test="filter.partHeader != null">
-			AND header LIKE	#{filter.likeHeader})
+			AND header LIKE	#{filter.likeHeader}
 		</if>
 		<if test="filter.exactHeader != null">
 			AND header = #{filter.exactHeader}

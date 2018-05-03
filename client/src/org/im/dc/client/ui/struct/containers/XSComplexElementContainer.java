@@ -12,8 +12,6 @@ import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.border.TitledBorder;
-import javax.xml.stream.XMLStreamConstants;
-import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.xerces.xs.XSAttributeUse;
@@ -135,8 +133,6 @@ public class XSComplexElementContainer extends XSBaseContainer<XSComplexTypeDefi
             }
             if (particleChild != null) {
                 particleChild.insertData(node);
-            } else {
-                throw new Exception("Particle child not allowed");
             }
         }
     }
