@@ -38,12 +38,10 @@ public class JsValidationTest {
     private void process(String[] words, String articleType, String articleFile, String expectedError)
             throws Exception {
         byte[] xml = Files.readAllBytes(Paths.get("src-test/org/im/dc/server/js/" + articleFile));
-
         Validator validator = Config.schemas.get(articleType).newValidator();
-        validator.validate(new StreamSource(new ByteArrayInputStream(xml)));
 
         SimpleScriptContext context = new SimpleScriptContext();
-        ValidationHelper helper = new ValidationHelper(-1);
+        ValidationHelper helper = new ValidationHelper(-1, validator, xml);
         context.setAttribute("helper", helper, ScriptContext.ENGINE_SCOPE);
         context.setAttribute("words", words, ScriptContext.ENGINE_SCOPE);
         context.setAttribute("article", new JsDomWrapper(JsDomWrapper.parseDoc(xml).getDocumentElement()), ScriptContext.ENGINE_SCOPE);
@@ -65,7 +63,7 @@ public class JsValidationTest {
         byte[] xml = Files.readAllBytes(Paths.get("src-test/org/im/dc/server/js/test-article.xml"));
 
         SimpleScriptContext context = new SimpleScriptContext();
-        context.setAttribute("helper", new ValidationHelper(-1), ScriptContext.ENGINE_SCOPE);
+        context.setAttribute("helper", new ValidationHelper(-1, null, xml), ScriptContext.ENGINE_SCOPE);
         context.setAttribute("words", new String[] { "хадзіць" }, ScriptContext.ENGINE_SCOPE);
         context.setAttribute("article", new JsDomWrapper(JsDomWrapper.parseDoc(xml).getDocumentElement()),
                 ScriptContext.ENGINE_SCOPE);

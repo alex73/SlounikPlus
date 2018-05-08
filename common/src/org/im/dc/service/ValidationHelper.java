@@ -1,16 +1,24 @@
 package org.im.dc.service;
 
+import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Validator;
+
 public class ValidationHelper {
     private final int currentArticleId;
+    private final Validator validator;
+    private final byte[] xml;
     private final List<String> links = new ArrayList<>();
     public String newHeader;
     public String error;
 
-    public ValidationHelper(int currentArticleId) {
+    public ValidationHelper(int currentArticleId, Validator validator, byte[] xml) {
         this.currentArticleId = currentArticleId;
+        this.validator = validator;
+        this.xml = xml;
     }
 
     public void addLink(String link) {
@@ -23,6 +31,14 @@ public class ValidationHelper {
 
     public String[] getLinks() {
         return links.toArray(new String[0]);
+    }
+
+    public void validateByXSD() throws Exception {
+        validator.validate(new StreamSource(new ByteArrayInputStream(xml)));
+    }
+
+    public void log(String text) {
+        System.out.println(text);
     }
 
     /*public boolean checkUniqueWords(String[] words) throws Exception {

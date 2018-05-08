@@ -81,10 +81,8 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
         }
         String result = null;
         Validator validator = Config.schemas.get(rec.getArticleType()).newValidator();
-        ValidationHelper helper = new ValidationHelper(rec.getArticleId());
+        ValidationHelper helper = new ValidationHelper(rec.getArticleId(), validator, rec.getXml());
         try {
-            validator.validate(new StreamSource(new ByteArrayInputStream(rec.getXml())));
-
             SimpleScriptContext context = new SimpleScriptContext();
             context.setAttribute("helper", helper, ScriptContext.ENGINE_SCOPE);
             context.setAttribute("header", rec.getHeader(), ScriptContext.ENGINE_SCOPE);
@@ -97,7 +95,7 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
             result = ex.getCause().getMessage();
         } catch (Exception ex) {
             ex.printStackTrace();
-            return "Памылка валідацыі артыкула: " + ex.getMessage();
+            result = "Памылка валідацыі артыкула: " + ex.getMessage();
         }
         if (helper.newHeader != null) {
             rec.setHeader(helper.newHeader);
@@ -189,6 +187,7 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
                 rec.setState(PermissionChecker.getNewArticleState(Config.getConfig(), article.type));
                 rec.setMarkers(new String[0]);
                 rec.setWatchers(new String[0]);
+                rec.setLinkedTo(new String[0]);
             }
             if (!PermissionChecker.canUserEditArticle(Config.getConfig(), header.user, rec.getArticleType(), rec.getState(), rec.getAssignedUsers())) {
                 throw new RuntimeException("Permission error: user can't change article");

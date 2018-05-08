@@ -168,10 +168,8 @@ public class ArticleWebserviceGitImpl implements ArticleWebservice {
             return null;
         }
         Validator validator = GitProc.configSchemas.get(articleTypeId).newValidator();
-        ValidationHelper helper = new ValidationHelper(0);
+        ValidationHelper helper = new ValidationHelper(0, validator, xml);
         try {
-            validator.validate(new StreamSource(new ByteArrayInputStream(xml)));
-
             SimpleScriptContext context = new SimpleScriptContext();
             context.setAttribute("helper", helper, ScriptContext.ENGINE_SCOPE);
             Document doc = JsDomWrapper.parseDoc(xml);
