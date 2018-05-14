@@ -81,7 +81,7 @@ public abstract class BaseController<T extends Window> {
         ((RootPaneContainer) window).setGlassPane(glass);
     }
 
-    boolean closing() {
+    protected boolean closing() {
         return true;
     }
 

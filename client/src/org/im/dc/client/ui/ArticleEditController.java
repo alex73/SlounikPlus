@@ -98,7 +98,7 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
     }
 
     @Override
-    boolean closing() {
+    protected boolean closing() {
         return !askSave();
     }
 

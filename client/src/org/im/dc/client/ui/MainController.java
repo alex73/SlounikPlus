@@ -100,7 +100,7 @@ public class MainController extends BaseController<MainFrame> {
     }
 
     @Override
-    boolean closing() {
+    protected boolean closing() {
         SettingsController.savePlacesForWindow(window, desk);
         System.exit(0);
         return true;
