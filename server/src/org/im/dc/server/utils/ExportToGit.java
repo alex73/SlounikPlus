@@ -1,4 +1,4 @@
-package org.im.dc.server.startup;
+package org.im.dc.server.utils;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;

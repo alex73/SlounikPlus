@@ -103,10 +103,11 @@
 			validationError = #{record.validationError}
 		WHERE articleId = #{record.articleId} AND lastUpdated = #{prevLastUpdated}
 	</update>
-	<update id="updateArticleHeaderXml??lastUpdated?">
+	<update id="updateArticleHeaderXml">
 		UPDATE Articles
 		SET xml = #{record.xml},
-			header = #{record.header}
+			header = #{record.header},
+			lastUpdated = #{record.lastUpdated}
 		WHERE articleId = #{record.articleId}
 	</update>
 	<update id="updateArticleHeader">

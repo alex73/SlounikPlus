@@ -1,4 +1,4 @@
-package org.im.dc.server.startup;
+package org.im.dc.server.utils;
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -37,7 +38,8 @@ public class ExportArticles {
         File out = new File(args[0]);
         if (out.getName().toLowerCase().endsWith(".zip")) {
             out.getParentFile().mkdirs();
-            zip = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(out), 256 * 1024), StandardCharsets.UTF_8);
+            zip = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(out), 256 * 1024),
+                    StandardCharsets.UTF_8);
         } else {
             out.mkdirs();
         }
@@ -45,20 +47,24 @@ public class ExportArticles {
         Db.exec((api) -> {
             for (int id : api.getArticleMapper().selectAllIds()) {
                 RecArticle a = api.getArticleMapper().selectArticle(id);
-                if (a.getXml() == null) {
-                    continue;
-                }
                 try {
                     String fn = a.getArticleType() + '/' + a.getHeader().replace('/', '_') + '-' + a.getArticleId()
                             + ".xml";
                     System.err.println(fn);
-                    byte[] xml = xml2text(a.getXml()).getBytes("UTF-8");
+                    byte[] xml;
+                    if (a.getXml() != null) {
+                        xml = xml2text(a.getXml()).getBytes("UTF-8");
+                    } else {
+                        xml = new byte[0];
+                    }
                     if (zip != null) {
                         zip.putNextEntry(new ZipEntry(fn));
                         zip.write(xml);
                         zip.closeEntry();
                     } else {
-                        Files.write(new File(args[0], fn).toPath(), xml);
+                        Path p = new File(args[0], fn).toPath();
+                        Files.createDirectories(p.getParent());
+                        Files.write(p, xml);
                     }
                 } catch (Exception ex) {
                     ex.printStackTrace();
