@@ -13,7 +13,9 @@ public class JoinWithSeparators implements IHtmlPart {
     }
 
     public JoinWithSeparators text(String text) {
-        children.add(new Text(text, true));
+        if (text != null) {
+            children.add(new Text(text, true));
+        }
         return this;
     }
 

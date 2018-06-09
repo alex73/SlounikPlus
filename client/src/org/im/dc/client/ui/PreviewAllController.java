@@ -22,7 +22,7 @@ import org.im.dc.client.WS;
 public class PreviewAllController extends BaseController<PreviewAllDialog> {
     private static Font BASE_FONT;
 
-    public PreviewAllController(int[] articleIds) {
+    public PreviewAllController(int[] articleIds, String typeId) {
         super(new PreviewAllDialog(MainController.instance.window, false), MainController.instance.window);
         setupCloseOnEscape();
 
@@ -52,15 +52,15 @@ public class PreviewAllController extends BaseController<PreviewAllDialog> {
         window.output.addHyperlinkListener(linkListener);
 
         window.btnRefresh.addActionListener(l -> {
-            show(articleIds);
+            show(articleIds, typeId);
         });
 
-        show(articleIds);
+        show(articleIds, typeId);
 
         displayOnParent();
     }
 
-    void show(int[] articleIds) {
+    void show(int[] articleIds, String typeId) {
         new LongProcess() {
             StringBuilder out;
 
@@ -68,7 +68,7 @@ public class PreviewAllController extends BaseController<PreviewAllDialog> {
             protected void exec() throws Exception {
                 out = new StringBuilder("<!DOCTYPE html>\n<html><head><meta charset=\"UTF-8\"></head><body>\n");
 
-                String[] articlesPreview = WS.getToolsWebservice().preparePreviews(WS.header, null, articleIds);
+                String[] articlesPreview = WS.getToolsWebservice().preparePreviews(WS.header, typeId, articleIds);
                 for (int i = 0; i < articleIds.length; i++) {
                     if (articlesPreview[i] == null) {
                         continue;
@@ -83,6 +83,7 @@ public class PreviewAllController extends BaseController<PreviewAllDialog> {
             @Override
             protected void ok() {
                 window.output.setText(out.toString());
+                window.output.setCaretPosition(0);
                 window.output.getDocument().putProperty("ZOOM_FACTOR", new Double(2.5));
             }
 

@@ -39,6 +39,11 @@ public class JsDomWrapper implements Map<String, Object> {
     }
 
     @Override
+    public String toString() {
+        throw new RuntimeException("Trying to show as text");
+    }
+
+    @Override
     public boolean containsKey(Object key) {
         if (el.hasAttribute(key.toString())) {
             return true;

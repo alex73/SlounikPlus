@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Desktop;
 import java.awt.Font;
+import java.awt.Rectangle;
 import java.awt.event.ActionListener;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
@@ -333,6 +334,7 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
         }
         applyFont(editorUI.getUIComponent());
         panelEdit.panelEditor.setViewportView(editorUI.getUIComponent());
+        SwingUtilities.invokeLater(() -> panelEdit.panelEditor.getVerticalScrollBar().setValue(0));
 
         Related.sortByTimeDesc(article.related);
 

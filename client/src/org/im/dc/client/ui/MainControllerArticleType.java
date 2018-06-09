@@ -22,7 +22,7 @@ import com.vlsolutions.swing.docking.DockKey;
 import com.vlsolutions.swing.docking.Dockable;
 
 public class MainControllerArticleType implements IArticleUpdatedListener {
-    private final InitialData.TypeInfo typeInfo;
+    private InitialData.TypeInfo typeInfo;
     private final MainFramePanelArticles panelArticles = new MainFramePanelArticles();
     protected final Dockable dock;
 
@@ -117,7 +117,7 @@ public class MainControllerArticleType implements IArticleUpdatedListener {
             if (articleIds.length > 100) {
                 MainController.instance.todo("Абрана зашмат артыкулаў");
             } else {
-                new PreviewAllController(articleIds);
+                new PreviewAllController(articleIds, typeInfo.typeId);
             }
         }
     };

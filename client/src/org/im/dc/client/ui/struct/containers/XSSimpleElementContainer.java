@@ -4,8 +4,6 @@ import java.lang.reflect.Constructor;
 import java.util.Collection;
 
 import javax.swing.JComponent;
-import javax.xml.stream.XMLStreamConstants;
-import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.xerces.impl.dv.XSSimpleType;
@@ -22,7 +20,6 @@ import org.im.dc.client.ui.struct.editors.XSEditComboFiltered;
 import org.im.dc.client.ui.struct.editors.XSEditRadio;
 import org.im.dc.client.ui.struct.editors.XSEditText;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 
 public class XSSimpleElementContainer extends XSBaseContainer<XSSimpleTypeDefinition> {
     protected XSElementDeclaration elem;

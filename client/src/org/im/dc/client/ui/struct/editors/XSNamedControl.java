@@ -22,7 +22,11 @@ public abstract class XSNamedControl<T extends JComponent> extends JPanel {
         this.context = context;
         this.parentContainer = parentContainer;
         this.ann = ann;
-        setOpaque(false);
+        if (ann.bgColor != null) {
+            setBackground(ann.bgColor);
+        } else {
+            setOpaque(false);
+        }
 
         JLabel label = new JLabel(ann.text + ": ");
         if (ann.tooltip != null) {
