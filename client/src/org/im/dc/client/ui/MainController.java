@@ -171,7 +171,6 @@ public class MainController extends BaseController<MainFrame> {
                 } else {
                     WS.initGit(addr, username);
                 }
-                WS.header.configVersion = WS.getInitWebservice().getConfigVersion(WS.header.appVersion);
                 initialData = WS.getToolsWebservice().getInitialData(WS.header);
 
                 SchemaLoader.init(initialData);

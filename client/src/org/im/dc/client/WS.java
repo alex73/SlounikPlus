@@ -39,6 +39,15 @@ public class WS {
 
         disableSSL();
 
+        service = Service.create(new URL(urlPrefix + "/init?wsdl"),
+                new QName("http://impl.service.dc.im.org/", "InitWebserviceImplService"));
+        initWebservice = service.getPort(InitWebservice.class);
+        setupCompression((BindingProvider) initWebservice);
+
+        header = new Header();
+        header.appVersion = AppConst.APP_VERSION;
+        header.configVersion = WS.getInitWebservice().getConfigVersion(WS.header.appVersion);
+
         service = Service.create(new URL(urlPrefix + "/articles?wsdl"),
                 new QName("http://impl.service.dc.im.org/", "ArticleWebserviceImplService"));
         articleService = service.getPort(ArticleWebservice.class);
@@ -49,15 +58,8 @@ public class WS {
         toolsWebservice = service.getPort(ToolsWebservice.class);
         setupCompression((BindingProvider) toolsWebservice);
 
-        service = Service.create(new URL(urlPrefix + "/init?wsdl"),
-                new QName("http://impl.service.dc.im.org/", "InitWebserviceImplService"));
-        initWebservice = service.getPort(InitWebservice.class);
-        setupCompression((BindingProvider) initWebservice);
-
-        header = new Header();
         header.user = user;
         header.pass = pass;
-        header.appVersion = AppConst.APP_VERSION;
     }
 
     public static void initGit(String url, String user) throws Exception {
@@ -66,9 +68,9 @@ public class WS {
         header.appVersion = AppConst.APP_VERSION;
 
         GitProc.INSTANCE = new GitProc(GitProc.REPO_DIR, url);
+        initWebservice = new InitWebserviceGitImpl();
         articleService = new ArticleWebserviceGitImpl();
         toolsWebservice = new ToolsWebserviceGitImpl();
-        initWebservice = new InitWebserviceGitImpl();
     }
 
     private static void setupCompression(BindingProvider provider) {

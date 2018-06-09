@@ -112,7 +112,9 @@ public class MainControllerArticleType implements IArticleUpdatedListener {
             int[] selectedRows = panelArticles.tableArticles.getSelectedRows();
             int[] articleIds = new int[selectedRows.length];
             for (int i = 0; i < selectedRows.length; i++) {
-                articleIds[i] = model.articles.get(selectedRows[i]).id;
+                int row = selectedRows[i];
+                row = panelArticles.tableArticles.convertRowIndexToModel(row);
+                articleIds[i] = model.articles.get(row).id;
             }
             if (articleIds.length > 100) {
                 MainController.instance.todo("Абрана зашмат артыкулаў");

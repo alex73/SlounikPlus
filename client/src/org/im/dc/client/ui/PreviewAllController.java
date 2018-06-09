@@ -12,6 +12,7 @@ import java.awt.event.KeyEvent;
 import javax.swing.AbstractAction;
 import javax.swing.JComponent;
 import javax.swing.JEditorPane;
+import javax.swing.JTextPane;
 import javax.swing.KeyStroke;
 import javax.swing.RootPaneContainer;
 import javax.swing.event.HyperlinkEvent;
@@ -31,8 +32,8 @@ public class PreviewAllController extends BaseController<PreviewAllDialog> {
         }
         window.output.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, Boolean.TRUE);
         window.output.setFont(BASE_FONT);
-        //window.output.getActionMap().put("copy", clipboardAction);
-        //window.output.getActionMap().put("cut", clipboardAction);
+        // window.output.getActionMap().put("copy", clipboardAction);
+        // window.output.getActionMap().put("cut", clipboardAction);
 
         ((RootPaneContainer) window).getRootPane().registerKeyboardAction(decZoom,
                 KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, InputEvent.CTRL_MASK), JComponent.WHEN_IN_FOCUSED_WINDOW);
@@ -62,11 +63,13 @@ public class PreviewAllController extends BaseController<PreviewAllDialog> {
 
     void show(int[] articleIds, String typeId) {
         new LongProcess() {
-            StringBuilder out;
+            StringBuilder out, outClipboard;
 
             @Override
             protected void exec() throws Exception {
                 out = new StringBuilder("<!DOCTYPE html>\n<html><head><meta charset=\"UTF-8\"></head><body>\n");
+                outClipboard = new StringBuilder(
+                        "<!DOCTYPE html>\n<html><head><meta charset=\"UTF-8\"></head><body>\n");
 
                 String[] articlesPreview = WS.getToolsWebservice().preparePreviews(WS.header, typeId, articleIds);
                 for (int i = 0; i < articleIds.length; i++) {
@@ -76,8 +79,11 @@ public class PreviewAllController extends BaseController<PreviewAllDialog> {
                     out.append(articlesPreview[i]);
                     out.append(" <a href='" + articleIds[i] + "'>рэдагаваць</a>\n");
                     out.append("<hr/>\n");
+                    outClipboard.append(articlesPreview[i]);
+                    outClipboard.append("<br/>\n");
                 }
                 out.append("\n</body></html>\n");
+                outClipboard.append("\n</body></html>\n");
             }
 
             @Override
@@ -85,6 +91,12 @@ public class PreviewAllController extends BaseController<PreviewAllDialog> {
                 window.output.setText(out.toString());
                 window.output.setCaretPosition(0);
                 window.output.getDocument().putProperty("ZOOM_FACTOR", new Double(2.5));
+
+                JTextPane o = new JTextPane();
+                o.setContentType("text/html");
+                o.setText(outClipboard.toString());
+                o.selectAll();
+                o.copy();
             }
 
             @Override
