@@ -120,6 +120,7 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
         a.article.validationError = rec.getValidationError();
 
         a.youCanEdit = PermissionChecker.canUserEditArticle(Config.getConfig(), header.user, rec.getArticleType(), rec.getState(), rec.getAssignedUsers());
+        a.youCanChangeStateTo = PermissionChecker.canChangeStateTo(Config.getConfig(), header.user, rec.getArticleType(), rec.getState(), rec.getAssignedUsers());
         a.youWatched = false;
         for (String w : rec.getWatchers()) {
             if (header.user.equals(w)) {
@@ -303,7 +304,7 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
                 LOG.warn("<< changeState: wrong type/id requested");
                 throw new Exception("Запыт няправільнага ID для вызначанага тыпу");
             }
-            if (!PermissionChecker.canUserChangeArticleState(Config.getConfig(), header.user, rec.getArticleType(), rec.getState(), newState)) {
+            if (!PermissionChecker.canUserChangeArticleState(Config.getConfig(), header.user, rec.getArticleType(), rec.getState(), newState, rec.getAssignedUsers())) {
                 throw new RuntimeException("Permission error: Impossible state change");
             }
 

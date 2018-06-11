@@ -114,20 +114,25 @@ public class PermissionChecker {
         throw new RuntimeException("No permission for this operation");
     }
 
+    /**
+     * if assigned users defined - other users can't edit article. They can be not defined only for git.
+     */
+    private static boolean isUserAssigned(String user, String[] assignedUsers) {
+        if (assignedUsers == null) {
+            return true;
+        }
+        for (String au : assignedUsers) {
+            if (user.equals(au)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public static boolean canUserEditArticle(Config config, String user, String articleType, String articleState,
             String[] assignedUsers) {
-        if (assignedUsers != null) {
-            // if assigned users defined - other users can't edit article
-            boolean found = false;
-            for (String au : assignedUsers) {
-                if (user.equals(au)) {
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
-                return false;
-            }
+        if (!isUserAssigned(user, assignedUsers)) {
+            return false;
         }
         String userRole = getUserRole(config, user);
         Type t = getType(config, articleType);
@@ -141,10 +146,13 @@ public class PermissionChecker {
         return false;
     }
 
-    public static Set<String> canChangeStateTo(Config config, String user, String articleType, String articleState) {
+    public static Set<String> canChangeStateTo(Config config, String user, String articleType, String articleState, String[] assignedUsers) {
+        Set<String> result = new TreeSet<>();
+        if (!isUserAssigned(user, assignedUsers)) {
+            return result;
+        }
         String userRole = getUserRole(config, user);
         Type t = getType(config, articleType);
-        Set<String> result = new TreeSet<>();
         for (State st : t.getState()) {
             if (st.getName().equals(articleState) && st.getEditRoles() != null) {
                 for (Change ch : st.getChange()) {
@@ -158,7 +166,10 @@ public class PermissionChecker {
     }
 
     public static boolean canUserChangeArticleState(Config config, String user, String articleType, String articleState,
-            String newState) {
+            String newState, String[] assignedUsers) {
+        if (!isUserAssigned(user, assignedUsers)) {
+            return false;
+        }
         String userRole = getUserRole(config, user);
         Type t = getType(config, articleType);
         for (State st : t.getState()) {

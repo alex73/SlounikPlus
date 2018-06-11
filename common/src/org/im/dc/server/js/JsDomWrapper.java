@@ -40,7 +40,7 @@ public class JsDomWrapper implements Map<String, Object> {
 
     @Override
     public String toString() {
-        throw new RuntimeException("Trying to show as text");
+        throw new RuntimeException("Trying to show JsDomWrapper as text");
     }
 
     @Override
