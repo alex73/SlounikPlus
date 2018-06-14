@@ -6,6 +6,7 @@ import java.awt.GridBagLayout;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -85,12 +86,25 @@ public class XSComplexElementContainer extends XSBaseContainer<XSComplexTypeDefi
         }
 
         ann.applyColors(panel, parentContainer);
+        updatePositionInList(-1,-1);
+    }
+
+    public void updatePositionInList(int position, int total) {
+        String positionSuffix;
+        if (position < 0) {
+            positionSuffix = "";
+        } else if (total == 1 && position == 0) {
+            positionSuffix = "";
+        } else {
+            positionSuffix = " (" + (position + 1) + ")";
+        }
         TitledBorder border;
         if (ann.borderColor != null) {
-            border = BorderFactory.createTitledBorder(BorderFactory.createLineBorder(ann.borderColor), ann.text);
+            border = BorderFactory.createTitledBorder(BorderFactory.createLineBorder(ann.borderColor),
+                    ann.text + positionSuffix);
             border.setTitleColor(ann.borderColor);
         } else {
-            border = BorderFactory.createTitledBorder(ann.text);
+            border = BorderFactory.createTitledBorder(ann.text + positionSuffix);
         }
         border.setTitleFont(new Font(border.getTitleFont().getName(), Font.BOLD, border.getTitleFont().getSize() + 2));
         panel.setBorder(border);

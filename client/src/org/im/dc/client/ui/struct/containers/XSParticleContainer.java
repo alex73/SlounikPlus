@@ -14,8 +14,6 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
-import javax.xml.stream.XMLStreamConstants;
-import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.xerces.xs.XSConstants;
@@ -30,7 +28,6 @@ import org.im.dc.client.ui.struct.ArticleUIContext;
 import org.im.dc.client.ui.struct.IXSContainer;
 import org.im.dc.client.ui.struct.XSContainersFactory;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 
 public class XSParticleContainer extends XSBaseContainer<XSParticle> {
     private static final Insets INSETS = new Insets(3, 0, 3, 0);
@@ -81,6 +78,7 @@ public class XSParticleContainer extends XSBaseContainer<XSParticle> {
         for (int i = 0; i < minOccurs; i++) {
             addElement();
         }
+        udpateAllChildrenPositions();
         revalidate();
     }
 
@@ -112,6 +110,7 @@ public class XSParticleContainer extends XSBaseContainer<XSParticle> {
             public void actionPerformed(ActionEvent e) {
                 children.remove(ci);
                 panel.remove(ci.panel);
+                udpateAllChildrenPositions();
                 revalidate();
                 context.fireChanged();
             }
@@ -179,6 +178,15 @@ public class XSParticleContainer extends XSBaseContainer<XSParticle> {
         return ci.element;
     }
 
+    private void udpateAllChildrenPositions() {
+        for (int i = 0; i < children.size(); i++) {
+            IXSContainer child = children.get(i).element;
+            if (child instanceof XSComplexElementContainer) {
+                ((XSComplexElementContainer) child).updatePositionInList(i, children.size());
+            }
+        }
+    }
+
     @Override
     public String getTag() {
         return obj.getTerm().getName();
@@ -212,6 +220,7 @@ public class XSParticleContainer extends XSBaseContainer<XSParticle> {
             @Override
             public void actionPerformed(ActionEvent e) {
                 addElement();
+                udpateAllChildrenPositions();
                 revalidate();
                 context.fireChanged();
             }
@@ -253,6 +262,7 @@ public class XSParticleContainer extends XSBaseContainer<XSParticle> {
                 throw new Exception("Wrong element: " + node.getNodeName());
             }
         }
+        udpateAllChildrenPositions();
         revalidate();
     }
 
