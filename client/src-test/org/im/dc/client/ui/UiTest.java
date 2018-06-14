@@ -88,7 +88,6 @@ public class UiTest {
         article.article = new ArticleFull();
         article.article.type = typeInfo.typeId;
         article.article.state = typeInfo.newArticleState;
-        article.article.assignedUsers = MainController.initialData.newArticleUsers;
         article.article.xml = Files.readAllBytes(Paths.get(file));
 
         return article;

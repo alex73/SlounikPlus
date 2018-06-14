@@ -14,7 +14,6 @@ public class InitialData {
     // map: key=user, value=role
     public Map<String, String> allUsers;
     public String currentUserRole;
-    public String[] newArticleUsers;
     public List<String> states = new ArrayList<>();
     public Set<String> currentUserPermissions = new TreeSet<>();
     public Map<String, byte[]> xsds;

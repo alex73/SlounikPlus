@@ -189,6 +189,7 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
                 rec.setMarkers(new String[0]);
                 rec.setWatchers(new String[0]);
                 rec.setLinkedTo(new String[0]);
+                rec.setAssignedUsers(article.assignedUsers);
             }
             if (!PermissionChecker.canUserEditArticle(Config.getConfig(), header.user, rec.getArticleType(), rec.getState(), rec.getAssignedUsers())) {
                 throw new RuntimeException("Permission error: user can't change article");
