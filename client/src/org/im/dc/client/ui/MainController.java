@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.jar.Manifest;
 
 import javax.swing.JComponent;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 import javax.swing.SwingWorker;
@@ -46,7 +47,7 @@ public class MainController extends BaseController<MainFrame> {
     private MainFrameNewsModel newsModel;
 
     private List<MainControllerArticleType> panelArticleTypes = new ArrayList<>();
-    private List<IArticleUpdatedListener> articleUpdatedListeners = new ArrayList();
+    private List<IArticleUpdatedListener> articleUpdatedListeners = new ArrayList<>();
     private MainFramePanelIssues panelIssues = new MainFramePanelIssues();
     private MainFramePanelNews panelNews = new MainFramePanelNews();
 
@@ -226,7 +227,11 @@ public class MainController extends BaseController<MainFrame> {
         }
 
         if (initialData.currentUserPermissions.contains(CommonPermission.FULL_VALIDATION.name())) {
-            window.miValidateFull.addActionListener((e) -> validateFull());
+            for (InitialData.TypeInfo ti : initialData.articleTypes) {
+                JMenuItem it = new JMenuItem(ti.typeName);
+                it.addActionListener((e) -> validateFull(ti.typeId));
+                window.miValidateFull.add(it);
+            }
         } else {
             window.miValidateFull.setVisible(false);
         }
@@ -258,11 +263,11 @@ public class MainController extends BaseController<MainFrame> {
         }
     }
 
-    private void validateFull() {
+    private void validateFull(String articleTypeId) {
         new LongProcess() {
             @Override
             protected void exec() throws Exception {
-                WS.getToolsWebservice().validateAll(WS.header);
+                WS.getToolsWebservice().validateAll(WS.header, articleTypeId);
             }
 
             @Override

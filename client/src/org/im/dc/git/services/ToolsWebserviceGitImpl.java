@@ -47,7 +47,7 @@ public class ToolsWebserviceGitImpl implements ToolsWebservice {
     }
 
     @Override
-    public void validateAll(Header header) throws Exception {
+    public void validateAll(Header header, String articleType) throws Exception {
         throw new Exception("Not implemented for git version");
     }
 

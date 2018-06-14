@@ -22,7 +22,7 @@ public class MainFrame extends javax.swing.JFrame {
         menuCommon = new javax.swing.JMenu();
         miSettings = new javax.swing.JMenuItem();
         miStat = new javax.swing.JMenuItem();
-        miValidateFull = new javax.swing.JMenuItem();
+        miValidateFull = new javax.swing.JMenu();
         miResetDesk = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
@@ -91,6 +91,6 @@ public class MainFrame extends javax.swing.JFrame {
     public javax.swing.JMenuItem miResetDesk;
     public javax.swing.JMenuItem miSettings;
     public javax.swing.JMenuItem miStat;
-    public javax.swing.JMenuItem miValidateFull;
+    public javax.swing.JMenu miValidateFull;
     // End of variables declaration//GEN-END:variables
 }

@@ -92,13 +92,13 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
     }
 
     @Override
-    public void validateAll(Header header) throws Exception {
-        LOG.info(">> validateAll(" + header.user + ")");
+    public void validateAll(Header header, String articleType) throws Exception {
+        LOG.info(">> validateAll(" + header.user + "," + articleType + ")");
         long startTime = System.currentTimeMillis();
         check(header);
         PermissionChecker.userRequiresCommonPermission(Config.getConfig(), header.user, CommonPermission.FULL_VALIDATION);
 
-        List<Integer> articleIds = Db.execAndReturn((api) -> api.getArticleMapper().selectAllIds());
+        List<Integer> articleIds = Db.execAndReturn((api) -> api.getArticleMapper().selectAllIds(articleType));
 
         for (int id : articleIds) {
             Db.exec((api) -> {

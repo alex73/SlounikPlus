@@ -31,9 +31,12 @@
 			WHERE articleType = #{articleType}
 		</if>
 	</select>
-	<select id="selectAllIds" resultType="int">
+	<select id="selectAllIds" parameterType="String" resultType="int">
 		SELECT articleId
 		FROM Articles
+		<if test="articleType != null">
+			WHERE articleType = #{articleType}
+		</if>
 	</select>
 	<select id="selectArticle" parameterType="int" resultType="RecArticle" resultMap="RecArticleMap">
 		SELECT *

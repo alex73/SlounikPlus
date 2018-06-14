@@ -45,7 +45,7 @@ public class ExportArticles {
         }
 
         Db.exec((api) -> {
-            for (int id : api.getArticleMapper().selectAllIds()) {
+            for (int id : api.getArticleMapper().selectAllIds(null)) {
                 RecArticle a = api.getArticleMapper().selectArticle(id);
                 try {
                     String fn = a.getArticleType() + '/' + a.getHeader().replace('/', '_') + '-' + a.getArticleId()
