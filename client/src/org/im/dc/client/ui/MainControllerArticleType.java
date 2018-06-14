@@ -2,6 +2,8 @@ package org.im.dc.client.ui;
 
 import java.awt.Component;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -69,6 +71,10 @@ public class MainControllerArticleType implements IArticleUpdatedListener {
                 new ArticleEditController(typeInfo, a.id);
             }
         });
+        panelArticles.cbUser.addKeyListener(pressEnter);
+        panelArticles.cbState.addKeyListener(pressEnter);
+        panelArticles.txtWord.addKeyListener(pressEnter);
+        panelArticles.txtText.addKeyListener(pressEnter);
         panelArticles.tableArticles.getSelectionModel().addListSelectionListener((e) -> {
             panelArticles.labelSelected.setText("Пазначана: " + panelArticles.tableArticles.getSelectedRows().length);
         });
@@ -92,6 +98,15 @@ public class MainControllerArticleType implements IArticleUpdatedListener {
             panelArticles.btnPreview.setVisible(false);
         }
     }
+
+    KeyAdapter pressEnter = new KeyAdapter() {
+        @Override
+        public void keyPressed(KeyEvent e) {
+            if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                search();
+            }
+        }
+    };
 
     ActionListener reassign = (e) -> {
         TableModel m = panelArticles.tableArticles.getModel();

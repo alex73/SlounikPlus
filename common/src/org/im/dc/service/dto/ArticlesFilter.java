@@ -11,13 +11,13 @@ public class ArticlesFilter {
         if (partText == null) {
             return null;
         }
-        return "% " + partText.replace('*', '%') + " %";
+        return " " + partText.replace('*', '%') + " ";
     }
 
     public String getLikeHeader() {
         if (partHeader == null) {
             return null;
         }
-        return "%" + partHeader.replace('*', '%') + "%";
+        return partHeader.replace('*', '%');
     }
 }
