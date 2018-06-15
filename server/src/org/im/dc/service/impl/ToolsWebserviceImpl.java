@@ -222,8 +222,14 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
         PermissionChecker.userRequiresTypePermission(Config.getConfig(), header.user, articleType, TypePermission.VIEW_OUTPUT);
 
         try {
-            Validator validator = Config.schemas.get(articleType).newValidator();
-            validator.validate(new StreamSource(new ByteArrayInputStream(xml)));
+            RecArticle a = new RecArticle();
+            a.setArticleType(articleType);
+            a.setHeader(articleHeader);
+            a.setXml(xml);
+            String err = ArticleWebserviceImpl.validateArticle(a);
+            if (err != null) {
+                throw new Exception(err);
+            }
 
             HtmlOut out = new HtmlOut();
             SimpleScriptContext context = new SimpleScriptContext();
@@ -267,8 +273,10 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
                     LOG.warn("<< preparePreviews: wrong type/id requested");
                     throw new Exception("Запыт няправільнага ID для вызначанага тыпу");
                 }
-                Validator validator = Config.schemas.get(articleType).newValidator();
-                validator.validate(new StreamSource(new ByteArrayInputStream(a.getXml())));
+                String err = ArticleWebserviceImpl.validateArticle(a);
+                if (err != null) {
+                    throw new Exception(err);
+                }
 
                 HtmlOut out = new HtmlOut();
                 SimpleScriptContext context = new SimpleScriptContext();
