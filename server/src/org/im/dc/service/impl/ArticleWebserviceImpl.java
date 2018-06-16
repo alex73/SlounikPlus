@@ -1,6 +1,5 @@
 package org.im.dc.service.impl;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,7 +10,6 @@ import javax.jws.WebService;
 import javax.script.ScriptContext;
 import javax.script.ScriptException;
 import javax.script.SimpleScriptContext;
-import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Validator;
 
 import org.im.dc.config.PermissionChecker;
@@ -92,6 +90,7 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
             JsProcessing.exec(new File(Config.getConfigDir(), rec.getArticleType() + "-validate.js").getAbsolutePath(),
                     context);
         } catch (ScriptException ex) {
+            ex.printStackTrace();
             result = ex.getCause().getMessage();
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -119,8 +118,10 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
         a.article.lastUpdated = rec.getLastUpdated();
         a.article.validationError = rec.getValidationError();
 
-        a.youCanEdit = PermissionChecker.canUserEditArticle(Config.getConfig(), header.user, rec.getArticleType(), rec.getState(), rec.getAssignedUsers());
-        a.youCanChangeStateTo = PermissionChecker.canChangeStateTo(Config.getConfig(), header.user, rec.getArticleType(), rec.getState(), rec.getAssignedUsers());
+        a.youCanEdit = PermissionChecker.canUserEditArticle(Config.getConfig(), header.user, rec.getArticleType(),
+                rec.getState(), rec.getAssignedUsers());
+        a.youCanChangeStateTo = PermissionChecker.canChangeStateTo(Config.getConfig(), header.user,
+                rec.getArticleType(), rec.getState(), rec.getAssignedUsers());
         a.youWatched = false;
         for (String w : rec.getWatchers()) {
             if (header.user.equals(w)) {
@@ -191,7 +192,8 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
                 rec.setLinkedTo(new String[0]);
                 rec.setAssignedUsers(article.assignedUsers);
             }
-            if (!PermissionChecker.canUserEditArticle(Config.getConfig(), header.user, rec.getArticleType(), rec.getState(), rec.getAssignedUsers())) {
+            if (!PermissionChecker.canUserEditArticle(Config.getConfig(), header.user, rec.getArticleType(),
+                    rec.getState(), rec.getAssignedUsers())) {
                 throw new RuntimeException("Permission error: user can't change article");
             }
 
@@ -305,7 +307,8 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
                 LOG.warn("<< changeState: wrong type/id requested");
                 throw new Exception("Запыт няправільнага ID для вызначанага тыпу");
             }
-            if (!PermissionChecker.canUserChangeArticleState(Config.getConfig(), header.user, rec.getArticleType(), rec.getState(), newState, rec.getAssignedUsers())) {
+            if (!PermissionChecker.canUserChangeArticleState(Config.getConfig(), header.user, rec.getArticleType(),
+                    rec.getState(), newState, rec.getAssignedUsers())) {
                 throw new RuntimeException("Permission error: Impossible state change");
             }
 

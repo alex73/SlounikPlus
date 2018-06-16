@@ -1,6 +1,5 @@
 package org.im.dc.service.impl;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
@@ -12,9 +11,8 @@ import java.util.Set;
 
 import javax.jws.WebService;
 import javax.script.ScriptContext;
+import javax.script.ScriptException;
 import javax.script.SimpleScriptContext;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.validation.Validator;
 
 import org.im.dc.config.ConfigLoad;
 import org.im.dc.config.PermissionChecker;
@@ -242,6 +240,9 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
             out.normalize();
             LOG.info("<< preparePreview (" + (System.currentTimeMillis() - startTime) + "ms)");
             return out.toString();
+        } catch (ScriptException ex) {
+            ex.printStackTrace();
+            throw new Exception(ex.getCause().getMessage());
         } catch (Exception ex) {
             LOG.error("Error in preparePreview", ex);
             throw ex;

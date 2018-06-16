@@ -62,20 +62,20 @@ public class XSGroupSequenceContainer extends XSBaseContainer<XSModelGroup> {
     }
 
     public void insertData(Element node) throws Exception {
-        boolean found = false;
         for (Node ch = node.getFirstChild(); ch != null; ch = ch.getNextSibling()) {
             if (ch.getNodeType() != Node.ELEMENT_NODE) {
                 continue;
             }
+            boolean found = false;
             for (IXSContainer ci : children) {
                 if (ch.getNodeName().equals(ci.getTag())) {
                     ci.insertData((Element) ch);
                     found = true;
                 }
             }
-        }
-        if (!found) {
-            throw new Exception("Child not found for tag " + node.getNodeName());
+            if (!found) {
+                throw new Exception("Child not found for tag " + node.getNodeName());
+            }
         }
     }
 

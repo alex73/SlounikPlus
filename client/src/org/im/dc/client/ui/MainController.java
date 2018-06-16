@@ -322,6 +322,8 @@ public class MainController extends BaseController<MainFrame> {
         }
         if (buildtime != null) {
             t += " [" + buildtime + "]";
+        } else {
+            t += " [dev]";
         }
         window.setTitle(t);
     }
