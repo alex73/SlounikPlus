@@ -79,6 +79,17 @@ public abstract class UpdateInDb {
         }
     }
 
+    protected void findNodes1(Element root, String nodeName, Consumer<Element> action) {
+        for (Node ch = root.getFirstChild(); ch != null; ch = ch.getNextSibling()) {
+            if (ch.getNodeType() != Node.ELEMENT_NODE) {
+                continue;
+            }
+            if (ch.getNodeName().equals(nodeName)) {
+                action.accept((Element) ch);
+            }
+        }
+    }
+
     protected void updateAll(String articleType) throws Exception {
         Db.exec((api) -> {
             articleIds = api.getArticleMapper().selectAllIds(articleType);
@@ -119,7 +130,7 @@ public abstract class UpdateInDb {
                     }
                 });
             } catch (Exception ex) {
-                throw new RuntimeException(ex);
+                throw new RuntimeException("Error during processing ID=" + id, ex);
             }
         });
     }
