@@ -5,5 +5,5 @@ package org.im.dc.server;
  */
 @FunctionalInterface
 public interface DbExecutor {
-    public abstract void run(Db.Api Api);
+    public abstract void run(Db.Api Api) throws Exception;
 }

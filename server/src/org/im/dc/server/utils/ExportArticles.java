@@ -8,6 +8,7 @@ import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -44,33 +45,33 @@ public class ExportArticles {
             out.mkdirs();
         }
 
-        Db.exec((api) -> {
-            for (int id : api.getArticleMapper().selectAllIds(null)) {
-                RecArticle a = api.getArticleMapper().selectArticle(id);
-                try {
-                    String fn = a.getArticleType() + '/' + a.getHeader().replace('/', '_') + '-' + a.getArticleId()
-                            + ".xml";
-                    System.err.println(fn);
-                    byte[] xml;
-                    if (a.getXml() != null) {
-                        xml = xml2text(a.getXml()).getBytes("UTF-8");
-                    } else {
-                        xml = new byte[0];
-                    }
-                    if (zip != null) {
-                        zip.putNextEntry(new ZipEntry(fn));
-                        zip.write(xml);
-                        zip.closeEntry();
-                    } else {
-                        Path p = new File(args[0], fn).toPath();
-                        Files.createDirectories(p.getParent());
-                        Files.write(p, xml);
-                    }
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-            }
+        List<Integer> ids = Db.execAndReturn((api) -> {
+            return api.getArticleMapper().selectAllIds(null);
         });
+
+        for (int id : ids) {
+            Db.exec((api) -> {
+                RecArticle a = api.getArticleMapper().selectArticle(id);
+                String fn = a.getArticleType() + '/' + a.getHeader().replace('/', '_') + '-' + a.getArticleId()
+                        + ".xml";
+                System.err.println(fn);
+                byte[] xml;
+                if (a.getXml() != null) {
+                    xml = xml2text(a.getXml()).getBytes("UTF-8");
+                } else {
+                    xml = new byte[0];
+                }
+                if (zip != null) {
+                    zip.putNextEntry(new ZipEntry(fn));
+                    zip.write(xml);
+                    zip.closeEntry();
+                } else {
+                    Path p = new File(args[0], fn).toPath();
+                    Files.createDirectories(p.getParent());
+                    Files.write(p, xml);
+                }
+            });
+        }
 
         if (zip != null) {
             zip.flush();
