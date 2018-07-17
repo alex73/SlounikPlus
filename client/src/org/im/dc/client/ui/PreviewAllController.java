@@ -19,13 +19,18 @@ import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 
 import org.im.dc.client.WS;
+import org.im.dc.service.dto.InitialData;
 
 public class PreviewAllController extends BaseController<PreviewAllDialog> {
     private static Font BASE_FONT;
 
+    private final InitialData.TypeInfo typeInfo;
+
     public PreviewAllController(int[] articleIds, String typeId) {
         super(new PreviewAllDialog(MainController.instance.window, false), MainController.instance.window);
         setupCloseOnEscape();
+
+        typeInfo = MainController.initialData.getTypeInfo(typeId);
 
         if (BASE_FONT == null) {
             BASE_FONT = window.getFont().deriveFont(Font.PLAIN);
@@ -53,15 +58,15 @@ public class PreviewAllController extends BaseController<PreviewAllDialog> {
         window.output.addHyperlinkListener(linkListener);
 
         window.btnRefresh.addActionListener(l -> {
-            show(articleIds, typeId);
+            show(articleIds);
         });
 
-        show(articleIds, typeId);
+        show(articleIds);
 
         displayOnParent();
     }
 
-    void show(int[] articleIds, String typeId) {
+    void show(int[] articleIds) {
         new LongProcess() {
             StringBuilder out, outClipboard;
 
@@ -71,7 +76,8 @@ public class PreviewAllController extends BaseController<PreviewAllDialog> {
                 outClipboard = new StringBuilder(
                         "<!DOCTYPE html>\n<html><head><meta charset=\"UTF-8\"></head><body>\n");
 
-                String[] articlesPreview = WS.getToolsWebservice().preparePreviews(WS.header, typeId, articleIds);
+                String[] articlesPreview = WS.getToolsWebservice().preparePreviews(WS.header, typeInfo.typeId,
+                        articleIds);
                 for (int i = 0; i < articleIds.length; i++) {
                     if (articlesPreview[i] == null) {
                         continue;
@@ -111,7 +117,7 @@ public class PreviewAllController extends BaseController<PreviewAllDialog> {
         public void hyperlinkUpdate(HyperlinkEvent e) {
             if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
                 int idx = Integer.parseInt(e.getDescription());
-                new ArticleEditController(null, idx);
+                new ArticleEditController(typeInfo, idx);
             }
         }
     };
