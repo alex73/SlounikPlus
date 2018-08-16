@@ -1,17 +1,15 @@
 package org.im.dc.server.utils;
 
 import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.validation.Validator;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -65,8 +63,15 @@ public class ImportArticles {
         });
     }
 
+    static final Pattern RE_FILE = Pattern.compile("(.*)\\-([0-9]+)\\.xml");
+
     static void read(String articleType, String fn, byte[] xml) throws Exception {
-        String header = fn.replaceAll("\\.xml$", "");
+        Matcher m = RE_FILE.matcher(fn);
+        if (!m.matches()) {
+            throw new Exception("Wrong file name: " + fn);
+        }
+        String header = m.group(1);
+        int id = Integer.parseInt(m.group(2));
 
         try {
             //Validator validator = Config.schemas.get(articleType).newValidator();
@@ -78,6 +83,7 @@ public class ImportArticles {
         }
 
         RecArticle a = new RecArticle();
+        a.setArticleId(id);
         a.setHeader(header);
         a.setArticleType(articleType);
         a.setXml(xml);

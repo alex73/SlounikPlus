@@ -68,10 +68,17 @@
 	</select>
 	<insert id="insertArticles" parameterType="java.util.List">
 		INSERT INTO Articles
-		(header,articleType,xml,assignedUsers,state,markers,watchers,linkedTo,textForSearch,lettersCount,lastUpdated,validationError)
+		(articleId,header,articleType,xml,assignedUsers,state,markers,watchers,linkedTo,textForSearch,lettersCount,lastUpdated,validationError)
 		VALUES
 		<foreach collection="records" item="item" index="index" separator=",">
-			(#{item.header},
+			(
+			<if test="item.articleId != null">
+				#{item.articleId},
+			</if>
+			<if test="item.articleId == null">
+				DEFAULT,
+			</if>
+			#{item.header},
 			#{item.articleType},
 			#{item.xml},
 			#{item.assignedUsers,typeHandler=StringArrayTypeHandler},
