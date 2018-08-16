@@ -75,6 +75,7 @@ public class MainControllerArticleType implements IArticleUpdatedListener {
         panelArticles.cbState.addKeyListener(pressEnter);
         panelArticles.txtWord.addKeyListener(pressEnter);
         panelArticles.txtText.addKeyListener(pressEnter);
+        panelArticles.txtID.addKeyListener(pressEnter);
         panelArticles.tableArticles.getSelectionModel().addListSelectionListener((e) -> {
             panelArticles.labelSelected.setText("Пазначана: " + panelArticles.tableArticles.getSelectedRows().length);
         });
@@ -150,11 +151,20 @@ public class MainControllerArticleType implements IArticleUpdatedListener {
                 : panelArticles.txtWord.getText().trim();
         filter.partText = panelArticles.txtText.getText().trim().isEmpty() ? null
                 : panelArticles.txtText.getText().trim();
+        String ids = panelArticles.txtID.getText().trim();
         MainController.instance.new LongProcess() {
             MainFrameArticlesModel model;
 
             @Override
             protected void exec() throws Exception {
+                if (!ids.isEmpty()) {
+                    filter.ids = new ArrayList<>();
+                    for (String s : ids.split("\\s+")) {
+                        if (!s.isEmpty()) {
+                            filter.ids.add(Integer.parseInt(s));
+                        }
+                    }
+                }
                 model = new MainFrameArticlesModel(
                         WS.getArticleService().listArticles(WS.header, typeInfo.typeId, filter));
             }

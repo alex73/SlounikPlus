@@ -300,7 +300,11 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
         displayIssue();
 
         if (article.article.header != null) {
-            window.setTitle(window.getTitle().replaceAll("\\[.*\\]", article.article.header));
+            String h = article.article.header;
+            if (!isNew()) {
+                h = "#" + article.article.id + ": " + h;
+            }
+            window.setTitle(window.getTitle().replaceAll("\\[.*\\]", h));
         }
         window.txtState.setText(article.article.state);
         window.txtUsers.setVisible(article.article.assignedUsers != null);

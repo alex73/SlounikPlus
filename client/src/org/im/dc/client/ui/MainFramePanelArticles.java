@@ -28,6 +28,8 @@ public class MainFramePanelArticles extends javax.swing.JPanel {
         txtWord = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
         txtText = new javax.swing.JTextField();
+        jLabel5 = new javax.swing.JLabel();
+        txtID = new javax.swing.JTextField();
         labelSelected = new javax.swing.JLabel();
         btnSearch = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -106,6 +108,22 @@ public class MainFramePanelArticles extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         jPanel3.add(txtText, gridBagConstraints);
 
+        jLabel5.setText(bundle.getString("MainFramePanelArticles.jLabel5.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        jPanel3.add(jLabel5, gridBagConstraints);
+
+        txtID.setText(bundle.getString("MainFramePanelArticles.txtID.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        jPanel3.add(txtID, gridBagConstraints);
+
         labelSelected.setText(bundle.getString("MainFrame.labelSelected.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
@@ -175,11 +193,13 @@ public class MainFramePanelArticles extends javax.swing.JPanel {
     public javax.swing.JLabel jLabel2;
     public javax.swing.JLabel jLabel3;
     public javax.swing.JLabel jLabel4;
+    public javax.swing.JLabel jLabel5;
     public javax.swing.JPanel jPanel1;
     public javax.swing.JPanel jPanel3;
     public javax.swing.JScrollPane jScrollPane1;
     public javax.swing.JLabel labelSelected;
     public javax.swing.JTable tableArticles;
+    public javax.swing.JTextField txtID;
     public javax.swing.JTextField txtText;
     public javax.swing.JTextField txtWord;
     // End of variables declaration//GEN-END:variables

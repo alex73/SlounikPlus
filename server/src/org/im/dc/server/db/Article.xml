@@ -8,6 +8,13 @@
 		<if test="articleType != null">
 			AND articleType = #{articleType}
 		</if>
+		<if test="filter.ids != null">
+			AND articleId IN (
+			<foreach collection="filter.ids" item="id" index="index" separator=",">
+				#{id}
+			</foreach>
+			)
+		</if>
 		<if test="filter.state != null">
 			AND state=#{filter.state}
 		</if>
