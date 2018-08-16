@@ -35,6 +35,7 @@ public class AddWordsDialog extends javax.swing.JDialog {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("org/im/dc/client/ui/Bundle"); // NOI18N
         setTitle(bundle.getString("AddWordsDialog.title")); // NOI18N
+        setMinimumSize(new java.awt.Dimension(600, 400));
 
         jPanel1.setLayout(new java.awt.GridBagLayout());
 
