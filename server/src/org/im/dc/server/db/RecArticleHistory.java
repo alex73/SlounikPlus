@@ -6,6 +6,8 @@ import org.im.dc.service.dto.Related;
 
 public class RecArticleHistory {
     private int historyId;
+    // тып артыкула
+    private String articleType;
     // артыкул
     private int articleId;
     // загаловак артыкула
@@ -37,6 +39,14 @@ public class RecArticleHistory {
 
     public void setHistoryId(int historyId) {
         this.historyId = historyId;
+    }
+
+    public String getArticleType() {
+        return articleType;
+    }
+
+    public void setArticleType(String articleType) {
+        this.articleType = articleType;
     }
 
     public int getArticleId() {
@@ -140,6 +150,7 @@ public class RecArticleHistory {
         r.type = Related.RelatedType.HISTORY;
         r.articleId = articleId;
         r.header = header;
+        r.articleTypeId = articleType;
         r.id = historyId;
         r.articleId = articleId;
         r.when = changed;

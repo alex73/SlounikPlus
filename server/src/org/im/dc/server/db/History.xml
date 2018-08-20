@@ -3,7 +3,7 @@
 
 <mapper namespace="org.im.dc.server.db.DoArticleHistory">
 	<select id="retrieveUserHistory" resultType="RecArticleHistory" resultMap="RecArticleHistoryMap">
-		SELECT ArticlesHistory.*, Articles.header
+		SELECT ArticlesHistory.*, Articles.header, Articles.articleType
 		FROM ArticlesHistory, Articles
 		WHERE ArticlesHistory.articleId = Articles.articleId AND
 			(Articles.assignedUsers @> ARRAY[#{user}]::varchar[][] OR Articles.watchers @> ARRAY[#{user}]::varchar[][])

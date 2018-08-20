@@ -198,7 +198,8 @@ public class MainController extends BaseController<MainFrame> {
             public void mouseClicked(MouseEvent e) {
                 Related a = ((MainFrameIssuesModel) panelIssues.tableIssues.getModel()).issues
                         .get(panelIssues.tableIssues.getSelectedRow());
-                new ArticleEditController(null, a.articleId);
+                InitialData.TypeInfo ti = MainController.initialData.getTypeInfo(a.articleTypeId);
+                new ArticleEditController(ti, a.articleId);
             }
         });
         panelNews.tableNews.addMouseListener(new MouseAdapter() {
@@ -206,7 +207,8 @@ public class MainController extends BaseController<MainFrame> {
             public void mouseClicked(MouseEvent e) {
                 Related a = ((MainFrameNewsModel) panelNews.tableNews.getModel()).news
                         .get(panelNews.tableNews.getSelectedRow());
-                new ArticleEditController(null, a.articleId);
+                InitialData.TypeInfo ti = MainController.initialData.getTypeInfo(a.articleTypeId);
+                new ArticleEditController(ti, a.articleId);
             }
         });
 

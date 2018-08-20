@@ -15,6 +15,8 @@ public class Related {
 
     public RelatedType type;
 
+    public String articleTypeId;
+
     public int id;
 
     // спасылаецца на артыкул
