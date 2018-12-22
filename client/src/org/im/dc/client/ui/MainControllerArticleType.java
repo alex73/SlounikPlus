@@ -7,11 +7,16 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Vector;
 
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.RowSorter;
+import javax.swing.SortOrder;
 import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 
 import org.im.dc.client.WS;
 import org.im.dc.gen.config.TypePermission;
@@ -79,7 +84,6 @@ public class MainControllerArticleType implements IArticleUpdatedListener {
         panelArticles.tableArticles.getSelectionModel().addListSelectionListener((e) -> {
             panelArticles.labelSelected.setText("Пазначана: " + panelArticles.tableArticles.getSelectedRows().length);
         });
-        panelArticles.tableArticles.setAutoCreateRowSorter(true);
 
         if (typeInfo.currentUserTypePermissions.contains(TypePermission.ADD_ARTICLE.name())) {
             panelArticles.btnAddArticle.addActionListener((e) -> new ArticleEditController(typeInfo));
@@ -171,7 +175,17 @@ public class MainControllerArticleType implements IArticleUpdatedListener {
 
             @Override
             protected void ok() {
-                SettingsController.replaceModel(panelArticles.tableArticles, model);
+                if (panelArticles.tableArticles.getRowSorter() == null) {
+                    SettingsController.replaceModel(panelArticles.tableArticles, model);
+                    panelArticles.tableArticles.setRowSorter(new TableArticlesSorter(model));
+                } else {
+                    List<? extends RowSorter.SortKey> sortKeys = panelArticles.tableArticles.getRowSorter()
+                            .getSortKeys();
+                    SettingsController.replaceModel(panelArticles.tableArticles, model);
+                    ((TableRowSorter<MainFrameArticlesModel>) panelArticles.tableArticles.getRowSorter())
+                            .setModel(model);
+                    panelArticles.tableArticles.getRowSorter().setSortKeys(sortKeys);
+                }
                 panelArticles.labelSelected.setText("Знойдзена: " + model.getRowCount());
             }
         };
@@ -198,6 +212,23 @@ public class MainControllerArticleType implements IArticleUpdatedListener {
             if (needUpdate) {
                 model.fireTableDataChanged();
             }
+        }
+    }
+
+    public static class TableArticlesSorter extends TableRowSorter<MainFrameArticlesModel> {
+        public TableArticlesSorter(MainFrameArticlesModel model) {
+            super(model);
+            setSortKeys(Arrays.asList(new RowSorter.SortKey(0, SortOrder.ASCENDING)));
+        }
+
+        @Override
+        public Comparator<?> getComparator(int column) {
+            return new Comparator<Object>() {
+                @Override
+                public int compare(Object o1, Object o2) {
+                    return WordsComparator.INSTANCE.compare(o1.toString(), o2.toString());
+                }
+            };
         }
     }
 }
