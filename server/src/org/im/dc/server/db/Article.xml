@@ -79,10 +79,10 @@
 		VALUES
 		<foreach collection="records" item="item" index="index" separator=",">
 			(
-			<if test="item.articleId != null">
+			<if test="item.articleId != 0">
 				#{item.articleId},
 			</if>
-			<if test="item.articleId == null">
+			<if test="item.articleId == 0">
 				DEFAULT,
 			</if>
 			#{item.header},

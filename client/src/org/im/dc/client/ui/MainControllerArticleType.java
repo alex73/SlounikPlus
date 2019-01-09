@@ -122,7 +122,7 @@ public class MainControllerArticleType implements IArticleUpdatedListener {
                 articles.add(model.articles.get(r));
             }
 
-            new ReassignController(articles);
+            new ReassignController(articles, typeInfo.typeId);
         }
     };
     ActionListener preview = (e) -> {

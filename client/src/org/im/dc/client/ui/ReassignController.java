@@ -9,14 +9,19 @@ import java.util.Map;
 import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
 
+import org.im.dc.client.WS;
 import org.im.dc.service.dto.ArticleShort;
+import org.im.dc.service.dto.InitialData;
 
 public class ReassignController extends BaseController<ReassignDialog> {
+    private final InitialData.TypeInfo typeInfo;
     private int[] articleIds;
 
-    public ReassignController(List<ArticleShort> articles) {
+    public ReassignController(List<ArticleShort> articles, String typeId) {
         super(new ReassignDialog(MainController.instance.window, true), MainController.instance.window);
         setupCloseOnEscape();
+
+        typeInfo = MainController.initialData.getTypeInfo(typeId);
 
         window.btnReassign.addActionListener(reassign);
         window.btnCancel.addActionListener((e) -> window.dispose());
@@ -66,8 +71,8 @@ public class ReassignController extends BaseController<ReassignDialog> {
             new LongProcess() {
                 @Override
                 protected void exec() throws Exception {
-                    throw new RuntimeException("Need to implement");
-                    //WS.getToolsWebservice().reassignUsers(WS.header, articleIds, users.toArray(new String[users.size()]));
+                    WS.getToolsWebservice().reassignUsers(WS.header, typeInfo.typeId, articleIds,
+                            users.toArray(new String[users.size()]));
                 }
 
                 @Override
