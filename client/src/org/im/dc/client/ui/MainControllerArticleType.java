@@ -119,6 +119,7 @@ public class MainControllerArticleType implements IArticleUpdatedListener {
             MainFrameArticlesModel model = (MainFrameArticlesModel) m;
             List<ArticleShort> articles = new ArrayList<>();
             for (int r : panelArticles.tableArticles.getSelectedRows()) {
+                r = panelArticles.tableArticles.convertRowIndexToModel(r);
                 articles.add(model.articles.get(r));
             }
 
