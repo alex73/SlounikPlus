@@ -21,7 +21,7 @@ public class MainFrameArticlesModel extends DefaultTableModel {
 
     @Override
     public int getColumnCount() {
-        return 3;
+        return 4;
     }
 
     @Override
@@ -32,6 +32,8 @@ public class MainFrameArticlesModel extends DefaultTableModel {
         case 1:
             return "Стан";
         case 2:
+            return "Карыстальнікі";
+        case 3:
             return "Памылкі";
         default:
             return null;
@@ -52,6 +54,8 @@ public class MainFrameArticlesModel extends DefaultTableModel {
         case 1:
             return a.state;
         case 2:
+            return String.join(",", a.assignedUsers);
+        case 3:
             return a.validationError;
         default:
             return null;
