@@ -1,6 +1,5 @@
 package org.im.dc.git.services;
 
-import java.io.ByteArrayInputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -11,7 +10,6 @@ import java.util.List;
 import javax.script.ScriptContext;
 import javax.script.ScriptException;
 import javax.script.SimpleScriptContext;
-import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Validator;
 
 import org.im.dc.client.GitProc;
@@ -51,7 +49,7 @@ public class ArticleWebserviceGitImpl implements ArticleWebservice {
     }
 
     @Override
-    public ArticleFullInfo saveArticle(Header header, ArticleFull article) throws Exception {
+    public ArticleFullInfo saveArticle(Header header, ArticleFull article, boolean batchUpdate) throws Exception {
         Path oldPath = getArticleFile(article.type, article.header);
         byte[] prev = null;
         if (oldPath != null) {

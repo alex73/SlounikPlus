@@ -13,6 +13,7 @@ import javax.script.SimpleScriptContext;
 import javax.xml.validation.Validator;
 
 import org.im.dc.config.PermissionChecker;
+import org.im.dc.gen.config.TypePermission;
 import org.im.dc.server.Config;
 import org.im.dc.server.Db;
 import org.im.dc.server.VersionChecker;
@@ -162,7 +163,7 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
     }
 
     @Override
-    public ArticleFullInfo saveArticle(Header header, ArticleFull article) throws Exception {
+    public ArticleFullInfo saveArticle(Header header, ArticleFull article, boolean batchUpdate) throws Exception {
         LOG.info(">> saveArticle(" + header.user + "): " + article.id);
         long startTime = System.currentTimeMillis();
         check(header);
@@ -192,9 +193,14 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
                 rec.setLinkedTo(new String[0]);
                 rec.setAssignedUsers(article.assignedUsers);
             }
-            if (!PermissionChecker.canUserEditArticle(Config.getConfig(), header.user, rec.getArticleType(),
-                    rec.getState(), rec.getAssignedUsers())) {
-                throw new RuntimeException("Permission error: user can't change article");
+            if (batchUpdate) {
+                PermissionChecker.userRequiresTypePermission(Config.getConfig(), header.user, rec.getArticleType(),
+                        TypePermission.ADD_ARTICLES);
+            } else {
+                if (!PermissionChecker.canUserEditArticle(Config.getConfig(), header.user, rec.getArticleType(),
+                        rec.getState(), rec.getAssignedUsers())) {
+                    throw new RuntimeException("Permission error: user can't change article");
+                }
             }
 
             history.setOldXml(rec.getXml());

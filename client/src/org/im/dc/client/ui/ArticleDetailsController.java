@@ -125,7 +125,7 @@ public class ArticleDetailsController extends BaseController<ArticleDetailsDialo
             protected void exec() throws Exception {
                 if (newXml != null) {
                     parent.article.article.xml = newXml;
-                    ArticleFullInfo ai = WS.getArticleService().saveArticle(WS.header, parent.article.article);
+                    ArticleFullInfo ai = WS.getArticleService().saveArticle(WS.header, parent.article.article, false);
                     MainController.instance.fireArticleUpdated(ai.article);
                 }
                 parent.article = WS.getArticleService().fixIssue(WS.header, parent.article.article.type,

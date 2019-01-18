@@ -119,7 +119,7 @@ public class PermissionChecker {
      */
     private static boolean isUserAssigned(String user, String[] assignedUsers) {
         if (assignedUsers == null) {
-            return true;
+            return false;
         }
         for (String au : assignedUsers) {
             if (user.equals(au)) {
