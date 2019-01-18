@@ -8,6 +8,8 @@ public class RecIssue {
     private int issueId;
     // артыкул
     private int articleId;
+    // Тып артыкула
+    private String articleType;
     // загаловак артыкула
     private String header;
     // калі быў створаны каментар
@@ -119,9 +121,9 @@ public class RecIssue {
         Related r = new Related();
         r.type = Related.RelatedType.ISSUE;
         r.articleId = articleId;
+        r.articleTypeId = articleType;
         r.header = header;
         r.id = issueId;
-        r.articleId = articleId;
         if (fixed != null) {
             r.when = fixed;
             r.who = fixer;

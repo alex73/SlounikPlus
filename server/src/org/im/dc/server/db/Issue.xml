@@ -3,32 +3,32 @@
 
 <mapper namespace="org.im.dc.server.db.DoIssue">
 	<select id="retrieveUserOpenIssues" resultType="RecIssue" resultMap="RecIssueMap">
-		SELECT Issues.*, Articles.header
+		SELECT Issues.*, Articles.articleType, Articles.header
 		FROM Issues, Articles
 		WHERE Issues.articleId = Articles.articleId AND
 			(Articles.assignedUsers @> ARRAY[#{user}]::varchar[][] OR Articles.watchers @> ARRAY[#{user}]::varchar[][]) AND
 			fixed IS NULL
 	</select>
 	<select id="retrieveUserIssues" resultType="RecIssue" resultMap="RecIssueMap">
-		SELECT Issues.*, Articles.header
+		SELECT Issues.*, Articles.articleType, Articles.header
 		FROM Issues, Articles
 		WHERE Issues.articleId = Articles.articleId AND
 			(Articles.assignedUsers @> ARRAY[#{user}]::varchar[][] OR Articles.watchers @> ARRAY[#{user}]::varchar[][])
 	</select>
 	<select id="retrieveAuthorIssues" resultType="RecIssue" resultMap="RecIssueMap">
-		SELECT Issues.*, Articles.header
+		SELECT Issues.*, Articles.articleType, Articles.header
 		FROM Issues, Articles
 		WHERE Issues.articleId = Articles.articleId AND Issues.author = #{user}
 	</select>
     <select id="retrieveIssues" resultType="RecIssue" resultMap="RecIssueMap">
-        SELECT *
-        FROM Issues
-        WHERE articleId = #{articleId}
+        SELECT Issues.*, Articles.articleType
+        FROM Issues, Articles
+        WHERE Issues.articleId = #{articleId} AND Issues.articleId = Articles.articleId
     </select>
     <select id="getIssue" resultType="RecIssue" resultMap="RecIssueMap">
-        SELECT *
-        FROM Issues
-        WHERE issueId = #{issueId}
+        SELECT Issues.*, Articles.articleType
+        FROM Issues, Articles
+        WHERE issueId = #{issueId} AND Issues.articleId = Articles.articleId
     </select>
 	<insert id="insertIssue" useGeneratedKeys="true" keyProperty="issue.issueId">
 		INSERT INTO Issues (articleId,created,author,comment,oldXml,newXml) 
