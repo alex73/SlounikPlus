@@ -106,13 +106,19 @@ public class ArticleEditDialog extends javax.swing.JDialog {
 
         jPanel2.add(jPanel3, java.awt.BorderLayout.EAST);
 
-        jPanel9.setLayout(new java.awt.BorderLayout());
+        jPanel9.setLayout(new java.awt.GridBagLayout());
 
         panelLinkedFrom.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
-        jPanel9.add(panelLinkedFrom, java.awt.BorderLayout.WEST);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        jPanel9.add(panelLinkedFrom, gridBagConstraints);
 
         panelLinkedExternal.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
-        jPanel9.add(panelLinkedExternal, java.awt.BorderLayout.EAST);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        jPanel9.add(panelLinkedExternal, gridBagConstraints);
 
         jPanel2.add(jPanel9, java.awt.BorderLayout.NORTH);
 

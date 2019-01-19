@@ -183,7 +183,7 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
             }
         };
         Dockable notes = new Dockable() {
-            DockKey key = new DockKey("notes", "Заўвагі");
+            DockKey key = new DockKey("notes", "Нататнік");
 
             @Override
             public DockKey getDockKey() {
