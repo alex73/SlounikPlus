@@ -1,9 +1,9 @@
 package org.im.dc.client.ui.struct.containers;
 
+import java.lang.reflect.Constructor;
 import java.util.Collection;
 
 import javax.swing.JComponent;
-import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.xerces.impl.dv.XSSimpleType;
@@ -20,7 +20,6 @@ import org.im.dc.client.ui.struct.editors.XSEditRadio;
 import org.im.dc.client.ui.struct.editors.XSEditText;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
 
 public class XSAttributeContainer extends XSBaseContainer<XSAttributeDeclaration> {
     private boolean required;
@@ -32,7 +31,15 @@ public class XSAttributeContainer extends XSBaseContainer<XSAttributeDeclaration
         super(context, parentContainer, obj);
         ann = new AnnotationInfo(obj.getAnnotation());
 
-        if (ann.editType == null) {
+        if (ann.customImpl != null) {
+            try {
+                Constructor<?> c = ann.customImpl.getConstructor(ArticleUIContext.class, IXSContainer.class,
+                        AnnotationInfo.class);
+                editor = (IXSEdit) c.newInstance(context, this, ann);
+            } catch (Exception ex) {
+                throw new RuntimeException("Error create custom control from " + ann.customImpl.getName(), ex);
+            }
+        } else if (ann.editType == null) {
             switch (obj.getTypeDefinition().getType()) {
             case XSSimpleType.PRIMITIVE_BOOLEAN:
                 editor = new XSEditBoolean(context, this, ann);
@@ -46,8 +53,12 @@ public class XSAttributeContainer extends XSBaseContainer<XSAttributeDeclaration
             }
         } else {
             switch (ann.editType) {
+            case TEXT:
+                editor = new XSEditText(context, this, ann);
+                break;
             case CHECK:
-                throw new RuntimeException("Can't create editor for type: " + ann.editType.name());
+                editor = new XSEditBoolean(context, this, ann);
+                break;
             case RADIO:
                 editor = new XSEditRadio(context, this, ann);
                 break;

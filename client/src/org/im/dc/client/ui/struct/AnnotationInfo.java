@@ -18,7 +18,7 @@ public class AnnotationInfo {
     private static final Pattern RE_COLOR = Pattern.compile("#([0-9A-Fa-f]{2})([0-9A-Fa-f]{2})([0-9A-Fa-f]{2})");
 
     public enum EDIT_TYPE {
-        COMBO, COMBO_FILTERED, RADIO, CHECK, ARTICLES_LIST
+        TEXT, COMBO, COMBO_FILTERED, RADIO, CHECK, ARTICLES_LIST
     };
 
     public String text, tooltip;
