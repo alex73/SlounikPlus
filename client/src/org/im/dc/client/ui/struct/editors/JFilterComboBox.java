@@ -61,4 +61,12 @@ public class JFilterComboBox extends JComboBox<String> {
             textfield.setText(enteredText);
         }
     }
+
+    public String getValue() {
+        String v = (String) getSelectedItem();
+        if (v != null && !array.contains(v)) {
+            v = null;
+        }
+        return v;
+    }
 }

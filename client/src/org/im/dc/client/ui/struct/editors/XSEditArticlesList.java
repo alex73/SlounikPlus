@@ -98,7 +98,13 @@ public class XSEditArticlesList extends XSNamedControl<JPanel> implements IXSEdi
 
     @Override
     public String getData() {
-        return (String) combo.getSelectedItem();
+        if (combo.array.isEmpty()) {
+            List<String> headers = context.editController.getHeaders(ann.editDetails);
+            if (headers != null && !headers.isEmpty()) {
+                combo.array = headers;
+            }
+        }
+        return (String) combo.getValue();
     }
 
     private void openEdit(String header) {
