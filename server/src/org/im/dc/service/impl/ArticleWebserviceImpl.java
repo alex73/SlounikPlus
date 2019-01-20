@@ -223,7 +223,7 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
             }
 
             api.getArticleNoteMapper().deleteNote(rec.getArticleId(), header.user);
-            if (article.notes != null && !article.notes.trim().isEmpty()) {
+            if (article.notes != null) {
                 RecArticleNote note = new RecArticleNote();
                 note.setArticleId(rec.getArticleId());
                 note.setCreator(header.user);

@@ -1,5 +1,6 @@
 package org.im.dc.client.ui;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Desktop;
@@ -14,6 +15,9 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.font.TextAttribute;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URI;
 import java.text.Collator;
@@ -45,6 +49,7 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.im.dc.client.SchemaLoader;
 import org.im.dc.client.WS;
+import org.im.dc.client.ui.rtfeditor.TinySwingPanel;
 import org.im.dc.client.ui.struct.ArticleUIContext;
 import org.im.dc.client.ui.struct.IXSContainer;
 import org.im.dc.client.ui.struct.containers.XSAttributeContainer;
@@ -236,6 +241,8 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
                 new PreviewController(window, ArticleEditController.this);
             }
         });
+        TinySwingPanel buttonsNotes = new TinySwingPanel(panelNotes.txtNotes);
+        panelNotes.add(buttonsNotes, BorderLayout.SOUTH);
         panelNotes.txtNotes.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void removeUpdate(DocumentEvent e) {
@@ -308,8 +315,13 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
         window.txtState.setText(article.article.state);
         window.txtUsers.setVisible(article.article.assignedUsers != null);
         window.txtUsers.setText(Arrays.toString(article.article.assignedUsers));
+        panelNotes.txtNotes.setText("");
         if (article.article.notes != null) {
-            panelNotes.txtNotes.setText(article.article.notes);
+            try {
+                panelNotes.txtNotes.getEditorKit().read(new ByteArrayInputStream(article.article.notes),
+                        panelNotes.txtNotes.getDocument(), 0);
+            } catch (Exception ex) {
+            }
         }
         window.lblValidationError
                 .setText(article.article.validationError != null ? article.article.validationError : " ");
@@ -506,7 +518,23 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
      * Save changes to server.
      */
     private void save() {
-        article.article.notes = panelNotes.txtNotes.getText();
+        article.article.notes = null;
+        try {
+            String plainText = panelNotes.txtNotes.getDocument().getText(0,
+                    panelNotes.txtNotes.getDocument().getLength());
+            if (!plainText.trim().isEmpty()) {
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                article.article.notes = null;
+                panelNotes.txtNotes.getEditorKit().write(out, panelNotes.txtNotes.getDocument(), 0, 0);
+                article.article.notes = out.toByteArray();
+            }
+        } catch (Exception ex) {
+            if (JOptionPane.showConfirmDialog(window,
+                    "Немагчыма захаваць нататку: " + ex.getMessage() + "\nЗахоўваць нягледзячы на гэта(нататка будзе згубленая) ?", "Памылка",
+                    JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION) {
+                return;
+            }
+        }
         new LongProcess() {
             boolean saved = false;
 

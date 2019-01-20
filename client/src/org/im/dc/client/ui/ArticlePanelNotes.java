@@ -28,12 +28,11 @@ public class ArticlePanelNotes extends javax.swing.JPanel {
     private void initComponents() {
 
         jScrollPane2 = new javax.swing.JScrollPane();
-        txtNotes = new javax.swing.JTextArea();
+        txtNotes = new javax.swing.JTextPane();
 
         setLayout(new java.awt.BorderLayout());
 
-        txtNotes.setColumns(20);
-        txtNotes.setRows(5);
+        txtNotes.setContentType("text/rtf"); // NOI18N
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("org/im/dc/client/ui/Bundle"); // NOI18N
         txtNotes.setToolTipText(bundle.getString("ArticleEditDialog.txtNotes.toolTipText")); // NOI18N
         jScrollPane2.setViewportView(txtNotes);
@@ -44,6 +43,6 @@ public class ArticlePanelNotes extends javax.swing.JPanel {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public javax.swing.JScrollPane jScrollPane2;
-    public javax.swing.JTextArea txtNotes;
+    public javax.swing.JTextPane txtNotes;
     // End of variables declaration//GEN-END:variables
 }

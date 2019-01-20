@@ -6,7 +6,7 @@ public class RecArticleNote {
     // карыстальнік
     private String creator;
     // нататка
-    private String note;
+    private byte[] note;
 
     public int getArticleId() {
         return articleId;
@@ -24,11 +24,11 @@ public class RecArticleNote {
         this.creator = creator;
     }
 
-    public String getNote() {
+    public byte[] getNote() {
         return note;
     }
 
-    public void setNote(String note) {
+    public void setNote(byte[] note) {
         this.note = note;
     }
 }

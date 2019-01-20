@@ -75,6 +75,6 @@ CREATE TABLE Issues (
 CREATE TABLE ArticleNotes (
     articleId INTEGER NOT NULL REFERENCES Articles(articleId),
     creator VARCHAR(50) NOT NULL,
-    note TEXT NOT NULL,
+    note bytea NOT NULL,
     PRIMARY KEY (articleId, creator)
 );

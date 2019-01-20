@@ -10,7 +10,7 @@ public class ArticleFull {
     public String state;
     public String[] markers;
     public String[] assignedUsers;
-    public String notes;
+    public byte[] notes;
     public Date lastUpdated;
     public String validationError;
 }
