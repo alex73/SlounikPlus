@@ -53,7 +53,7 @@ public class XSEditText extends XSNamedControl<JTextArea> implements IXSEdit {
 
     @Override
     public String getData() throws Exception {
-        String text = editor.getText();// TODO trim and return null
-        return text;
+        String text = editor.getText().trim();
+        return text.isEmpty() ? null : text;
     }
 }
