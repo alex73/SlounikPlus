@@ -16,8 +16,6 @@ import java.awt.event.MouseEvent;
 import java.awt.font.TextAttribute;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URI;
 import java.text.Collator;
@@ -39,6 +37,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.stream.XMLInputFactory;
@@ -50,6 +50,7 @@ import javax.xml.stream.XMLStreamWriter;
 import org.im.dc.client.SchemaLoader;
 import org.im.dc.client.WS;
 import org.im.dc.client.ui.rtfeditor.TinySwingPanel;
+import org.im.dc.client.ui.rtfeditor.rtf_fix.RTFReaderFix;
 import org.im.dc.client.ui.struct.ArticleUIContext;
 import org.im.dc.client.ui.struct.IXSContainer;
 import org.im.dc.client.ui.struct.containers.XSAttributeContainer;
@@ -316,12 +317,23 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
         window.txtUsers.setVisible(article.article.assignedUsers != null);
         window.txtUsers.setText(Arrays.toString(article.article.assignedUsers));
         panelNotes.txtNotes.setText("");
+        StyledDocument notesDoc = (StyledDocument) panelNotes.txtNotes.getDocument();
         if (article.article.notes != null) {
-            try {
-                panelNotes.txtNotes.getEditorKit().read(new ByteArrayInputStream(article.article.notes),
-                        panelNotes.txtNotes.getDocument(), 0);
+            try (RTFReaderFix rdr = new RTFReaderFix(notesDoc)) {
+                rdr.readFromStream(new ByteArrayInputStream(article.article.notes));
             } catch (Exception ex) {
             }
+            try {
+                String plainText = notesDoc.getText(0, notesDoc.getLength());
+                if (plainText.endsWith("\n")) {
+                    // remove latest EOL because it added every time
+                    notesDoc.remove(plainText.length() - 1, 1);
+                }
+            } catch (Exception ex) {
+            }
+        } else {
+            // Set default white color. Instead, default background will be black.
+            StyleConstants.setBackground(panelNotes.txtNotes.getInputAttributes(), Color.WHITE);
         }
         window.lblValidationError
                 .setText(article.article.validationError != null ? article.article.validationError : " ");
@@ -525,7 +537,7 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
             if (!plainText.trim().isEmpty()) {
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
                 article.article.notes = null;
-                panelNotes.txtNotes.getEditorKit().write(out, panelNotes.txtNotes.getDocument(), 0, 0);
+                panelNotes.txtNotes.getEditorKit().write(out, panelNotes.txtNotes.getDocument(), 0, plainText.length());
                 article.article.notes = out.toByteArray();
             }
         } catch (Exception ex) {
