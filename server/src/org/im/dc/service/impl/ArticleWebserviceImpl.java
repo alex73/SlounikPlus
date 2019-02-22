@@ -88,7 +88,8 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
             Document doc = JsDomWrapper.parseDoc(rec.getXml());
             context.setAttribute("articleDoc", doc, ScriptContext.ENGINE_SCOPE);
             context.setAttribute("article", new JsDomWrapper(doc.getDocumentElement()), ScriptContext.ENGINE_SCOPE);
-            JsProcessing.exec(new File(Config.getConfigDir(), rec.getArticleType() + "-validate.js").getAbsolutePath(),
+            context.setAttribute("mode", "validate", ScriptContext.ENGINE_SCOPE);
+            JsProcessing.exec(new File(Config.getConfigDir(), rec.getArticleType() + ".js").getAbsolutePath(),
                     context);
         } catch (ScriptException ex) {
             ex.printStackTrace();

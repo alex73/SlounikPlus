@@ -236,7 +236,8 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
             Document doc = JsDomWrapper.parseDoc(xml);
             context.setAttribute("articleDoc", doc, ScriptContext.ENGINE_SCOPE);
             context.setAttribute("article", new JsDomWrapper(doc.getDocumentElement()), ScriptContext.ENGINE_SCOPE);
-            JsProcessing.exec(new File(Config.getConfigDir(), "output.js").getAbsolutePath(), context);
+            context.setAttribute("mode", "output", ScriptContext.ENGINE_SCOPE);
+            JsProcessing.exec(new File(Config.getConfigDir(), articleType + ".js").getAbsolutePath(), context);
             out.normalize();
             LOG.info("<< preparePreview (" + (System.currentTimeMillis() - startTime) + "ms)");
             return out.toString();
@@ -286,7 +287,8 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
                 Document doc = JsDomWrapper.parseDoc(a.getXml());
                 context.setAttribute("articleDoc", doc, ScriptContext.ENGINE_SCOPE);
                 context.setAttribute("article", new JsDomWrapper(doc.getDocumentElement()), ScriptContext.ENGINE_SCOPE);
-                JsProcessing.exec(new File(Config.getConfigDir(), "output.js").getAbsolutePath(), context);
+                context.setAttribute("mode", "output", ScriptContext.ENGINE_SCOPE);
+                JsProcessing.exec(new File(Config.getConfigDir(), articleType + ".js").getAbsolutePath(), context);
                 out.normalize();
                 result[i] = out.toString();
             }

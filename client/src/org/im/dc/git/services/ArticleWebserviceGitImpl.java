@@ -168,12 +168,14 @@ public class ArticleWebserviceGitImpl implements ArticleWebservice {
         Validator validator = GitProc.configSchemas.get(articleTypeId).newValidator();
         ValidationHelper helper = new ValidationHelper(0, validator, xml);
         try {
+            // TODO synchronize with DB-related code
             SimpleScriptContext context = new SimpleScriptContext();
             context.setAttribute("helper", helper, ScriptContext.ENGINE_SCOPE);
             Document doc = JsDomWrapper.parseDoc(xml);
             context.setAttribute("articleDoc", doc, ScriptContext.ENGINE_SCOPE);
             context.setAttribute("article", new JsDomWrapper(doc.getDocumentElement()), ScriptContext.ENGINE_SCOPE);
-            JsProcessing.exec(GitProc.getInstance().getLocalDir().resolve(articleTypeId + "-validate.js").toString(),
+            context.setAttribute("mode", "validate", ScriptContext.ENGINE_SCOPE);
+            JsProcessing.exec(GitProc.getInstance().getLocalDir().resolve(articleTypeId + ".js").toString(),
                     context);
         } catch (ScriptException ex) {
             helper.error = ex.getCause().getMessage();

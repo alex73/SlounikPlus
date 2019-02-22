@@ -58,7 +58,10 @@ public class ExportOutput {
                             context.setAttribute("articleDoc", doc, ScriptContext.ENGINE_SCOPE);
                             context.setAttribute("article", new JsDomWrapper(doc.getDocumentElement()),
                                     ScriptContext.ENGINE_SCOPE);
-                            JsProcessing.exec(new File(Config.getConfigDir(), "output.js").getAbsolutePath(), context);
+                            context.setAttribute("mode", "output", ScriptContext.ENGINE_SCOPE);
+                            JsProcessing.exec(
+                                    new File(Config.getConfigDir(), a.getArticleType() + ".js").getAbsolutePath(),
+                                    context);
                             out.normalize();
                             text = out.toString();
                         } catch (Exception ex) {

@@ -45,6 +45,7 @@ public class JsValidationTest {
         context.setAttribute("helper", helper, ScriptContext.ENGINE_SCOPE);
         context.setAttribute("words", words, ScriptContext.ENGINE_SCOPE);
         context.setAttribute("article", new JsDomWrapper(JsDomWrapper.parseDoc(xml).getDocumentElement()), ScriptContext.ENGINE_SCOPE);
+        context.setAttribute("mode", "validate", ScriptContext.ENGINE_SCOPE);
         try {
             JsProcessing.exec("config/validation.js", context);
             if (expectedError != null) {
@@ -67,6 +68,7 @@ public class JsValidationTest {
         context.setAttribute("words", new String[] { "хадзіць" }, ScriptContext.ENGINE_SCOPE);
         context.setAttribute("article", new JsDomWrapper(JsDomWrapper.parseDoc(xml).getDocumentElement()),
                 ScriptContext.ENGINE_SCOPE);
+        context.setAttribute("mode", "validate", ScriptContext.ENGINE_SCOPE);
         JsProcessing.exec("config/validation.js", context);
     }
 }
