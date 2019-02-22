@@ -74,7 +74,7 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
         return a;
     }
 
-    protected static String validateArticle(RecArticle rec) {
+    public static String validateArticle(RecArticle rec) {
         if (rec.getXml() == null) {
             return null;
         }

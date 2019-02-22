@@ -38,7 +38,7 @@ public class Server {
         System.out.println("Server started");
     }
 
-    static void initPlugins() throws Exception {
+    public static void initPlugins() throws Exception {
         Enumeration<URL> mfs = Server.class.getClassLoader().getResources("META-INF/MANIFEST.MF");
         while (mfs.hasMoreElements()) {
             URL url = mfs.nextElement();
