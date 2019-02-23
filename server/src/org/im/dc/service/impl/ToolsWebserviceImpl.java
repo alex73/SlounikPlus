@@ -13,6 +13,7 @@ import javax.jws.WebService;
 import javax.script.ScriptContext;
 import javax.script.ScriptException;
 import javax.script.SimpleScriptContext;
+import javax.xml.validation.Validator;
 
 import org.im.dc.config.ConfigLoad;
 import org.im.dc.config.PermissionChecker;
@@ -28,6 +29,7 @@ import org.im.dc.server.db.RecIssue;
 import org.im.dc.server.js.JsDomWrapper;
 import org.im.dc.server.js.JsProcessing;
 import org.im.dc.service.ToolsWebservice;
+import org.im.dc.service.ValidationHelper;
 import org.im.dc.service.dto.ArticleFull;
 import org.im.dc.service.dto.ArticlesFilter;
 import org.im.dc.service.dto.Header;
@@ -229,9 +231,12 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
                 throw new Exception(err);
             }
 
+            Validator validator = Config.schemas.get(a.getArticleType()).newValidator();
+            ValidationHelper helper = new ValidationHelper(a.getArticleId(), validator, a.getXml());
             HtmlOut out = new HtmlOut();
             SimpleScriptContext context = new SimpleScriptContext();
             context.setAttribute("out", out, ScriptContext.ENGINE_SCOPE);
+            context.setAttribute("helper", helper, ScriptContext.ENGINE_SCOPE);
             context.setAttribute("header", articleHeader, ScriptContext.ENGINE_SCOPE);
             Document doc = JsDomWrapper.parseDoc(xml);
             context.setAttribute("articleDoc", doc, ScriptContext.ENGINE_SCOPE);

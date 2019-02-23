@@ -60,10 +60,10 @@
 		FROM Articles
 		WHERE articleId = #{id} FOR UPDATE
 	</select>
-	<select id="--selectLinkedTo" resultType="RecArticle" resultMap="RecArticleMap">
-		SELECT articleId, header
+	<select id="selectLinkedTo" resultType="RecArticle" resultMap="RecArticleMap">
+		SELECT articleId, articleType, header
 		FROM Articles
-		WHERE linkedTo &amp;&amp; ARRAY[#{words,typeHandler=StringArrayTypeHandler}]::varchar[][]
+		WHERE linkedTo &amp;&amp; ARRAY[#{header}]::varchar[][]
 	</select>
 	<select id="--getArticlesWithWords" parameterType="java.util.List" resultType="RecArticle" resultMap="RecArticleMap">
 		SELECT *

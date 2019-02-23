@@ -35,6 +35,7 @@ import org.im.dc.service.dto.ArticleShort;
 import org.im.dc.service.dto.ArticlesFilter;
 import org.im.dc.service.dto.Header;
 import org.im.dc.service.dto.Related;
+import org.im.dc.service.js.HtmlOut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -89,6 +90,7 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
             context.setAttribute("articleDoc", doc, ScriptContext.ENGINE_SCOPE);
             context.setAttribute("article", new JsDomWrapper(doc.getDocumentElement()), ScriptContext.ENGINE_SCOPE);
             context.setAttribute("mode", "validate", ScriptContext.ENGINE_SCOPE);
+            context.setAttribute("out", new HtmlOut(), ScriptContext.ENGINE_SCOPE);
             JsProcessing.exec(new File(Config.getConfigDir(), rec.getArticleType() + ".js").getAbsolutePath(),
                     context);
         } catch (ScriptException ex) {
@@ -154,11 +156,13 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
         }
         Related.sortByTimeDesc(a.related);
 
-        /*
-         * for (RecArticle linked : Db.execAndReturn((api) -> api.getArticleMapper().selectLinkedTo(a.article.header)))
-         * { ArticleFullInfo.LinkFrom lf = new ArticleFullInfo.LinkFrom(); lf.articleId = linked.getArticleId();
-         * lf.header = linked.getHeader(); a.linksFrom.add(lf); }
-         */
+        for (RecArticle linked : Db.execAndReturn((api) -> api.getArticleMapper().selectLinkedTo(a.article.header))) {
+            ArticleFullInfo.LinkFrom lf = new ArticleFullInfo.LinkFrom();
+            lf.articleId = linked.getArticleId();
+            lf.articleType = linked.getArticleType();
+            lf.header = linked.getHeader();
+            a.linksFrom.add(lf);
+        }
 
         return a;
     }

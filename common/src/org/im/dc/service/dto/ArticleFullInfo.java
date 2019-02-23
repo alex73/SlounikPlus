@@ -22,8 +22,9 @@ public class ArticleFullInfo {
     public List<LinkExternal> linksExternal = new ArrayList<>();
 
     public static class LinkFrom {
+        public String articleType;
         public int articleId;
-        public String[] headers;
+        public String header;
     }
 
     public static class LinkExternal {

@@ -373,13 +373,20 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
             window.panelLinkedFrom.setVisible(true);
             window.panelLinkedFrom.removeAll();
             window.panelLinkedFrom.add(new JLabel("На гэты артыкул спасылаюцца:"));
-            /*
-             * for (ArticleFullInfo.LinkFrom lf : article.linksFrom) { JLabel lbl = new
-             * JLabel(Arrays.toString(lf.words)); lbl.addMouseListener(new MouseAdapter() {
-             * 
-             * @Override public void mouseClicked(MouseEvent e) { new ArticleEditController(lf.articleId); } });
-             * asLink(lbl); window.panelLinkedFrom.add(lbl); }
-             */
+
+            for (ArticleFullInfo.LinkFrom lf : article.linksFrom) {
+                JLabel lbl = new JLabel(lf.header);
+                lbl.addMouseListener(new MouseAdapter() {
+
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        InitialData.TypeInfo ti = MainController.initialData.getTypeInfo(lf.articleType);
+                        new ArticleEditController(ti, lf.articleId);
+                    }
+                });
+                asLink(lbl);
+                window.panelLinkedFrom.add(lbl);
+            }
         }
         if (article.linksExternal.isEmpty()) {
             window.panelLinkedExternal.setVisible(false);
