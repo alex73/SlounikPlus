@@ -97,7 +97,7 @@ public class ExportToGit {
                 new File(repoPath, oldFile).delete();
                 git.rm().addFilepattern(oldFile).call();
             }
-            String newFile = articleType + '/' + header + '-' + h.getArticleId() + ".xml";
+            String newFile = articleType + '/' + header.replace("<", "").replace(">", "") + '-' + h.getArticleId() + ".xml";
             String xml = xml2text(h.getNewXml());
             FileUtils.writeStringToFile(new File(repoPath, newFile), xml, StandardCharsets.UTF_8);
             git.add().addFilepattern(newFile).call();

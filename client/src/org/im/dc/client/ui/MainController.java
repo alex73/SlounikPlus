@@ -173,6 +173,7 @@ public class MainController extends BaseController<MainFrame> {
                     WS.initGit(addr, username);
                 }
                 initialData = WS.getToolsWebservice().getInitialData(WS.header);
+                WordsComparator.init(initialData.headerLocale);
 
                 SchemaLoader.init(initialData);
             }
