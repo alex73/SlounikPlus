@@ -20,10 +20,10 @@ public class MainFrame extends javax.swing.JFrame {
 
         jMenuBar1 = new javax.swing.JMenuBar();
         menuCommon = new javax.swing.JMenu();
-        miSettings = new javax.swing.JMenuItem();
-        miStat = new javax.swing.JMenuItem();
-        miValidateFull = new javax.swing.JMenu();
         miResetDesk = new javax.swing.JMenuItem();
+        miSettings = new javax.swing.JMenuItem();
+        miValidateFull = new javax.swing.JMenu();
+        miReports = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("org/im/dc/client/ui/Bundle"); // NOI18N
@@ -31,17 +31,17 @@ public class MainFrame extends javax.swing.JFrame {
 
         menuCommon.setText(bundle.getString("MainFrame.menuCommon.text")); // NOI18N
 
+        miResetDesk.setText(bundle.getString("MainFrame.miResetDesk.text")); // NOI18N
+        menuCommon.add(miResetDesk);
+
         miSettings.setText(bundle.getString("MainFrame.miSettings.text")); // NOI18N
         menuCommon.add(miSettings);
-
-        miStat.setText(bundle.getString("MainFrame.miStat.text")); // NOI18N
-        menuCommon.add(miStat);
 
         miValidateFull.setText(bundle.getString("MainFrame.miValidateFull.text")); // NOI18N
         menuCommon.add(miValidateFull);
 
-        miResetDesk.setText(bundle.getString("MainFrame.miResetDesk.text")); // NOI18N
-        menuCommon.add(miResetDesk);
+        miReports.setText(bundle.getString("MainFrame.miReports.text")); // NOI18N
+        menuCommon.add(miReports);
 
         jMenuBar1.add(menuCommon);
 
@@ -88,9 +88,9 @@ public class MainFrame extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public javax.swing.JMenuBar jMenuBar1;
     public javax.swing.JMenu menuCommon;
+    public javax.swing.JMenu miReports;
     public javax.swing.JMenuItem miResetDesk;
     public javax.swing.JMenuItem miSettings;
-    public javax.swing.JMenuItem miStat;
     public javax.swing.JMenu miValidateFull;
     // End of variables declaration//GEN-END:variables
 }

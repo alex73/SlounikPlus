@@ -14,7 +14,7 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;simpleType name="commonPermission">
  *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *     &lt;enumeration value="full_statistics"/>
+ *     &lt;enumeration value="reports"/>
  *     &lt;enumeration value="full_validation"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
@@ -27,11 +27,11 @@ public enum CommonPermission {
 
 
     /**
-     * Ці можа карыстальнік глядзець статыстыку па ўсіх
+     * Ці можа карыстальнік глядзець справаздачы
      * 
      */
-    @XmlEnumValue("full_statistics")
-    FULL_STATISTICS("full_statistics"),
+    @XmlEnumValue("reports")
+    REPORTS("reports"),
 
     /**
      * Ці можа карыстальнік правяраць ўвесь слоўнік

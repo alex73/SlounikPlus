@@ -223,10 +223,8 @@ public class MainController extends BaseController<MainFrame> {
             SettingsController.initializeDockingLayour(window, desk);
         });
 
-        if (initialData.currentUserPermissions.contains(CommonPermission.FULL_STATISTICS.name())) {
-            window.miStat.addActionListener((e) -> todo("Тут будзе статыстыка ў залежнасці ад дазволу"));
-        } else {
-            window.miStat.setVisible(false);
+        if (!initialData.currentUserPermissions.contains(CommonPermission.REPORTS.name())) {
+            window.miReports.setVisible(false);
         }
 
         if (initialData.currentUserPermissions.contains(CommonPermission.FULL_VALIDATION.name())) {

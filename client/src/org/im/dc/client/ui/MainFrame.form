@@ -11,17 +11,17 @@
             </Property>
           </Properties>
           <SubComponents>
+            <MenuItem class="javax.swing.JMenuItem" name="miResetDesk">
+              <Properties>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="org/im/dc/client/ui/Bundle.properties" key="MainFrame.miResetDesk.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                </Property>
+              </Properties>
+            </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="miSettings">
               <Properties>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                   <ResourceString bundle="org/im/dc/client/ui/Bundle.properties" key="MainFrame.miSettings.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
-                </Property>
-              </Properties>
-            </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="miStat">
-              <Properties>
-                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="org/im/dc/client/ui/Bundle.properties" key="MainFrame.miStat.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
             </MenuItem>
@@ -32,13 +32,13 @@
                 </Property>
               </Properties>
             </Menu>
-            <MenuItem class="javax.swing.JMenuItem" name="miResetDesk">
+            <Menu class="javax.swing.JMenu" name="miReports">
               <Properties>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="org/im/dc/client/ui/Bundle.properties" key="MainFrame.miResetDesk.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="org/im/dc/client/ui/Bundle.properties" key="MainFrame.miReports.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
-            </MenuItem>
+            </Menu>
           </SubComponents>
         </Menu>
       </SubComponents>

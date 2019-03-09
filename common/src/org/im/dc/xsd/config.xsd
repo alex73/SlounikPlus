@@ -93,9 +93,9 @@
 	</xs:element>
 	<xs:simpleType name="commonPermission">
 		<xs:restriction base="xs:string">
-			<xs:enumeration value="full_statistics">
+			<xs:enumeration value="reports">
 				<xs:annotation>
-					<xs:documentation>Ці можа карыстальнік глядзець статыстыку па ўсіх</xs:documentation>
+					<xs:documentation>Ці можа карыстальнік глядзець справаздачы</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
 			<xs:enumeration value="full_validation">
