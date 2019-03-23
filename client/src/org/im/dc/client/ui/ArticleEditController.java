@@ -19,6 +19,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.StringWriter;
 import java.net.URI;
 import java.text.Collator;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -26,6 +27,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.TreeMap;
 
 import javax.swing.ImageIcon;
@@ -75,6 +77,8 @@ import com.vlsolutions.swing.docking.DockingDesktop;
  * Controls article editor.
  */
 public class ArticleEditController extends BaseController<ArticleEditDialog> {
+    static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("org/im/dc/client/ui/Bundle");
+
     public static final XMLInputFactory READER_FACTORY = XMLInputFactory.newInstance();
     public static final XMLOutputFactory WRITER_FACTORY = XMLOutputFactory.newInstance();
     public static final DocumentBuilderFactory DOC_FACTORY = DocumentBuilderFactory.newInstance();
@@ -163,7 +167,7 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
 
     void initDocking() {
         Dockable edit = new Dockable() {
-            DockKey key = new DockKey("edit", "Артыкул");
+            DockKey key = new DockKey("edit", BUNDLE.getString("ArticleEdit.dock.Record"));
 
             @Override
             public DockKey getDockKey() {
@@ -176,7 +180,7 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
             }
         };
         Dockable history = new Dockable() {
-            DockKey key = new DockKey("history", "Гісторыя");
+            DockKey key = new DockKey("history", BUNDLE.getString("ArticleEdit.dock.History"));
 
             @Override
             public DockKey getDockKey() {
@@ -189,7 +193,7 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
             }
         };
         Dockable notes = new Dockable() {
-            DockKey key = new DockKey("notes", "Нататнік");
+            DockKey key = new DockKey("notes", BUNDLE.getString("ArticleEdit.dock.Notebook"));
 
             @Override
             public DockKey getDockKey() {
@@ -565,7 +569,8 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
                         article.article.header, article.article.xml);
                 if (err != null) {
                     if (JOptionPane.showConfirmDialog(window,
-                            "Памылка валідацыі: " + err + "\nЗахоўваць нягледзячы на гэта ?", "Памылка",
+                            MessageFormat.format(BUNDLE.getString("Message.Error.Validation"), err),
+                            BUNDLE.getString("Message.ErrorTitle"),
                             JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION) {
                         return;
                     }
@@ -661,7 +666,8 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
 
     private void updateIssueButton() {
         window.btnSave.setEnabled(wasChanged);
-        window.btnAddIssue.setText(wasChanged ? "Прапанаваць змены" : "Дадаць заўвагу");
+        window.btnAddIssue.setText(
+                wasChanged ? BUNDLE.getString("ArticleEdit.ProposeChanges") : BUNDLE.getString("ArticleEdit.AddIssue"));
     }
 
     private void addIssue() {
@@ -672,8 +678,8 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
         if (!wasChanged) {
             return false;
         }
-        if (JOptionPane.showConfirmDialog(window, "Змены, што Вы зрабілі ў артыкуле, згубяцца. Працягнуць ?",
-                "Працягнуць", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
+        if (JOptionPane.showConfirmDialog(window, BUNDLE.getString("Message.Continue.LostChanges"),
+                BUNDLE.getString("Message.ContinueTitle"), JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
             return false;
         } else {
             return true;

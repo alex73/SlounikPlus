@@ -1,6 +1,7 @@
 package org.im.dc.client.ui;
 
 import java.util.List;
+import java.util.ResourceBundle;
 
 import javax.swing.table.DefaultTableModel;
 
@@ -8,6 +9,8 @@ import org.im.dc.service.dto.ArticleShort;
 
 @SuppressWarnings("serial")
 public class MainFrameArticlesModel extends DefaultTableModel {
+    static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("org/im/dc/client/ui/Bundle");
+
     protected final List<ArticleShort> articles;
 
     public MainFrameArticlesModel(List<ArticleShort> articles) {
@@ -28,13 +31,13 @@ public class MainFrameArticlesModel extends DefaultTableModel {
     public String getColumnName(int column) {
         switch (column) {
         case 0:
-            return "Артыкул";
+            return BUNDLE.getString("MainFrameArticlesModel.Article");
         case 1:
-            return "Стан";
+            return BUNDLE.getString("MainFrameArticlesModel.State");
         case 2:
-            return "Карыстальнікі";
+            return BUNDLE.getString("MainFrameArticlesModel.Users");
         case 3:
-            return "Памылкі";
+            return BUNDLE.getString("MainFrameArticlesModel.Errors");
         default:
             return null;
         }

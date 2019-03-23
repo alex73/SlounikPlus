@@ -126,7 +126,11 @@ public class ConfigLoad {
 
                     @Override
                     public InputStream getByteStream() {
-                        return new ByteArrayInputStream(schemaSources.get(systemId));
+                        byte[] bytes = schemaSources.get(systemId);
+                        if (bytes == null) {
+                            throw new RuntimeException("There is no resource: " + systemId);
+                        }
+                        return new ByteArrayInputStream(bytes);
                     }
 
                     @Override

@@ -12,6 +12,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 
 import org.im.dc.client.WS;
 import org.im.dc.client.ui.ArticleEditController;
@@ -35,7 +37,7 @@ public class XSEditArticlesList extends XSNamedControl<JPanel> implements IXSEdi
     @Override
     protected void initEditor() {
         articleTypeId = ann.editDetails;
-        context.editController.requestRetrieveHeaders(articleTypeId, null);
+        SwingUtilities.invokeLater(() -> context.editController.requestRetrieveHeaders(articleTypeId, null));
 
         combo = new JFilterComboBox(new ArrayList<>()) {
             @Override

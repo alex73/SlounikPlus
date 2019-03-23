@@ -6,10 +6,12 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.Vector;
 
 import javax.swing.DefaultComboBoxModel;
@@ -29,6 +31,8 @@ import com.vlsolutions.swing.docking.DockKey;
 import com.vlsolutions.swing.docking.Dockable;
 
 public class MainControllerArticleType implements IArticleUpdatedListener {
+    static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("org/im/dc/client/ui/Bundle");
+
     private InitialData.TypeInfo typeInfo;
     private final MainFramePanelArticles panelArticles = new MainFramePanelArticles();
     protected final Dockable dock;
@@ -36,7 +40,7 @@ public class MainControllerArticleType implements IArticleUpdatedListener {
     public MainControllerArticleType(InitialData.TypeInfo articleTypeInfo) {
         this.typeInfo = articleTypeInfo;
         dock = new Dockable() {
-            DockKey key = new DockKey("articlesList-" + typeInfo.typeId, "Артыкулы - " + typeInfo.typeName);
+            DockKey key = new DockKey("articlesList-" + typeInfo.typeId, typeInfo.typeName);
 
             @Override
             public DockKey getDockKey() {
@@ -187,7 +191,8 @@ public class MainControllerArticleType implements IArticleUpdatedListener {
                             .setModel(model);
                     panelArticles.tableArticles.getRowSorter().setSortKeys(sortKeys);
                 }
-                panelArticles.labelSelected.setText("Знойдзена: " + model.getRowCount());
+                panelArticles.labelSelected.setText(
+                        MessageFormat.format(BUNDLE.getString("MainFrameArticles.Found"), model.getRowCount()));
             }
         };
     }

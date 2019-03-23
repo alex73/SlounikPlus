@@ -2,6 +2,7 @@ package org.im.dc.client.ui;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.ResourceBundle;
 
 import javax.swing.table.DefaultTableModel;
 
@@ -9,6 +10,8 @@ import org.im.dc.service.dto.Related;
 
 @SuppressWarnings("serial")
 public class ArticleEditRelatedModel extends DefaultTableModel {
+    static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("org/im/dc/client/ui/Bundle");
+
     private SimpleDateFormat TIME_FMT = new SimpleDateFormat("dd MMM HH:mm");
 
     protected final List<Related> related;
@@ -31,11 +34,11 @@ public class ArticleEditRelatedModel extends DefaultTableModel {
     public String getColumnName(int column) {
         switch (column) {
         case 0:
-            return "Час";
+            return BUNDLE.getString("ArticleEditRelatedModel.Time");
         case 1:
-            return "Хто";
+            return BUNDLE.getString("ArticleEditRelatedModel.Who");
         case 2:
-            return "Сутнасць";
+            return BUNDLE.getString("ArticleEditRelatedModel.Details");
         default:
             return null;
         }

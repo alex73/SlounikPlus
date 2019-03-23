@@ -14,6 +14,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.jar.Manifest;
 
 import javax.swing.JComponent;
@@ -38,6 +39,8 @@ import com.vlsolutions.swing.docking.DockingDesktop;
  * Controls main window.
  */
 public class MainController extends BaseController<MainFrame> {
+    static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("org/im/dc/client/ui/Bundle");
+
     public static InitialData initialData;
     public static MainController instance;
     int fontSize;
@@ -63,7 +66,7 @@ public class MainController extends BaseController<MainFrame> {
             panelArticleTypes.add(new MainControllerArticleType(ti));
         }
         Dockable issues = new Dockable() {
-            DockKey key = new DockKey("issuesList", "Заўвагі");
+            DockKey key = new DockKey("issuesList", BUNDLE.getString("MainFrame.dock.issuesList"));
 
             @Override
             public DockKey getDockKey() {
@@ -76,7 +79,7 @@ public class MainController extends BaseController<MainFrame> {
             }
         };
         Dockable news = new Dockable() {
-            DockKey key = new DockKey("newsList", "Навіны");
+            DockKey key = new DockKey("newsList", BUNDLE.getString("MainFrame.dock.newsList"));
 
             @Override
             public DockKey getDockKey() {
@@ -301,7 +304,7 @@ public class MainController extends BaseController<MainFrame> {
     }
 
     private void setTitle(String user) {
-        String t = "Рэдагаванне слоўніка";
+        String t = BUNDLE.getString("MainFrame.title");
         if (user != null) {
             t += ": " + user;
         }
