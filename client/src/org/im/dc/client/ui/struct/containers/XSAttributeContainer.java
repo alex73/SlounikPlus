@@ -40,12 +40,21 @@ public class XSAttributeContainer extends XSBaseContainer<XSAttributeDeclaration
                 throw new RuntimeException("Error create custom control from " + ann.customImpl.getName(), ex);
             }
         } else if (ann.editType == null) {
-            switch (obj.getTypeDefinition().getType()) {
-            case XSSimpleType.PRIMITIVE_BOOLEAN:
+            String typeName;
+            if (obj.getTypeDefinition().getAnonymous()) {
+                typeName = obj.getTypeDefinition().getBaseType().getName();
+            } else {
+                typeName = obj.getTypeDefinition().getName();
+            }
+            if (typeName == null) {
+                throw new RuntimeException("Can't create editor for unknown simple type: " + obj.getName());
+            }
+            switch (typeName) {
+            case "boolean":
                 editor = new XSEditBoolean(context, this, ann);
                 break;
-            case XSSimpleType.PRIMITIVE_DECIMAL:
-            case XSSimpleType.PRIMITIVE_STRING:
+            case "integer":
+            case "string":
                 editor = new XSEditText(context, this, ann);
                 break;
             default:
