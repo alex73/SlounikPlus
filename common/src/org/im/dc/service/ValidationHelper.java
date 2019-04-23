@@ -8,6 +8,8 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Validator;
 
 public class ValidationHelper {
+    public static final String KNOWN_ERRORS_PREFIX = "SlounikPlus:";
+
     private final int currentArticleId;
     private final Validator validator;
     private final byte[] xml;
@@ -27,6 +29,10 @@ public class ValidationHelper {
 
     public void replaceHeader(String newHeader) {
         this.newHeader = newHeader;
+    }
+
+    public int getCurrentArticleId() {
+        return currentArticleId;
     }
 
     public String[] getLinks() {

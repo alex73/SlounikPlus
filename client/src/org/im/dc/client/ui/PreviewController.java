@@ -2,6 +2,7 @@ package org.im.dc.client.ui;
 
 import java.awt.Font;
 import java.awt.Toolkit;
+import java.awt.Window;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
@@ -11,18 +12,21 @@ import java.awt.event.KeyEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.JComponent;
-import javax.swing.JDialog;
 import javax.swing.JEditorPane;
 import javax.swing.KeyStroke;
 import javax.swing.RootPaneContainer;
 
-import org.im.dc.client.WS;
-
 public class PreviewController extends BaseController<PreviewDialog> {
     private static Font BASE_FONT;
 
-    public PreviewController(JDialog parent, ArticleEditController articleEditController) {
-        super(new PreviewDialog(MainController.instance.window, true), parent);
+    @FunctionalInterface
+    public interface Proc {
+        void execute(PreviewController t);
+    }
+
+    public PreviewController(Window parent, boolean modal) {
+        super(new PreviewDialog(MainController.instance.window, modal), parent);
+
         setupCloseOnEscape();
 
         if (BASE_FONT == null) {
@@ -30,8 +34,8 @@ public class PreviewController extends BaseController<PreviewDialog> {
         }
         window.text.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, Boolean.TRUE);
         window.text.setFont(BASE_FONT);
-        //window.text.getActionMap().put("copy", clipboardAction);
-        //window.text.getActionMap().put("cut", clipboardAction);
+        // window.text.getActionMap().put("copy", clipboardAction);
+        // window.text.getActionMap().put("cut", clipboardAction);
 
         ((RootPaneContainer) window).getRootPane().registerKeyboardAction(decZoom,
                 KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, InputEvent.CTRL_MASK), JComponent.WHEN_IN_FOCUSED_WINDOW);
@@ -48,29 +52,6 @@ public class PreviewController extends BaseController<PreviewDialog> {
         ((RootPaneContainer) window).getRootPane().registerKeyboardAction(resetZoom,
                 KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD0, InputEvent.CTRL_MASK), JComponent.WHEN_IN_FOCUSED_WINDOW);
 
-        new LongProcess() {
-            String preview;
-
-            @Override
-            protected void exec() throws Exception {
-                String text = preview = WS.getToolsWebservice().preparePreview(WS.header,
-                        articleEditController.article.article.type, articleEditController.article.article.header,
-                        articleEditController.extractXml());
-                preview = "<!DOCTYPE html>\n<html><head><meta charset=\"UTF-8\"></head><body>\n" + text
-                        + "\n</body></html>\n";
-            }
-
-            @Override
-            protected void ok() {
-                window.text.setText(preview);
-                window.text.getDocument().putProperty("ZOOM_FACTOR", new Double(2.5));
-            }
-
-            @Override
-            protected void error() {
-                window.dispose();
-            }
-        };
         displayOnParent();
     }
 

@@ -26,6 +26,7 @@ import org.im.dc.server.js.JsDomWrapper;
 import org.im.dc.server.js.JsProcessing;
 import org.im.dc.service.ArticleWebservice;
 import org.im.dc.service.ValidationHelper;
+import org.im.dc.service.ValidationSummaryStorage;
 import org.im.dc.service.dto.ArticleCommentFull;
 import org.im.dc.service.dto.ArticleFull;
 import org.im.dc.service.dto.ArticleFullInfo;
@@ -63,7 +64,7 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
             LOG.warn("<< getArticleFullInfo: there is no specified article");
             throw new Exception("Няма вызначанага артыкула");
         }
-        String err = validateArticle(rec);
+        String err = validateArticle(rec, new ValidationSummaryStorage());
         rec.setValidationError(err);
 
         ArticleFullInfo a = getAdditionalArticleInfo(header, rec);
@@ -75,7 +76,7 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
         return a;
     }
 
-    public static String validateArticle(RecArticle rec) {
+    public static String validateArticle(RecArticle rec, ValidationSummaryStorage storage) {
         if (rec.getXml() == null) {
             return null;
         }
@@ -91,11 +92,17 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
             context.setAttribute("article", new JsDomWrapper(doc.getDocumentElement()), ScriptContext.ENGINE_SCOPE);
             context.setAttribute("mode", "validate", ScriptContext.ENGINE_SCOPE);
             context.setAttribute("out", new HtmlOut(), ScriptContext.ENGINE_SCOPE);
+            context.setAttribute("summaryStorage", storage, ScriptContext.ENGINE_SCOPE);
             JsProcessing.exec(new File(Config.getConfigDir(), rec.getArticleType() + ".js").getAbsolutePath(),
                     context);
         } catch (ScriptException ex) {
-            ex.printStackTrace();
-            result = ex.getCause().getMessage();
+            if (ex.getCause().getMessage().startsWith(ValidationHelper.KNOWN_ERRORS_PREFIX)) {
+                result = ex.getCause().getMessage().substring(ValidationHelper.KNOWN_ERRORS_PREFIX.length());
+                System.out.println(result); // TODO remove
+            } else {
+                ex.printStackTrace();
+                result = ex.getCause().getMessage();
+            }
         } catch (Exception ex) {
             ex.printStackTrace();
             result = "Памылка валідацыі артыкула: " + ex.getMessage();
@@ -214,7 +221,7 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
             rec.setXml(article.xml);
             rec.setLastUpdated(currentDate);
 
-            String err = validateArticle(rec);
+            String err = validateArticle(rec, new ValidationSummaryStorage());
             rec.setValidationError(err);
 
             if (article.id != 0) {

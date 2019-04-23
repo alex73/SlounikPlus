@@ -16,6 +16,7 @@ import org.im.dc.server.db.RecArticle;
 import org.im.dc.server.js.JsDomWrapper;
 import org.im.dc.server.js.JsProcessing;
 import org.im.dc.server.startup.Server;
+import org.im.dc.service.ValidationSummaryStorage;
 import org.im.dc.service.impl.ArticleWebserviceImpl;
 import org.im.dc.service.js.HtmlOut;
 import org.w3c.dom.Document;
@@ -40,11 +41,12 @@ public class ExportOutput {
         Collections.sort(ids);
 
         try (BufferedWriter wr = Files.newBufferedWriter(Paths.get(args[0]))) {
+            ValidationSummaryStorage storage = new ValidationSummaryStorage();
             for (int id : ids) {
                 Db.exec((api) -> {
                     RecArticle a = api.getArticleMapper().selectArticle(id);
 
-                    String err = ArticleWebserviceImpl.validateArticle(a);
+                    String err = ArticleWebserviceImpl.validateArticle(a, storage);
                     String text;
                     if (err != null) {
                         text = "ERROR: " + err;
@@ -59,6 +61,7 @@ public class ExportOutput {
                             context.setAttribute("article", new JsDomWrapper(doc.getDocumentElement()),
                                     ScriptContext.ENGINE_SCOPE);
                             context.setAttribute("mode", "output", ScriptContext.ENGINE_SCOPE);
+                            context.setAttribute("summaryStorage", storage, ScriptContext.ENGINE_SCOPE);
                             JsProcessing.exec(
                                     new File(Config.getConfigDir(), a.getArticleType() + ".js").getAbsolutePath(),
                                     context);

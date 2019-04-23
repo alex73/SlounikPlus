@@ -243,7 +243,29 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
         window.lblPreview.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                new PreviewController(window, ArticleEditController.this);
+                PreviewController previewer = new PreviewController(window, true);
+                previewer.new LongProcess() {
+                    String preview;
+
+                    @Override
+                    protected void exec() throws Exception {
+                        String text = preview = WS.getToolsWebservice().preparePreview(WS.header, article.article.type,
+                                article.article.header, extractXml());
+                        preview = "<!DOCTYPE html>\n<html><head><meta charset=\"UTF-8\"></head><body>\n" + text
+                                + "\n</body></html>\n";
+                    }
+
+                    @Override
+                    protected void ok() {
+                        previewer.window.text.setText(preview);
+                        previewer.window.text.getDocument().putProperty("ZOOM_FACTOR", new Double(2.5));
+                    }
+
+                    @Override
+                    protected void error() {
+                        previewer.window.dispose();
+                    }
+                };
             }
         });
         TinySwingPanel buttonsNotes = new TinySwingPanel(panelNotes.txtNotes);

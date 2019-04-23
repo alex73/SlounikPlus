@@ -15,8 +15,11 @@ import java.util.ResourceBundle;
 import java.util.Vector;
 
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
+import javax.swing.JTextPane;
 import javax.swing.RowSorter;
 import javax.swing.SortOrder;
+import javax.swing.event.HyperlinkEvent;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
@@ -144,7 +147,61 @@ public class MainControllerArticleType implements IArticleUpdatedListener {
             if (articleIds.length > 100) {
                 MainController.instance.todo("Абрана зашмат артыкулаў");
             } else {
-                new PreviewAllController(articleIds, typeInfo.typeId);
+                PreviewController previewer = new PreviewController(MainController.instance.window, false);
+                JButton btnRefresh = new JButton();
+                ActionListener show = a->{
+                    previewer.new LongProcess() {
+                        StringBuilder out, outClipboard;
+
+                        @Override
+                        protected void exec() throws Exception {
+                            out = new StringBuilder("<!DOCTYPE html>\n<html><head><meta charset=\"UTF-8\"></head><body>\n");
+                            outClipboard = new StringBuilder(
+                                    "<!DOCTYPE html>\n<html><head><meta charset=\"UTF-8\"></head><body>\n");
+
+                            String[] articlesPreview = WS.getToolsWebservice().preparePreviews(WS.header, typeInfo.typeId,
+                                    articleIds);
+                            for (int i = 0; i < articleIds.length; i++) {
+                                if (articlesPreview[i] == null) {
+                                    continue;
+                                }
+                                out.append(articlesPreview[i]);
+                                out.append(" <a href='" + articleIds[i] + "'>рэдагаваць</a>\n");
+                                out.append("<hr/>\n");
+                                outClipboard.append(articlesPreview[i]);
+                                outClipboard.append("<br/>\n");
+                            }
+                            out.append("\n</body></html>\n");
+                            outClipboard.append("\n</body></html>\n");
+                        }
+
+                        @Override
+                        protected void ok() {
+                            previewer.window.text.setText(out.toString());
+                            previewer.window.text.setCaretPosition(0);
+                            previewer.window.text.getDocument().putProperty("ZOOM_FACTOR", new Double(2.5));
+
+                            JTextPane o = new JTextPane();
+                            o.setContentType("text/html");
+                            o.setText(outClipboard.toString());
+                            o.selectAll();
+                            o.copy();
+                        }
+
+                        @Override
+                        protected void error() {
+                            previewer.window.dispose();
+                        }
+                    };
+                };
+                btnRefresh.addActionListener(show);
+                previewer.window.text.addHyperlinkListener(he -> {
+                    if (he.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+                        int idx = Integer.parseInt(he.getDescription());
+                        new ArticleEditController(typeInfo, idx);
+                    }
+                });
+                show.actionPerformed(null);
             }
         }
     };

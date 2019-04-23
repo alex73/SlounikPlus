@@ -268,17 +268,23 @@ public class MainController extends BaseController<MainFrame> {
     }
 
     private void validateFull(String articleTypeId) {
-        new LongProcess() {
+        PreviewController previewer = new PreviewController(MainController.instance.window, false);
+        previewer.new LongProcess() {
+            String result;
+
             @Override
             protected void exec() throws Exception {
-                WS.getToolsWebservice().validateAll(WS.header, articleTypeId);
+                result = WS.getToolsWebservice().validateAll(WS.header, articleTypeId);
+                if (result.isEmpty()) {
+                    result = "Праверка паспяхова скончаная";
+                }
             }
 
             @Override
             protected void ok() {
-                JOptionPane.showMessageDialog(window,
-                        "Валідацыя прайшла паспяхова. Абнавіце спіс артыкулаў каб бачыць вынікі", "Валідацыя",
-                        JOptionPane.INFORMATION_MESSAGE);
+                previewer.window.text.setText("<html><body>" + result + "</html></body>");
+                previewer.window.text.setCaretPosition(0);
+                previewer.window.text.getDocument().putProperty("ZOOM_FACTOR", new Double(2.5));
             }
         };
     }

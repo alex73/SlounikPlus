@@ -30,6 +30,7 @@ import org.im.dc.server.js.JsDomWrapper;
 import org.im.dc.server.js.JsProcessing;
 import org.im.dc.service.ToolsWebservice;
 import org.im.dc.service.ValidationHelper;
+import org.im.dc.service.ValidationSummaryStorage;
 import org.im.dc.service.dto.ArticleFull;
 import org.im.dc.service.dto.ArticlesFilter;
 import org.im.dc.service.dto.Header;
@@ -82,7 +83,7 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
             a.setArticleType(articleType);
             a.setHeader(articleHeader);
             a.setXml(xml);
-            err = ArticleWebserviceImpl.validateArticle(a);
+            err = ArticleWebserviceImpl.validateArticle(a, new ValidationSummaryStorage());
         } catch (Exception ex) {
             throw new RuntimeException("Памылка ў артыкуле #" + articleId);
         }
@@ -92,7 +93,7 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
     }
 
     @Override
-    public void validateAll(Header header, String articleType) throws Exception {
+    public String validateAll(Header header, String articleType) throws Exception {
         LOG.info(">> validateAll(" + header.user + "," + articleType + ")");
         long startTime = System.currentTimeMillis();
         check(header);
@@ -100,12 +101,13 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
 
         List<Integer> articleIds = Db.execAndReturn((api) -> api.getArticleMapper().selectAllIds(articleType));
 
+        ValidationSummaryStorage storage = new ValidationSummaryStorage();
         for (int id : articleIds) {
             Db.exec((api) -> {
                 RecArticle a = api.getArticleMapper().selectArticleForUpdate(id);
                 String err;
                 try {
-                    err = ArticleWebserviceImpl.validateArticle(a);
+                    err = ArticleWebserviceImpl.validateArticle(a, storage);
                 } catch (Exception ex) {
                     throw new RuntimeException("Памылка ў артыкуле #" + id);
                 }
@@ -120,7 +122,27 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
             });
         }
 
+
+        String result;
+        try {
+            HtmlOut out = new HtmlOut();
+            SimpleScriptContext context = new SimpleScriptContext();
+            context.setAttribute("mode", "validate-summary", ScriptContext.ENGINE_SCOPE);
+            context.setAttribute("out", out, ScriptContext.ENGINE_SCOPE);
+            context.setAttribute("summaryStorage", storage, ScriptContext.ENGINE_SCOPE);
+            JsProcessing.exec(new File(Config.getConfigDir(), articleType + ".js").getAbsolutePath(), context);
+            out.normalize();
+            result = out.toString();
+        } catch (ScriptException ex) {
+            ex.printStackTrace();
+            result = "Script execution error: " + ex.getCause().getMessage();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            result = "Памылка агульнай валідацыі: " + ex.getMessage();
+        }
+
         LOG.info("<< validateAll (" + (System.currentTimeMillis() - startTime) + "ms)");
+        return result;
     }
 
     @Override
@@ -221,12 +243,13 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
         check(header);
         PermissionChecker.userRequiresTypePermission(Config.getConfig(), header.user, articleType, TypePermission.VIEW_OUTPUT);
 
+        ValidationSummaryStorage storage = new ValidationSummaryStorage();
         try {
             RecArticle a = new RecArticle();
             a.setArticleType(articleType);
             a.setHeader(articleHeader);
             a.setXml(xml);
-            String err = ArticleWebserviceImpl.validateArticle(a);
+            String err = ArticleWebserviceImpl.validateArticle(a, storage);
             if (err != null) {
                 throw new Exception(err);
             }
@@ -242,6 +265,7 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
             context.setAttribute("articleDoc", doc, ScriptContext.ENGINE_SCOPE);
             context.setAttribute("article", new JsDomWrapper(doc.getDocumentElement()), ScriptContext.ENGINE_SCOPE);
             context.setAttribute("mode", "output", ScriptContext.ENGINE_SCOPE);
+            context.setAttribute("summaryStorage", storage, ScriptContext.ENGINE_SCOPE);
             JsProcessing.exec(new File(Config.getConfigDir(), articleType + ".js").getAbsolutePath(), context);
             out.normalize();
             LOG.info("<< preparePreview (" + (System.currentTimeMillis() - startTime) + "ms)");
@@ -269,6 +293,7 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
                 articles.forEach(a -> articlesMap.put(a.getArticleId(), a));
             });
 
+            ValidationSummaryStorage storage = new ValidationSummaryStorage();
             String[] result = new String[articleIds.length];
             for (int i = 0; i < articleIds.length; i++) {
                 RecArticle a = articlesMap.get(articleIds[i]);
@@ -280,7 +305,7 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
                     LOG.warn("<< preparePreviews: wrong type/id requested");
                     throw new Exception("Запыт няправільнага ID для вызначанага тыпу");
                 }
-                String err = ArticleWebserviceImpl.validateArticle(a);
+                String err = ArticleWebserviceImpl.validateArticle(a, storage);
                 if (err != null) {
                     throw new Exception(err);
                 }
@@ -293,6 +318,7 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
                 context.setAttribute("articleDoc", doc, ScriptContext.ENGINE_SCOPE);
                 context.setAttribute("article", new JsDomWrapper(doc.getDocumentElement()), ScriptContext.ENGINE_SCOPE);
                 context.setAttribute("mode", "output", ScriptContext.ENGINE_SCOPE);
+                context.setAttribute("summaryStorage", storage, ScriptContext.ENGINE_SCOPE);
                 JsProcessing.exec(new File(Config.getConfigDir(), articleType + ".js").getAbsolutePath(), context);
                 out.normalize();
                 result[i] = out.toString();

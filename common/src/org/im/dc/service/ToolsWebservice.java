@@ -17,7 +17,7 @@ public interface ToolsWebservice {
 
     String validate(Header header, String articleType, int articleId, String aticleHeader, byte[] xml) throws Exception;
 
-    void validateAll(Header header, String articleType) throws Exception;
+    String validateAll(Header header, String articleType) throws Exception;
 
     void reassignUsers(Header header, String articleType, int[] articleIds, String[] users) throws Exception;
 
