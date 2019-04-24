@@ -311,8 +311,10 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
                 }
 
                 HtmlOut out = new HtmlOut();
+                ValidationHelper helper = new ValidationHelper(a.getArticleId(), null, a.getXml());
                 SimpleScriptContext context = new SimpleScriptContext();
                 context.setAttribute("out", out, ScriptContext.ENGINE_SCOPE);
+                context.setAttribute("helper", helper, ScriptContext.ENGINE_SCOPE);
                 context.setAttribute("header", a.getHeader(), ScriptContext.ENGINE_SCOPE);
                 Document doc = JsDomWrapper.parseDoc(a.getXml());
                 context.setAttribute("articleDoc", doc, ScriptContext.ENGINE_SCOPE);

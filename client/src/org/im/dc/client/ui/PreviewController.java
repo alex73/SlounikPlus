@@ -15,6 +15,7 @@ import javax.swing.JComponent;
 import javax.swing.JEditorPane;
 import javax.swing.KeyStroke;
 import javax.swing.RootPaneContainer;
+import javax.swing.SwingUtilities;
 
 public class PreviewController extends BaseController<PreviewDialog> {
     private static Font BASE_FONT;
@@ -52,7 +53,7 @@ public class PreviewController extends BaseController<PreviewDialog> {
         ((RootPaneContainer) window).getRootPane().registerKeyboardAction(resetZoom,
                 KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD0, InputEvent.CTRL_MASK), JComponent.WHEN_IN_FOCUSED_WINDOW);
 
-        displayOnParent();
+        SwingUtilities.invokeLater(() -> displayOnParent());
     }
 
     ActionListener resetZoom = (e) -> {
