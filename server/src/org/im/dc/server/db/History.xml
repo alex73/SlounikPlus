@@ -14,8 +14,8 @@
 	<select id="getHistory" resultType="RecArticleHistory" resultMap="RecArticleHistoryMap">
 		SELECT * FROM ArticlesHistory WHERE historyId = #{historyId}
 	</select>
-    <select id="retrieveAllHistory" resultType="RecArticleHistory" resultMap="RecArticleHistoryMap">
-        SELECT * FROM ArticlesHistory ORDER BY historyId
+    <select id="retrieveHistoryHeadersForExport" resultType="RecArticleHistory" resultMap="RecArticleHistoryMap">
+        SELECT historyId, articleId, oldHeader, newHeader, changed, changer FROM ArticlesHistory WHERE newXml IS NOT NULL ORDER BY historyId
     </select>
 	<insert id="insertArticleHistory" useGeneratedKeys="true" keyProperty="hist.historyId">
 		INSERT INTO ArticlesHistory (articleId,changed,changer,oldState,newState,oldHeader,newHeader,oldAssignedUsers,newAssignedUsers,oldXml,newXml)

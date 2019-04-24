@@ -19,7 +19,7 @@ public class DbTestArticle {
     @Before
     public void prepare() throws Exception {
         System.setProperty("log4j.configurationFile", new File("config/log4j.xml").getAbsolutePath());
-        Db.init();
+        Db.init(".");
     }
 
     @Test

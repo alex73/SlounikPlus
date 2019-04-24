@@ -26,9 +26,11 @@ public class Db {
 
     private static SqlSessionFactory sqlSessionFactory;
 
-    public static void init() throws Exception {
+    public static void init(String configDir) throws Exception {
+        File config = new File(configDir, "db.properties");
+        LOG.info("Loading db info from {}", config.getAbsolutePath());
         Properties props = new Properties();
-        try (InputStream in = new FileInputStream(new File(Config.getConfigDir(), "db.properties"))) {
+        try (InputStream in = new FileInputStream(config)) {
             props.load(in);
         }
 

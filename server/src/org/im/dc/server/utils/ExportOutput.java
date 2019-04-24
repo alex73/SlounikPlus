@@ -32,7 +32,7 @@ public class ExportOutput {
         }
 
         Config.load(System.getProperty("CONFIG_DIR"));
-        Db.init();
+        Db.init(System.getProperty("CONFIG_DIR"));
         Server.initPlugins();
 
         List<Integer> ids = Db.execAndReturn((api) -> {

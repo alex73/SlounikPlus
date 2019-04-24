@@ -22,7 +22,7 @@ public class ApplicationInit implements ServletContextListener {
         try {
             String configDir = event.getServletContext().getInitParameter("CONFIG_DIR");
             Config.load(configDir);
-            Db.init();
+            Db.init(configDir);
 
             initPlugins();
         } catch (Throwable ex) {

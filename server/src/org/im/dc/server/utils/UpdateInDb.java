@@ -51,7 +51,7 @@ public abstract class UpdateInDb {
 
     public UpdateInDb(String configDir) throws Exception {
         Config.load(configDir);
-        Db.init();
+        Db.init(configDir);
     }
 
     List<Integer> articleIds;

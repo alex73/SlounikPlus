@@ -35,7 +35,7 @@ public class ExportArticles {
         }
 
         Config.load(System.getProperty("CONFIG_DIR"));
-        Db.init();
+        Db.init(System.getProperty("CONFIG_DIR"));
         File out = new File(args[0]);
         if (out.getName().toLowerCase().endsWith(".zip")) {
             out.getParentFile().mkdirs();

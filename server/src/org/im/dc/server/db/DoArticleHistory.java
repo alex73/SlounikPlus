@@ -9,7 +9,7 @@ public interface DoArticleHistory {
 
     List<RecArticleHistory> retrieveHistory(@Param("articleId") int articleId);
 
-    List<RecArticleHistory> retrieveAllHistory();
+    List<RecArticleHistory> retrieveHistoryHeadersForExport();
 
     RecArticleHistory getHistory(@Param("historyId") int historyId);
 

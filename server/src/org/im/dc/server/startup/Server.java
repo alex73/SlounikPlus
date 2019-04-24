@@ -28,7 +28,7 @@ public class Server {
 
         System.setProperty("log4j.configurationFile", new File("config/log4j.xml").getAbsolutePath());
         Config.load(System.getProperty("CONFIG_DIR"));
-        Db.init();
+        Db.init(System.getProperty("CONFIG_DIR"));
 
         initPlugins();
 

@@ -28,7 +28,7 @@ public class UpdateArticles {
 
         System.setProperty("log4j.configurationFile", new File("config/log4j.xml").getAbsolutePath());
         Config.load(System.getProperty("CONFIG_DIR"));
-        Db.init();
+        Db.init(System.getProperty("CONFIG_DIR"));
         File[] ls = new File(args[0]).listFiles();
         if (ls == null) {
             return;

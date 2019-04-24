@@ -4,9 +4,11 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
@@ -22,8 +24,10 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jgit.api.CommitCommand;
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.errors.NoHeadException;
+import org.eclipse.jgit.errors.RepositoryNotFoundException;
 import org.eclipse.jgit.lib.PersonIdent;
-import org.im.dc.server.Config;
+import org.eclipse.jgit.revwalk.RevCommit;
 import org.im.dc.server.Db;
 import org.im.dc.server.db.RecArticle;
 import org.im.dc.server.db.RecArticleHistory;
@@ -33,25 +37,41 @@ public class ExportToGit {
     static File repoPath;
     static Git git;
     static List<RecArticleHistory> history;
+    static List<GitHistory> gitHistory = new ArrayList<>();
     static Map<Integer, String> headers = new HashMap<>();
     static Map<Integer, String> articleTypes = new HashMap<>();
+    static RecArticleHistory fullCurrentHistory;
 
     public static void main(String[] args) throws Exception {
-        Config.load(System.getProperty("CONFIG_DIR"));
-        Db.init();
+        if (args.length != 1) {
+            System.err.println("ExportToGit <git_dir>");
+            System.exit(1);
+        }
 
-        repoPath = new File("/tmp/dictrepo");
-        FileUtils.deleteDirectory(repoPath);
+        Db.init(System.getProperty("CONFIG_DIR"));
 
-        // create the directory
-        git = Git.init().setDirectory(repoPath).call();
+        repoPath = new File(args[0]);
+
+        try {
+            git = Git.open(repoPath);
+            Iterable<RevCommit> log = git.log().call();
+            for (Iterator<RevCommit> iterator = log.iterator(); iterator.hasNext();) {
+                RevCommit rev = iterator.next();
+                gitHistory.add(new GitHistory(rev));
+            }
+            Collections.reverse(gitHistory);
+        } catch (RepositoryNotFoundException ex) {
+            git = Git.init().setDirectory(repoPath).call();
+        } catch (NoHeadException ex) {
+            git = Git.init().setDirectory(repoPath).call();
+        }
 
         Db.exec((api) -> {
             for (RecArticle a : api.getArticleMapper().listArticles(null, new ArticlesFilter())) {
                 headers.put(a.getArticleId(), a.getHeader());
                 articleTypes.put(a.getArticleId(), a.getArticleType());
             }
-            history = api.getArticleHistoryMapper().retrieveAllHistory();
+            history = api.getArticleHistoryMapper().retrieveHistoryHeadersForExport();
         });
 
         Collections.sort(history, new Comparator<RecArticleHistory>() {
@@ -74,40 +94,63 @@ public class ExportToGit {
             }
         });
 
+        int count = 0;
         for (RecArticleHistory h : history) {
             String oldHeader = StringUtils.equals(h.getOldHeader(), h.getNewHeader()) ? null : h.getOldHeader();
             if (h.getNewHeader() != null) {
                 headers.put(h.getArticleId(), h.getNewHeader());
             }
-            if (h.getNewXml() != null) {
-                add(h, oldHeader);
+            count++;
+            System.out.println(
+                    "Export " + count + "/" + history.size() + ": #" + h.getHistoryId() + " from " + h.getChanged());
+            add(h, oldHeader);
+            if (count % 1000 == 0) {
+                git.gc().call();
             }
         }
+        git.close();
     }
 
     static void add(RecArticleHistory h, String oldHeader) {
         try {
-            String articleType = articleTypes.get(h.getArticleId());
             String header = headers.get(h.getArticleId());
             if (header == null) {
                 header = "change";
             }
+            // and then commit the changes
+            PersonIdent pi = new PersonIdent(h.getChanger(), "user@localhost", h.getChanged(), TimeZone.getDefault());
+            String message = "#" + h.getHistoryId() + ": " + header;
+
+            if (!gitHistory.isEmpty()) {
+                GitHistory h0 = gitHistory.remove(0);
+                GitHistory c = new GitHistory(pi, message);
+                if (h0.equals(c)) {
+                    return;
+                } else {
+                    System.err.println("There is wrong history record: " + message);
+                    System.exit(1);
+                }
+            }
+
+            Db.exec((api) -> {
+                fullCurrentHistory = api.getArticleHistoryMapper().getHistory(h.getHistoryId());
+            });
+
+            String articleType = articleTypes.get(h.getArticleId());
+            // check if already exist in git
             if (oldHeader != null) {
                 String oldFile = articleType + '/' + oldHeader + '-' + h.getArticleId() + ".xml";
                 new File(repoPath, oldFile).delete();
                 git.rm().addFilepattern(oldFile).call();
             }
-            String newFile = articleType + '/' + header.replace("<", "").replace(">", "") + '-' + h.getArticleId() + ".xml";
-            String xml = xml2text(h.getNewXml());
+            String newFile = articleType + '/' + header.replace("<", "").replace(">", "") + '-' + h.getArticleId()
+                    + ".xml";
+            String xml = xml2text(fullCurrentHistory.getNewXml());
             FileUtils.writeStringToFile(new File(repoPath, newFile), xml, StandardCharsets.UTF_8);
             git.add().addFilepattern(newFile).call();
 
-            int offset = TimeZone.getDefault().getOffset(h.getChanged().getTime());
-
-            // and then commit the changes
             CommitCommand cc = git.commit();
-            PersonIdent pi = new PersonIdent(h.getChanger(), "user@localhost", h.getChanged().getTime(), offset);
-            cc.setCommitter(pi).setMessage(header).call();
+            cc.setCommitter(pi).setMessage(message).call();
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
@@ -127,5 +170,31 @@ public class ExportToGit {
         Source sou = new StreamSource(new ByteArrayInputStream(xml));
         transformer.transform(sou, res);
         return res.getWriter().toString();
+    }
+
+    static class GitHistory {
+        String changer;
+        long changed;
+        String message;
+
+        public GitHistory(PersonIdent pi, String message) {
+            changer = pi.getName();
+            changed = pi.getWhen().getTime() / 1000;
+            this.message = message;
+        }
+
+        public GitHistory(RevCommit rev) {
+            this(rev.getCommitterIdent(), rev.getShortMessage());
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj instanceof GitHistory) {
+                GitHistory o = (GitHistory) obj;
+                return changed == o.changed && changer.equals(o.changer) && message.equals(o.message);
+            } else {
+                return false;
+            }
+        }
     }
 }

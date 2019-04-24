@@ -26,7 +26,7 @@ public class JsValidationTest {
         System.setProperty("log4j.configurationFile", new File("config/log4j.xml").getAbsolutePath());
         Config.load(System.getProperty("CONFIG_DIR"));
 
-        Db.init();
+        Db.init(System.getProperty("CONFIG_DIR"));
 
         process(new String[] { "камфара+", "ка+мфара", "камфо+ра" }, null, "v2.xml",
                 "Колькасць паметаў загалоўных слоў несупадае з колькасцю слоў");
@@ -59,7 +59,7 @@ public class JsValidationTest {
     public static void main(String[] a) throws Exception {
         System.setProperty("log4j.configurationFile", new File("config/log4j.xml").getAbsolutePath());
         Config.load(System.getProperty("CONFIG_DIR"));
-        Db.init();
+        Db.init(System.getProperty("CONFIG_DIR"));
 
         byte[] xml = Files.readAllBytes(Paths.get("src-test/org/im/dc/server/js/test-article.xml"));
 
