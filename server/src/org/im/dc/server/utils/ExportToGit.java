@@ -5,11 +5,12 @@ import java.io.File;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.TimeZone;
 
@@ -21,7 +22,6 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jgit.api.CommitCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.NoHeadException;
@@ -38,9 +38,7 @@ public class ExportToGit {
     static Git git;
     static List<RecArticleHistory> history;
     static List<GitHistory> gitHistory = new ArrayList<>();
-    static Map<Integer, String> headers = new HashMap<>();
-    static Map<Integer, String> articleTypes = new HashMap<>();
-    static RecArticleHistory fullCurrentHistory;
+    static Map<Integer, ArticleInfo> articleInfos = new HashMap<>();
 
     public static void main(String[] args) throws Exception {
         if (args.length != 1) {
@@ -66,60 +64,57 @@ public class ExportToGit {
             git = Git.init().setDirectory(repoPath).call();
         }
 
+        // list history
         Db.exec((api) -> {
             for (RecArticle a : api.getArticleMapper().listArticles(null, new ArticlesFilter())) {
-                headers.put(a.getArticleId(), a.getHeader());
-                articleTypes.put(a.getArticleId(), a.getArticleType());
+                articleInfos.put(a.getArticleId(), new ArticleInfo(a));
             }
             history = api.getArticleHistoryMapper().retrieveHistoryHeadersForExport();
         });
 
-        Collections.sort(history, new Comparator<RecArticleHistory>() {
-            @Override
-            public int compare(RecArticleHistory o1, RecArticleHistory o2) {
-                return Long.compare(o2.getHistoryId(), o1.getHistoryId());
-            }
-        });
-
-        for (RecArticleHistory h : history) {
+        for (ListIterator<RecArticleHistory> it = history.listIterator(history.size()); it.hasPrevious();) {
+            RecArticleHistory h = it.previous();
+            ArticleInfo ai = articleInfos.get(h.getArticleId());
             if (h.getOldHeader() != null) {
-                headers.put(h.getArticleId(), h.getOldHeader());
+                ai.header = h.getOldHeader();
+            }
+            if (h.getOldState() != null) {
+                ai.state = h.getOldState();
+            }
+            if (h.getOldAssignedUsers() != null) {
+                ai.assignedUsers = h.getOldAssignedUsers();
             }
         }
 
-        Collections.sort(history, new Comparator<RecArticleHistory>() {
-            @Override
-            public int compare(RecArticleHistory o1, RecArticleHistory o2) {
-                return Long.compare(o1.getHistoryId(), o2.getHistoryId());
-            }
-        });
-
-        int count = 0;
         for (RecArticleHistory h : history) {
-            String oldHeader = StringUtils.equals(h.getOldHeader(), h.getNewHeader()) ? null : h.getOldHeader();
+            ArticleInfo ai = articleInfos.get(h.getArticleId());
+            String oldFile = ai.getPath(h.getArticleId());
             if (h.getNewHeader() != null) {
-                headers.put(h.getArticleId(), h.getNewHeader());
+                ai.header = h.getNewHeader();
             }
-            count++;
+            if (h.getNewState() != null) {
+                ai.state = h.getNewState();
+            }
+            if (h.getNewAssignedUsers() != null) {
+                ai.assignedUsers = h.getNewAssignedUsers();
+            }
+            String newFile = ai.getPath(h.getArticleId());
+
             System.out.println(
                     "Export " + count + "/" + history.size() + ": #" + h.getHistoryId() + " from " + h.getChanged());
-            add(h, oldHeader);
-            if (count % 1000 == 0) {
-                git.gc().call();
-            }
+            add(h, ai, oldFile, newFile);
         }
         git.close();
     }
 
-    static void add(RecArticleHistory h, String oldHeader) {
+    static int count, added;
+
+    static void add(RecArticleHistory h, ArticleInfo ai, String oldFile, String newFile) {
+        count++;
         try {
-            String header = headers.get(h.getArticleId());
-            if (header == null) {
-                header = "change";
-            }
             // and then commit the changes
             PersonIdent pi = new PersonIdent(h.getChanger(), "user@localhost", h.getChanged(), TimeZone.getDefault());
-            String message = "#" + h.getHistoryId() + ": " + header;
+            String message = "#" + h.getHistoryId() + " " + newFile;
 
             if (!gitHistory.isEmpty()) {
                 GitHistory h0 = gitHistory.remove(0);
@@ -131,26 +126,37 @@ public class ExportToGit {
                     System.exit(1);
                 }
             }
+            added++;
 
-            Db.exec((api) -> {
-                fullCurrentHistory = api.getArticleHistoryMapper().getHistory(h.getHistoryId());
+            RecArticleHistory fullCurrentHistory = Db.execAndReturn((api) -> {
+                return api.getArticleHistoryMapper().getHistory(h.getHistoryId());
             });
 
-            String articleType = articleTypes.get(h.getArticleId());
-            // check if already exist in git
-            if (oldHeader != null) {
-                String oldFile = articleType + '/' + oldHeader + '-' + h.getArticleId() + ".xml";
+            if (oldFile.equals(newFile)) {
+                if (fullCurrentHistory.getNewXml() != null) {
+                    String xml = xml2text(fullCurrentHistory.getNewXml());
+                    FileUtils.writeStringToFile(new File(repoPath, newFile), xml, StandardCharsets.UTF_8);
+                    git.add().addFilepattern(newFile).call();
+                }
+            } else {
+                if (new File(repoPath, oldFile).exists()) {
+                    new File(repoPath, oldFile).renameTo(new File(repoPath, newFile));
+                }
                 new File(repoPath, oldFile).delete();
                 git.rm().addFilepattern(oldFile).call();
+                if (fullCurrentHistory.getNewXml() != null) {
+                    String xml = xml2text(fullCurrentHistory.getNewXml());
+                    FileUtils.writeStringToFile(new File(repoPath, newFile), xml, StandardCharsets.UTF_8);
+                }
+                git.add().addFilepattern(newFile).call();
             }
-            String newFile = articleType + '/' + header.replace("<", "").replace(">", "") + '-' + h.getArticleId()
-                    + ".xml";
-            String xml = xml2text(fullCurrentHistory.getNewXml());
-            FileUtils.writeStringToFile(new File(repoPath, newFile), xml, StandardCharsets.UTF_8);
-            git.add().addFilepattern(newFile).call();
 
             CommitCommand cc = git.commit();
             cc.setCommitter(pi).setMessage(message).call();
+
+            if (added % 500 == 0) {
+                git.gc().call();
+            }
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
@@ -195,6 +201,25 @@ public class ExportToGit {
             } else {
                 return false;
             }
+        }
+    }
+
+    static class ArticleInfo {
+        public String type;
+        public String header;
+        public String state;
+        public String[] assignedUsers;
+
+        public ArticleInfo(RecArticle a) {
+            type = a.getArticleType();
+            header = a.getHeader();
+            state = a.getState();
+            assignedUsers = a.getAssignedUsers();
+        }
+
+        public String getPath(int articleId) {
+            return type + '/' + header.replace("<", "").replace(">", "") + '-' + state + '-'
+                    + Arrays.toString(assignedUsers) + '-' + articleId + ".xml";
         }
     }
 }
