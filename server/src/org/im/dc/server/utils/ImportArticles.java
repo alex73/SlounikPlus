@@ -20,6 +20,7 @@ import org.im.dc.server.db.RecArticle;
 public class ImportArticles {
     static Date lastUpdated;
     static List<RecArticle> articles;
+    static final boolean USE_ARTICLE_IDS = false;
 
     public static void main(String[] args) throws Exception {
         if (args.length != 2) {
@@ -66,12 +67,21 @@ public class ImportArticles {
     static final Pattern RE_FILE = Pattern.compile("(.*)\\-([0-9]+)\\.xml");
 
     static void read(String articleType, String fn, byte[] xml) throws Exception {
-        Matcher m = RE_FILE.matcher(fn);
-        if (!m.matches()) {
-            throw new Exception("Wrong file name: " + fn);
+        RecArticle a = new RecArticle();
+
+        if (USE_ARTICLE_IDS) {
+            Matcher m = RE_FILE.matcher(fn);
+            if (!m.matches()) {
+                throw new Exception("Wrong file name: " + fn);
+            }
+            String header = m.group(1);
+            int id = Integer.parseInt(m.group(2));
+            a.setArticleId(id);
+            a.setHeader(header);
+        } else {
+            String header = fn.replaceAll("\\.xml$", "");
+            a.setHeader(header);
         }
-        String header = m.group(1);
-        int id = Integer.parseInt(m.group(2));
 
         try {
             //Validator validator = Config.schemas.get(articleType).newValidator();
@@ -82,9 +92,6 @@ public class ImportArticles {
             throw ex;
         }
 
-        RecArticle a = new RecArticle();
-        a.setArticleId(id);
-        a.setHeader(header);
         a.setArticleType(articleType);
         a.setXml(xml);
         a.setAssignedUsers(new String[0]);
