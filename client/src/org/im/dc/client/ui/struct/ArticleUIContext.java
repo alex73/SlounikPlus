@@ -28,6 +28,21 @@ public class ArticleUIContext {
         return wr;
     }
 
+    public boolean getVisible(boolean parentVisible, AnnotationInfo ann) {
+        Boolean wr = null;
+        for (RORW e : ann.visible) {
+            if (e.role.equals("*") || e.role.equals(userRole)) {
+                if (e.state.equals("*") || e.state.equals(articleState)) {
+                    wr = e.writable;
+                }
+            }
+        }
+        if (wr == null) {
+            wr = parentVisible;
+        }
+        return wr;
+    }
+
     public String getArticleTypeId() {
         return articleTypeId;
     }

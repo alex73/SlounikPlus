@@ -78,6 +78,9 @@ public class XSParticleContainer extends XSBaseContainer<XSParticle> {
         for (int i = 0; i < minOccurs; i++) {
             addElement();
         }
+        if (!context.getVisible(true, childAnn)) {
+            panel.setVisible(false);
+        }
         udpateAllChildrenPositions();
         revalidate();
     }

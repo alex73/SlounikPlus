@@ -76,6 +76,9 @@ public class XSSimpleElementContainer extends XSBaseContainer<XSSimpleTypeDefini
                 throw new RuntimeException("Can't create editor for type: " + ann.editType.name());
             }
         }
+        if (!context.getVisible(true, ann)) {
+            editor.getUIComponent().setVisible(false);
+        }
     }
 
     @Override

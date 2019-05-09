@@ -86,7 +86,7 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
     private final InitialData.TypeInfo typeInfo;
     public IXSContainer editorUI;
 
-    protected volatile ArticleFullInfo article;
+    public volatile ArticleFullInfo article;
     protected volatile boolean wasChanged;
 
     public ArticlePanelEdit panelEdit = new ArticlePanelEdit();

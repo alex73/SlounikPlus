@@ -27,6 +27,7 @@ public class AnnotationInfo {
     public String editDetails;
     public Class<?> customImpl;
     public List<RORW> enables = new ArrayList<>();
+    public List<RORW> visible = new ArrayList<>();
     public int overrideMinOccurs = -1;
     public int overrideMaxOccurs = -1;
 
@@ -56,7 +57,7 @@ public class AnnotationInfo {
             editDetails = value.substring(pp + 1);
             break;
         case "ro":
-        case "rw":
+        case "rw": {
             RORW r = new RORW();
             enables.add(r);
             r.writable = "rw".equals(key);
@@ -67,6 +68,20 @@ public class AnnotationInfo {
             r.role = value.substring(0, p);
             r.state = value.substring(p + 1);
             break;
+        }
+        case "hide":
+        case "show": {
+            RORW r = new RORW();
+            visible.add(r);
+            r.writable = "show".equals(key);
+            int p = value.indexOf('/');
+            if (p <= 0) {
+                throw new RuntimeException("Wrong annotation: " + value);
+            }
+            r.role = value.substring(0, p);
+            r.state = value.substring(p + 1);
+            break;
+        }
         case "overrideMinOccurs":
             overrideMinOccurs = Integer.parseInt(value);
             break;
