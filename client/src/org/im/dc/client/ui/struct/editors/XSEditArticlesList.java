@@ -106,7 +106,7 @@ public class XSEditArticlesList extends XSNamedControl<JPanel> implements IXSEdi
                 combo.array = headers;
             }
         }
-        return (String) combo.getValue();
+        return (String) combo.getSelectedItem();
     }
 
     private void openEdit(String header) {
