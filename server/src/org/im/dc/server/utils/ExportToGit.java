@@ -1,17 +1,21 @@
 package org.im.dc.server.utils;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.StringWriter;
-import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.TimeZone;
 
 import javax.xml.transform.OutputKeys;
@@ -104,6 +108,48 @@ public class ExportToGit {
                     "Export " + count + "/" + history.size() + ": #" + h.getHistoryId() + " from " + h.getChanged());
             add(h, ai, oldFile, newFile);
         }
+
+        // export current state
+        Path root = repoPath.toPath();
+        Set<String> existFiles = new HashSet<>();
+        Files.find(root, Integer.MAX_VALUE, (p, a) -> a.isRegularFile()).map(p -> root.relativize(p).toString())
+                .filter(n -> !n.startsWith(".git/")).forEach(n -> existFiles.add(n));
+
+        boolean changed = false;
+        count = 0;
+        for (int id : articleInfos.keySet()) {
+            count++;
+            System.out.print("Check for change " + count + "/" + articleInfos.size() + ": #" + id);
+            RecArticle a = Db.execAndReturn((api) -> {
+                return api.getArticleMapper().selectArticle(id);
+            });
+            ArticleInfo ai = new ArticleInfo(a);
+            String newFile = ai.getPath(a.getArticleId());
+
+            byte[] xml = xmlFormat(a.getXml());
+            File f = new File(repoPath, newFile);
+            byte[] existXml = f.exists() ? FileUtils.readFileToByteArray(f) : new byte[0];
+            if (!Arrays.equals(xml, existXml)) {
+                FileUtils.writeByteArrayToFile(f, xml);
+                git.add().addFilepattern(newFile).call();
+                changed = true;
+                System.out.println(" - changed " + newFile);
+            } else {
+                System.out.println();
+            }
+            existFiles.remove(newFile);
+        }
+        for (String f : existFiles) {
+            new File(repoPath, f).delete();
+            git.rm().addFilepattern(f).call();
+            changed = true;
+        }
+        if (changed) {
+            CommitCommand cc = git.commit();
+            cc.setCommitter(new PersonIdent("admin", "db@localhost", new Date(), TimeZone.getDefault()))
+                    .setMessage("Snapshot of current db state").call();
+        }
+
         git.close();
     }
 
@@ -134,8 +180,8 @@ public class ExportToGit {
 
             if (oldFile.equals(newFile)) {
                 if (fullCurrentHistory.getNewXml() != null) {
-                    String xml = xml2text(fullCurrentHistory.getNewXml());
-                    FileUtils.writeStringToFile(new File(repoPath, newFile), xml, StandardCharsets.UTF_8);
+                    byte[] xml = xmlFormat(fullCurrentHistory.getNewXml());
+                    FileUtils.writeByteArrayToFile(new File(repoPath, newFile), xml);
                     git.add().addFilepattern(newFile).call();
                 }
             } else {
@@ -145,8 +191,8 @@ public class ExportToGit {
                 new File(repoPath, oldFile).delete();
                 git.rm().addFilepattern(oldFile).call();
                 if (fullCurrentHistory.getNewXml() != null) {
-                    String xml = xml2text(fullCurrentHistory.getNewXml());
-                    FileUtils.writeStringToFile(new File(repoPath, newFile), xml, StandardCharsets.UTF_8);
+                    byte[] xml = xmlFormat(fullCurrentHistory.getNewXml());
+                    FileUtils.writeByteArrayToFile(new File(repoPath, newFile), xml);
                 }
                 git.add().addFilepattern(newFile).call();
             }
@@ -164,18 +210,20 @@ public class ExportToGit {
 
     private static final TransformerFactory TRANSFORMER_FACTORY = TransformerFactory.newInstance();
 
-    private static String xml2text(byte[] xml) throws Exception {
+    private static byte[] xmlFormat(byte[] xml) throws Exception {
         if (xml == null) {
-            return "";
+            return new byte[0];
         }
         Transformer transformer = TRANSFORMER_FACTORY.newTransformer();
         transformer.setOutputProperty(OutputKeys.INDENT, "yes");
         transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+        transformer.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC, "yes");
 
-        StreamResult res = new StreamResult(new StringWriter());
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        StreamResult res = new StreamResult(out);
         Source sou = new StreamSource(new ByteArrayInputStream(xml));
         transformer.transform(sou, res);
-        return res.getWriter().toString();
+        return out.toByteArray();
     }
 
     static class GitHistory {
@@ -218,8 +266,8 @@ public class ExportToGit {
         }
 
         public String getPath(int articleId) {
-            return type + '/' + header.replace("<", "").replace(">", "") + '-' + state + '-'
-                    + Arrays.toString(assignedUsers) + '-' + articleId + ".xml";
+            return (type + '/' + header.replace("<", "").replace(">", "") + '-' + state + '-'
+                    + Arrays.toString(assignedUsers) + '-' + articleId + ".xml").replaceAll("/{2,}", "/");
         }
     }
 }
