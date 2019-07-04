@@ -162,10 +162,14 @@ public class ExportToGit {
             PersonIdent pi = new PersonIdent(h.getChanger(), "user@localhost", h.getChanged(), TimeZone.getDefault());
             String message = "#" + h.getHistoryId() + " " + newFile;
 
-            if (!gitHistory.isEmpty()) {
+            while (!gitHistory.isEmpty()) {
                 GitHistory h0 = gitHistory.remove(0);
+                if (!h0.message.startsWith("#")) {
+                    continue;
+                }
                 GitHistory c = new GitHistory(pi, message);
-                if (h0.equals(c)) {
+                if (h0.changed == c.changed && h0.changer.equals(c.changer)
+                        && h0.message.replaceAll(" .+", "").equals(c.message.replaceAll(" .+", ""))) {
                     return;
                 } else {
                     System.err.println("There is wrong history record: " + message);
@@ -201,7 +205,7 @@ public class ExportToGit {
             cc.setCommitter(pi).setMessage(message).call();
 
             if (added % 500 == 0) {
-                git.gc().call();
+                //git.gc().call();
             }
         } catch (Exception ex) {
             throw new RuntimeException(ex);
