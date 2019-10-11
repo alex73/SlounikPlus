@@ -167,10 +167,22 @@ public class PermissionChecker {
 
     public static boolean canUserChangeArticleState(Config config, String user, String articleType, String articleState,
             String newState, String[] assignedUsers) {
+        String userRole = getUserRole(config, user);
+        // check if common permission allow to force change status
+        for (Role r : config.getRoles().getRole()) {
+            if (r.getName().equals(userRole)) {
+                for (CommonPermission p : r.getPermission()) {
+                    if (CommonPermission.FORCE_STATE_CHANGE.equals(p)) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        // check if user allowed to change status for specific article
         if (!isUserAssigned(user, assignedUsers)) {
             return false;
         }
-        String userRole = getUserRole(config, user);
         Type t = getType(config, articleType);
         for (State st : t.getState()) {
             if (st.getName().equals(articleState)) {
