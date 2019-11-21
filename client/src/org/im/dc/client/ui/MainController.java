@@ -269,6 +269,7 @@ public class MainController extends BaseController<MainFrame> {
 
     private void validateFull(String articleTypeId) {
         PreviewController previewer = new PreviewController(MainController.instance.window, false);
+        previewer.window.setTitle("Праверка");
         previewer.new LongProcess() {
             String result;
 
