@@ -74,7 +74,8 @@ public class XSGroupSequenceContainer extends XSBaseContainer<XSModelGroup> {
                 }
             }
             if (!found) {
-                throw new Exception("Child not found for tag " + node.getNodeName());
+                throw new Exception(
+                        "No UI controls for set data from tag " + node.getNodeName() + "/" + ch.getNodeName());
             }
         }
     }

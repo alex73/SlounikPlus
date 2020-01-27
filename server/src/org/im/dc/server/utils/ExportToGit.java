@@ -270,7 +270,7 @@ public class ExportToGit {
         }
 
         public String getPath(int articleId) {
-            return (type + '/' + header.replace("<", "").replace(">", "") + '-' + state + '-'
+            return (type + '/' + header.replace("<", "").replace(">", "").replace("/", "_") + '-' + state + '-'
                     + Arrays.toString(assignedUsers) + '-' + articleId + ".xml").replaceAll("/{2,}", "/");
         }
     }
