@@ -28,7 +28,7 @@ import org.im.dc.service.dto.ArticlesFilter;
 import org.im.dc.service.dto.Header;
 import org.w3c.dom.Document;
 
-public class ArticleWebserviceGitImpl implements ArticleWebservice {
+/*public class ArticleWebserviceGitImpl implements ArticleWebservice {
     @Override
     public ArticleFullInfo getArticleFullInfo(Header header, String articleTypeId, int articleId) throws Exception {
         Path file = GitProc.getInstance().getPathById(articleId);
@@ -186,3 +186,4 @@ public class ArticleWebserviceGitImpl implements ArticleWebservice {
         return helper;
     }
 }
+*/

@@ -59,6 +59,7 @@ import org.im.dc.client.ui.struct.containers.XSAttributeContainer;
 import org.im.dc.client.ui.struct.containers.XSSimpleElementContainer;
 import org.im.dc.client.ui.struct.editors.IXSEdit;
 import org.im.dc.gen.config.TypePermission;
+import org.im.dc.service.OutputSummaryStorage;
 import org.im.dc.service.dto.ArticleFull;
 import org.im.dc.service.dto.ArticleFullInfo;
 import org.im.dc.service.dto.ArticleShort;
@@ -249,8 +250,13 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
 
                     @Override
                     protected void exec() throws Exception {
-                        String text = preview = WS.getToolsWebservice().preparePreview(WS.header, article.article.type,
-                                article.article.header, extractXml());
+                        OutputSummaryStorage result = WS.getToolsWebservice().preparePreview(WS.header,
+                                article.article.type, article.article.id, extractXml());
+                        StringBuilder text = new StringBuilder();
+                        result.articleInfos.values().stream().flatMap(ai -> ai.errors.stream())
+                                .forEach(e -> text.append("<p>ПАМЫЛКА: " + e + "</p>\n"));
+                        result.articleInfos.values().stream().flatMap(ai -> ai.outputs.stream())
+                                .forEach(o -> text.append("<p>" + o.html + "</p>\n"));
                         preview = "<!DOCTYPE html>\n<html><head><meta charset=\"UTF-8\"></head><body>\n" + text
                                 + "\n</body></html>\n";
                     }
@@ -587,8 +593,10 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
             protected void exec() throws Exception {
                 article.article.xml = extractXml();
 
-                String err = WS.getToolsWebservice().validate(WS.header, article.article.type, article.article.id,
-                        article.article.header, article.article.xml);
+                OutputSummaryStorage result = WS.getToolsWebservice().preparePreview(WS.header, article.article.type,
+                        article.article.id, article.article.xml);
+                String err = result.articleInfos.values().stream().flatMap(ai -> ai.errors.stream())
+                        .filter(e -> e != null).findFirst().orElse(null);
                 if (err != null) {
                     if (JOptionPane.showConfirmDialog(window,
                             MessageFormat.format(BUNDLE.getString("Message.Error.Validation"), err),

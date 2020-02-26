@@ -69,7 +69,7 @@ public class JoinWithSeparators implements IHtmlPart {
     /**
      * It removes child levels if there is no required texts.
      */
-    public void normalize() {
+    public String normalize() {
         for (int i = 0; i < children.size(); i++) {
             if (children.get(i) instanceof JoinWithSeparators) {
                 ((JoinWithSeparators) children.get(i)).normalize();
@@ -79,6 +79,7 @@ public class JoinWithSeparators implements IHtmlPart {
                 }
             }
         }
+        return toString();
     }
 
     @Override

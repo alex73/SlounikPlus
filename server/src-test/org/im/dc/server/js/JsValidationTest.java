@@ -3,7 +3,6 @@ package org.im.dc.server.js;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -11,11 +10,11 @@ import java.nio.file.Paths;
 import javax.script.ScriptContext;
 import javax.script.ScriptException;
 import javax.script.SimpleScriptContext;
-import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Validator;
 
 import org.im.dc.server.Config;
 import org.im.dc.server.Db;
+import org.im.dc.service.OutputSummaryStorage;
 import org.im.dc.service.ValidationHelper;
 import org.junit.Test;
 
@@ -40,8 +39,9 @@ public class JsValidationTest {
         byte[] xml = Files.readAllBytes(Paths.get("src-test/org/im/dc/server/js/" + articleFile));
         Validator validator = Config.schemas.get(articleType).newValidator();
 
+        OutputSummaryStorage storage = new OutputSummaryStorage();
         SimpleScriptContext context = new SimpleScriptContext();
-        ValidationHelper helper = new ValidationHelper(-1, validator, xml);
+        ValidationHelper helper = new ValidationHelper(-1, validator, xml, storage);
         context.setAttribute("helper", helper, ScriptContext.ENGINE_SCOPE);
         context.setAttribute("words", words, ScriptContext.ENGINE_SCOPE);
         context.setAttribute("article", new JsDomWrapper(JsDomWrapper.parseDoc(xml).getDocumentElement()), ScriptContext.ENGINE_SCOPE);
@@ -63,8 +63,9 @@ public class JsValidationTest {
 
         byte[] xml = Files.readAllBytes(Paths.get("src-test/org/im/dc/server/js/test-article.xml"));
 
+        OutputSummaryStorage storage = new OutputSummaryStorage();
         SimpleScriptContext context = new SimpleScriptContext();
-        context.setAttribute("helper", new ValidationHelper(-1, null, xml), ScriptContext.ENGINE_SCOPE);
+        context.setAttribute("helper", new ValidationHelper(-1, null, xml, storage), ScriptContext.ENGINE_SCOPE);
         context.setAttribute("words", new String[] { "хадзіць" }, ScriptContext.ENGINE_SCOPE);
         context.setAttribute("article", new JsDomWrapper(JsDomWrapper.parseDoc(xml).getDocumentElement()),
                 ScriptContext.ENGINE_SCOPE);

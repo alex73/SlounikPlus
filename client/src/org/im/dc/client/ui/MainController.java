@@ -27,6 +27,7 @@ import javax.swing.Timer;
 import org.im.dc.client.SchemaLoader;
 import org.im.dc.client.WS;
 import org.im.dc.gen.config.CommonPermission;
+import org.im.dc.service.OutputSummaryStorage;
 import org.im.dc.service.dto.ArticleFull;
 import org.im.dc.service.dto.InitialData;
 import org.im.dc.service.dto.Related;
@@ -271,19 +272,21 @@ public class MainController extends BaseController<MainFrame> {
         PreviewController previewer = new PreviewController(MainController.instance.window, false);
         previewer.window.setTitle("Праверка");
         previewer.new LongProcess() {
-            String result;
+            String text;
 
             @Override
             protected void exec() throws Exception {
-                result = WS.getToolsWebservice().validateAll(WS.header, articleTypeId);
-                if (result.isEmpty()) {
-                    result = "Праверка паспяхова скончаная";
+                OutputSummaryStorage result = WS.getToolsWebservice().previewValidateAll(WS.header, articleTypeId);
+                if (result.summaryErrors.isEmpty()) {
+                    text = "<html><body>Праверка паспяхова скончаная</html></body>";
+                } else {
+                    text = "<html><body>" + String.join("<br/>\n", result.summaryErrors) + "</html></body>";
                 }
             }
 
             @Override
             protected void ok() {
-                previewer.window.text.setText("<html><body>" + result + "</html></body>");
+                previewer.window.text.setText(text);
                 previewer.window.text.setCaretPosition(0);
                 previewer.window.text.getDocument().putProperty("ZOOM_FACTOR", new Double(2.5));
             }

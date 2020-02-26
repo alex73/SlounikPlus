@@ -25,6 +25,7 @@ import javax.swing.table.TableRowSorter;
 
 import org.im.dc.client.WS;
 import org.im.dc.gen.config.TypePermission;
+import org.im.dc.service.OutputSummaryStorage;
 import org.im.dc.service.dto.ArticleFull;
 import org.im.dc.service.dto.ArticleShort;
 import org.im.dc.service.dto.ArticlesFilter;
@@ -155,22 +156,28 @@ public class MainControllerArticleType implements IArticleUpdatedListener {
 
                         @Override
                         protected void exec() throws Exception {
-                            out = new StringBuilder("<!DOCTYPE html>\n<html><head><meta charset=\"UTF-8\"></head><body>\n");
+                            out = new StringBuilder(
+                                    "<!DOCTYPE html>\n<html><head><meta charset=\"UTF-8\"></head><body>\n");
                             outClipboard = new StringBuilder(
                                     "<!DOCTYPE html>\n<html><head><meta charset=\"UTF-8\"></head><body>\n");
 
-                            String[] articlesPreview = WS.getToolsWebservice().preparePreviews(WS.header, typeInfo.typeId,
-                                    articleIds);
-                            for (int i = 0; i < articleIds.length; i++) {
-                                if (articlesPreview[i] == null) {
-                                    continue;
-                                }
-                                out.append(articlesPreview[i]);
-                                out.append(" <a href='" + articleIds[i] + "'>рэдагаваць</a>\n");
-                                out.append("<hr/>\n");
-                                outClipboard.append(articlesPreview[i]);
-                                outClipboard.append("<br/>\n");
-                            }
+                            OutputSummaryStorage articlesPreview = WS.getToolsWebservice().preparePreviews(WS.header,
+                                    typeInfo.typeId, articleIds);
+                            articlesPreview.articleInfos.values().stream().flatMap(ai -> ai.errors.stream())
+                                    .forEach(e -> {
+                                        out.append("<b>" + e + "</b><br/>\n");
+                                        outClipboard.append("<b>" + e + "</b><br/>\n");
+                                    });
+                            articlesPreview.articleInfos.values().forEach(ai -> {
+                                ai.outputs.stream().forEach(o -> {
+                                    out.append(o.html);
+                                    outClipboard.append(o.html);
+                                    out.append(" <a href='" + ai.articleId + "'>рэдагаваць</a>\n");
+                                    out.append("<hr/>\n");
+                                    outClipboard.append("<br/>\n");
+                                });
+                            });
+
                             out.append("\n</body></html>\n");
                             outClipboard.append("\n</body></html>\n");
                         }

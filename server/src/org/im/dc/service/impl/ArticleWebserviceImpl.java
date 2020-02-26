@@ -1,16 +1,11 @@
 package org.im.dc.service.impl;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
 import javax.jws.WebService;
-import javax.script.ScriptContext;
-import javax.script.ScriptException;
-import javax.script.SimpleScriptContext;
-import javax.xml.validation.Validator;
 
 import org.im.dc.config.PermissionChecker;
 import org.im.dc.gen.config.TypePermission;
@@ -22,11 +17,8 @@ import org.im.dc.server.db.RecArticleHistory;
 import org.im.dc.server.db.RecArticleNote;
 import org.im.dc.server.db.RecComment;
 import org.im.dc.server.db.RecIssue;
-import org.im.dc.server.js.JsDomWrapper;
-import org.im.dc.server.js.JsProcessing;
 import org.im.dc.service.ArticleWebservice;
-import org.im.dc.service.ValidationHelper;
-import org.im.dc.service.ValidationSummaryStorage;
+import org.im.dc.service.OutputSummaryStorage;
 import org.im.dc.service.dto.ArticleCommentFull;
 import org.im.dc.service.dto.ArticleFull;
 import org.im.dc.service.dto.ArticleFullInfo;
@@ -36,10 +28,8 @@ import org.im.dc.service.dto.ArticleShort;
 import org.im.dc.service.dto.ArticlesFilter;
 import org.im.dc.service.dto.Header;
 import org.im.dc.service.dto.Related;
-import org.im.dc.service.js.HtmlOut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
 
 @WebService(endpointInterface = "org.im.dc.service.ArticleWebservice")
 public class ArticleWebserviceImpl implements ArticleWebservice {
@@ -64,8 +54,7 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
             LOG.warn("<< getArticleFullInfo: there is no specified article");
             throw new Exception("Няма вызначанага артыкула");
         }
-        String err = validateArticle(rec, new ValidationSummaryStorage());
-        rec.setValidationError(err);
+        validateArticle(rec);
 
         ArticleFullInfo a = getAdditionalArticleInfo(header, rec);
         if (!articleType.equals(a.article.type)) {
@@ -76,44 +65,17 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
         return a;
     }
 
-    public static String validateArticle(RecArticle rec, ValidationSummaryStorage storage) {
+    public static void validateArticle(RecArticle rec) throws Exception {
         if (rec.getXml() == null) {
-            return null;
+            return;
         }
-        String result = null;
-        Validator validator = Config.schemas.get(rec.getArticleType()).newValidator();
-        ValidationHelper helper = new ValidationHelper(rec.getArticleId(), validator, rec.getXml());
-        try {
-            SimpleScriptContext context = new SimpleScriptContext();
-            context.setAttribute("helper", helper, ScriptContext.ENGINE_SCOPE);
-            context.setAttribute("header", rec.getHeader(), ScriptContext.ENGINE_SCOPE);
-            Document doc = JsDomWrapper.parseDoc(rec.getXml());
-            context.setAttribute("articleDoc", doc, ScriptContext.ENGINE_SCOPE);
-            context.setAttribute("article", new JsDomWrapper(doc.getDocumentElement()), ScriptContext.ENGINE_SCOPE);
-            context.setAttribute("mode", "validate", ScriptContext.ENGINE_SCOPE);
-            context.setAttribute("out", new HtmlOut(), ScriptContext.ENGINE_SCOPE);
-            context.setAttribute("summaryStorage", storage, ScriptContext.ENGINE_SCOPE);
-            JsProcessing.exec(new File(Config.getConfigDir(), rec.getArticleType() + ".js").getAbsolutePath(),
-                    context);
-        } catch (ScriptException ex) {
-            if (ex.getCause().getMessage().startsWith(ValidationHelper.KNOWN_ERRORS_PREFIX)) {
-                result = ex.getCause().getMessage().substring(ValidationHelper.KNOWN_ERRORS_PREFIX.length());
-                System.out.println(result); // TODO remove
-            } else {
-                ex.printStackTrace();
-                result = ex.getCause().getMessage();
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            result = "Памылка валідацыі артыкула: " + ex.getMessage();
-        }
-        if (helper.newHeader != null) {
-            rec.setHeader(helper.newHeader);
-        }
-        rec.setLinkedTo(helper.getLinks());
-        rec.setTextForSearch(new WordSplitter().parse(rec.getXml()));
 
-        return result;
+        OutputSummaryStorage storage = JsHelper.previewSomeArticles(rec.getArticleType(), Arrays.asList(rec));
+        OutputSummaryStorage.ArticleInfo ai = storage.getArticleInfo(rec.getArticleId());
+        rec.setValidationError(String.join("\n", ai.errors));
+        rec.setHeader(ai.header);
+        rec.setLinkedTo(ai.linkedTo.toArray(new String[0]));
+        rec.setTextForSearch(ai.textForSearch);
     }
 
     private ArticleFullInfo getAdditionalArticleInfo(Header header, RecArticle rec) throws Exception {
@@ -221,8 +183,7 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
             rec.setXml(article.xml);
             rec.setLastUpdated(currentDate);
 
-            String err = validateArticle(rec, new ValidationSummaryStorage());
-            rec.setValidationError(err);
+            validateArticle(rec);
 
             if (article.id != 0) {
                 int u = api.getArticleMapper().updateArticle(rec, article.lastUpdated);

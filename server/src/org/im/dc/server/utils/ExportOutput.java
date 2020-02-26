@@ -16,7 +16,7 @@ import org.im.dc.server.db.RecArticle;
 import org.im.dc.server.js.JsDomWrapper;
 import org.im.dc.server.js.JsProcessing;
 import org.im.dc.server.startup.Server;
-import org.im.dc.service.ValidationSummaryStorage;
+import org.im.dc.service.OutputSummaryStorage;
 import org.im.dc.service.impl.ArticleWebserviceImpl;
 import org.im.dc.service.js.HtmlOut;
 import org.w3c.dom.Document;
@@ -41,21 +41,15 @@ public class ExportOutput {
         Collections.sort(ids);
 
         try (BufferedWriter wr = Files.newBufferedWriter(Paths.get(args[0]))) {
-            ValidationSummaryStorage storage = new ValidationSummaryStorage();
+            OutputSummaryStorage storage = new OutputSummaryStorage();
             for (int id : ids) {
                 Db.exec((api) -> {
                     RecArticle a = api.getArticleMapper().selectArticle(id);
 
-                    String err = ArticleWebserviceImpl.validateArticle(a, storage);
                     String text;
-                    if (err != null) {
-                        text = "ERROR: " + err;
-                    } else {
                         try {
                             HtmlOut out = new HtmlOut();
                             SimpleScriptContext context = new SimpleScriptContext();
-                            context.setAttribute("out", out, ScriptContext.ENGINE_SCOPE);
-                            context.setAttribute("header", a.getHeader(), ScriptContext.ENGINE_SCOPE);
                             Document doc = JsDomWrapper.parseDoc(a.getXml());
                             context.setAttribute("articleDoc", doc, ScriptContext.ENGINE_SCOPE);
                             context.setAttribute("article", new JsDomWrapper(doc.getDocumentElement()),
@@ -70,7 +64,6 @@ public class ExportOutput {
                         } catch (Exception ex) {
                             text = "ERROR: " + ex.getMessage();
                         }
-                    }
 
                     wr.write("## " + id + "\n");
                     wr.write(text + "\n");

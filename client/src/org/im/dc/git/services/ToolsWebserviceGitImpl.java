@@ -14,7 +14,7 @@ import org.im.dc.service.dto.ArticleFull;
 import org.im.dc.service.dto.Header;
 import org.im.dc.service.dto.InitialData;
 import org.im.dc.service.dto.Related;
-
+/*
 public class ToolsWebserviceGitImpl implements ToolsWebservice {
     static Config config;
 
@@ -86,3 +86,4 @@ public class ToolsWebserviceGitImpl implements ToolsWebservice {
         return null;
     }
 }
+*/

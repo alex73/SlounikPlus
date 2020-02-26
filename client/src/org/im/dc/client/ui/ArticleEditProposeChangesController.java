@@ -34,7 +34,7 @@ public class ArticleEditProposeChangesController extends BaseController<ArticleE
                 byte[] proposedXml = parent.wasChanged ? parent.extractXml() : null;
 
                 String err = WS.getToolsWebservice().validate(WS.header, parent.article.article.type,
-                        parent.article.article.id, parent.article.article.header, proposedXml);
+                        parent.article.article.id, proposedXml);
                 if (err != null) {
                     if (JOptionPane.showConfirmDialog(window,
                             "Памылка валідацыі: " + err + "\nЗахоўваць нягледзячы на гэта ?", "Памылка",

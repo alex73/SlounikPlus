@@ -19,9 +19,7 @@ import javax.xml.ws.BindingProvider;
 import javax.xml.ws.Service;
 import javax.xml.ws.handler.MessageContext;
 
-import org.im.dc.git.services.ArticleWebserviceGitImpl;
 import org.im.dc.git.services.InitWebserviceGitImpl;
-import org.im.dc.git.services.ToolsWebserviceGitImpl;
 import org.im.dc.service.AppConst;
 import org.im.dc.service.ArticleWebservice;
 import org.im.dc.service.InitWebservice;
@@ -69,8 +67,8 @@ public class WS {
 
         GitProc.INSTANCE = new GitProc(GitProc.REPO_DIR, url);
         initWebservice = new InitWebserviceGitImpl();
-        articleService = new ArticleWebserviceGitImpl();
-        toolsWebservice = new ToolsWebserviceGitImpl();
+        //articleService = new ArticleWebserviceGitImpl();
+       // toolsWebservice = new ToolsWebserviceGitImpl();
     }
 
     private static void setupCompression(BindingProvider provider) {

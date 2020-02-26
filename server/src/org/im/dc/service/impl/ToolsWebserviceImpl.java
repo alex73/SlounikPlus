@@ -1,19 +1,14 @@
 package org.im.dc.service.impl;
 
-import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.jws.WebService;
-import javax.script.ScriptContext;
 import javax.script.ScriptException;
-import javax.script.SimpleScriptContext;
-import javax.xml.validation.Validator;
 
 import org.im.dc.config.ConfigLoad;
 import org.im.dc.config.PermissionChecker;
@@ -26,20 +21,15 @@ import org.im.dc.server.db.RecArticle;
 import org.im.dc.server.db.RecArticleHistory;
 import org.im.dc.server.db.RecComment;
 import org.im.dc.server.db.RecIssue;
-import org.im.dc.server.js.JsDomWrapper;
-import org.im.dc.server.js.JsProcessing;
+import org.im.dc.service.OutputSummaryStorage;
 import org.im.dc.service.ToolsWebservice;
-import org.im.dc.service.ValidationHelper;
-import org.im.dc.service.ValidationSummaryStorage;
 import org.im.dc.service.dto.ArticleFull;
 import org.im.dc.service.dto.ArticlesFilter;
 import org.im.dc.service.dto.Header;
 import org.im.dc.service.dto.InitialData;
 import org.im.dc.service.dto.Related;
-import org.im.dc.service.js.HtmlOut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
 
 @WebService(endpointInterface = "org.im.dc.service.ToolsWebservice")
 public class ToolsWebserviceImpl implements ToolsWebservice {
@@ -67,82 +57,6 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
 
     @Override
     public void getStatistics(Header header) throws Exception {
-    }
-
-    @Override
-    public String validate(Header header, String articleType, int articleId, String articleHeader, byte[] xml)
-            throws Exception {
-        LOG.info(">> validate(" + header.user + ")");
-        long startTime = System.currentTimeMillis();
-        check(header);
-
-        String err;
-        try {
-            RecArticle a = new RecArticle();
-            a.setArticleId(articleId);
-            a.setArticleType(articleType);
-            a.setHeader(articleHeader);
-            a.setXml(xml);
-            err = ArticleWebserviceImpl.validateArticle(a, new ValidationSummaryStorage());
-        } catch (Exception ex) {
-            throw new RuntimeException("Памылка ў артыкуле #" + articleId);
-        }
-
-        LOG.info("<< validate (" + (System.currentTimeMillis() - startTime) + "ms)");
-        return err;
-    }
-
-    @Override
-    public String validateAll(Header header, String articleType) throws Exception {
-        LOG.info(">> validateAll(" + header.user + "," + articleType + ")");
-        long startTime = System.currentTimeMillis();
-        check(header);
-        PermissionChecker.userRequiresCommonPermission(Config.getConfig(), header.user, CommonPermission.FULL_VALIDATION);
-
-        List<Integer> articleIds = Db.execAndReturn((api) -> api.getArticleMapper().selectAllIds(articleType));
-
-        ValidationSummaryStorage storage = new ValidationSummaryStorage();
-        for (int id : articleIds) {
-            Db.exec((api) -> {
-                RecArticle a = api.getArticleMapper().selectArticleForUpdate(id);
-                String err;
-                try {
-                    err = ArticleWebserviceImpl.validateArticle(a, storage);
-                } catch (Exception ex) {
-                    throw new RuntimeException("Памылка ў артыкуле #" + id);
-                }
-                Date prevUpdated = a.getLastUpdated();
-                a.setValidationError(err);
-                a.setLastUpdated(new Date());
-                int u = api.getArticleMapper().updateArticle(a, prevUpdated);
-                if (u != 1) {
-                    LOG.info("<< validateAll: db was not updated");
-                    throw new RuntimeException("No updated. Possible somebody other updated");
-                }
-            });
-        }
-
-
-        String result;
-        try {
-            HtmlOut out = new HtmlOut();
-            SimpleScriptContext context = new SimpleScriptContext();
-            context.setAttribute("mode", "validate-summary", ScriptContext.ENGINE_SCOPE);
-            context.setAttribute("out", out, ScriptContext.ENGINE_SCOPE);
-            context.setAttribute("summaryStorage", storage, ScriptContext.ENGINE_SCOPE);
-            JsProcessing.exec(new File(Config.getConfigDir(), articleType + ".js").getAbsolutePath(), context);
-            out.normalize();
-            result = out.toString();
-        } catch (ScriptException ex) {
-            ex.printStackTrace();
-            result = "Script execution error: " + ex.getCause().getMessage();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            result = "Памылка агульнай валідацыі: " + ex.getMessage();
-        }
-
-        LOG.info("<< validateAll (" + (System.currentTimeMillis() - startTime) + "ms)");
-        return result;
     }
 
     @Override
@@ -236,40 +150,53 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
         LOG.info("<< addArticles (" + (System.currentTimeMillis() - startTime) + "ms)");
     }
 
+    /**
+     * Validate only one article during read/write for edit.
+     */
     @Override
-    public String preparePreview(Header header, String articleType, String articleHeader, byte[] xml) throws Exception {
+    public String validate(Header header, String articleType, int articleId, byte[] xml) throws Exception {
+        LOG.info(">> validate(" + header.user + ")");
+        long startTime = System.currentTimeMillis();
+        check(header);
+
+        String err;
+        try {
+            RecArticle a = new RecArticle();
+            a.setArticleId(articleId);
+            a.setArticleType(articleType);
+            a.setXml(xml);
+
+            OutputSummaryStorage storage = JsHelper.previewSomeArticles(articleType, Arrays.asList(a));
+            err = String.join("\n", storage.getArticleInfo(a.getArticleId()).errors);
+        } catch (Exception ex) {
+            throw new RuntimeException("Памылка ў артыкуле");
+        }
+
+        LOG.info("<< validate (" + (System.currentTimeMillis() - startTime) + "ms)");
+        return err;
+    }
+
+    /**
+     * Prepare preview only one article from GUI.
+     */
+    @Override
+    public OutputSummaryStorage preparePreview(Header header, String articleType, int articleId, byte[] xml) throws Exception {
         LOG.info(">> preparePreview(" + header.user + ")");
         long startTime = System.currentTimeMillis();
         check(header);
-        PermissionChecker.userRequiresTypePermission(Config.getConfig(), header.user, articleType, TypePermission.VIEW_OUTPUT);
+        PermissionChecker.userRequiresTypePermission(Config.getConfig(), header.user, articleType,
+                TypePermission.VIEW_OUTPUT);
 
-        ValidationSummaryStorage storage = new ValidationSummaryStorage();
         try {
             RecArticle a = new RecArticle();
+            a.setArticleId(articleId);
             a.setArticleType(articleType);
-            a.setHeader(articleHeader);
             a.setXml(xml);
-            String err = ArticleWebserviceImpl.validateArticle(a, storage);
-            if (err != null) {
-                throw new Exception(err);
-            }
 
-            Validator validator = Config.schemas.get(a.getArticleType()).newValidator();
-            ValidationHelper helper = new ValidationHelper(a.getArticleId(), validator, a.getXml());
-            HtmlOut out = new HtmlOut();
-            SimpleScriptContext context = new SimpleScriptContext();
-            context.setAttribute("out", out, ScriptContext.ENGINE_SCOPE);
-            context.setAttribute("helper", helper, ScriptContext.ENGINE_SCOPE);
-            context.setAttribute("header", articleHeader, ScriptContext.ENGINE_SCOPE);
-            Document doc = JsDomWrapper.parseDoc(xml);
-            context.setAttribute("articleDoc", doc, ScriptContext.ENGINE_SCOPE);
-            context.setAttribute("article", new JsDomWrapper(doc.getDocumentElement()), ScriptContext.ENGINE_SCOPE);
-            context.setAttribute("mode", "output", ScriptContext.ENGINE_SCOPE);
-            context.setAttribute("summaryStorage", storage, ScriptContext.ENGINE_SCOPE);
-            JsProcessing.exec(new File(Config.getConfigDir(), articleType + ".js").getAbsolutePath(), context);
-            out.normalize();
+            OutputSummaryStorage storage = JsHelper.previewSomeArticles(articleType, Arrays.asList(a));
+
             LOG.info("<< preparePreview (" + (System.currentTimeMillis() - startTime) + "ms)");
-            return out.toString();
+            return storage;
         } catch (ScriptException ex) {
             ex.printStackTrace();
             throw new Exception(ex.getCause().getMessage());
@@ -279,24 +206,59 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
         }
     }
 
+    /**
+     * Prepare preview for several articles.
+     */
     @Override
-    public String[] preparePreviews(Header header, String articleType, int[] articleIds) throws Exception {
+    public OutputSummaryStorage preparePreviews(Header header, String articleType, int[] articleIds) throws Exception {
         LOG.info(">> preparePreviews(" + header.user + ")");
         long startTime = System.currentTimeMillis();
         check(header);
-        PermissionChecker.userRequiresTypePermission(Config.getConfig(), header.user, articleType, TypePermission.VIEW_OUTPUT);
+        PermissionChecker.userRequiresTypePermission(Config.getConfig(), header.user, articleType,
+                TypePermission.VIEW_OUTPUT);
 
         try {
-            Map<Integer, RecArticle> articlesMap = new HashMap<>();
-            Db.exec((api) -> {
+            List<RecArticle> todo = Db.execAndReturn((api) -> {
+                List<RecArticle> r = new ArrayList<>();
                 List<RecArticle> articles = api.getArticleMapper().selectArticles(articleIds);
-                articles.forEach(a -> articlesMap.put(a.getArticleId(), a));
+                for (RecArticle a : articles) {
+                    if (a == null) {
+                        // no such article
+                        continue;
+                    }
+                    if (!articleType.equals(a.getArticleType())) {
+                        LOG.warn("<< preparePreviews: wrong type/id requested");
+                        throw new Exception("Запыт няправільнага ID для вызначанага тыпу");
+                    }
+                    r.add(a);
+                }
+                return r;
             });
 
-            ValidationSummaryStorage storage = new ValidationSummaryStorage();
-            String[] result = new String[articleIds.length];
-            for (int i = 0; i < articleIds.length; i++) {
-                RecArticle a = articlesMap.get(articleIds[i]);
+            OutputSummaryStorage storage = JsHelper.previewSomeArticles(articleType, todo);
+
+            LOG.info("<< preparePreviews (" + (System.currentTimeMillis() - startTime) + "ms)");
+            return storage;
+        } catch (Exception ex) {
+            LOG.error("Error in preparePreviews", ex);
+            throw ex;
+        }
+    }
+
+    /**
+     * Prepare preview for all articles, save validation errors for each article, then validate summaries.
+     */
+    @Override
+    public OutputSummaryStorage previewValidateAll(Header header, String articleType) throws Exception {
+        LOG.info(">> validateAll(" + header.user + "," + articleType + ")");
+        long startTime = System.currentTimeMillis();
+        check(header);
+        PermissionChecker.userRequiresCommonPermission(Config.getConfig(), header.user, CommonPermission.FULL_VALIDATION);
+
+        List<RecArticle> todo = Db.execAndReturn((api) -> {
+            List<RecArticle> r = new ArrayList<>();
+            List<RecArticle> articles = api.getArticleMapper().getAllArticles(articleType);
+            for (RecArticle a : articles) {
                 if (a == null) {
                     // no such article
                     continue;
@@ -305,33 +267,41 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
                     LOG.warn("<< preparePreviews: wrong type/id requested");
                     throw new Exception("Запыт няправільнага ID для вызначанага тыпу");
                 }
-                String err = ArticleWebserviceImpl.validateArticle(a, storage);
-                if (err != null) {
-                    throw new Exception(err);
-                }
-
-                HtmlOut out = new HtmlOut();
-                ValidationHelper helper = new ValidationHelper(a.getArticleId(), null, a.getXml());
-                SimpleScriptContext context = new SimpleScriptContext();
-                context.setAttribute("out", out, ScriptContext.ENGINE_SCOPE);
-                context.setAttribute("helper", helper, ScriptContext.ENGINE_SCOPE);
-                context.setAttribute("header", a.getHeader(), ScriptContext.ENGINE_SCOPE);
-                Document doc = JsDomWrapper.parseDoc(a.getXml());
-                context.setAttribute("articleDoc", doc, ScriptContext.ENGINE_SCOPE);
-                context.setAttribute("article", new JsDomWrapper(doc.getDocumentElement()), ScriptContext.ENGINE_SCOPE);
-                context.setAttribute("mode", "output", ScriptContext.ENGINE_SCOPE);
-                context.setAttribute("summaryStorage", storage, ScriptContext.ENGINE_SCOPE);
-                JsProcessing.exec(new File(Config.getConfigDir(), articleType + ".js").getAbsolutePath(), context);
-                out.normalize();
-                result[i] = out.toString();
+                r.add(a);
             }
+            return r;
+        });
 
-            LOG.info("<< preparePreviews (" + (System.currentTimeMillis() - startTime) + "ms)");
-            return result;
+        OutputSummaryStorage storage = JsHelper.previewSomeArticles(articleType, todo);
+        for (RecArticle aa : todo) {
+            OutputSummaryStorage.ArticleInfo ai = storage.getArticleInfo(aa.getArticleId());
+            Db.exec((api) -> {
+                RecArticle a = api.getArticleMapper().selectArticleForUpdate(aa.getArticleId());
+                Date prevUpdated = a.getLastUpdated();
+
+                a.setValidationError(String.join("\n", ai.errors));
+                a.setHeader(ai.header);
+                a.setLinkedTo(ai.linkedTo.toArray(new String[0]));
+                a.setTextForSearch(ai.textForSearch);
+
+                a.setLastUpdated(new Date());
+                int u = api.getArticleMapper().updateArticle(a, prevUpdated);
+                if (u != 1) {
+                    LOG.info("<< validateAll: db was not updated");
+                    throw new RuntimeException("Possible somebody other updated article #" + a.getArticleId());
+                }
+            });
+        }
+
+        try {
+            JsHelper.validateSummary(articleType, storage);
         } catch (Exception ex) {
-            LOG.error("Error in preparePreviews", ex);
+            ex.printStackTrace();
             throw ex;
         }
+
+        LOG.info("<< validateAll (" + (System.currentTimeMillis() - startTime) + "ms)");
+        return storage;
     }
 
     @Override
