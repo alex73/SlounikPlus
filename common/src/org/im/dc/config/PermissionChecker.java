@@ -1,5 +1,7 @@
 package org.im.dc.config;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -28,36 +30,37 @@ public class PermissionChecker {
         return false;
     }
 
-    public static String getUserRole(Config config, String user) {
+    public static Set<String> getUserRoles(Config config, String user) {
         for (User u : config.getUsers().getUser()) {
             if (u.getName().equals(user)) {
-                return u.getRole();
+                return new TreeSet<>(Arrays.asList(u.getRoles().split(",")));
             }
         }
-        return null;
+        throw new RuntimeException("User not defined: " + user);
     }
 
     public static Set<String> getUserPermissions(Config config, String user) {
-        String userRole = getUserRole(config, user);
-        for (Role r : config.getRoles().getRole()) {
-            if (r.getName().equals(userRole)) {
-                Set<String> result = new TreeSet<>();
-                r.getPermission().forEach(cp -> result.add(cp.name()));
-                return result;
+        Set<String> result = new TreeSet<>();
+        for (String userRole : getUserRoles(config, user)) {
+            for (Role r : config.getRoles().getRole()) {
+                if (r.getName().equals(userRole)) {
+                    r.getPermission().forEach(cp -> result.add(cp.name()));
+                }
             }
         }
-        throw new RuntimeException("Roles not defined for user role: " + userRole);
+        return result;
     }
 
     public static Map<String, Set<String>> getUserPermissionsByType(Config config, String user) {
-        String userRole = getUserRole(config, user);
         Map<String, Set<String>> result = new TreeMap<>();
-        for (Type t : config.getTypes().getType()) {
-            Set<String> o = new TreeSet<>();
-            result.put(t.getId(), o);
-            for (Permissions ps : t.getPermissions()) {
-                if (ps.getRole().equals(userRole)) {
-                    ps.getPermission().forEach(p -> o.add(p.name()));
+        for (String userRole : getUserRoles(config, user)) {
+            for (Type t : config.getTypes().getType()) {
+                Set<String> o = new TreeSet<>();
+                result.put(t.getId(), o);
+                for (Permissions ps : t.getPermissions()) {
+                    if (ps.getRole().equals(userRole)) {
+                        ps.getPermission().forEach(p -> o.add(p.name()));
+                    }
                 }
             }
         }
@@ -86,12 +89,13 @@ public class PermissionChecker {
      */
 
     public static void userRequiresCommonPermission(Config config, String user, CommonPermission perm) {
-        String userRole = getUserRole(config, user);
-        for (Role r : config.getRoles().getRole()) {
-            if (r.getName().equals(userRole)) {
-                for (CommonPermission p : r.getPermission()) {
-                    if (perm.equals(p)) {
-                        return;
+        for (String userRole : getUserRoles(config, user)) {
+            for (Role r : config.getRoles().getRole()) {
+                if (r.getName().equals(userRole)) {
+                    for (CommonPermission p : r.getPermission()) {
+                        if (perm.equals(p)) {
+                            return;
+                        }
                     }
                 }
             }
@@ -100,13 +104,14 @@ public class PermissionChecker {
     }
 
     public static void userRequiresTypePermission(Config config, String user, String articleType, TypePermission perm) {
-        String userRole = getUserRole(config, user);
-        Type type = getType(config, articleType);
-        for (Permissions ps : type.getPermissions()) {
-            if (ps.getRole().equals(userRole)) {
-                for (TypePermission p : ps.getPermission()) {
-                    if (perm.equals(p)) {
-                        return;
+        for (String userRole : getUserRoles(config, user)) {
+            Type type = getType(config, articleType);
+            for (Permissions ps : type.getPermissions()) {
+                if (ps.getRole().equals(userRole)) {
+                    for (TypePermission p : ps.getPermission()) {
+                        if (perm.equals(p)) {
+                            return;
+                        }
                     }
                 }
             }
@@ -134,12 +139,13 @@ public class PermissionChecker {
         if (!isUserAssigned(user, assignedUsers)) {
             return false;
         }
-        String userRole = getUserRole(config, user);
-        Type t = getType(config, articleType);
-        for (State st : t.getState()) {
-            if (st.getName().equals(articleState) && st.getEditRoles() != null) {
-                if (roleInRolesList(config, userRole, st.getEditRoles())) {
-                    return true;
+        for (String userRole : getUserRoles(config, user)) {
+            Type t = getType(config, articleType);
+            for (State st : t.getState()) {
+                if (st.getName().equals(articleState) && st.getEditRoles() != null) {
+                    if (roleInRolesList(config, userRole, st.getEditRoles())) {
+                        return true;
+                    }
                 }
             }
         }
@@ -151,13 +157,14 @@ public class PermissionChecker {
         if (!isUserAssigned(user, assignedUsers)) {
             return result;
         }
-        String userRole = getUserRole(config, user);
-        Type t = getType(config, articleType);
-        for (State st : t.getState()) {
-            if (st.getName().equals(articleState) && st.getEditRoles() != null) {
-                for (Change ch : st.getChange()) {
-                    if (roleInRolesList(config, userRole, ch.getRoles())) {
-                        result.add(ch.getTo());
+        for (String userRole : getUserRoles(config, user)) {
+            Type t = getType(config, articleType);
+            for (State st : t.getState()) {
+                if (st.getName().equals(articleState) && st.getEditRoles() != null) {
+                    for (Change ch : st.getChange()) {
+                        if (roleInRolesList(config, userRole, ch.getRoles())) {
+                            result.add(ch.getTo());
+                        }
                     }
                 }
             }
@@ -167,13 +174,14 @@ public class PermissionChecker {
 
     public static boolean canUserChangeArticleState(Config config, String user, String articleType, String articleState,
             String newState, String[] assignedUsers) {
-        String userRole = getUserRole(config, user);
-        // check if common permission allow to force change status
-        for (Role r : config.getRoles().getRole()) {
-            if (r.getName().equals(userRole)) {
-                for (CommonPermission p : r.getPermission()) {
-                    if (CommonPermission.FORCE_STATE_CHANGE.equals(p)) {
-                        return true;
+        for (String userRole : getUserRoles(config, user)) {
+            // check if common permission allow to force change status
+            for (Role r : config.getRoles().getRole()) {
+                if (r.getName().equals(userRole)) {
+                    for (CommonPermission p : r.getPermission()) {
+                        if (CommonPermission.FORCE_STATE_CHANGE.equals(p)) {
+                            return true;
+                        }
                     }
                 }
             }
@@ -184,13 +192,15 @@ public class PermissionChecker {
             return false;
         }
         Type t = getType(config, articleType);
-        for (State st : t.getState()) {
-            if (st.getName().equals(articleState)) {
-                for (Change ch : st.getChange()) {
-                    if (ch.getTo().equals(newState)) {
-                        String toRoles = ch.getRoles();
-                        if (roleInRolesList(config, userRole, toRoles)) {
-                            return true;
+        for (String userRole : getUserRoles(config, user)) {
+            for (State st : t.getState()) {
+                if (st.getName().equals(articleState)) {
+                    for (Change ch : st.getChange()) {
+                        if (ch.getTo().equals(newState)) {
+                            String toRoles = ch.getRoles();
+                            if (roleInRolesList(config, userRole, toRoles)) {
+                                return true;
+                            }
                         }
                     }
                 }

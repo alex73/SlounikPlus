@@ -1,11 +1,13 @@
 package org.im.dc.client.ui.struct;
 
+import java.util.Set;
+
 import org.im.dc.client.ui.ArticleEditController;
 import org.im.dc.client.ui.struct.AnnotationInfo.RORW;
 
 public class ArticleUIContext {
     public final String articleTypeId;
-    public String userRole;
+    public Set<String> userRoles;
     public String articleState;
     public ArticleEditController editController;
 
@@ -16,7 +18,7 @@ public class ArticleUIContext {
     public boolean getWritable(boolean parentWritable, AnnotationInfo ann) {
         Boolean wr = null;
         for (RORW e : ann.enables) {
-            if (e.role.equals("*") || e.role.equals(userRole)) {
+            if (e.role.equals("*") || userRoles.contains(e.role)) {
                 if (e.state.equals("*") || e.state.equals(articleState)) {
                     wr = e.writable;
                 }
@@ -31,7 +33,7 @@ public class ArticleUIContext {
     public boolean getVisible(boolean parentVisible, AnnotationInfo ann) {
         Boolean wr = null;
         for (RORW e : ann.visible) {
-            if (e.role.equals("*") || e.role.equals(userRole)) {
+            if (e.role.equals("*") || userRoles.contains(e.role)) {
                 if (e.state.equals("*") || e.state.equals(articleState)) {
                     wr = e.writable;
                 }

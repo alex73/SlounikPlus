@@ -6,7 +6,9 @@ import java.io.File;
 import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamWriter;
@@ -54,7 +56,7 @@ public class UiTest {
             context.editController = new ArticleEditController(ti);
         }
         context.articleState = "0";
-        context.userRole = "укладальнік";
+        context.userRoles = new TreeSet<>(Arrays.asList("укладальнік"));
 
         // IXSContainer c = SchemaLoader.createUI(context);
         // System.out.println(c.dump(""));

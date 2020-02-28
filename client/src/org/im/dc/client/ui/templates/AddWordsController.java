@@ -6,6 +6,7 @@ import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.DefaultComboBoxModel;
@@ -43,8 +44,8 @@ public abstract class AddWordsController extends BaseController<AddWordsDialog> 
         window.btnCancel.addActionListener((e) -> window.dispose());
 
         window.cbInitialState.setModel(new DefaultComboBoxModel<>(new Vector<>(MainController.initialData.states)));
-        for (Map.Entry<String, String> en : MainController.initialData.allUsers.entrySet()) {
-            JCheckBox cb = new JCheckBox(en.getKey() + " (" + en.getValue() + ')');
+        for (Map.Entry<String, String[]> en : MainController.initialData.allUsers.entrySet()) {
+            JCheckBox cb = new JCheckBox(en.getKey() + " (" + String.join(",", en.getValue()) + ')');
             cb.setName(en.getKey());
             window.panelUsers.add(cb);
         }

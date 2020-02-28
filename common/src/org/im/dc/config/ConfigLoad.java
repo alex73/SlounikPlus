@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.Reader;
 import java.nio.file.Files;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -176,9 +177,9 @@ public class ConfigLoad {
         result.states.addAll(config.getStates().getState());
         result.allUsers = new TreeMap<>();
         for (User u : config.getUsers().getUser()) {
-            result.allUsers.put(u.getName(), u.getRole());
+            result.allUsers.put(u.getName(), u.getRoles().split(","));
         }
-        result.currentUserRole = PermissionChecker.getUserRole(config, user);
+        result.currentUserRoles = PermissionChecker.getUserRoles(config, user);
 
         return result;
     }
@@ -195,8 +196,10 @@ public class ConfigLoad {
             if (!users.add(u.getName())) {
                 throw new RuntimeException("Duplicate user in config: " + u.getName());
             }
-            if (!roles.contains(u.getRole())) {
-                throw new RuntimeException("There is no specified role: " + u.getRole());
+            for (String r : u.getRoles().split(",")) {
+                if (!roles.contains(r)) {
+                    throw new RuntimeException("There is no specified role: " + r);
+                }
             }
         }
         Set<String> states = new TreeSet<>();

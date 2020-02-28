@@ -5,6 +5,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
@@ -26,10 +27,10 @@ public class ReassignController extends BaseController<ReassignDialog> {
         window.btnReassign.addActionListener(reassign);
         window.btnCancel.addActionListener((e) -> window.dispose());
 
-        for (Map.Entry<String, String> en : MainController.initialData.allUsers.entrySet()) {
+        for (Map.Entry<String, String[]> en : MainController.initialData.allUsers.entrySet()) {
             int c = calcForUser(articles, en.getKey());
-            JCheckBox cb = new JCheckBox(
-                    en.getKey() + (c > 0 ? " (" + en.getValue() + ") - на яго прызначана " + c + " слоў" : ""));
+            JCheckBox cb = new JCheckBox(en.getKey()
+                    + (c > 0 ? " (" + String.join(",", en.getValue()) + ") - на яго прызначана " + c + " слоў" : ""));
             cb.setName(en.getKey());
             if (c > 0) {
                 cb.setSelected(true);

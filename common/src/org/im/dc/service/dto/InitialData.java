@@ -11,9 +11,9 @@ public class InitialData {
     public String headerLocale;
     public String stress;
     public List<TypeInfo> articleTypes = new ArrayList<>();
-    // map: key=user, value=role
-    public Map<String, String> allUsers;
-    public String currentUserRole;
+    // map: key=user, value=roles
+    public Map<String, String[]> allUsers;
+    public Set<String> currentUserRoles;
     public List<String> states = new ArrayList<>(); // TODO make states per type and remove global list from xml
     public Set<String> currentUserPermissions = new TreeSet<>();
     public Map<String, byte[]> xsds;

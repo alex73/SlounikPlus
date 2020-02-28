@@ -40,7 +40,7 @@
 		<xs:complexType>
 			<xs:attribute name="name" type="xs:string" use="required" />
 			<xs:attribute name="pass" type="xs:string" use="optional" />
-			<xs:attribute name="role" type="xs:string" use="required" />
+			<xs:attribute name="roles" type="xs:string" use="required" />
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="states">
