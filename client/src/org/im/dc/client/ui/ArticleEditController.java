@@ -253,10 +253,8 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
                         OutputSummaryStorage result = WS.getToolsWebservice().preparePreview(WS.header,
                                 article.article.type, article.article.id, extractXml());
                         StringBuilder text = new StringBuilder();
-                        result.articleInfos.values().stream().flatMap(ai -> ai.errors.stream())
-                                .forEach(e -> text.append("<p>ПАМЫЛКА: " + e + "</p>\n"));
-                        result.articleInfos.values().stream().flatMap(ai -> ai.outputs.stream())
-                                .forEach(o -> text.append("<p>" + o.html + "</p>\n"));
+                        result.errors.forEach(e -> text.append("<p>ПАМЫЛКА: " + e.error + "</p>\n"));
+                        result.outputs.forEach(o -> text.append("<p>" + o.html + "</p>\n"));
                         preview = "<!DOCTYPE html>\n<html><head><meta charset=\"UTF-8\"></head><body>\n" + text
                                 + "\n</body></html>\n";
                     }
@@ -595,11 +593,10 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
 
                 OutputSummaryStorage result = WS.getToolsWebservice().preparePreview(WS.header, article.article.type,
                         article.article.id, article.article.xml);
-                String err = result.articleInfos.values().stream().flatMap(ai -> ai.errors.stream())
-                        .filter(e -> e != null).findFirst().orElse(null);
-                if (err != null) {
+                if (!result.errors.isEmpty()) {
                     if (JOptionPane.showConfirmDialog(window,
-                            MessageFormat.format(BUNDLE.getString("Message.Error.Validation"), err),
+                            MessageFormat.format(BUNDLE.getString("Message.Error.Validation"),
+                                    result.errors.get(0).error),
                             BUNDLE.getString("Message.ErrorTitle"),
                             JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION) {
                         return;

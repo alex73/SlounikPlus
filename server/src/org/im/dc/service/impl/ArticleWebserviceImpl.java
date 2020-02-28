@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.jws.WebService;
 
@@ -71,11 +72,11 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
         }
 
         OutputSummaryStorage storage = JsHelper.previewSomeArticles(rec.getArticleType(), Arrays.asList(rec));
-        OutputSummaryStorage.ArticleInfo ai = storage.getArticleInfo(rec.getArticleId());
-        rec.setValidationError(String.join("\n", ai.errors));
-        rec.setHeader(ai.header);
-        rec.setLinkedTo(ai.linkedTo.toArray(new String[0]));
-        rec.setTextForSearch(ai.textForSearch);
+        rec.setValidationError(
+                String.join("\n", storage.errors.stream().map(e -> e.error).collect(Collectors.toList())));
+        rec.setHeader(storage.headers.get(rec.getArticleId()));
+        rec.setLinkedTo(storage.linkedTo.get(rec.getArticleId()));
+        rec.setTextForSearch(storage.textForSearch.get(rec.getArticleId()));
     }
 
     private ArticleFullInfo getAdditionalArticleInfo(Header header, RecArticle rec) throws Exception {

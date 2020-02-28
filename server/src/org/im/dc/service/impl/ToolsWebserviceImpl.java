@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.jws.WebService;
 import javax.script.ScriptException;
@@ -167,7 +168,8 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
             a.setXml(xml);
 
             OutputSummaryStorage storage = JsHelper.previewSomeArticles(articleType, Arrays.asList(a));
-            err = String.join("\n", storage.getArticleInfo(a.getArticleId()).errors);
+            err = String.join("\n", storage.errors.stream().filter(e -> e.articleId == a.getArticleId())
+                    .map(e -> e.error).collect(Collectors.toList()));
         } catch (Exception ex) {
             throw new RuntimeException("Памылка ў артыкуле");
         }
@@ -236,6 +238,7 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
             });
 
             OutputSummaryStorage storage = JsHelper.previewSomeArticles(articleType, todo);
+            JsHelper.validateSummary(articleType, storage, false);
 
             LOG.info("<< preparePreviews (" + (System.currentTimeMillis() - startTime) + "ms)");
             return storage;
@@ -255,51 +258,52 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
         check(header);
         PermissionChecker.userRequiresCommonPermission(Config.getConfig(), header.user, CommonPermission.FULL_VALIDATION);
 
-        List<RecArticle> todo = Db.execAndReturn((api) -> {
-            List<RecArticle> r = new ArrayList<>();
-            List<RecArticle> articles = api.getArticleMapper().getAllArticles(articleType);
-            for (RecArticle a : articles) {
-                if (a == null) {
-                    // no such article
-                    continue;
-                }
-                if (!articleType.equals(a.getArticleType())) {
-                    LOG.warn("<< preparePreviews: wrong type/id requested");
-                    throw new Exception("Запыт няправільнага ID для вызначанага тыпу");
-                }
-                r.add(a);
-            }
-            return r;
-        });
-
-        OutputSummaryStorage storage = JsHelper.previewSomeArticles(articleType, todo);
-        for (RecArticle aa : todo) {
-            OutputSummaryStorage.ArticleInfo ai = storage.getArticleInfo(aa.getArticleId());
-            Db.exec((api) -> {
-                RecArticle a = api.getArticleMapper().selectArticleForUpdate(aa.getArticleId());
-                Date prevUpdated = a.getLastUpdated();
-
-                a.setValidationError(String.join("\n", ai.errors));
-                a.setHeader(ai.header);
-                a.setLinkedTo(ai.linkedTo.toArray(new String[0]));
-                a.setTextForSearch(ai.textForSearch);
-
-                a.setLastUpdated(new Date());
-                int u = api.getArticleMapper().updateArticle(a, prevUpdated);
-                if (u != 1) {
-                    LOG.info("<< validateAll: db was not updated");
-                    throw new RuntimeException("Possible somebody other updated article #" + a.getArticleId());
-                }
-            });
-        }
-
+        OutputSummaryStorage storage;
         try {
-            JsHelper.validateSummary(articleType, storage);
+            List<RecArticle> todo = Db.execAndReturn((api) -> {
+                List<RecArticle> r = new ArrayList<>();
+                List<RecArticle> articles = api.getArticleMapper().getAllArticles(articleType);
+                for (RecArticle a : articles) {
+                    if (a == null) {
+                        // no such article
+                        continue;
+                    }
+                    if (!articleType.equals(a.getArticleType())) {
+                        LOG.warn("<< preparePreviews: wrong type/id requested");
+                        throw new Exception("Запыт няправільнага ID для вызначанага тыпу");
+                    }
+                    r.add(a);
+                }
+                return r;
+            });
+
+            storage = JsHelper.previewSomeArticles(articleType, todo);
+            for (RecArticle aa : todo) {
+                Db.exec((api) -> {
+                    RecArticle a = api.getArticleMapper().selectArticleForUpdate(aa.getArticleId());
+                    Date prevUpdated = a.getLastUpdated();
+
+                    a.setValidationError(
+                            String.join("\n", storage.errors.stream().filter(e -> e.articleId == aa.getArticleId())
+                                    .map(e -> e.error).collect(Collectors.toList())));
+                    a.setHeader(storage.headers.get(aa.getArticleId()));
+                    a.setLinkedTo(storage.linkedTo.get(aa.getArticleId()));
+                    a.setTextForSearch(storage.textForSearch.get(aa.getArticleId()));
+
+                    a.setLastUpdated(new Date());
+                    int u = api.getArticleMapper().updateArticle(a, prevUpdated);
+                    if (u != 1) {
+                        LOG.info("<< validateAll: db was not updated");
+                        throw new RuntimeException("Possible somebody other updated article #" + a.getArticleId());
+                    }
+                });
+            }
+
+            JsHelper.validateSummary(articleType, storage, true);
         } catch (Exception ex) {
-            ex.printStackTrace();
+            LOG.error("Error in validateAll", ex);
             throw ex;
         }
-
         LOG.info("<< validateAll (" + (System.currentTimeMillis() - startTime) + "ms)");
         return storage;
     }

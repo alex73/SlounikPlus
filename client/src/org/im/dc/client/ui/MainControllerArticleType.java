@@ -153,6 +153,7 @@ public class MainControllerArticleType implements IArticleUpdatedListener {
                 ActionListener show = a->{
                     previewer.new LongProcess() {
                         StringBuilder out, outClipboard;
+                        boolean needHr = false;
 
                         @Override
                         protected void exec() throws Exception {
@@ -163,19 +164,22 @@ public class MainControllerArticleType implements IArticleUpdatedListener {
 
                             OutputSummaryStorage articlesPreview = WS.getToolsWebservice().preparePreviews(WS.header,
                                     typeInfo.typeId, articleIds);
-                            articlesPreview.articleInfos.values().stream().flatMap(ai -> ai.errors.stream())
-                                    .forEach(e -> {
-                                        out.append("<b>" + e + "</b><br/>\n");
-                                        outClipboard.append("<b>" + e + "</b><br/>\n");
-                                    });
-                            articlesPreview.articleInfos.values().forEach(ai -> {
-                                ai.outputs.stream().forEach(o -> {
-                                    out.append(o.html);
-                                    outClipboard.append(o.html);
-                                    out.append(" <a href='" + ai.articleId + "'>рэдагаваць</a>\n");
+                            for (OutputSummaryStorage.ArticleError e : articlesPreview.errors) {
+                                out.append("<a href='" + e.articleId + "'>рэдагаваць: " + e.key + "</a> ");
+                                out.append("<b>ПАМЫЛКА: " + e + "</b><br/>\n");
+                                outClipboard.append("<b>ПАМЫЛКА ў " + e.key + ": " + e.error + "</b><br/>\n");
+                                needHr = true;
+                            }
+                            articlesPreview.outputs.forEach(ao -> {
+                                if (needHr) {
                                     out.append("<hr/>\n");
-                                    outClipboard.append("<br/>\n");
-                                });
+                                } else {
+                                    needHr = true;
+                                }
+                                out.append(ao.html);
+                                outClipboard.append(ao.html);
+                                out.append(" <a href='" + ao.articleId + "'>рэдагаваць</a>\n");
+                                outClipboard.append("<br/>\n");
                             });
 
                             out.append("\n</body></html>\n");
