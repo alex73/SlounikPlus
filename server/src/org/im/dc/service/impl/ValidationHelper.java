@@ -1,4 +1,4 @@
-package org.im.dc.service;
+package org.im.dc.service.impl;
 
 import java.io.ByteArrayInputStream;
 import java.util.Set;
@@ -7,7 +7,11 @@ import java.util.TreeSet;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Validator;
 
-import org.im.dc.service.js.HtmlOut;
+import org.im.dc.service.OutputSummaryStorage;
+import org.im.dc.service.OutputSummaryStorage.ArticleError;
+import org.im.dc.service.OutputSummaryStorage.ArticleOutput;
+import org.im.dc.service.impl.js.HtmlOut;
+import org.xml.sax.SAXParseException;
 
 public class ValidationHelper {
     private final OutputSummaryStorage storage;
@@ -35,7 +39,14 @@ public class ValidationHelper {
     }
 
     public void validateByXSD() throws Exception {
-        validator.validate(new StreamSource(new ByteArrayInputStream(xml)));
+        try {
+            validator.validate(new StreamSource(new ByteArrayInputStream(xml)));
+        } catch (SAXParseException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            throw ex;
+        }
     }
 
     public void error(String key, String error) {

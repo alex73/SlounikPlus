@@ -15,7 +15,9 @@ import javax.xml.validation.Validator;
 import org.im.dc.server.Config;
 import org.im.dc.server.Db;
 import org.im.dc.service.OutputSummaryStorage;
-import org.im.dc.service.ValidationHelper;
+import org.im.dc.service.impl.ValidationHelper;
+import org.im.dc.service.impl.js.JsDomWrapper;
+import org.im.dc.service.impl.js.JsProcessing;
 import org.junit.Test;
 
 public class JsValidationTest {
@@ -46,8 +48,8 @@ public class JsValidationTest {
         context.setAttribute("words", words, ScriptContext.ENGINE_SCOPE);
         context.setAttribute("article", new JsDomWrapper(JsDomWrapper.parseDoc(xml).getDocumentElement()), ScriptContext.ENGINE_SCOPE);
         context.setAttribute("mode", "validate", ScriptContext.ENGINE_SCOPE);
-        try {
-            JsProcessing.exec("config/validation.js", context);
+        try (JsProcessing js = new JsProcessing("config/validation.js")) {
+            js.exec(context);
             if (expectedError != null) {
                 fail("Выканалася без памылкі");
             }
@@ -70,6 +72,8 @@ public class JsValidationTest {
         context.setAttribute("article", new JsDomWrapper(JsDomWrapper.parseDoc(xml).getDocumentElement()),
                 ScriptContext.ENGINE_SCOPE);
         context.setAttribute("mode", "validate", ScriptContext.ENGINE_SCOPE);
-        JsProcessing.exec("config/validation.js", context);
+        try (JsProcessing js = new JsProcessing("config/validation.js")) {
+            js.exec(context);
+        }
     }
 }

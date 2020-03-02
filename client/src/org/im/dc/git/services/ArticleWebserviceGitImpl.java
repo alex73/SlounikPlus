@@ -1,33 +1,5 @@
 package org.im.dc.git.services;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-
-import javax.script.ScriptContext;
-import javax.script.ScriptException;
-import javax.script.SimpleScriptContext;
-import javax.xml.validation.Validator;
-
-import org.im.dc.client.GitProc;
-import org.im.dc.config.PermissionChecker;
-import org.im.dc.server.js.JsDomWrapper;
-import org.im.dc.server.js.JsProcessing;
-import org.im.dc.service.ArticleWebservice;
-import org.im.dc.service.ValidationHelper;
-import org.im.dc.service.dto.ArticleCommentFull;
-import org.im.dc.service.dto.ArticleFull;
-import org.im.dc.service.dto.ArticleFullInfo;
-import org.im.dc.service.dto.ArticleHistoryFull;
-import org.im.dc.service.dto.ArticleIssueFull;
-import org.im.dc.service.dto.ArticleShort;
-import org.im.dc.service.dto.ArticlesFilter;
-import org.im.dc.service.dto.Header;
-import org.w3c.dom.Document;
-
 /*public class ArticleWebserviceGitImpl implements ArticleWebservice {
     @Override
     public ArticleFullInfo getArticleFullInfo(Header header, String articleTypeId, int articleId) throws Exception {

@@ -253,6 +253,7 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
                         OutputSummaryStorage result = WS.getToolsWebservice().preparePreview(WS.header,
                                 article.article.type, article.article.id, extractXml());
                         StringBuilder text = new StringBuilder();
+                        result.summaryErrors.forEach(e -> text.append("<p>АГУЛЬНАЯ ПАМЫЛКА: " + e + "</p>\n"));
                         result.errors.forEach(e -> text.append("<p>ПАМЫЛКА: " + e.error + "</p>\n"));
                         result.outputs.forEach(o -> text.append("<p>" + o.html + "</p>\n"));
                         preview = "<!DOCTYPE html>\n<html><head><meta charset=\"UTF-8\"></head><body>\n" + text

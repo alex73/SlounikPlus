@@ -127,11 +127,14 @@
 			lastUpdated = #{record.lastUpdated}
 		WHERE articleId = #{record.articleId}
 	</update>
-	<update id="updateArticleHeader">
+	<update id="updateArticleHeaders">
 		UPDATE Articles
 		SET header = #{record.header},
-			lastUpdated = #{record.lastUpdated}
-		WHERE articleId = #{record.articleId} AND lastUpdated = #{prevLastUpdated}
+			linkedTo = #{record.linkedTo,typeHandler=StringArrayTypeHandler},
+			textForSearch = #{record.textForSearch},
+			lettersCount = #{record.lettersCount},
+			validationError = #{record.validationError}
+		WHERE articleId = #{record.articleId}
 	</update>
 	<update id="updateArticleState">
 		UPDATE Articles

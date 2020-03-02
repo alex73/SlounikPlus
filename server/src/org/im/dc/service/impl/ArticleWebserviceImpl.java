@@ -29,6 +29,7 @@ import org.im.dc.service.dto.ArticleShort;
 import org.im.dc.service.dto.ArticlesFilter;
 import org.im.dc.service.dto.Header;
 import org.im.dc.service.dto.Related;
+import org.im.dc.service.impl.js.JsHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,7 +76,8 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
         rec.setValidationError(
                 String.join("\n", storage.errors.stream().map(e -> e.error).collect(Collectors.toList())));
         rec.setHeader(storage.headers.get(rec.getArticleId()));
-        rec.setLinkedTo(storage.linkedTo.get(rec.getArticleId()));
+        String[] linkedTo = storage.linkedTo.get(rec.getArticleId());
+        rec.setLinkedTo(linkedTo != null ? linkedTo : new String[0]);
         rec.setTextForSearch(storage.textForSearch.get(rec.getArticleId()));
     }
 

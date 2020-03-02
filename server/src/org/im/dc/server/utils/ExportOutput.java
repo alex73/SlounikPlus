@@ -13,12 +13,11 @@ import javax.script.SimpleScriptContext;
 import org.im.dc.server.Config;
 import org.im.dc.server.Db;
 import org.im.dc.server.db.RecArticle;
-import org.im.dc.server.js.JsDomWrapper;
-import org.im.dc.server.js.JsProcessing;
 import org.im.dc.server.startup.Server;
 import org.im.dc.service.OutputSummaryStorage;
-import org.im.dc.service.impl.ArticleWebserviceImpl;
-import org.im.dc.service.js.HtmlOut;
+import org.im.dc.service.impl.js.HtmlOut;
+import org.im.dc.service.impl.js.JsDomWrapper;
+import org.im.dc.service.impl.js.JsProcessing;
 import org.w3c.dom.Document;
 
 /**
@@ -41,12 +40,13 @@ public class ExportOutput {
         Collections.sort(ids);
 
         try (BufferedWriter wr = Files.newBufferedWriter(Paths.get(args[0]))) {
-            OutputSummaryStorage storage = new OutputSummaryStorage();
-            for (int id : ids) {
-                Db.exec((api) -> {
-                    RecArticle a = api.getArticleMapper().selectArticle(id);
+            try (JsProcessing js = new JsProcessing(new File(Config.getConfigDir(), null + ".js").getAbsolutePath())) {
+                OutputSummaryStorage storage = new OutputSummaryStorage();
+                for (int id : ids) {
+                    Db.exec((api) -> {
+                        RecArticle a = api.getArticleMapper().selectArticle(id);
 
-                    String text;
+                        String text;
                         try {
                             HtmlOut out = new HtmlOut();
                             SimpleScriptContext context = new SimpleScriptContext();
@@ -56,18 +56,17 @@ public class ExportOutput {
                                     ScriptContext.ENGINE_SCOPE);
                             context.setAttribute("mode", "output", ScriptContext.ENGINE_SCOPE);
                             context.setAttribute("summaryStorage", storage, ScriptContext.ENGINE_SCOPE);
-                            JsProcessing.exec(
-                                    new File(Config.getConfigDir(), a.getArticleType() + ".js").getAbsolutePath(),
-                                    context);
+                            js.exec(context);
                             out.normalize();
                             text = out.toString();
                         } catch (Exception ex) {
                             text = "ERROR: " + ex.getMessage();
                         }
 
-                    wr.write("## " + id + "\n");
-                    wr.write(text + "\n");
-                });
+                        wr.write("## " + id + "\n");
+                        wr.write(text + "\n");
+                    });
+                }
             }
         }
     }

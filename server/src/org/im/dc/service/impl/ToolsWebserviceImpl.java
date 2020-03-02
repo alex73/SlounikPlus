@@ -29,6 +29,7 @@ import org.im.dc.service.dto.ArticlesFilter;
 import org.im.dc.service.dto.Header;
 import org.im.dc.service.dto.InitialData;
 import org.im.dc.service.dto.Related;
+import org.im.dc.service.impl.js.JsHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -238,7 +239,7 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
             });
 
             OutputSummaryStorage storage = JsHelper.previewSomeArticles(articleType, todo);
-            JsHelper.validateSummary(articleType, storage, false);
+            JsHelper.validateSummary(articleType, storage);
 
             LOG.info("<< preparePreviews (" + (System.currentTimeMillis() - startTime) + "ms)");
             return storage;
@@ -276,30 +277,24 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
                 }
                 return r;
             });
-
+            LOG.info("   validateAll - preview for each article started");
             storage = JsHelper.previewSomeArticles(articleType, todo);
-            for (RecArticle aa : todo) {
-                Db.exec((api) -> {
-                    RecArticle a = api.getArticleMapper().selectArticleForUpdate(aa.getArticleId());
-                    Date prevUpdated = a.getLastUpdated();
-
+            LOG.info("   validateAll - update each article started");
+            for (RecArticle a : todo) {
+                Db.execBatch((api) -> {
                     a.setValidationError(
-                            String.join("\n", storage.errors.stream().filter(e -> e.articleId == aa.getArticleId())
+                            String.join("\n", storage.errors.stream().filter(e -> e.articleId == a.getArticleId())
                                     .map(e -> e.error).collect(Collectors.toList())));
-                    a.setHeader(storage.headers.get(aa.getArticleId()));
-                    a.setLinkedTo(storage.linkedTo.get(aa.getArticleId()));
-                    a.setTextForSearch(storage.textForSearch.get(aa.getArticleId()));
+                    a.setHeader(storage.headers.get(a.getArticleId()));
+                    String[] linkedTo = storage.linkedTo.get(a.getArticleId());
+                    a.setLinkedTo(linkedTo != null ? linkedTo : new String[0]);
+                    a.setTextForSearch(storage.textForSearch.get(a.getArticleId()));
 
-                    a.setLastUpdated(new Date());
-                    int u = api.getArticleMapper().updateArticle(a, prevUpdated);
-                    if (u != 1) {
-                        LOG.info("<< validateAll: db was not updated");
-                        throw new RuntimeException("Possible somebody other updated article #" + a.getArticleId());
-                    }
+                    api.getArticleMapper().updateArticleHeaders(a);
                 });
             }
-
-            JsHelper.validateSummary(articleType, storage, true);
+            LOG.info("   validateAll - summary validation start");
+            JsHelper.validateSummary(articleType, storage);
         } catch (Exception ex) {
             LOG.error("Error in validateAll", ex);
             throw ex;

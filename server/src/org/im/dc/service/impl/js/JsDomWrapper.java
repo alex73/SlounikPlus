@@ -1,4 +1,4 @@
-package org.im.dc.server.js;
+package org.im.dc.service.impl.js;
 
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
@@ -115,7 +115,7 @@ public class JsDomWrapper implements Map<String, Object> {
     }
 
     @Override
-    public Set<java.util.Map.Entry<String, Object>> entrySet() {
+    public Set<Map.Entry<String, Object>> entrySet() {
         throw new RuntimeException("Not implemented");
     }
 }

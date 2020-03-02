@@ -1,4 +1,4 @@
-package org.im.dc.service.js;
+package org.im.dc.service.impl.js;
 
 import java.util.ArrayList;
 import java.util.List;

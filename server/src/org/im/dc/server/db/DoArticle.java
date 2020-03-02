@@ -30,6 +30,8 @@ public interface DoArticle {
 
     int updateArticleHeaderXml(@Param("record") RecArticle rec);
 
+    int updateArticleHeaders(@Param("record") RecArticle rec);
+
     void reassignArticles(@Param("articleIds") int[] articleIds, @Param("users") String[] users);
 
     int updateArticleState(@Param("record") RecArticle rec, @Param("prevLastUpdated") Date prevLastUpdated);

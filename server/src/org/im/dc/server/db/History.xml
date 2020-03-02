@@ -5,7 +5,7 @@
 	<select id="retrieveUserHistory" resultType="RecArticleHistory" resultMap="RecArticleHistoryMap">
 		SELECT ArticlesHistory.*, Articles.header, Articles.articleType
 		FROM ArticlesHistory, Articles
-		WHERE ArticlesHistory.articleId = Articles.articleId AND
+		WHERE ArticlesHistory.articleId = Articles.articleId AND ArticlesHistory.changed > NOW() - interval '1' month AND
 			(Articles.assignedUsers @> ARRAY[#{user}]::varchar[][] OR Articles.watchers @> ARRAY[#{user}]::varchar[][])
 	</select>
 	<select id="retrieveHistory" resultType="RecArticleHistory" resultMap="RecArticleHistoryMap">

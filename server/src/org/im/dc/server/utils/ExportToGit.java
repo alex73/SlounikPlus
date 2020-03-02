@@ -113,7 +113,7 @@ public class ExportToGit {
         Path root = repoPath.toPath();
         Set<String> existFiles = new HashSet<>();
         Files.find(root, Integer.MAX_VALUE, (p, a) -> a.isRegularFile()).map(p -> root.relativize(p).toString())
-                .filter(n -> !n.startsWith(".git/")).forEach(n -> existFiles.add(n));
+                .filter(n -> !n.startsWith(".git/") && !n.startsWith("_db/")).forEach(n -> existFiles.add(n));
 
         boolean changed = false;
         count = 0;

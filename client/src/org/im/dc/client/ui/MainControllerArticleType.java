@@ -164,6 +164,11 @@ public class MainControllerArticleType implements IArticleUpdatedListener {
 
                             OutputSummaryStorage articlesPreview = WS.getToolsWebservice().preparePreviews(WS.header,
                                     typeInfo.typeId, articleIds);
+                            for (String e : articlesPreview.summaryErrors) {
+                                out.append("<b>АГУЛЬНАЯ ПАМЫЛКА: " + e + "</b><br/>\n");
+                                outClipboard.append("<b>АГУЛЬНАЯ ПАМЫЛКА: " + e + "</b><br/>\n");
+                                needHr = true;
+                            }
                             for (OutputSummaryStorage.ArticleError e : articlesPreview.errors) {
                                 out.append("<a href='" + e.articleId + "'>рэдагаваць: " + e.key + "</a> ");
                                 out.append("<b>ПАМЫЛКА: " + e.error + "</b><br/>\n");

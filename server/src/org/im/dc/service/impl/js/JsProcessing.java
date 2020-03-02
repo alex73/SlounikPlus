@@ -1,8 +1,8 @@
-package org.im.dc.server.js;
+package org.im.dc.service.impl.js;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
+import java.io.Closeable;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,7 +10,9 @@ import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 
-public class JsProcessing {
+import org.apache.commons.io.IOUtils;
+
+public class JsProcessing implements Closeable {
 
     private static final ScriptEngineManager FACTORY = new ScriptEngineManager();
 
@@ -22,16 +24,25 @@ public class JsProcessing {
         }
     }
 
-    public static void exec(String scriptFile, ScriptContext context) throws Exception {
+    private final ScriptEngine engine;
+    private final String script;
+
+    public JsProcessing(String scriptFile) throws Exception {
+        engine = FACTORY.getEngineByName("JavaScript");
+        script = IOUtils.toString(new File(scriptFile).toURI(), "UTF-8");
+    }
+
+    public void exec(ScriptContext context) throws Exception {
         synchronized (preprocessors) {
             for (JsPreprocessor p : preprocessors) {
                 p.prepare(context);
             }
         }
-        ScriptEngine engine = FACTORY.getEngineByName("JavaScript");
-        try (BufferedReader rd = new BufferedReader(new InputStreamReader(new FileInputStream(scriptFile), "UTF-8"))) {
-            engine.eval(rd, context);
-        }
+        engine.eval(script, context);
+    }
+
+    @Override
+    public void close() throws IOException {
     }
 
     public interface JsPreprocessor {

@@ -1,4 +1,4 @@
-package org.im.dc.service.js;
+package org.im.dc.service.impl.js;
 
 public interface IHtmlPart {
     void out(StringBuilder out);

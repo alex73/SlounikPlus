@@ -78,6 +78,22 @@ public class Db {
         }
     }
 
+    public static void execBatch(DbExecutor exec) throws Exception {
+        LOG.debug("Start batch transaction");
+        try (SqlSession s = sqlSessionFactory.openSession(ExecutorType.BATCH,
+                TransactionIsolationLevel.READ_COMMITTED)) {
+            try {
+                exec.run(new Api(s));
+                s.commit();
+                LOG.debug("Commit batch transaction");
+            } catch (Throwable ex) {
+                LOG.warn("Error in batch transaction", ex);
+                s.rollback();
+                throw ex;
+            }
+        }
+    }
+
     public static class Api {
         private final SqlSession s;
 
