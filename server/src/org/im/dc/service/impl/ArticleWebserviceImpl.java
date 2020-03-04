@@ -73,8 +73,8 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
         }
 
         OutputSummaryStorage storage = JsHelper.previewSomeArticles(rec.getArticleType(), Arrays.asList(rec));
-        rec.setValidationError(
-                String.join("\n", storage.errors.stream().map(e -> e.error).collect(Collectors.toList())));
+        List<String> errors = storage.errors.stream().map(e -> e.error).collect(Collectors.toList());
+        rec.setValidationError(errors.isEmpty() ? null : String.join("\n", errors));
         rec.setHeader(storage.headers.get(rec.getArticleId()));
         String[] linkedTo = storage.linkedTo.get(rec.getArticleId());
         rec.setLinkedTo(linkedTo != null ? linkedTo : new String[0]);

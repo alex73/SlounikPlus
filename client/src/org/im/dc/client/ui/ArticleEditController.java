@@ -592,12 +592,11 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
             protected void exec() throws Exception {
                 article.article.xml = extractXml();
 
-                OutputSummaryStorage result = WS.getToolsWebservice().preparePreview(WS.header, article.article.type,
-                        article.article.id, article.article.xml);
-                if (!result.errors.isEmpty()) {
+                String error = WS.getToolsWebservice().validate(WS.header, article.article.type, article.article.id,
+                        article.article.xml);
+                if (error != null) {
                     if (JOptionPane.showConfirmDialog(window,
-                            MessageFormat.format(BUNDLE.getString("Message.Error.Validation"),
-                                    result.errors.get(0).error),
+                            MessageFormat.format(BUNDLE.getString("Message.Error.Validation"), error),
                             BUNDLE.getString("Message.ErrorTitle"),
                             JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION) {
                         return;

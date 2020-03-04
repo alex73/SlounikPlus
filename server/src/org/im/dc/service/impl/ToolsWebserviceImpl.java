@@ -169,10 +169,12 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
             a.setXml(xml);
 
             OutputSummaryStorage storage = JsHelper.previewSomeArticles(articleType, Arrays.asList(a));
-            err = String.join("\n", storage.errors.stream().filter(e -> e.articleId == a.getArticleId())
-                    .map(e -> e.error).collect(Collectors.toList()));
+            List<String> errors = storage.errors.stream().filter(e -> e.articleId == a.getArticleId()).map(e -> e.error)
+                    .collect(Collectors.toList());
+            err = errors.isEmpty() ? null : String.join("\n", errors);
         } catch (Exception ex) {
-            throw new RuntimeException("Памылка ў артыкуле");
+            LOG.error("validate error", ex);
+            throw new RuntimeException("Памылка праверкі артыкула", ex);
         }
 
         LOG.info("<< validate (" + (System.currentTimeMillis() - startTime) + "ms)");
@@ -282,9 +284,9 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
             LOG.info("   validateAll - update each article started");
             for (RecArticle a : todo) {
                 Db.execBatch((api) -> {
-                    a.setValidationError(
-                            String.join("\n", storage.errors.stream().filter(e -> e.articleId == a.getArticleId())
-                                    .map(e -> e.error).collect(Collectors.toList())));
+                    List<String> errors = storage.errors.stream().filter(e -> e.articleId == a.getArticleId())
+                            .map(e -> e.error).collect(Collectors.toList());
+                    a.setValidationError(errors.isEmpty() ? null : String.join("\n", errors));
                     a.setHeader(storage.headers.get(a.getArticleId()));
                     String[] linkedTo = storage.linkedTo.get(a.getArticleId());
                     a.setLinkedTo(linkedTo != null ? linkedTo : new String[0]);
