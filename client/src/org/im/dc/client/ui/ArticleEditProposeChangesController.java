@@ -31,16 +31,21 @@ public class ArticleEditProposeChangesController extends BaseController<ArticleE
 
             @Override
             protected void exec() throws Exception {
-                byte[] proposedXml = parent.wasChanged ? parent.extractXml() : null;
+                byte[] proposedXml;
+                if (parent.wasChanged) {
+                    proposedXml = parent.extractXml();
 
-                String err = WS.getToolsWebservice().validate(WS.header, parent.article.article.type,
-                        parent.article.article.id, proposedXml);
-                if (err != null) {
-                    if (JOptionPane.showConfirmDialog(window,
-                            "Памылка валідацыі: " + err + "\nЗахоўваць нягледзячы на гэта ?", "Памылка",
-                            JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION) {
-                        return;
+                    String err = WS.getToolsWebservice().validate(WS.header, parent.article.article.type,
+                            parent.article.article.id, proposedXml);
+                    if (err != null) {
+                        if (JOptionPane.showConfirmDialog(window,
+                                "Памылка валідацыі: " + err + "\nЗахоўваць нягледзячы на гэта ?", "Памылка",
+                                JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION) {
+                            return;
+                        }
                     }
+                } else {
+                    proposedXml = null;
                 }
 
                 parent.article = WS.getArticleService().addIssue(WS.header, parent.article.article.type,
