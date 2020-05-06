@@ -1,29 +1,29 @@
 package org.im.dc.server.utils;
 
-import java.io.BufferedWriter;
-import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
-import javax.script.ScriptContext;
-import javax.script.SimpleScriptContext;
-
+import org.im.dc.gen.config.Type;
 import org.im.dc.server.Config;
 import org.im.dc.server.Db;
 import org.im.dc.server.db.RecArticle;
 import org.im.dc.server.startup.Server;
 import org.im.dc.service.OutputSummaryStorage;
-import org.im.dc.service.impl.js.HtmlOut;
-import org.im.dc.service.impl.js.JsDomWrapper;
-import org.im.dc.service.impl.js.JsProcessing;
-import org.w3c.dom.Document;
+import org.im.dc.service.impl.js.JsHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * It exports all records to HTML.
  */
 public class ExportOutput {
+    private static final Logger LOG = LoggerFactory.getLogger(ExportOutput.class);
+
+    static boolean needHr;
+
     public static void main(String[] args) throws Exception {
         if (args.length != 1) {
             System.err.println("ExportOutput <dir|zip>");
@@ -34,40 +34,53 @@ public class ExportOutput {
         Db.init(System.getProperty("CONFIG_DIR"));
         Server.initPlugins();
 
-        List<Integer> ids = Db.execAndReturn((api) -> {
-            return api.getArticleMapper().selectAllIds(null);
-        });
-        Collections.sort(ids);
-
-        try (BufferedWriter wr = Files.newBufferedWriter(Paths.get(args[0]))) {
-            try (JsProcessing js = new JsProcessing(new File(Config.getConfigDir(), null + ".js").getAbsolutePath())) {
-                OutputSummaryStorage storage = new OutputSummaryStorage();
-                for (int id : ids) {
-                    Db.exec((api) -> {
-                        RecArticle a = api.getArticleMapper().selectArticle(id);
-
-                        String text;
-                        try {
-                            HtmlOut out = new HtmlOut();
-                            SimpleScriptContext context = new SimpleScriptContext();
-                            Document doc = JsDomWrapper.parseDoc(a.getXml());
-                            context.setAttribute("articleDoc", doc, ScriptContext.ENGINE_SCOPE);
-                            context.setAttribute("article", new JsDomWrapper(doc.getDocumentElement()),
-                                    ScriptContext.ENGINE_SCOPE);
-                            context.setAttribute("mode", "output", ScriptContext.ENGINE_SCOPE);
-                            context.setAttribute("summaryStorage", storage, ScriptContext.ENGINE_SCOPE);
-                            js.exec(context);
-                            out.normalize();
-                            text = out.toString();
-                        } catch (Exception ex) {
-                            text = "ERROR: " + ex.getMessage();
-                        }
-
-                        wr.write("## " + id + "\n");
-                        wr.write(text + "\n");
-                    });
+        for (Type type : Config.getConfig().getTypes().getType()) {
+            String articleType = type.getId();
+            List<RecArticle> todo = Db.execAndReturn((api) -> {
+                List<RecArticle> r = new ArrayList<>();
+                List<RecArticle> articles = api.getArticleMapper().getAllArticles(articleType);
+                for (RecArticle a : articles) {
+                    if (a == null) {
+                        // no such article
+                        continue;
+                    }
+                    if (!articleType.equals(a.getArticleType())) {
+                        LOG.warn("<< preparePreviews: wrong type/id requested");
+                        throw new Exception("Запыт няправільнага ID для вызначанага тыпу");
+                    }
+                    r.add(a);
                 }
+                return r;
+            });
+            LOG.info("   validateAll - preview for each article started");
+            OutputSummaryStorage storage = JsHelper.previewSomeArticles(articleType, todo);
+            LOG.info("   validateAll - summary validation start");
+            JsHelper.validateSummary(articleType, storage);
+
+            StringBuilder out = new StringBuilder(
+                    "<!DOCTYPE html>\n<html><head><meta charset=\"UTF-8\"></head><body>\n");
+            needHr = false;
+
+            for (String e : storage.summaryErrors) {
+                out.append("<b>АГУЛЬНАЯ ПАМЫЛКА: " + e + "</b><br/>\n");
+                needHr = true;
             }
+            for (OutputSummaryStorage.ArticleError e : storage.errors) {
+                out.append("<b>ПАМЫЛКА: " + e.error + "</b><br/>\n");
+                needHr = true;
+            }
+            storage.outputs.forEach(ao -> {
+                if (needHr) {
+                    out.append("<hr/>\n");
+                } else {
+                    needHr = true;
+                }
+                out.append(ao.html);
+                out.append("<br/>\n");
+            });
+
+            out.append("</body></html>\n");
+            Files.write(Paths.get(args[0] + articleType + ".html"), out.toString().getBytes(StandardCharsets.UTF_8));
         }
     }
 }
