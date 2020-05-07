@@ -3,7 +3,7 @@ package org.im.dc.service.dto;
 import java.util.List;
 
 public class ArticlesFilter {
-    public String state;
+    public List<String> states;
     public String user;
     public String exactHeader;
     public String partHeader;

@@ -32,7 +32,7 @@ import com.vlsolutions.swing.docking.DockingDesktop;
 public abstract class BaseController<T extends Window> {
     /** UI window for this controller(JFrame or JDialog) */
     public final T window;
-    private final Window parentWindow;
+    protected final Window parentWindow;
     protected DockingDesktop desk;
 
     /**

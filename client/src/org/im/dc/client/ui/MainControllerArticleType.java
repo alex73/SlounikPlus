@@ -1,6 +1,7 @@
 package org.im.dc.client.ui;
 
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -24,6 +25,7 @@ import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
 import org.im.dc.client.WS;
+import org.im.dc.client.ui.utils.ChooseStateController;
 import org.im.dc.gen.config.TypePermission;
 import org.im.dc.service.OutputSummaryStorage;
 import org.im.dc.service.dto.ArticleFull;
@@ -40,6 +42,7 @@ public class MainControllerArticleType implements IArticleUpdatedListener {
     private InitialData.TypeInfo typeInfo;
     private final MainFramePanelArticles panelArticles = new MainFramePanelArticles();
     protected final Dockable dock;
+    private List<String> selectedStates = new ArrayList<>();
 
     public MainControllerArticleType(InitialData.TypeInfo articleTypeInfo) {
         this.typeInfo = articleTypeInfo;
@@ -70,10 +73,6 @@ public class MainControllerArticleType implements IArticleUpdatedListener {
         users.add(null);
         users.addAll(MainController.initialData.allUsers.keySet());
         panelArticles.cbUser.setModel(new DefaultComboBoxModel<>(users));
-        Vector<String> states = new Vector<>();
-        states.add(null);
-        states.addAll(MainController.initialData.states);
-        panelArticles.cbState.setModel(new DefaultComboBoxModel<>(states));
         panelArticles.btnSearch.addActionListener((e) -> search());
         panelArticles.tableArticles.addMouseListener(new MouseAdapter() {
             @Override
@@ -85,7 +84,8 @@ public class MainControllerArticleType implements IArticleUpdatedListener {
             }
         });
         panelArticles.cbUser.addKeyListener(pressEnter);
-        panelArticles.cbState.addKeyListener(pressEnter);
+        panelArticles.btnStates.addActionListener(chooseStates);
+        panelArticles.btnStates.setPreferredSize(new Dimension(250, panelArticles.btnStates.getPreferredSize().height));
         panelArticles.txtWord.addKeyListener(pressEnter);
         panelArticles.txtText.addKeyListener(pressEnter);
         panelArticles.txtID.addKeyListener(pressEnter);
@@ -118,6 +118,20 @@ public class MainControllerArticleType implements IArticleUpdatedListener {
             if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                 search();
             }
+        }
+    };
+
+    ActionListener chooseStates = (e) -> {
+        ChooseStateController c = new ChooseStateController(selectedStates);
+        if (c.result != null) {
+            selectedStates.clear();
+            selectedStates.addAll(c.result);
+            if (c.result.isEmpty()) {
+                panelArticles.btnStates.setText(" ");
+            } else {
+                panelArticles.btnStates.setText(String.join(",", c.result));
+            }
+            search();
         }
     };
 
@@ -228,7 +242,7 @@ public class MainControllerArticleType implements IArticleUpdatedListener {
     private void search() {
         ArticlesFilter filter = new ArticlesFilter();
         filter.user = (String) panelArticles.cbUser.getSelectedItem();
-        filter.state = (String) panelArticles.cbState.getSelectedItem();
+        filter.states = selectedStates;
         filter.partHeader = panelArticles.txtWord.getText().trim().isEmpty() ? null
                 : panelArticles.txtWord.getText().trim();
         filter.partText = panelArticles.txtText.getText().trim().isEmpty() ? null

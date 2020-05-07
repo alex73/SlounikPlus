@@ -17,6 +17,7 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.im.dc.client.WS;
+import org.im.dc.client.ui.utils.DiffInit;
 import org.im.dc.service.dto.ArticleCommentFull;
 import org.im.dc.service.dto.ArticleFullInfo;
 import org.im.dc.service.dto.ArticleHistoryFull;
@@ -176,10 +177,9 @@ public class ArticleDetailsController extends BaseController<ArticleDetailsDialo
             a.setLineWrap(true);
             a.setWrapStyleWord(true);
             a.setText(commentText);
-            window.scroll.getViewport().add(a);
+            window.add(a);
         } else {
-            XMLDiffPanel p = new XMLDiffPanel(xmlOld, xmlNew);
-            window.scroll.getViewport().add(p);
+            window.add(DiffInit.init(xmlOld, xmlNew));
         }
     }
 }

@@ -23,7 +23,7 @@ public class MainFramePanelArticles extends javax.swing.JPanel {
         jLabel1 = new javax.swing.JLabel();
         cbUser = new javax.swing.JComboBox<>();
         jLabel4 = new javax.swing.JLabel();
-        cbState = new javax.swing.JComboBox<>();
+        btnStates = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
         txtWord = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
@@ -68,13 +68,16 @@ public class MainFramePanelArticles extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         jPanel3.add(jLabel4, gridBagConstraints);
 
-        cbState.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        btnStates.setText(bundle.getString("MainFramePanelArticles.btnStates.text")); // NOI18N
+        btnStates.setToolTipText(bundle.getString("MainFramePanelArticles.btnStates.toolTipText")); // NOI18N
+        btnStates.setMaximumSize(new java.awt.Dimension(50, 100));
+        btnStates.setMinimumSize(new java.awt.Dimension(50, 10));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        jPanel3.add(cbState, gridBagConstraints);
+        jPanel3.add(btnStates, gridBagConstraints);
 
         jLabel2.setText(bundle.getString("MainFrame.jLabel2.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -164,7 +167,7 @@ public class MainFramePanelArticles extends javax.swing.JPanel {
     public javax.swing.JButton btnPreview;
     public javax.swing.JButton btnReassign;
     public javax.swing.JButton btnSearch;
-    public javax.swing.JComboBox<String> cbState;
+    public javax.swing.JButton btnStates;
     public javax.swing.JComboBox<String> cbUser;
     public javax.swing.JLabel jLabel1;
     public javax.swing.JLabel jLabel2;

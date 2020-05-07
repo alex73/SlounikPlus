@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -93,7 +94,7 @@ public class DbTestArticle {
     public void testList() throws Exception {
         ArticlesFilter filter = new ArticlesFilter();
         List<RecArticle> list = Db.execAndReturn((api) -> api.getArticleMapper().listArticles(null, filter));
-        filter.state = "state";
+        filter.states = Arrays.asList("state");
         Db.exec((api) -> api.getArticleMapper().listArticles(null, filter));
     }
 

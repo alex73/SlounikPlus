@@ -1,11 +1,20 @@
-package org.im.dc.client.ui;
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package org.im.dc.client.ui.utils;
 
-public class ArticleDetailsDialog extends javax.swing.JDialog {
+/**
+ *
+ * @author alex
+ */
+public class ChooseStateDialog extends javax.swing.JDialog {
 
     /**
-     * Creates new form ArticleDetails
+     * Creates new form ChooseStateDialog
      */
-    public ArticleDetailsDialog(java.awt.Frame parent, boolean modal) {
+    public ChooseStateDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
     }
@@ -19,16 +28,27 @@ public class ArticleDetailsDialog extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        panelHeader = new javax.swing.JPanel();
-        panelButtons = new javax.swing.JPanel();
+        panelStates = new javax.swing.JPanel();
+        jPanel2 = new javax.swing.JPanel();
+        btnOK = new javax.swing.JButton();
+        btnCancel = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("Дэталі зменаў");
-        setPreferredSize(new java.awt.Dimension(400, 300));
+        setResizable(false);
 
-        panelHeader.setLayout(new java.awt.GridLayout(0, 1, 0, 5));
-        getContentPane().add(panelHeader, java.awt.BorderLayout.NORTH);
-        getContentPane().add(panelButtons, java.awt.BorderLayout.SOUTH);
+        panelStates.setBorder(javax.swing.BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        panelStates.setLayout(new javax.swing.BoxLayout(panelStates, javax.swing.BoxLayout.Y_AXIS));
+        getContentPane().add(panelStates, java.awt.BorderLayout.CENTER);
+
+        jPanel2.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+
+        btnOK.setText("Добра");
+        jPanel2.add(btnOK);
+
+        btnCancel.setText("Скасаваць");
+        jPanel2.add(btnCancel);
+
+        getContentPane().add(jPanel2, java.awt.BorderLayout.SOUTH);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -50,21 +70,20 @@ public class ArticleDetailsDialog extends javax.swing.JDialog {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(ArticleDetailsDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ChooseStateDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(ArticleDetailsDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ChooseStateDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(ArticleDetailsDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ChooseStateDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(ArticleDetailsDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ChooseStateDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the dialog */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                ArticleDetailsDialog dialog = new ArticleDetailsDialog(new javax.swing.JFrame(), true);
+                ChooseStateDialog dialog = new ChooseStateDialog(new javax.swing.JFrame(), true);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     @Override
                     public void windowClosing(java.awt.event.WindowEvent e) {
@@ -77,7 +96,9 @@ public class ArticleDetailsDialog extends javax.swing.JDialog {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    public javax.swing.JPanel panelButtons;
-    public javax.swing.JPanel panelHeader;
+    public javax.swing.JButton btnCancel;
+    public javax.swing.JButton btnOK;
+    public javax.swing.JPanel jPanel2;
+    public javax.swing.JPanel panelStates;
     // End of variables declaration//GEN-END:variables
 }

@@ -15,8 +15,12 @@
 			</foreach>
 			)
 		</if>
-		<if test="filter.state != null">
-			AND state=#{filter.state}
+		<if test="filter.states != null">
+			AND state IN (
+			<foreach collection="filter.states" item="state" index="index" separator=",">
+				#{state}
+			</foreach>
+			)
 		</if>
 		<if test="filter.user != null">
 			AND assignedUsers @> ARRAY[#{filter.user}]::varchar[][]
