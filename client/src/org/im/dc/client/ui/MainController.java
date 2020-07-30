@@ -271,26 +271,29 @@ public class MainController extends BaseController<MainFrame> {
     private void validateFull(String articleTypeId) {
         PreviewController previewer = new PreviewController(MainController.instance.window, false);
         previewer.window.setTitle("Праверка");
-        previewer.new LongProcess() {
-            String text;
+        previewer.setupExecutor(() -> {
+            previewer.new LongProcess() {
+                String text;
 
-            @Override
-            protected void exec() throws Exception {
-                OutputSummaryStorage result = WS.getToolsWebservice().previewValidateAll(WS.header, articleTypeId);
-                if (result.summaryErrors.isEmpty()) {
-                    text = "<html><body>Праверка паспяхова скончаная</html></body>";
-                } else {
-                    text = "<html><body>" + String.join("<br/>\n", result.summaryErrors) + "</html></body>";
+                @Override
+                protected void exec() throws Exception {
+                    OutputSummaryStorage result = WS.getToolsWebservice().previewValidateAll(WS.header, articleTypeId);
+                    if (result.summaryErrors.isEmpty()) {
+                        text = "<html><body>Праверка паспяхова скончаная</html></body>";
+                    } else {
+                        text = "<html><body>" + String.join("<br/>\n", result.summaryErrors) + "</html></body>";
+                    }
                 }
-            }
 
-            @Override
-            protected void ok() {
-                previewer.window.text.setText(text);
-                previewer.window.text.setCaretPosition(0);
-                previewer.window.text.getDocument().putProperty("ZOOM_FACTOR", new Double(2.5));
-            }
-        };
+                @Override
+                protected void ok() {
+                    previewer.window.text.setText(text);
+                    previewer.window.text.setCaretPosition(0);
+                    previewer.window.text.getDocument().putProperty("ZOOM_FACTOR", new Double(2.5));
+                }
+            };
+        });
+        previewer.execute();
     }
 
     public void addArticleUpdatedListener(IArticleUpdatedListener listener) {

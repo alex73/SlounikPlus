@@ -20,10 +20,7 @@ import javax.swing.SwingUtilities;
 public class PreviewController extends BaseController<PreviewDialog> {
     private static Font BASE_FONT;
 
-    @FunctionalInterface
-    public interface Proc {
-        void execute(PreviewController t);
-    }
+    private Runnable executor;
 
     public PreviewController(Window parent, boolean modal) {
         super(new PreviewDialog(MainController.instance.window, modal), parent);
@@ -37,6 +34,7 @@ public class PreviewController extends BaseController<PreviewDialog> {
         window.text.setFont(BASE_FONT);
         // window.text.getActionMap().put("copy", clipboardAction);
         // window.text.getActionMap().put("cut", clipboardAction);
+        window.btnRefresh.addActionListener(e -> execute());
 
         ((RootPaneContainer) window).getRootPane().registerKeyboardAction(decZoom,
                 KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, InputEvent.CTRL_MASK), JComponent.WHEN_IN_FOCUSED_WINDOW);
@@ -54,6 +52,14 @@ public class PreviewController extends BaseController<PreviewDialog> {
                 KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD0, InputEvent.CTRL_MASK), JComponent.WHEN_IN_FOCUSED_WINDOW);
 
         SwingUtilities.invokeLater(() -> displayOnParent());
+    }
+
+    public void setupExecutor(Runnable executor) {
+        this.executor = executor;
+    }
+
+    public void execute() {
+        executor.run();
     }
 
     ActionListener resetZoom = (e) -> {

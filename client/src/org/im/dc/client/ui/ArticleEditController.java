@@ -245,32 +245,35 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
             @Override
             public void mouseClicked(MouseEvent e) {
                 PreviewController previewer = new PreviewController(window, true);
-                previewer.new LongProcess() {
-                    String preview;
+                previewer.setupExecutor(() -> {
+                    previewer.new LongProcess() {
+                        String preview;
 
-                    @Override
-                    protected void exec() throws Exception {
-                        OutputSummaryStorage result = WS.getToolsWebservice().preparePreview(WS.header,
-                                article.article.type, article.article.id, extractXml());
-                        StringBuilder text = new StringBuilder();
-                        result.summaryErrors.forEach(e -> text.append("<p>АГУЛЬНАЯ ПАМЫЛКА: " + e + "</p>\n"));
-                        result.errors.forEach(e -> text.append("<p>ПАМЫЛКА: " + e.error + "</p>\n"));
-                        result.outputs.forEach(o -> text.append("<p>" + o.html + "</p>\n"));
-                        preview = "<!DOCTYPE html>\n<html><head><meta charset=\"UTF-8\"></head><body>\n" + text
-                                + "\n</body></html>\n";
-                    }
+                        @Override
+                        protected void exec() throws Exception {
+                            OutputSummaryStorage result = WS.getToolsWebservice().preparePreview(WS.header,
+                                    article.article.type, article.article.id, extractXml());
+                            StringBuilder text = new StringBuilder();
+                            result.summaryErrors.forEach(e -> text.append("<p>АГУЛЬНАЯ ПАМЫЛКА: " + e + "</p>\n"));
+                            result.errors.forEach(e -> text.append("<p>ПАМЫЛКА: " + e.error + "</p>\n"));
+                            result.outputs.forEach(o -> text.append("<p>" + o.html + "</p>\n"));
+                            preview = "<!DOCTYPE html>\n<html><head><meta charset=\"UTF-8\"></head><body>\n" + text
+                                    + "\n</body></html>\n";
+                        }
 
-                    @Override
-                    protected void ok() {
-                        previewer.window.text.setText(preview);
-                        previewer.window.text.getDocument().putProperty("ZOOM_FACTOR", new Double(2.5));
-                    }
+                        @Override
+                        protected void ok() {
+                            previewer.window.text.setText(preview);
+                            previewer.window.text.getDocument().putProperty("ZOOM_FACTOR", new Double(2.5));
+                        }
 
-                    @Override
-                    protected void error() {
-                        previewer.window.dispose();
-                    }
-                };
+                        @Override
+                        protected void error() {
+                            previewer.window.dispose();
+                        }
+                    };
+                });
+                previewer.execute();
             }
         });
         TinySwingPanel buttonsNotes = new TinySwingPanel(panelNotes.txtNotes);

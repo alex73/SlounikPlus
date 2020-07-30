@@ -28,12 +28,21 @@ public class PreviewDialog extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jPanel1 = new javax.swing.JPanel();
+        panelRefresh = new javax.swing.JPanel();
+        btnRefresh = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         text = new javax.swing.JEditorPane();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Перадпрагляд");
-        setPreferredSize(new java.awt.Dimension(400, 300));
+
+        panelRefresh.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+
+        btnRefresh.setText("Абнавіць");
+        panelRefresh.add(btnRefresh);
+
+        getContentPane().add(panelRefresh, java.awt.BorderLayout.PAGE_START);
 
         text.setEditable(false);
         text.setContentType("text/html"); // NOI18N
@@ -87,7 +96,10 @@ public class PreviewDialog extends javax.swing.JDialog {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    public javax.swing.JButton btnRefresh;
+    public javax.swing.JPanel jPanel1;
     public javax.swing.JScrollPane jScrollPane1;
+    public javax.swing.JPanel panelRefresh;
     public javax.swing.JEditorPane text;
     // End of variables declaration//GEN-END:variables
 }

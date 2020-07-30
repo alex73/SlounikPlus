@@ -163,78 +163,78 @@ public class MainControllerArticleType implements IArticleUpdatedListener {
                 MainController.instance.todo("Абрана зашмат артыкулаў");
             } else {
                 PreviewController previewer = new PreviewController(MainController.instance.window, false);
-                JButton btnRefresh = new JButton();
-                ActionListener show = a->{
-                    previewer.new LongProcess() {
-                        StringBuilder out, outClipboard;
-                        boolean needHr = false;
-
-                        @Override
-                        protected void exec() throws Exception {
-                            out = new StringBuilder(
-                                    "<!DOCTYPE html>\n<html><head><meta charset=\"UTF-8\"></head><body>\n");
-                            outClipboard = new StringBuilder(
-                                    "<!DOCTYPE html>\n<html><head><meta charset=\"UTF-8\"></head><body>\n");
-
-                            OutputSummaryStorage articlesPreview = WS.getToolsWebservice().preparePreviews(WS.header,
-                                    typeInfo.typeId, articleIds);
-                            for (String e : articlesPreview.summaryErrors) {
-                                out.append("<b>АГУЛЬНАЯ ПАМЫЛКА: " + e + "</b><br/>\n");
-                                outClipboard.append("<b>АГУЛЬНАЯ ПАМЫЛКА: " + e + "</b><br/>\n");
-                                needHr = true;
-                            }
-                            for (OutputSummaryStorage.ArticleError e : articlesPreview.errors) {
-                                out.append("<a href='" + e.articleId + "'>рэдагаваць: " + e.key + "</a> ");
-                                out.append("<b>ПАМЫЛКА: " + e.error + "</b><br/>\n");
-                                outClipboard.append("<b>ПАМЫЛКА ў " + e.key + ": " + e.error + "</b><br/>\n");
-                                needHr = true;
-                            }
-                            articlesPreview.outputs.forEach(ao -> {
-                                if (needHr) {
-                                    out.append("<hr/>\n");
-                                } else {
-                                    needHr = true;
-                                }
-                                out.append(ao.html);
-                                outClipboard.append(ao.html);
-                                out.append(" <a href='" + ao.articleId + "'>рэдагаваць</a>\n");
-                                outClipboard.append("<br/>\n");
-                            });
-
-                            out.append("\n</body></html>\n");
-                            outClipboard.append("\n</body></html>\n");
-                        }
-
-                        @Override
-                        protected void ok() {
-                            previewer.window.text.setText(out.toString());
-                            previewer.window.text.setCaretPosition(0);
-                            previewer.window.text.getDocument().putProperty("ZOOM_FACTOR", new Double(2.5));
-
-                            JTextPane o = new JTextPane();
-                            o.setContentType("text/html");
-                            o.setText(outClipboard.toString());
-                            o.selectAll();
-                            o.copy();
-                        }
-
-                        @Override
-                        protected void error() {
-                            previewer.window.dispose();
-                        }
-                    };
-                };
-                btnRefresh.addActionListener(show);
+                previewer.setupExecutor(() -> preview(previewer, articleIds));
                 previewer.window.text.addHyperlinkListener(he -> {
                     if (he.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
                         int idx = Integer.parseInt(he.getDescription());
                         new ArticleEditController(typeInfo, idx);
                     }
                 });
-                show.actionPerformed(null);
+                previewer.execute();
             }
         }
     };
+
+    void preview(PreviewController previewer, int[] articleIds) {
+        previewer.new LongProcess() {
+            StringBuilder out, outClipboard;
+            boolean needHr = false;
+
+            @Override
+            protected void exec() throws Exception {
+                out = new StringBuilder(
+                        "<!DOCTYPE html>\n<html><head><meta charset=\"UTF-8\"></head><body>\n");
+                outClipboard = new StringBuilder(
+                        "<!DOCTYPE html>\n<html><head><meta charset=\"UTF-8\"></head><body>\n");
+
+                OutputSummaryStorage articlesPreview = WS.getToolsWebservice().preparePreviews(WS.header,
+                        typeInfo.typeId, articleIds);
+                for (String e : articlesPreview.summaryErrors) {
+                    out.append("<b>АГУЛЬНАЯ ПАМЫЛКА: " + e + "</b><br/>\n");
+                    outClipboard.append("<b>АГУЛЬНАЯ ПАМЫЛКА: " + e + "</b><br/>\n");
+                    needHr = true;
+                }
+                for (OutputSummaryStorage.ArticleError e : articlesPreview.errors) {
+                    out.append("<a href='" + e.articleId + "'>рэдагаваць: " + e.key + "</a> ");
+                    out.append("<b>ПАМЫЛКА: " + e.error + "</b><br/>\n");
+                    outClipboard.append("<b>ПАМЫЛКА ў " + e.key + ": " + e.error + "</b><br/>\n");
+                    needHr = true;
+                }
+                articlesPreview.outputs.forEach(ao -> {
+                    if (needHr) {
+                        out.append("<hr/>\n");
+                    } else {
+                        needHr = true;
+                    }
+                    out.append(ao.html);
+                    outClipboard.append(ao.html);
+                    out.append(" <a href='" + ao.articleId + "'>рэдагаваць</a>\n");
+                    outClipboard.append("<br/>\n");
+                });
+
+                out.append("\n</body></html>\n");
+                outClipboard.append("\n</body></html>\n");
+            }
+
+            @Override
+            protected void ok() {
+                previewer.window.text.setText(out.toString());
+                previewer.window.text.setCaretPosition(0);
+                previewer.window.text.getDocument().putProperty("ZOOM_FACTOR", new Double(2.5));
+
+                JTextPane o = new JTextPane();
+                o.setContentType("text/html");
+                o.setText(outClipboard.toString());
+                o.selectAll();
+                o.copy();
+            }
+
+            @Override
+            protected void error() {
+                previewer.window.dispose();
+            }
+        };
+    }
 
     /**
      * Search articles by filter.
@@ -255,7 +255,7 @@ public class MainControllerArticleType implements IArticleUpdatedListener {
             protected void exec() throws Exception {
                 if (!ids.isEmpty()) {
                     filter.ids = new ArrayList<>();
-                    for (String s : ids.split("\\s+")) {
+                    for (String s : ids.split("[^0-9]")) {
                         if (!s.isEmpty()) {
                             filter.ids.add(Integer.parseInt(s));
                         }

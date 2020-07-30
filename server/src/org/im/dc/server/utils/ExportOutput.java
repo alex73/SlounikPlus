@@ -52,7 +52,7 @@ public class ExportOutput {
                 }
                 return r;
             });
-            LOG.info("   validateAll - preview for each article started");
+            LOG.info("   validateAll - preview for each article(type:" + articleType + ") started");
             OutputSummaryStorage storage = JsHelper.previewSomeArticles(articleType, todo);
             LOG.info("   validateAll - summary validation start");
             JsHelper.validateSummary(articleType, storage);
@@ -71,12 +71,12 @@ public class ExportOutput {
             }
             storage.outputs.forEach(ao -> {
                 if (needHr) {
-                    out.append("<hr/>\n");
+                    //out.append("<hr/>\n");
                 } else {
                     needHr = true;
                 }
                 out.append(ao.html);
-                out.append("<br/>\n");
+                //out.append("<br/>\n");
             });
 
             out.append("</body></html>\n");
