@@ -103,6 +103,11 @@
 					<xs:documentation>Ці можа карыстальнік правяраць ўвесь слоўнік</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
+			<xs:enumeration value="full_export">
+				<xs:annotation>
+					<xs:documentation>Ці можа карыстальнік экспартаваць ўвесь слоўнік</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
 			<xs:enumeration value="force_state_change">
 				<xs:annotation>
 					<xs:documentation>Дазволіць мяняць стан усіх артыкулаў</xs:documentation>

@@ -39,6 +39,13 @@
                 </Property>
               </Properties>
             </Menu>
+            <Menu class="javax.swing.JMenu" name="miExportFull">
+              <Properties>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="org/im/dc/client/ui/Bundle.properties" key="MainFrame.miExportFull.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                </Property>
+              </Properties>
+            </Menu>
           </SubComponents>
         </Menu>
       </SubComponents>

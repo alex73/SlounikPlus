@@ -24,6 +24,7 @@ public class MainFrame extends javax.swing.JFrame {
         miSettings = new javax.swing.JMenuItem();
         miValidateFull = new javax.swing.JMenu();
         miReports = new javax.swing.JMenu();
+        miExportFull = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("org/im/dc/client/ui/Bundle"); // NOI18N
@@ -42,6 +43,9 @@ public class MainFrame extends javax.swing.JFrame {
 
         miReports.setText(bundle.getString("MainFrame.miReports.text")); // NOI18N
         menuCommon.add(miReports);
+
+        miExportFull.setText(bundle.getString("MainFrame.miExportFull.text")); // NOI18N
+        menuCommon.add(miExportFull);
 
         jMenuBar1.add(menuCommon);
 
@@ -88,6 +92,7 @@ public class MainFrame extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public javax.swing.JMenuBar jMenuBar1;
     public javax.swing.JMenu menuCommon;
+    public javax.swing.JMenu miExportFull;
     public javax.swing.JMenu miReports;
     public javax.swing.JMenuItem miResetDesk;
     public javax.swing.JMenuItem miSettings;

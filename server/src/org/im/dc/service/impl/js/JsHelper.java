@@ -4,6 +4,8 @@ import java.io.File;
 import java.text.Collator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.TreeMap;
 
 import javax.script.ScriptContext;
 import javax.script.SimpleScriptContext;
@@ -23,6 +25,7 @@ public class JsHelper {
         Validator validator = Config.schemas.get(articleType).newValidator();
         try (JsProcessing js = new JsProcessing(
                 new File(Config.getConfigDir(), articleType + ".js").getAbsolutePath())) {
+            Map<String, Object> contextVar = new TreeMap<>();
             for (RecArticle a : articles) {
                 ValidationHelper helper = new ValidationHelper(a.getArticleId(), validator, a.getXml(), storage);
                 SimpleScriptContext context = new SimpleScriptContext();
@@ -31,6 +34,7 @@ public class JsHelper {
                 context.setAttribute("articleDoc", doc, ScriptContext.ENGINE_SCOPE);
                 context.setAttribute("articleState", a.getState(), ScriptContext.ENGINE_SCOPE);
                 context.setAttribute("article", new JsDomWrapper(doc.getDocumentElement()), ScriptContext.ENGINE_SCOPE);
+                context.setAttribute("context", contextVar, ScriptContext.ENGINE_SCOPE);
                 js.exec(context);
                 storage.textForSearch.put(a.getArticleId(), new WordSplitter().parse(a.getXml()));
             }

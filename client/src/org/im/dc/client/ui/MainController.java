@@ -8,9 +8,13 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -18,11 +22,13 @@ import java.util.ResourceBundle;
 import java.util.jar.Manifest;
 
 import javax.swing.JComponent;
+import javax.swing.JFileChooser;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 import javax.swing.SwingWorker;
 import javax.swing.Timer;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.im.dc.client.SchemaLoader;
 import org.im.dc.client.WS;
@@ -240,6 +246,15 @@ public class MainController extends BaseController<MainFrame> {
         } else {
             window.miValidateFull.setVisible(false);
         }
+        if (initialData.currentUserPermissions.contains(CommonPermission.FULL_EXPORT.name())) {
+            for (InitialData.TypeInfo ti : initialData.articleTypes) {
+                JMenuItem it = new JMenuItem(ti.typeName);
+                it.addActionListener((e) -> exportFull(ti.typeId));
+                window.miExportFull.add(it);
+            }
+        } else {
+            window.miExportFull.setVisible(false);
+        }
 
         showIssiesAndNews();
     }
@@ -294,6 +309,57 @@ public class MainController extends BaseController<MainFrame> {
             };
         });
         previewer.execute();
+    }
+
+    private void exportFull(String articleTypeId) {
+        JFileChooser chooser = new JFileChooser();
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("HTML files", "html");
+        chooser.setFileFilter(filter);
+        int returnVal = chooser.showSaveDialog(getMainFrame());
+        if (returnVal != JFileChooser.APPROVE_OPTION) {
+            return;
+        }
+
+        new LongProcess() {
+            boolean needHr;
+
+            @Override
+            protected void exec() throws Exception {
+                OutputSummaryStorage storage = WS.getToolsWebservice().previewValidateAll(WS.header, articleTypeId);
+                StringBuilder out = new StringBuilder(
+                        "<!DOCTYPE html>\n<html><head><meta charset=\"UTF-8\"></head><body>\n");
+                needHr = false;
+                for (String e : storage.summaryErrors) {
+                    out.append("<b>АГУЛЬНАЯ ПАМЫЛКА: " + e + "</b><br/>\n");
+                    needHr = true;
+                }
+                for (OutputSummaryStorage.ArticleError e : storage.errors) {
+                    out.append("<b>ПАМЫЛКА: " + e.error + "</b><br/>\n");
+                    needHr = true;
+                }
+                storage.outputs.forEach(ao -> {
+                    if (needHr) {
+                        // out.append("<hr/>\n");
+                    } else {
+                        needHr = true;
+                    }
+                    out.append(ao.html);
+                    // out.append("<br/>\n");
+                });
+                out.append("</body></html>\n");
+
+                File o = chooser.getSelectedFile();
+                if (!o.getName().endsWith(".html")) {
+                    o = new File(o.getAbsolutePath() + ".html");
+                }
+                Files.write(o.toPath(), out.toString().getBytes(StandardCharsets.UTF_8));
+            }
+
+            @Override
+            protected void ok() {
+                JOptionPane.showMessageDialog(getMainFrame(), "Finished", "Export", JOptionPane.INFORMATION_MESSAGE);
+            }
+        };
     }
 
     public void addArticleUpdatedListener(IArticleUpdatedListener listener) {
