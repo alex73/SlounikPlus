@@ -196,7 +196,7 @@ public class MainControllerArticleType implements IArticleUpdatedListener {
                 }
                 for (OutputSummaryStorage.ArticleError e : articlesPreview.errors) {
                     out.append("<a href='" + e.articleId + "'>рэдагаваць: " + e.key + "</a> ");
-                    out.append("<b>ПАМЫЛКА: " + e.error + "</b><br/>\n");
+                    out.append("<b>ПАМЫЛКА у " + e.key + ": " + e.error + "</b><br/>\n");
                     outClipboard.append("<b>ПАМЫЛКА ў " + e.key + ": " + e.error + "</b><br/>\n");
                     needHr = true;
                 }

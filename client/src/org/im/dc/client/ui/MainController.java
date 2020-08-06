@@ -334,7 +334,7 @@ public class MainController extends BaseController<MainFrame> {
                     needHr = true;
                 }
                 for (OutputSummaryStorage.ArticleError e : storage.errors) {
-                    out.append("<b>ПАМЫЛКА: " + e.error + "</b><br/>\n");
+                    out.append("<b>ПАМЫЛКА у " + e.key + ": " + e.error + "</b><br/>\n");
                     needHr = true;
                 }
                 storage.outputs.forEach(ao -> {
