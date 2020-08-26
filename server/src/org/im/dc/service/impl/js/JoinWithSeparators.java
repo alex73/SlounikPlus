@@ -133,6 +133,7 @@ public class JoinWithSeparators implements IHtmlPart {
         t = t.replace("&", "&amp;");
         t = t.replace("<", "&lt;");
         t = t.replace(">", "&gt;");
+        t = t.replace(" -- ", " &mdash; ");
         return t;
     }
 
@@ -142,6 +143,7 @@ public class JoinWithSeparators implements IHtmlPart {
         t = t.replace("&", "&amp;");
         t = t.replace("<", "&lt;");
         t = t.replace(">", "&gt;");
+        t = t.replace(" -- ", " &mdash; ");
         t = t.replace("〈", "<");
         t = t.replace("〉", ">");
         return t;
