@@ -57,9 +57,22 @@ Articles should be **exported** to be printed on paper. Each article in a dictio
 
 *SloŭnikPlus* is a **free software** (licensed under GPLv3). That means you have all benefits of a free software: you don’t need to create an application from scratch, you can improve the software without rewriting from scratch, you can use improvements from other teams. The architecture is pluggable and you can create some specific UI for your specific dictionary fields. Both the client and the server parts were written using Java ‒ you can use it under Windows, Linux or Mac.
 
-# Entities
-
+## Entities
 For start dictionary creation, you need to decide some basic things: language of dictionary keywords, article structure (dictionary can have more than one acticle types), processing flow and user's roles.
 
-# Setup process
+## Deployment
+*SloŭnikPlus* client is a simple Java Swing application, that require Java 8. You can use https://github.com/alex73/MiniWebStart or other tools for have client computers up to date, or just install client jars on user's computers.
 
+Server part requires to have Tomcat 9 or other java web server.
+
+## Customization
+All things for customize *SloŭnikPlus* are stored in the config/ directory.
+
+- db.properties - declares database connection. PostgreSQL is usually used. You need to run commands from DB_STRUCTURE.sql for initialize database structure.
+- config.xml - declares roles, users, flow, article types and permissions.
+- <article_type>.xsd - each article type should have own structure declaration. Name of root element should be the same like article type name.
+- <article_type>.js - script for prepare article output and validate article data.
+- <article_type>-summary.js - script for prepare summary and check errors, based on all articles.
+
+## Plugins
+If you are creating some complex dictionary, you can create some custom controls, use some external sources, add some custom menus and other plugins. All this things can be compiled with *SloŭnikPlus* client side and server side code and can be used with main application. See MANIFEST.MF for declare plugin initialization classes.
