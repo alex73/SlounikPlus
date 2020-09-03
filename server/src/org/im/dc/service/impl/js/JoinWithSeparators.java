@@ -120,6 +120,10 @@ public class JoinWithSeparators implements IHtmlPart {
         return o.toString();
     }
 
+    public boolean endsWith(String suffix) {
+        return out().replaceAll("<[^>]+>", "").endsWith(suffix);
+    }
+
     public void dump(String prefix) {
         System.err.println(prefix + "== join");
         for (IHtmlPart ch : children) {
