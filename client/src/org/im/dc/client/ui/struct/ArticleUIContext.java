@@ -27,7 +27,7 @@ public class ArticleUIContext {
         if (wr == null && parentContainer != null) {
             wr = parentContainer.isWritable();
         }
-        return wr;
+        return wr != null ? wr.booleanValue() : true;
     }
 
     public boolean getVisible(boolean parentVisible, AnnotationInfo ann) {
