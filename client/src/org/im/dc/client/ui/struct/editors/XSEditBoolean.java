@@ -20,7 +20,7 @@ public class XSEditBoolean extends XSNamedControl<JCheckBox> implements IXSEdit 
         editor.addItemListener(c -> {
             context.fireChanged();
         });
-        editor.setEnabled(context.getWritable(parentContainer.isWritable(), ann));
+        editor.setEnabled(context.getWritable(parentContainer, ann));
     }
 
     @Override

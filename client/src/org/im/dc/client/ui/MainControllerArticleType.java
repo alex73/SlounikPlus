@@ -16,7 +16,6 @@ import java.util.ResourceBundle;
 import java.util.Vector;
 
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.JButton;
 import javax.swing.JTextPane;
 import javax.swing.RowSorter;
 import javax.swing.SortOrder;
@@ -43,6 +42,7 @@ public class MainControllerArticleType implements IArticleUpdatedListener {
     private final MainFramePanelArticles panelArticles = new MainFramePanelArticles();
     protected final Dockable dock;
     private List<String> selectedStates = new ArrayList<>();
+    public Comparator<String> wordComparator = new WordsComparator(MainController.initialData.headerLocale);
 
     public MainControllerArticleType(InitialData.TypeInfo articleTypeInfo) {
         this.typeInfo = articleTypeInfo;
@@ -308,7 +308,7 @@ public class MainControllerArticleType implements IArticleUpdatedListener {
         }
     }
 
-    public static class TableArticlesSorter extends TableRowSorter<MainFrameArticlesModel> {
+    public class TableArticlesSorter extends TableRowSorter<MainFrameArticlesModel> {
         public TableArticlesSorter(MainFrameArticlesModel model) {
             super(model);
             setSortKeys(Arrays.asList(new RowSorter.SortKey(0, SortOrder.ASCENDING)));
@@ -319,7 +319,7 @@ public class MainControllerArticleType implements IArticleUpdatedListener {
             return new Comparator<Object>() {
                 @Override
                 public int compare(Object o1, Object o2) {
-                    return WordsComparator.INSTANCE.compare(o1.toString(), o2.toString());
+                    return wordComparator.compare(o1.toString(), o2.toString());
                 }
             };
         }

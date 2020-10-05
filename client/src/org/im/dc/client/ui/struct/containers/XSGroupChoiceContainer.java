@@ -18,6 +18,7 @@ import javax.xml.stream.XMLStreamWriter;
 import org.apache.xerces.xs.XSModelGroup;
 import org.apache.xerces.xs.XSObject;
 import org.apache.xerces.xs.XSObjectList;
+import org.im.dc.client.ui.struct.AnnotationInfo;
 import org.im.dc.client.ui.struct.ArticleUIContext;
 import org.im.dc.client.ui.struct.IXSContainer;
 import org.im.dc.client.ui.struct.XSContainersFactory;
@@ -29,9 +30,11 @@ public class XSGroupChoiceContainer extends XSBaseContainer<XSModelGroup> {
     private List<IXSContainer> children = new ArrayList<>();
     private JPanel panel;
     private JPanel pRadio;
+    private AnnotationInfo ann;
 
     public XSGroupChoiceContainer(ArticleUIContext context, IXSContainer parentContainer, XSModelGroup obj) {
         super(context, parentContainer, obj);
+        ann = new AnnotationInfo(obj.getAnnotation());
 
         panel = new JPanel(new GridBagLayout());
         panel.setOpaque(false);
@@ -113,6 +116,11 @@ public class XSGroupChoiceContainer extends XSBaseContainer<XSModelGroup> {
     @Override
     public JComponent getUIComponent() {
         return panel;
+    }
+
+    @Override
+    public boolean isWritable() {
+        return context.getWritable(parentContainer, ann);
     }
 
     @Override

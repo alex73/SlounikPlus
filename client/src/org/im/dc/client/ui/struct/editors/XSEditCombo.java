@@ -31,7 +31,7 @@ public class XSEditCombo extends XSNamedControl<JComboBox<String>> implements IX
             }
         });
         editor.setEditable(false);
-        editor.setEnabled(context.getWritable(parentContainer.isWritable(), ann));
+        editor.setEnabled(context.getWritable(parentContainer, ann));
     }
 
     @Override

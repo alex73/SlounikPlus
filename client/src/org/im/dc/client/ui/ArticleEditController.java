@@ -373,6 +373,8 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
                 .setText(article.article.validationError != null ? article.article.validationError : " ");
 
         ArticleUIContext editContext = new ArticleUIContext(typeInfo.typeId);
+        editContext.userRoles = MainController.initialData.currentUserRoles;
+        editContext.articleState = article.article.state;
         resetChanged();
         try {
             editorUI = SchemaLoader.createUI(editContext);
@@ -382,8 +384,6 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
                 Document doc = builder.parse(new ByteArrayInputStream(article.article.xml));
                 editorUI.insertData((Element) doc.getFirstChild());
             }
-            editContext.userRoles = MainController.initialData.currentUserRoles;
-            editContext.articleState = article.article.state;
             resetChanged();
         } catch (Throwable ex) {
             editorUI = null;

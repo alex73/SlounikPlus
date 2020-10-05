@@ -118,6 +118,11 @@ public class XSSimpleElementContainer extends XSBaseContainer<XSSimpleTypeDefini
         }
     }
 
+    @Override
+    public boolean isWritable() {
+        return context.getWritable(parentContainer, ann);
+    }
+
     public String dump(String prefix) {
         String r = prefix + getClass().getSimpleName() + " " + ann.text + " - simple\n";
         return r;

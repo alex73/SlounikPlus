@@ -59,7 +59,7 @@ public class XSEditCheck extends XSNamedControl<JPanel> implements IXSContainer 
                 }
             });
         }
-        editor.setEnabled(context.getWritable(parentContainer.isWritable(), ann));
+        editor.setEnabled(context.getWritable(parentContainer, ann));
     }
 
     @Override

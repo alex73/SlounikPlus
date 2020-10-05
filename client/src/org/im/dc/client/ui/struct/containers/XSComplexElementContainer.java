@@ -121,6 +121,11 @@ public class XSComplexElementContainer extends XSBaseContainer<XSComplexTypeDefi
     }
 
     @Override
+    public boolean isWritable() {
+        return context.getWritable(parentContainer, ann);
+    }
+
+    @Override
     public Collection<IXSContainer> children() {
         List<IXSContainer> result = new ArrayList<>();
         if (customContainer != null) {

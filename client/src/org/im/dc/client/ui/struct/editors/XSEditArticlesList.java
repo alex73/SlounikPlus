@@ -56,7 +56,7 @@ public class XSEditArticlesList extends XSNamedControl<JPanel> implements IXSEdi
                 context.fireChanged();
             }
         });
-        combo.setEditable(context.getWritable(parentContainer.isWritable(), ann));
+        combo.setEditable(context.getWritable(parentContainer, ann));
 
         ImageIcon addIcon = new ImageIcon(XSEditArticlesList.class.getResource("add.png"));
         ImageIcon editIcon = new ImageIcon(XSEditArticlesList.class.getResource("edit.png"));

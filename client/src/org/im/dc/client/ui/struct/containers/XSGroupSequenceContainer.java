@@ -13,6 +13,7 @@ import javax.xml.stream.XMLStreamWriter;
 import org.apache.xerces.xs.XSModelGroup;
 import org.apache.xerces.xs.XSObject;
 import org.apache.xerces.xs.XSObjectList;
+import org.im.dc.client.ui.struct.AnnotationInfo;
 import org.im.dc.client.ui.struct.ArticleUIContext;
 import org.im.dc.client.ui.struct.IXSContainer;
 import org.im.dc.client.ui.struct.XSContainersFactory;
@@ -22,9 +23,11 @@ import org.w3c.dom.Node;
 public class XSGroupSequenceContainer extends XSBaseContainer<XSModelGroup> {
     private List<IXSContainer> children = new ArrayList<>();
     private JPanel panel;
+    private AnnotationInfo ann;
 
     public XSGroupSequenceContainer(ArticleUIContext context, IXSContainer parentContainer, XSModelGroup obj) {
         super(context, parentContainer, obj);
+        ann = new AnnotationInfo(obj.getAnnotation());
 
         panel = new JPanel(new GridBagLayout());
         panel.setOpaque(false);
@@ -59,6 +62,11 @@ public class XSGroupSequenceContainer extends XSBaseContainer<XSModelGroup> {
     @Override
     public String getTag() {
         return null;
+    }
+
+    @Override
+    public boolean isWritable() {
+        return context.getWritable(parentContainer, ann);
     }
 
     public void insertData(Element node) throws Exception {

@@ -26,7 +26,7 @@ public class XSEditComboFiltered extends XSNamedControl<JFilterComboBox> impleme
             }
         });
         editor.setEditable(true);
-        editor.setEnabled(context.getWritable(parentContainer.isWritable(), ann));
+        editor.setEnabled(context.getWritable(parentContainer, ann));
     }
 
     @Override

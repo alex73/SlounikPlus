@@ -56,7 +56,7 @@ public class MainController extends BaseController<MainFrame> {
     private MainFrameIssuesModel issuesModel;
     private MainFrameNewsModel newsModel;
 
-    private List<MainControllerArticleType> panelArticleTypes = new ArrayList<>();
+    public List<MainControllerArticleType> panelArticleTypes = new ArrayList<>();
     private List<IArticleUpdatedListener> articleUpdatedListeners = new ArrayList<>();
     private MainFramePanelIssues panelIssues = new MainFramePanelIssues();
     private MainFramePanelNews panelNews = new MainFramePanelNews();
@@ -183,7 +183,6 @@ public class MainController extends BaseController<MainFrame> {
                     WS.initGit(addr, username);
                 }
                 initialData = WS.getToolsWebservice().getInitialData(WS.header);
-                WordsComparator.init(initialData.headerLocale);
 
                 SchemaLoader.init(initialData);
             }

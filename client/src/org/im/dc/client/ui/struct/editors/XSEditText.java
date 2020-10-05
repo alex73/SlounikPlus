@@ -43,7 +43,7 @@ public class XSEditText extends XSNamedControl<JTextArea> implements IXSEdit {
                 context.fireChanged();
             }
         });
-        editor.setEditable(context.getWritable(parentContainer.isWritable(), ann));
+        editor.setEditable(context.getWritable(parentContainer, ann));
     }
 
     @Override

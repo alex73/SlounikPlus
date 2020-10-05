@@ -15,7 +15,7 @@ public class ArticleUIContext {
         this.articleTypeId = articleTypeId;
     }
 
-    public boolean getWritable(boolean parentWritable, AnnotationInfo ann) {
+    public boolean getWritable(IXSContainer parentContainer, AnnotationInfo ann) {
         Boolean wr = null;
         for (RORW e : ann.enables) {
             if (e.role.equals("*") || userRoles.contains(e.role)) {
@@ -24,8 +24,8 @@ public class ArticleUIContext {
                 }
             }
         }
-        if (wr == null) {
-            wr = parentWritable;
+        if (wr == null && parentContainer != null) {
+            wr = parentContainer.isWritable();
         }
         return wr;
     }

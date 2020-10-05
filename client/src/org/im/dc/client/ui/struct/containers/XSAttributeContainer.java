@@ -101,6 +101,11 @@ public class XSAttributeContainer extends XSBaseContainer<XSAttributeDeclaration
     }
 
     @Override
+    public boolean isWritable() {
+        return context.getWritable(parentContainer, ann);
+    }
+
+    @Override
     public String getTag() {
         return null;
     }

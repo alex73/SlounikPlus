@@ -36,7 +36,6 @@ public class XSParticleContainer extends XSBaseContainer<XSParticle> {
     private JPanel panel;
     public int minOccurs, maxOccurs;
     private JButton addButton;
-    private boolean writable = true;
 
     public XSParticleContainer(ArticleUIContext context, IXSContainer parentContainer, XSParticle obj) {
         super(context, parentContainer, obj);
@@ -195,6 +194,11 @@ public class XSParticleContainer extends XSBaseContainer<XSParticle> {
         return obj.getTerm().getName();
     }
 
+    @Override
+    public boolean isWritable() {
+        return parentContainer.isWritable();
+    }
+
     private int indexOfPanel(JPanel p) {
         for (int i = 0; i < children.size(); i++) {
             if (children.get(i).panel == p) {
@@ -231,9 +235,9 @@ public class XSParticleContainer extends XSBaseContainer<XSParticle> {
     }
 
     public void revalidate() {
-        addButton.setVisible(writable && children.size() < maxOccurs);
+        addButton.setVisible(isWritable() && children.size() < maxOccurs);
 
-        boolean canCloseSomeone = writable && (children.size() > minOccurs);
+        boolean canCloseSomeone = isWritable() && (children.size() > minOccurs);
         for (ChildInfo ci : children) {
             ci.closeButton.setVisible(canCloseSomeone);
         }

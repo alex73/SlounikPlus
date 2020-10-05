@@ -5,14 +5,8 @@ import java.util.Comparator;
 import java.util.Locale;
 
 public class WordsComparator implements Comparator<String> {
-    public static WordsComparator INSTANCE;
-
     public final Locale loc;
     public final Collator collator;
-
-    public static void init(String locale) {
-        INSTANCE = new WordsComparator(locale);
-    }
 
     public WordsComparator(String locale) {
         loc = new Locale(locale);

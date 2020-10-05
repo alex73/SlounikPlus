@@ -39,7 +39,7 @@ public class XSEditRadio extends XSNamedControl<JPanel> implements IXSEdit {
                 }
             });
         }
-        editor.setEnabled(context.getWritable(parentContainer.isWritable(), ann));
+        editor.setEnabled(context.getWritable(parentContainer, ann));
     }
 
     @Override
