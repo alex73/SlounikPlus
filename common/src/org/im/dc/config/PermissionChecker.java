@@ -53,10 +53,10 @@ public class PermissionChecker {
 
     public static Map<String, Set<String>> getUserPermissionsByType(Config config, String user) {
         Map<String, Set<String>> result = new TreeMap<>();
-        for (String userRole : getUserRoles(config, user)) {
-            for (Type t : config.getTypes().getType()) {
-                Set<String> o = new TreeSet<>();
-                result.put(t.getId(), o);
+        for (Type t : config.getTypes().getType()) {
+            Set<String> o = new TreeSet<>();
+            result.put(t.getId(), o);
+            for (String userRole : getUserRoles(config, user)) {
                 for (Permissions ps : t.getPermissions()) {
                     if (ps.getRole().equals(userRole)) {
                         ps.getPermission().forEach(p -> o.add(p.name()));
