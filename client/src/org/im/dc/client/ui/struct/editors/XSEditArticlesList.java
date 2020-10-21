@@ -8,12 +8,12 @@ import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
-import javax.swing.SwingWorker;
 
 import org.im.dc.client.WS;
 import org.im.dc.client.ui.ArticleEditController;
@@ -95,6 +95,9 @@ public class XSEditArticlesList extends XSNamedControl<JPanel> implements IXSEdi
 
     @Override
     public void setData(String data) {
+        if (!combo.isEditable()) {
+            combo.setModel(new DefaultComboBoxModel<String>(new String[] { data }));
+        }
         combo.setSelectedItem(data);
     }
 
