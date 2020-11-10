@@ -1,6 +1,8 @@
 package org.im.dc.service.impl;
 
 import java.io.ByteArrayInputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
@@ -27,17 +29,22 @@ public class WordSplitter {
                 case XMLEvent.SPACE:
                     str.append(" ");
                     break;
-                default:
-                    if (str.length() > 0) {
-                        process();
-                        str.setLength(0);
+                case XMLEvent.START_ELEMENT:
+                    str.append(' ');
+                    for(int i=0;i<r.getAttributeCount();i++) {
+                        str.append(r.getAttributeValue(i)).append(' ');
                     }
+                    break;
+                case XMLEvent.END_ELEMENT:
+                    str.append(' ');
+                    break;
                 }
             }
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
 
+        process();
         result.append(' ');
 
         return result.toString().toLowerCase();
