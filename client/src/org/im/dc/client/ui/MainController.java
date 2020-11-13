@@ -50,7 +50,6 @@ public class MainController extends BaseController<MainFrame> {
 
     public static InitialData initialData;
     public static MainController instance;
-    int fontSize;
 
     private final String addr;
     private MainFrameIssuesModel issuesModel;

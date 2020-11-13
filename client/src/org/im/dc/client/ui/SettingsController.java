@@ -135,6 +135,13 @@ public class SettingsController extends BaseController<SettingsDialog> {
      * Усталёўвае вышыню радкоў у табліцах.
      */
     public static void setupFontForWindow(Container c) {
+        Font font;
+        if (fontName != null && !fontName.trim().isEmpty()) {
+            font = new Font(fontName, Font.PLAIN, fontSize);
+        } else {
+            font = c.getFont().deriveFont((float) fontSize);
+        }
+        c.setFont(font);
         for (int i = 0; i < c.getComponentCount(); i++) {
             Component cc = c.getComponent(i);
             if (cc instanceof Container) {
@@ -143,6 +150,9 @@ public class SettingsController extends BaseController<SettingsDialog> {
             if (cc instanceof JTable) {
                 ((JTable) cc).setRowHeight(fontSize + 2);
             }
+        }
+        if (c.getParent() != null) {
+            c.getParent().revalidate();
         }
     }
 

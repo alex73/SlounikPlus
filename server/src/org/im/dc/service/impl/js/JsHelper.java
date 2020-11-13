@@ -39,7 +39,7 @@ public class JsHelper {
                 context.setAttribute("article", new JsDomWrapper(doc.getDocumentElement()), ScriptContext.ENGINE_SCOPE);
                 context.setAttribute("context", contextVar, ScriptContext.ENGINE_SCOPE);
                 js.exec(context);
-                storage.textForSearch.put(a.getArticleId(), new WordSplitter().parse(a.getXml()));
+                storage.textForSearch.put(a.getArticleId(), new WordSplitter(Config.getConfig().getStress()).parse(a.getXml()));
             }
         }
         Comparator<String> comparator = COMPARATORS.get(articleType);
