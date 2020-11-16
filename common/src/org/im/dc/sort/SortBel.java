@@ -3,7 +3,7 @@ package org.im.dc.sort;
 import java.util.Comparator;
 
 public class SortBel implements Comparator<String> {
-	static final String ORDER = "0123456789абвгдеёжзіклмнопрстуўфхцчшыьэюя";
+	static final String ORDER = "0123456789абвгдеёжзійклмнопрстуўфхцчшыьэюя";
 
 	@Override
 	public int compare(String o1, String o2) {

@@ -14,5 +14,6 @@ public class SortBelTest {
 		assertEquals(-1, s.compare("але", "алё"));
 		assertEquals(0, s.compare("Але", "ал'е"));
 		assertEquals(1, s.compare("Алео", "ал'е"));
+		assertEquals(-1, s.compare("а/1", "ай"));
 	}
 }
