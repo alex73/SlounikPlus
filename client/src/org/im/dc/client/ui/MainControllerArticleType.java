@@ -42,7 +42,6 @@ public class MainControllerArticleType implements IArticleUpdatedListener {
     private final MainFramePanelArticles panelArticles = new MainFramePanelArticles();
     protected final Dockable dock;
     private List<String> selectedStates = new ArrayList<>();
-    public Comparator<String> wordComparator = new WordsComparator(MainController.initialData.headerLocale);
 
     public MainControllerArticleType(InitialData.TypeInfo articleTypeInfo) {
         this.typeInfo = articleTypeInfo;
@@ -309,6 +308,8 @@ public class MainControllerArticleType implements IArticleUpdatedListener {
     }
 
     public class TableArticlesSorter extends TableRowSorter<MainFrameArticlesModel> {
+        private Comparator<String> comparator = MainController.getComparatorForArticleType(typeInfo.typeId);
+
         public TableArticlesSorter(MainFrameArticlesModel model) {
             super(model);
             setSortKeys(Arrays.asList(new RowSorter.SortKey(0, SortOrder.ASCENDING)));
@@ -319,7 +320,7 @@ public class MainControllerArticleType implements IArticleUpdatedListener {
             return new Comparator<Object>() {
                 @Override
                 public int compare(Object o1, Object o2) {
-                    return wordComparator.compare(o1.toString(), o2.toString());
+                    return comparator.compare(o1.toString(), o2.toString());
                 }
             };
         }

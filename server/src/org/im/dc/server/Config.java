@@ -1,7 +1,9 @@
 package org.im.dc.server;
 
 import java.io.File;
+import java.util.Comparator;
 import java.util.Map;
+import java.util.TreeMap;
 
 import javax.xml.validation.Schema;
 
@@ -19,6 +21,7 @@ public class Config {
 
     static public Map<String, byte[]> schemaSources;
     static public Map<String, Schema> schemas;
+    public static Map<String, Comparator<String>> comparators = new TreeMap<>();
 
     public static synchronized void load(String configDir) throws Exception {
         CONFIG_DIR = configDir;

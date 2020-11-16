@@ -32,6 +32,13 @@
                 </Property>
               </Properties>
             </Menu>
+            <Menu class="javax.swing.JMenu" name="miValuesFull">
+              <Properties>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="org/im/dc/client/ui/Bundle.properties" key="MainFrame.miValuesFull.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                </Property>
+              </Properties>
+            </Menu>
             <Menu class="javax.swing.JMenu" name="miReports">
               <Properties>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">

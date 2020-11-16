@@ -1,0 +1,28 @@
+<html>
+<head>
+<style>
+    table, th, td {
+      border: 1px solid black;
+      border-collapse: collapse;
+    }
+</style>
+</head>
+<body style="font-family: sans-serif">
+  <table>
+    <tr>
+      <th>Звесткі</th>
+      <th>Артыкулы</th>
+    </tr>
+    <#list sortedValues as v>
+      <tr>
+        <td>${v}</td>
+        <td>
+          <#list values[v] as a>
+            <a href="#${a.id}">${a.header}</a>
+          </#list>
+        </td>
+      </tr>
+    </#list>
+  </table>
+</body>
+</html>

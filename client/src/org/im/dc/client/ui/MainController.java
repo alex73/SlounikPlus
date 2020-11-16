@@ -14,11 +14,13 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.TreeMap;
 import java.util.jar.Manifest;
 
 import javax.swing.JComponent;
@@ -32,6 +34,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.im.dc.client.SchemaLoader;
 import org.im.dc.client.WS;
+import org.im.dc.client.ui.reports.ReportFieldValuesController;
 import org.im.dc.gen.config.CommonPermission;
 import org.im.dc.service.OutputSummaryStorage;
 import org.im.dc.service.dto.ArticleFull;
@@ -48,6 +51,7 @@ import com.vlsolutions.swing.docking.DockingDesktop;
 public class MainController extends BaseController<MainFrame> {
     static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("org/im/dc/client/ui/Bundle");
 
+    public static Map<String, Comparator<String>> comparators = new TreeMap<>();
     public static InitialData initialData;
     public static MainController instance;
 
@@ -244,6 +248,15 @@ public class MainController extends BaseController<MainFrame> {
         } else {
             window.miValidateFull.setVisible(false);
         }
+        if (initialData.currentUserPermissions.contains(CommonPermission.FULL_VALUES.name())) {
+            for (InitialData.TypeInfo ti : initialData.articleTypes) {
+                JMenuItem it = new JMenuItem(ti.typeName);
+                it.addActionListener((e) -> valuesFull(ti.typeId));
+                window.miValuesFull.add(it);
+            }
+        } else {
+            window.miValuesFull.setVisible(false);
+        }
         if (initialData.currentUserPermissions.contains(CommonPermission.FULL_EXPORT.name())) {
             for (InitialData.TypeInfo ti : initialData.articleTypes) {
                 JMenuItem it = new JMenuItem(ti.typeName);
@@ -281,6 +294,14 @@ public class MainController extends BaseController<MainFrame> {
         }
     }
 
+    public static Comparator<String> getComparatorForArticleType(String articleType) {
+        Comparator<String> result = comparators.get(articleType);
+        if (result == null) {
+            result = new WordsComparator(MainController.initialData.headerLocale);
+        }
+        return result;
+    }
+
     private void validateFull(String articleTypeId) {
         PreviewController previewer = new PreviewController(MainController.instance.window, false);
         previewer.window.setTitle("Праверка");
@@ -307,6 +328,10 @@ public class MainController extends BaseController<MainFrame> {
             };
         });
         previewer.execute();
+    }
+
+    private void valuesFull(String articleTypeId) {
+        new ReportFieldValuesController(articleTypeId);
     }
 
     private void exportFull(String articleTypeId) {

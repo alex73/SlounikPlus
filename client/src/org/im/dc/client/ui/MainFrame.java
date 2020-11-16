@@ -23,6 +23,7 @@ public class MainFrame extends javax.swing.JFrame {
         miResetDesk = new javax.swing.JMenuItem();
         miSettings = new javax.swing.JMenuItem();
         miValidateFull = new javax.swing.JMenu();
+        miValuesFull = new javax.swing.JMenu();
         miReports = new javax.swing.JMenu();
         miExportFull = new javax.swing.JMenu();
 
@@ -40,6 +41,9 @@ public class MainFrame extends javax.swing.JFrame {
 
         miValidateFull.setText(bundle.getString("MainFrame.miValidateFull.text")); // NOI18N
         menuCommon.add(miValidateFull);
+
+        miValuesFull.setText(bundle.getString("MainFrame.miValuesFull.text")); // NOI18N
+        menuCommon.add(miValuesFull);
 
         miReports.setText(bundle.getString("MainFrame.miReports.text")); // NOI18N
         menuCommon.add(miReports);
@@ -97,5 +101,6 @@ public class MainFrame extends javax.swing.JFrame {
     public javax.swing.JMenuItem miResetDesk;
     public javax.swing.JMenuItem miSettings;
     public javax.swing.JMenu miValidateFull;
+    public javax.swing.JMenu miValuesFull;
     // End of variables declaration//GEN-END:variables
 }

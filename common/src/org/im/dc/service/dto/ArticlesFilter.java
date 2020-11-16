@@ -14,7 +14,7 @@ public class ArticlesFilter {
         if (partText == null) {
             return null;
         }
-        return " " + partText.replace('*', '%') + " ";
+        return "% " + partText.replace('*', '%') + " %";
     }
 
     public String getLikeHeader() {

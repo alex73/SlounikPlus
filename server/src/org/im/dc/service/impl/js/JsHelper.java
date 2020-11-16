@@ -20,8 +20,6 @@ import org.im.dc.service.impl.WordSplitter;
 import org.w3c.dom.Document;
 
 public class JsHelper {
-    public static Map<String, Comparator<String>> COMPARATORS = new TreeMap<>();
-
     public static OutputSummaryStorage previewSomeArticles(String articleType, List<RecArticle> articles)
             throws Exception {
         OutputSummaryStorage storage = new OutputSummaryStorage();
@@ -42,7 +40,7 @@ public class JsHelper {
                 storage.textForSearch.put(a.getArticleId(), new WordSplitter(Config.getConfig().getStress()).parse(a.getXml()));
             }
         }
-        Comparator<String> comparator = COMPARATORS.get(articleType);
+        Comparator<String> comparator = Config.comparators.get(articleType);
         if (comparator != null) {
             storage.outputs.sort((a, b) -> comparator.compare(a.key, b.key));
         }

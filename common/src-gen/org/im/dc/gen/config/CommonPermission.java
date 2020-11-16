@@ -17,6 +17,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;enumeration value="reports"/>
  *     &lt;enumeration value="full_validation"/>
  *     &lt;enumeration value="full_export"/>
+ *     &lt;enumeration value="full_values"/>
  *     &lt;enumeration value="force_state_change"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
@@ -48,6 +49,13 @@ public enum CommonPermission {
      */
     @XmlEnumValue("full_export")
     FULL_EXPORT("full_export"),
+
+    /**
+     * Ці можа карыстальнік праглядаць спіс значэнняў у палях
+     * 
+     */
+    @XmlEnumValue("full_values")
+    FULL_VALUES("full_values"),
 
     /**
      * Дазволіць мяняць стан усіх артыкулаў
