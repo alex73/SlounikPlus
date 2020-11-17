@@ -29,12 +29,18 @@ public class ReportFieldValues extends javax.swing.JPanel {
 
         buttonGroup1 = new javax.swing.ButtonGroup();
         cbField = new javax.swing.JComboBox<>();
+        btnSaveAs = new javax.swing.JButton();
 
         add(cbField);
+
+        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("org/im/dc/client/ui/Bundle"); // NOI18N
+        btnSaveAs.setText(bundle.getString("ReportFieldValues.btnSaveAs")); // NOI18N
+        add(btnSaveAs);
     }// </editor-fold>//GEN-END:initComponents
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    public javax.swing.JButton btnSaveAs;
     public javax.swing.ButtonGroup buttonGroup1;
     public javax.swing.JComboBox<String> cbField;
     // End of variables declaration//GEN-END:variables

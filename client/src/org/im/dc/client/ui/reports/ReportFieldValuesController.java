@@ -1,7 +1,11 @@
 package org.im.dc.client.ui.reports;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,8 +18,11 @@ import java.util.Vector;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.xml.bind.JAXBContext;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -46,6 +53,7 @@ public class ReportFieldValuesController extends BaseController<ReportDialog> {
 
     private String articleTypeId;
     private final ReportFieldValues input;
+    private String html;
 
     public ReportFieldValuesController(String articleTypeId) {
         super(new ReportDialog(MainController.instance.window, false), MainController.instance.window);
@@ -54,6 +62,25 @@ public class ReportFieldValuesController extends BaseController<ReportDialog> {
         window.output.addHyperlinkListener(hyperlinkListener);
         window.panelInput.add(input);
         window.btnStart.setVisible(false);
+        
+        input.btnSaveAs.addActionListener(e->{
+            JFileChooser chooser = new JFileChooser();
+            FileNameExtensionFilter filter = new FileNameExtensionFilter("HTML files", "html");
+            chooser.setFileFilter(filter);
+            int returnVal = chooser.showSaveDialog(window);
+            if (returnVal != JFileChooser.APPROVE_OPTION) {
+                return;
+            }
+            File o = chooser.getSelectedFile();
+            if (!o.getName().endsWith(".html")) {
+                o = new File(o.getAbsolutePath() + ".html");
+            }
+            try {
+                Files.write(o.toPath(), html.getBytes(StandardCharsets.UTF_8));
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(window, "Error", ex.getMessage(), JOptionPane.ERROR_MESSAGE);
+            }
+        });
 
         window.setSize(1200, 700);
         setupCloseOnEscape();
@@ -128,7 +155,7 @@ public class ReportFieldValuesController extends BaseController<ReportDialog> {
     protected void out(Map<String, List<ArticleShort>> v) {
         Map<String, Object> data = new TreeMap<>();
         List<String> sortedValues = new ArrayList<>(v.keySet());
-        Collections.sort(sortedValues);
+        Collections.sort(sortedValues, Collator.getInstance());
         data.put("values", v);
         data.put("sortedValues", sortedValues);
 
@@ -143,7 +170,6 @@ public class ReportFieldValuesController extends BaseController<ReportDialog> {
         b.setExposeFields(true);
         cfg.setObjectWrapper(b.build());
 
-        String html;
         StringWriter o = new StringWriter();
         try {
             Template template = cfg.getTemplate("ReportFieldValues.template");

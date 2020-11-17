@@ -17,15 +17,6 @@ public class ArticleShort {
     public String[] assignedUsers = EMPTY_LIST;
     public String validationError;
 
-    public static void sortByAlphabet(List<ArticleShort> list) {
-        Collections.sort(list, new Comparator<ArticleShort>() {
-            @Override
-            public int compare(ArticleShort a1, ArticleShort a2) {
-                return BE.compare(a1.header.replace("+", ""), a2.header.replace("+", ""));
-            }
-        });
-    }
-
     public static void sortById(List<ArticleShort> list) {
         Collections.sort(list, new Comparator<ArticleShort>() {
             @Override

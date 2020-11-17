@@ -371,6 +371,7 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
         }
         window.lblValidationError
                 .setText(article.article.validationError != null ? article.article.validationError : " ");
+        window.lblValidationError.setToolTipText(window.lblValidationError.getText());
 
         ArticleUIContext editContext = new ArticleUIContext(typeInfo.typeId);
         editContext.userRoles = MainController.initialData.currentUserRoles;
@@ -480,8 +481,7 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
                     List<ArticleShort> articles = WS.getArticleService().listArticles(WS.header, articleTypeId,
                             new ArticlesFilter());
                     articles.forEach(a -> headers.add(a.header));
-                    Collator collator = Collator.getInstance(new Locale(MainController.initialData.headerLocale));
-                    Collections.sort(headers, collator);
+                    Collections.sort(headers, MainController.getComparatorForArticleType(articleTypeId));
                     return null;
                 }
 
