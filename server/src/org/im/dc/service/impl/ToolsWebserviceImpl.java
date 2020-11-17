@@ -82,6 +82,46 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
         LOG.info("<< reassignUsers (" + (System.currentTimeMillis() - startTime) + "ms)");
     }
 
+    @Override
+    public void assignUser(Header header, String articleType, int[] articleIds, String username) throws Exception {
+        LOG.info(">> assignUser(" + header.user + ")");
+        long startTime = System.currentTimeMillis();
+        check(header);
+        PermissionChecker.userRequiresTypePermission(Config.getConfig(), header.user, articleType, TypePermission.REASSIGN);
+
+        Db.exec((api) -> {
+            checkArticlesType(api, articleType, articleIds);
+            api.getArticleMapper().assignArticles(articleIds, username);
+        });
+
+        LOG.info("<< assignUser (" + (System.currentTimeMillis() - startTime) + "ms)");
+    }
+
+    @Override
+    public void unassignUser(Header header, String articleType, int[] articleIds, String username) throws Exception {
+        LOG.info(">> unassignUser(" + header.user + ")");
+        long startTime = System.currentTimeMillis();
+        check(header);
+        PermissionChecker.userRequiresTypePermission(Config.getConfig(), header.user, articleType, TypePermission.REASSIGN);
+
+        Db.exec((api) -> {
+            checkArticlesType(api, articleType, articleIds);
+            api.getArticleMapper().unassignArticles(articleIds, username);
+        });
+
+        LOG.info("<< unassignUser (" + (System.currentTimeMillis() - startTime) + "ms)");
+    }
+
+    protected void checkArticlesType(Db.Api db, String articleType, int[] articleIds) {
+        for (int articleId : articleIds) {
+            RecArticle a = db.getArticleMapper().selectArticle(articleId);
+            if (!articleType.equals(a.getArticleType())) {
+                LOG.warn("<< validateAll: wrong type/id requested");
+                throw new RuntimeException("Запыт няправільнага ID для вызначанага тыпу");
+            }
+        }
+    }
+
     public List<ArticleFull> getAllArticles(Header header, String articleType) throws Exception {
         LOG.info(">> getAllArticles(" + header.user + ")");
         long startTime = System.currentTimeMillis();

@@ -2,11 +2,14 @@ package org.im.dc.client.ui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.Collator;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.Vector;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
 
@@ -27,16 +30,10 @@ public class ReassignController extends BaseController<ReassignDialog> {
         window.btnReassign.addActionListener(reassign);
         window.btnCancel.addActionListener((e) -> window.dispose());
 
-        for (Map.Entry<String, String[]> en : MainController.initialData.allUsers.entrySet()) {
-            int c = calcForUser(articles, en.getKey());
-            JCheckBox cb = new JCheckBox(en.getKey()
-                    + (c > 0 ? " (" + String.join(",", en.getValue()) + ") - на яго прызначана " + c + " слоў" : ""));
-            cb.setName(en.getKey());
-            if (c > 0) {
-                cb.setSelected(true);
-            }
-            window.panelUsers.add(cb);
-        }
+        Vector<String> users=new Vector<>(MainController.initialData.allUsers.keySet());
+        Collections.sort(users, Collator.getInstance());
+        window.list.setModel(new DefaultComboBoxModel<>(users));
+
         articleIds = new int[articles.size()];
         for (int i = 0; i < articles.size(); i++) {
             articleIds[i] = articles.get(i).id;
@@ -46,34 +43,19 @@ public class ReassignController extends BaseController<ReassignDialog> {
         displayOnParent();
     }
 
-    private int calcForUser(List<ArticleShort> articles, String user) {
-        int count = 0;
-        for (ArticleShort a : articles) {
-            for (String u : a.assignedUsers) {
-                if (user.equals(u)) {
-                    count++;
-                }
-            }
-        }
-        return count;
-    }
-
     private ActionListener reassign = new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
-            List<String> users = new ArrayList<>();
-            for (int i = 0; i < window.panelUsers.getComponentCount(); i++) {
-                JCheckBox cb = (JCheckBox) window.panelUsers.getComponent(i);
-                if (cb.isSelected()) {
-                    users.add(cb.getName());
-                }
-            }
+            String username = (String)window.list.getSelectedItem();
 
             new LongProcess() {
                 @Override
                 protected void exec() throws Exception {
-                    WS.getToolsWebservice().reassignUsers(WS.header, typeInfo.typeId, articleIds,
-                            users.toArray(new String[users.size()]));
+                    if (window.rbAdd.isSelected()) {
+                        WS.getToolsWebservice().assignUser(WS.header, typeInfo.typeId, articleIds, username);
+                    } else {
+                        WS.getToolsWebservice().unassignUser(WS.header, typeInfo.typeId, articleIds, username);
+                    }
                 }
 
                 @Override

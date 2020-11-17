@@ -29,8 +29,11 @@ public class ReassignDialog extends javax.swing.JDialog {
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
-        jLabel1 = new javax.swing.JLabel();
-        panelUsers = new javax.swing.JPanel();
+        buttonGroup1 = new javax.swing.ButtonGroup();
+        jPanel2 = new javax.swing.JPanel();
+        rbAdd = new javax.swing.JRadioButton();
+        rbRemove = new javax.swing.JRadioButton();
+        list = new javax.swing.JComboBox<>();
         jPanel1 = new javax.swing.JPanel();
         btnReassign = new javax.swing.JButton();
         btnCancel = new javax.swing.JButton();
@@ -38,24 +41,30 @@ public class ReassignDialog extends javax.swing.JDialog {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
-        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("Пераназначыць абраныя словы на карыстальнікаў:");
+        buttonGroup1.add(rbAdd);
+        rbAdd.setSelected(true);
+        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("org/im/dc/client/ui/Bundle"); // NOI18N
+        rbAdd.setText(bundle.getString("Reassign.AddUser")); // NOI18N
+        jPanel2.add(rbAdd);
+
+        buttonGroup1.add(rbRemove);
+        rbRemove.setText(bundle.getString("Reassign.RemoveUser")); // NOI18N
+        jPanel2.add(rbRemove);
+
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
-        getContentPane().add(jLabel1, gridBagConstraints);
-
-        panelUsers.setLayout(new javax.swing.BoxLayout(panelUsers, javax.swing.BoxLayout.Y_AXIS));
+        getContentPane().add(jPanel2, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
-        gridBagConstraints.weighty = 1.0;
-        getContentPane().add(panelUsers, gridBagConstraints);
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        getContentPane().add(list, gridBagConstraints);
 
-        btnReassign.setText("Пераназначыць");
+        btnReassign.setText(bundle.getString("Reassign.OK")); // NOI18N
         jPanel1.add(btnReassign);
 
-        btnCancel.setText("Скасаваць");
+        btnCancel.setText(bundle.getString("Reassign.Cancel")); // NOI18N
         jPanel1.add(btnCancel);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -111,8 +120,11 @@ public class ReassignDialog extends javax.swing.JDialog {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public javax.swing.JButton btnCancel;
     public javax.swing.JButton btnReassign;
-    public javax.swing.JLabel jLabel1;
+    public javax.swing.ButtonGroup buttonGroup1;
     public javax.swing.JPanel jPanel1;
-    public javax.swing.JPanel panelUsers;
+    public javax.swing.JPanel jPanel2;
+    public javax.swing.JComboBox<String> list;
+    public javax.swing.JRadioButton rbAdd;
+    public javax.swing.JRadioButton rbRemove;
     // End of variables declaration//GEN-END:variables
 }

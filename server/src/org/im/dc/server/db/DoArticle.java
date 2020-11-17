@@ -34,6 +34,10 @@ public interface DoArticle {
 
     void reassignArticles(@Param("articleIds") int[] articleIds, @Param("users") String[] users);
 
+    void assignArticles(@Param("articleIds") int[] articleIds, @Param("user") String user);
+
+    void unassignArticles(@Param("articleIds") int[] articleIds, @Param("user") String user);
+
     int updateArticleState(@Param("record") RecArticle rec, @Param("prevLastUpdated") Date prevLastUpdated);
 
     void addWatch(@Param("articleId") int articleId, @Param("user") String user);

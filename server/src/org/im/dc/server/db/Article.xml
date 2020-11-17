@@ -165,6 +165,24 @@
 		</foreach>
 		)
 	</update>
+	<update id="assignArticles">
+		UPDATE Articles
+		SET assignedUsers = array_append(assignedUsers, #{user})
+		WHERE articleId IN (
+		<foreach collection="articleIds" item="articleId" separator=",">
+			#{articleId}
+		</foreach>
+		)
+	</update>
+	<update id="unassignArticles">
+		UPDATE Articles
+		SET assignedUsers = array_remove(assignedUsers, #{user})
+		WHERE articleId IN (
+		<foreach collection="articleIds" item="articleId" separator=",">
+			#{articleId}
+		</foreach>
+		)
+	</update>
 
 	<resultMap id="RecArticleMap" type="RecArticle">
 		<id property="articleId" column="articleId" />
