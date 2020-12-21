@@ -3,6 +3,7 @@ package org.im.dc.server.utils;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
+import java.util.stream.Collectors;
 
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Source;
@@ -92,7 +94,6 @@ public class ExportToGit {
 
         for (RecArticleHistory h : history) {
             ArticleInfo ai = articleInfos.get(h.getArticleId());
-            String oldFile = ai.getPath(h.getArticleId());
             if (h.getNewHeader() != null) {
                 ai.header = h.getNewHeader();
             }
@@ -106,7 +107,7 @@ public class ExportToGit {
 
             System.out.println(
                     "Export " + count + "/" + history.size() + ": #" + h.getHistoryId() + " from " + h.getChanged());
-            add(h, ai, oldFile, newFile);
+            add(h, ai, newFile);
         }
 
         // export current state
@@ -130,6 +131,10 @@ public class ExportToGit {
             File f = new File(repoPath, newFile);
             byte[] existXml = f.exists() ? FileUtils.readFileToByteArray(f) : new byte[0];
             if (!Arrays.equals(xml, existXml)) {
+                for (String oldFile : getOldFilePaths(id)) {
+                    new File(repoPath, oldFile).delete();
+                    git.rm().addFilepattern(oldFile).call();
+                }
                 FileUtils.writeByteArrayToFile(f, xml);
                 git.add().addFilepattern(newFile).call();
                 changed = true;
@@ -155,7 +160,7 @@ public class ExportToGit {
 
     static int count, added;
 
-    static void add(RecArticleHistory h, ArticleInfo ai, String oldFile, String newFile) {
+    static void add(RecArticleHistory h, ArticleInfo ai, String newFile) {
         count++;
         try {
             // and then commit the changes
@@ -182,24 +187,34 @@ public class ExportToGit {
                 return api.getArticleHistoryMapper().getHistory(h.getHistoryId());
             });
 
-            if (oldFile.equals(newFile)) {
-                if (fullCurrentHistory.getNewXml() != null) {
-                    byte[] xml = xmlFormat(fullCurrentHistory.getNewXml());
-                    FileUtils.writeByteArrayToFile(new File(repoPath, newFile), xml);
-                    git.add().addFilepattern(newFile).call();
-                }
-            } else {
-                if (new File(repoPath, oldFile).exists()) {
-                    new File(repoPath, oldFile).renameTo(new File(repoPath, newFile));
-                }
+            for (String oldFile : getOldFilePaths(h.getArticleId())) {
                 new File(repoPath, oldFile).delete();
                 git.rm().addFilepattern(oldFile).call();
-                if (fullCurrentHistory.getNewXml() != null) {
-                    byte[] xml = xmlFormat(fullCurrentHistory.getNewXml());
-                    FileUtils.writeByteArrayToFile(new File(repoPath, newFile), xml);
-                }
-                git.add().addFilepattern(newFile).call();
             }
+            if (fullCurrentHistory.getNewXml() != null) {
+                byte[] xml = xmlFormat(fullCurrentHistory.getNewXml());
+                FileUtils.writeByteArrayToFile(new File(repoPath, newFile), xml);
+            }
+            git.add().setUpdate(false).addFilepattern(newFile).call();
+
+//            if (oldFile.equals(newFile)) {
+//                if (fullCurrentHistory.getNewXml() != null) {
+//                    byte[] xml = xmlFormat(fullCurrentHistory.getNewXml());
+//                    FileUtils.writeByteArrayToFile(new File(repoPath, newFile), xml);
+//                    git.add().setUpdate(true).addFilepattern(newFile).call();
+//                }
+//            } else {
+//                if (new File(repoPath, oldFile).exists()) {
+//                    new File(repoPath, oldFile).renameTo(new File(repoPath, newFile));
+//                }
+//                new File(repoPath, oldFile).delete();
+//                git.rm().addFilepattern(oldFile).call();
+//                if (fullCurrentHistory.getNewXml() != null) {
+//                    byte[] xml = xmlFormat(fullCurrentHistory.getNewXml());
+//                    FileUtils.writeByteArrayToFile(new File(repoPath, newFile), xml);
+//                }
+//                git.add().setUpdate(false).addFilepattern(newFile).call();
+//            }
 
             CommitCommand cc = git.commit();
             cc.setCommitter(pi).setMessage(message).call();
@@ -210,6 +225,13 @@ public class ExportToGit {
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
+    }
+
+    static List<String> getOldFilePaths(int articleId) throws IOException {
+        return Files
+                .find(repoPath.toPath(), Integer.MAX_VALUE,
+                        (p, a) -> a.isRegularFile() && p.toString().endsWith("-" + articleId + ".xml"))
+                .map(p -> repoPath.toPath().relativize(p).toString()).collect(Collectors.toList());
     }
 
     private static final TransformerFactory TRANSFORMER_FACTORY = TransformerFactory.newInstance();

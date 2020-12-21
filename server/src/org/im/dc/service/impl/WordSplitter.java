@@ -1,6 +1,7 @@
 package org.im.dc.service.impl;
 
 import java.io.ByteArrayInputStream;
+import java.util.regex.Pattern;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
@@ -18,6 +19,7 @@ public class WordSplitter {
     }
 
     public String parse(byte[] xml) {
+        result.append(' ');
         try {
             XMLStreamReader r = FACTORY.createXMLStreamReader(new ByteArrayInputStream(xml));
             while (r.hasNext()) {
@@ -30,16 +32,13 @@ public class WordSplitter {
                     str.append(" ");
                     break;
                 case XMLEvent.START_ELEMENT:
-                    str.setLength(0);
-                    str.append(' ');
+                    process();
                     for (int i = 0; i < r.getAttributeCount(); i++) {
                         str.append(r.getAttributeValue(i)).append(' ');
                     }
                     break;
                 case XMLEvent.END_ELEMENT:
-                    str.append(' ');
                     process();
-                    str.setLength(0);
                     break;
                 }
             }
@@ -50,17 +49,27 @@ public class WordSplitter {
         return result.toString().toLowerCase();
     }
 
+    static final Pattern SEPARATOR = Pattern.compile("[^\\p{IsAlphabetic}]");
+
     private void process() {
-        if (str.toString().trim().isEmpty()) {
+        String s = str.toString().trim();
+        str.setLength(0);
+        if (s.isEmpty()) {
             return;
         }
-        for (int i = 0; i < str.length(); i++) {
-            char c = str.charAt(i);
+        for (char c : s.toCharArray()) {
             if (stressChars.indexOf(c) >= 0) {
                 continue;
             }
-            result.append(c);
+            if (Character.isWhitespace(c)) {
+                c = ' ';
+            }
+            str.append(c);
         }
-        result.append('\n');
+        String[] words = SEPARATOR.split(str);
+        for (String w : words) {
+            result.append(w).append(' ');
+        }
+        str.setLength(0);
     }
 }
