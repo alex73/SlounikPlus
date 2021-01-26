@@ -208,7 +208,6 @@ public class MainControllerArticleType implements IArticleUpdatedListener {
                     out.append(ao.html);
                     outClipboard.append(ao.html);
                     out.append(" <a href='" + ao.articleId + "'>рэдагаваць</a>\n");
-                    outClipboard.append("<br/>\n");
                 });
 
                 out.append("\n</body></html>\n");
