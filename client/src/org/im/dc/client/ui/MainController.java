@@ -297,7 +297,7 @@ public class MainController extends BaseController<MainFrame> {
     public static Comparator<String> getComparatorForArticleType(String articleType) {
         Comparator<String> result = comparators.get(articleType);
         if (result == null) {
-            result = new WordsComparator(MainController.initialData.headerLocale);
+            throw new RuntimeException("Comparator not defined for " + articleType);
         }
         return result;
     }

@@ -1,10 +1,8 @@
 package org.im.dc.service.impl.js;
 
 import java.io.File;
-import java.text.Collator;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -41,9 +39,11 @@ public class JsHelper {
             }
         }
         Comparator<String> comparator = Config.comparators.get(articleType);
-        if (comparator != null) {
-            storage.outputs.sort((a, b) -> comparator.compare(a.key, b.key));
+        if (comparator == null) {
+            throw new Exception("Comparator not defined for " + articleType);
         }
+        storage.outputs.sort((a, b) -> comparator.compare(a.key, b.key));
+        storage.errors.sort((a, b) -> comparator.compare(a.key, b.key));
         return storage;
     }
 
@@ -52,12 +52,13 @@ public class JsHelper {
         if (!script.exists()) {
             return;
         }
-        Collator c = Config.getConfig().getHeaderLocale() != null
-                ? Collator.getInstance(new Locale(Config.getConfig().getHeaderLocale()))
-                : null;
+        Comparator<String> comparator = Config.comparators.get(articleType);
+        if (comparator == null) {
+            throw new Exception("Comparator not defined for " + articleType);
+        }
         try (JsProcessing js = new JsProcessing(script.getAbsolutePath())) {
             SimpleScriptContext context = new SimpleScriptContext();
-            context.setAttribute("collator", c, ScriptContext.ENGINE_SCOPE);
+            context.setAttribute("comparator", comparator, ScriptContext.ENGINE_SCOPE);
             context.setAttribute("summaryStorage", storage, ScriptContext.ENGINE_SCOPE);
             js.exec(context);
         }

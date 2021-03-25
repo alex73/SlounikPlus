@@ -1,9 +1,12 @@
 package org.im.dc.sort;
 
+import java.text.Collator;
 import java.util.Comparator;
+import java.util.Locale;
 
 public class SortBel implements Comparator<String> {
 	static final String ORDER = "0123456789абвгдеёжзійклмнопрстуўфхцчшыьэюя";
+    static final Collator BE = Collator.getInstance(new Locale("be"));
 
 	@Override
 	public int compare(String o1, String o2) {
@@ -30,7 +33,7 @@ public class SortBel implements Comparator<String> {
 				continue;
 			}
 			if (ci == -2 && cj == -2) {
-				return 0;
+				return BE.compare(o1, o2);
 			}
 
 			if (ci < cj) {
