@@ -16,7 +16,7 @@ Most dictionaries are created using standard text processors like Microsoft Word
 This software was created for the Jakub Kolas Institute for Linguistics, and was used for following dictionaries creation:
 - Тлумачальны слоўнік беларускай мовы (Explanatory Dictionary of the Belarusian Language)
 - Словарь бѣлорусскаго нарѣчія (Dictionary of the Belarusian Dialect) by Ivan Nasovič
-- Італьянска-белаурскі слоўнік (Italian-Belarusian Dictionary)
+- Італьянска-беларускі слоўнік (Italian-Belarusian Dictionary)
 - Беларуска-Кітайскі і Кітайска-Беларускі слоўнікі (Belarusian-Chinese and Chinese-Belarusian dictionaries)
 
 *SloŭnikPlus* (https://github.com/alex73/SlounikPlus/) is based on modern technologies and significantly improves dictionary creation process. It makes work faster, comfortable, and more effective in comparison with usual dictionary creation.
