@@ -6,6 +6,7 @@ import java.util.ResourceBundle;
 
 import javax.swing.table.DefaultTableModel;
 
+import org.im.dc.client.ui.utils.AdaptiveTime;
 import org.im.dc.service.dto.Related;
 
 @SuppressWarnings("serial")
@@ -56,7 +57,7 @@ public class MainFrameNewsModel extends DefaultTableModel {
         Related a = news.get(row);
         switch (column) {
         case 0:
-            return TIME_FMT.format(a.when);
+            return AdaptiveTime.format(a.when);
         case 1:
             return a.who;
         case 2:
