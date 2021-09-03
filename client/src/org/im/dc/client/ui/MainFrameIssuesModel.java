@@ -13,7 +13,7 @@ import org.im.dc.service.dto.Related;
 public class MainFrameIssuesModel extends DefaultTableModel {
     static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("org/im/dc/client/ui/Bundle");
 
-    private SimpleDateFormat TIME_FMT = new SimpleDateFormat("dd MMM HH:mm");
+    private SimpleDateFormat TIME_FMT = new SimpleDateFormat("dd.MM.yyyy HH:mm");
 
     protected final List<Related> issues;
 
@@ -57,7 +57,7 @@ public class MainFrameIssuesModel extends DefaultTableModel {
         Related a = issues.get(row);
         switch (column) {
         case 0:
-            return AdaptiveTime.format(a.when);
+            return TIME_FMT.format(a.when);
         case 1:
             return a.who;
         case 2:

@@ -6,14 +6,13 @@ import java.util.ResourceBundle;
 
 import javax.swing.table.DefaultTableModel;
 
-import org.im.dc.client.ui.utils.AdaptiveTime;
 import org.im.dc.service.dto.Related;
 
 @SuppressWarnings("serial")
 public class ArticleEditRelatedModel extends DefaultTableModel {
     static final ResourceBundle BUNDLE = java.util.ResourceBundle.getBundle("org/im/dc/client/ui/Bundle");
 
-    private SimpleDateFormat TIME_FMT = new SimpleDateFormat("dd MMM HH:mm");
+    private SimpleDateFormat TIME_FMT = new SimpleDateFormat("dd.MM.yyyy HH:mm");
 
     protected final List<Related> related;
 
@@ -55,7 +54,7 @@ public class ArticleEditRelatedModel extends DefaultTableModel {
         Related a = related.get(row);
         switch (column) {
         case 0:
-            return AdaptiveTime.format(a.when);
+            return TIME_FMT.format(a.when);
         case 1:
             return a.who;
         case 2:
