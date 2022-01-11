@@ -61,6 +61,12 @@
             <classes dir="server/build" />
             <lib dir="server/lib/" includes="**/*.jar" />
         </war>
+
+        <mkdir dir="dist/utils/" />
+        <jar destfile="dist/utils/server.jar" basedir="server/build"/>
+        <copy todir="dist/utils/lib">
+            <fileset dir="server/lib" />
+        </copy>
     </target>
 
     <target name="all" depends="clean, xjc, server, client" />

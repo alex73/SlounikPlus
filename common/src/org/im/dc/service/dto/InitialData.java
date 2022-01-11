@@ -22,6 +22,7 @@ public class InitialData {
         public String typeId;
         public String typeName;
         public String newArticleState;
+        public boolean viewable;
         public Set<String> currentUserTypePermissions = new TreeSet<>();
     }
 

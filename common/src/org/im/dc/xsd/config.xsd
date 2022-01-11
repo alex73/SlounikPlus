@@ -66,6 +66,7 @@
 			<xs:attribute name="id" type="xs:string" use="required" />
 			<xs:attribute name="name" type="xs:string" use="required" />
 			<xs:attribute name="new-article-state" type="xs:string" use="optional" />
+			<xs:attribute name="view-roles" type="xs:string" use="optional" />
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="state">

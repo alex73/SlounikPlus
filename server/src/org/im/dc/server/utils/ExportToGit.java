@@ -2,10 +2,11 @@ package org.im.dc.server.utils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -15,9 +16,12 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
+import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import javax.xml.transform.OutputKeys;
@@ -27,9 +31,11 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import org.apache.commons.io.FileUtils;
+import org.eclipse.jgit.api.AddCommand;
 import org.eclipse.jgit.api.CommitCommand;
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.RmCommand;
+import org.eclipse.jgit.api.errors.EmptyCommitException;
 import org.eclipse.jgit.api.errors.NoHeadException;
 import org.eclipse.jgit.errors.RepositoryNotFoundException;
 import org.eclipse.jgit.lib.PersonIdent;
@@ -40,11 +46,14 @@ import org.im.dc.server.db.RecArticleHistory;
 import org.im.dc.service.dto.ArticlesFilter;
 
 public class ExportToGit {
-    static File repoPath;
+    static final Collator BE = Collator.getInstance(new Locale("be"));
+
+    static Path repoPath;
     static Git git;
     static List<RecArticleHistory> history;
     static List<GitHistory> gitHistory = new ArrayList<>();
     static Map<Integer, ArticleInfo> articleInfos = new HashMap<>();
+    static Map<String, Map<Integer, Set<String>>> assignments = new TreeMap<>(); // <type, <id, <user>>>
 
     public static void main(String[] args) throws Exception {
         if (args.length != 1) {
@@ -54,10 +63,10 @@ public class ExportToGit {
 
         Db.init(System.getProperty("CONFIG_DIR"));
 
-        repoPath = new File(args[0]);
+        repoPath = Paths.get(args[0]);
 
         try {
-            git = Git.open(repoPath);
+            git = Git.open(repoPath.toFile());
             Iterable<RevCommit> log = git.log().call();
             for (Iterator<RevCommit> iterator = log.iterator(); iterator.hasNext();) {
                 RevCommit rev = iterator.next();
@@ -65,19 +74,20 @@ public class ExportToGit {
             }
             Collections.reverse(gitHistory);
         } catch (RepositoryNotFoundException ex) {
-            git = Git.init().setDirectory(repoPath).call();
+            git = Git.init().setDirectory(repoPath.toFile()).call();
         } catch (NoHeadException ex) {
-            git = Git.init().setDirectory(repoPath).call();
+            git = Git.init().setDirectory(repoPath.toFile()).call();
         }
 
         // list history
         Db.exec((api) -> {
-            for (RecArticle a : api.getArticleMapper().listArticles(null, new ArticlesFilter())) {
+            for (RecArticle a : api.getArticleMapper().getAllArticles(null)) {
                 articleInfos.put(a.getArticleId(), new ArticleInfo(a));
             }
             history = api.getArticleHistoryMapper().retrieveHistoryHeadersForExport();
         });
 
+        // calculate initial state
         for (ListIterator<RecArticleHistory> it = history.listIterator(history.size()); it.hasPrevious();) {
             RecArticleHistory h = it.previous();
             ArticleInfo ai = articleInfos.get(h.getArticleId());
@@ -88,10 +98,11 @@ public class ExportToGit {
                 ai.state = h.getOldState();
             }
             if (h.getOldAssignedUsers() != null) {
-                ai.assignedUsers = h.getOldAssignedUsers();
+                ai.setAssignedUsers(h.getOldAssignedUsers());
             }
         }
 
+        // history export
         for (RecArticleHistory h : history) {
             ArticleInfo ai = articleInfos.get(h.getArticleId());
             if (h.getNewHeader() != null) {
@@ -101,71 +112,91 @@ public class ExportToGit {
                 ai.state = h.getNewState();
             }
             if (h.getNewAssignedUsers() != null) {
-                ai.assignedUsers = h.getNewAssignedUsers();
+                ai.setAssignedUsers(h.getNewAssignedUsers());
             }
-            String newFile = ai.getPath(h.getArticleId());
+            Path newFile = ai.getPath();
+            applyAssignments(ai);
 
-            System.out.println(
-                    "Export " + count + "/" + history.size() + ": #" + h.getHistoryId() + " from " + h.getChanged());
+            System.out.println("Export " + count + "/" + history.size() + ": #" + h.getHistoryId() + " from " + h.getChanged());
             add(h, ai, newFile);
         }
 
-        // export current state
-        Path root = repoPath.toPath();
-        Set<String> existFiles = new HashSet<>();
-        Files.find(root, Integer.MAX_VALUE, (p, a) -> a.isRegularFile()).map(p -> root.relativize(p).toString())
-                .filter(n -> !n.startsWith(".git/") && !n.startsWith("_db/")).forEach(n -> existFiles.add(n));
+        // export current snapshot and assignments
+        Set<Path> added = new HashSet<>();
+        added.addAll(setCurrentArticles());
+        added.addAll(setCurrentAssignments());
 
-        boolean changed = false;
-        count = 0;
-        for (int id : articleInfos.keySet()) {
-            count++;
-            System.out.print("Check for change " + count + "/" + articleInfos.size() + ": #" + id);
-            RecArticle a = Db.execAndReturn((api) -> {
-                return api.getArticleMapper().selectArticle(id);
-            });
-            ArticleInfo ai = new ArticleInfo(a);
-            String newFile = ai.getPath(a.getArticleId());
+        Set<String> forDelete = new HashSet<>();
+        Files.find(repoPath, Integer.MAX_VALUE, (p, a) -> a.isRegularFile()).filter(p -> !added.contains(p)).map(p -> repoPath.relativize(p).toString())
+                .filter(n -> !n.startsWith(".git/") && !n.startsWith("_db/")).forEach(n -> forDelete.add(n));
 
-            byte[] xml = xmlFormat(a.getXml());
-            File f = new File(repoPath, newFile);
-            byte[] existXml = f.exists() ? FileUtils.readFileToByteArray(f) : new byte[0];
-            if (!Arrays.equals(xml, existXml)) {
-                for (String oldFile : getOldFilePaths(id)) {
-                    new File(repoPath, oldFile).delete();
-                    git.rm().addFilepattern(oldFile).call();
-                }
-                FileUtils.writeByteArrayToFile(f, xml);
-                git.add().addFilepattern(newFile).call();
-                changed = true;
-                System.out.println(" - changed " + newFile);
-            } else {
-                System.out.println();
+        if (!added.isEmpty()) {
+            AddCommand add = git.add();
+            added.forEach(p -> add.addFilepattern(repoPath.relativize(p).toString()));
+            add.call();
+        }
+        if (!forDelete.isEmpty()) {
+            RmCommand rm = git.rm();
+            for (String f : forDelete) {
+                Files.delete(repoPath.resolve(f));
+                rm.addFilepattern(f);
             }
-            existFiles.remove(newFile);
+            rm.call();
         }
-        for (String f : existFiles) {
-            new File(repoPath, f).delete();
-            git.rm().addFilepattern(f).call();
-            changed = true;
-        }
-        if (changed) {
+        try {
             CommitCommand cc = git.commit();
-            cc.setCommitter(new PersonIdent("admin", "db@localhost", new Date(), TimeZone.getDefault()))
+            cc.setAllowEmpty(false).setCommitter(new PersonIdent("admin", "db@localhost", new Date(), TimeZone.getDefault()))
                     .setMessage("Snapshot of current db state").call();
+        } catch (EmptyCommitException ex) {
         }
 
         git.close();
     }
 
+    // запісвае бягучы стан, без гісторыі
+    static Set<Path> setCurrentArticles() throws Exception {
+        Set<Path> added = new HashSet<>();
+        int pos = 0;
+        for (int id : articleInfos.keySet().toArray(new Integer[0])) {
+            pos++;
+            System.out.print("Check for change " + pos + "/" + articleInfos.size() + ": #" + id);
+            RecArticle a = Db.execAndReturn((api) -> {
+                return api.getArticleMapper().selectArticle(id);
+            });
+            ArticleInfo ai = new ArticleInfo(a);
+            articleInfos.put(id, ai);
+            applyAssignments(ai);
+            Path newFile = ai.getPath();
+            byte[] xml = xmlFormat(a.getXml());
+            byte[] existXml = Files.exists(newFile) ? Files.readAllBytes(newFile) : new byte[0];
+            if (!Arrays.equals(xml, existXml)) {
+                Files.createDirectories(newFile.getParent());
+                Files.write(newFile, xml);
+                System.out.println(" - changed " + newFile);
+            } else {
+                System.out.println();
+            }
+            added.add(newFile);
+        }
+        return added;
+    }
+
+    static Set<Path> setCurrentAssignments() throws Exception {
+        Set<Path> added = new HashSet<>();
+        for (String type : articleInfos.values().stream().map(ai -> ai.type).sorted().distinct().collect(Collectors.toList())) {
+            added.add(saveAssignments(type));
+        }
+        return added;
+    }
+
     static int count, added;
 
-    static void add(RecArticleHistory h, ArticleInfo ai, String newFile) {
+    static void add(RecArticleHistory h, ArticleInfo ai, Path newFile) {
         count++;
         try {
             // and then commit the changes
             PersonIdent pi = new PersonIdent(h.getChanger(), "user@localhost", h.getChanged(), TimeZone.getDefault());
-            String message = "#" + h.getHistoryId() + " " + newFile;
+            String message = "#" + h.getHistoryId() + " " + repoPath.relativize(newFile);
 
             while (!gitHistory.isEmpty()) {
                 GitHistory h0 = gitHistory.remove(0);
@@ -173,8 +204,7 @@ public class ExportToGit {
                     continue;
                 }
                 GitHistory c = new GitHistory(pi, message);
-                if (h0.changed == c.changed && h0.changer.equals(c.changer)
-                        && h0.message.replaceAll(" .+", "").equals(c.message.replaceAll(" .+", ""))) {
+                if (h0.changed == c.changed && h0.changer.equals(c.changer) && h0.message.replaceAll(" .+", "").equals(c.message.replaceAll(" .+", ""))) {
                     return;
                 } else {
                     System.err.println("There is wrong history record: " + message);
@@ -187,51 +217,51 @@ public class ExportToGit {
                 return api.getArticleHistoryMapper().getHistory(h.getHistoryId());
             });
 
-            for (String oldFile : getOldFilePaths(h.getArticleId())) {
-                new File(repoPath, oldFile).delete();
-                git.rm().addFilepattern(oldFile).call();
+            for (Path oldFile : getOldFilePaths(h.getArticleId())) {
+                if (!newFile.equals(oldFile)) {
+                    Files.delete(oldFile);
+                    git.rm().addFilepattern(repoPath.relativize(oldFile).toString()).call();
+                }
             }
             if (fullCurrentHistory.getNewXml() != null) {
                 byte[] xml = xmlFormat(fullCurrentHistory.getNewXml());
-                FileUtils.writeByteArrayToFile(new File(repoPath, newFile), xml);
+                Files.createDirectories(newFile.getParent());
+                Files.write(newFile, xml);
             }
-            git.add().setUpdate(false).addFilepattern(newFile).call();
-
-//            if (oldFile.equals(newFile)) {
-//                if (fullCurrentHistory.getNewXml() != null) {
-//                    byte[] xml = xmlFormat(fullCurrentHistory.getNewXml());
-//                    FileUtils.writeByteArrayToFile(new File(repoPath, newFile), xml);
-//                    git.add().setUpdate(true).addFilepattern(newFile).call();
-//                }
-//            } else {
-//                if (new File(repoPath, oldFile).exists()) {
-//                    new File(repoPath, oldFile).renameTo(new File(repoPath, newFile));
-//                }
-//                new File(repoPath, oldFile).delete();
-//                git.rm().addFilepattern(oldFile).call();
-//                if (fullCurrentHistory.getNewXml() != null) {
-//                    byte[] xml = xmlFormat(fullCurrentHistory.getNewXml());
-//                    FileUtils.writeByteArrayToFile(new File(repoPath, newFile), xml);
-//                }
-//                git.add().setUpdate(false).addFilepattern(newFile).call();
-//            }
+            saveAssignments(ai.type);
+            git.add().setUpdate(false).addFilepattern(repoPath.relativize(newFile).toString()).call();
 
             CommitCommand cc = git.commit();
             cc.setCommitter(pi).setMessage(message).call();
 
             if (added % 500 == 0) {
-                //git.gc().call();
+                // git.gc().call();
             }
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
     }
 
-    static List<String> getOldFilePaths(int articleId) throws IOException {
-        return Files
-                .find(repoPath.toPath(), Integer.MAX_VALUE,
-                        (p, a) -> a.isRegularFile() && p.toString().endsWith("-" + articleId + ".xml"))
-                .map(p -> repoPath.toPath().relativize(p).toString()).collect(Collectors.toList());
+    static void applyAssignments(ArticleInfo ai) {
+        if (ai.assignedUsers != null) {
+            Map<Integer, Set<String>> t = assignments.computeIfAbsent(ai.type, k -> new TreeMap<>());
+            t.put(ai.articleId, ai.assignedUsers);
+        }
+    }
+
+    static Path saveAssignments(String type) throws Exception {
+        Map<Integer, Set<String>> t = assignments.computeIfAbsent(type, k -> new HashMap<>());
+        List<String> lines = t.entrySet().stream().map(en -> en.getKey() + ": " + en.getValue()).collect(Collectors.toList());
+        String fn = type + "-assignments.txt";
+        Path r = repoPath.resolve(fn);
+        Files.write(r, lines);
+        git.add().setUpdate(false).addFilepattern(fn).call();
+        return r;
+    }
+
+    static List<Path> getOldFilePaths(int articleId) throws IOException {
+        return Files.find(repoPath, Integer.MAX_VALUE, (p, a) -> a.isRegularFile() && p.toString().endsWith("-" + articleId + ".xml"))
+                .collect(Collectors.toList());
     }
 
     private static final TransformerFactory TRANSFORMER_FACTORY = TransformerFactory.newInstance();
@@ -279,21 +309,28 @@ public class ExportToGit {
     }
 
     static class ArticleInfo {
-        public String type;
+        public final int articleId;
+        public final String type;
         public String header;
         public String state;
-        public String[] assignedUsers;
+        public Set<String> assignedUsers;
 
         public ArticleInfo(RecArticle a) {
+            articleId = a.getArticleId();
             type = a.getArticleType();
             header = a.getHeader();
             state = a.getState();
-            assignedUsers = a.getAssignedUsers();
+            setAssignedUsers(a.getAssignedUsers());
         }
 
-        public String getPath(int articleId) {
-            return (type + '/' + header.replace("<", "").replace(">", "").replace("/", "_") + '-' + state + '-'
-                    + Arrays.toString(assignedUsers) + '-' + articleId + ".xml").replaceAll("/{2,}", "/");
+        public void setAssignedUsers(String[] users) {
+            assignedUsers = new TreeSet<>(BE);
+            assignedUsers.addAll(Arrays.asList(users));
+        }
+
+        public Path getPath() {
+            return repoPath.resolve((type + '/' + state + '/' + header.replace("<", "").replace(">", "").replace("/", "_") + '-' + articleId + ".xml")
+                    .replaceAll("/{2,}", "/"));
         }
     }
 }

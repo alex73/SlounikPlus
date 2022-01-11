@@ -4,7 +4,7 @@
 <mapper namespace="org.im.dc.server.db.DoArticle">
 	<select id="listArticles" parameterType="ArticlesFilter" resultType="RecArticle" resultMap="RecArticleMap">
 		SELECT articleId, articleType, header, state, assignedUsers, validationError
-		FROM Articles WHERE 1=1
+		FROM Articles WHERE deleted = FALSE
 		<if test="articleType != null">
 			AND articleType = #{articleType}
 		</if>
@@ -44,9 +44,9 @@
 	</select>
 	<select id="selectAllIds" parameterType="String" resultType="int">
 		SELECT articleId
-		FROM Articles
+		FROM Articles WHERE deleted = FALSE
 		<if test="articleType != null">
-			WHERE articleType = #{articleType}
+			AND articleType = #{articleType}
 		</if>
 	</select>
 	<select id="selectArticle" parameterType="int" resultType="RecArticle" resultMap="RecArticleMap">

@@ -158,11 +158,23 @@ public class ConfigLoad {
         result.headerLocale = config.getHeaderLocale();
         result.stress = config.getStress();
         result.xsds = schemaSources;
+        result.currentUserRoles = PermissionChecker.getUserRoles(config, user);
         for (Type type : config.getTypes().getType()) {
             InitialData.TypeInfo ti = new InitialData.TypeInfo();
             ti.typeId = type.getId();
             ti.typeName = type.getName();
             ti.newArticleState = PermissionChecker.getNewArticleState(config, ti.typeId);
+            if (type.getViewRoles() != null) {
+                ti.viewable = false;
+                for (String r : type.getViewRoles().split(",")) {
+                    if (result.currentUserRoles.contains(r)) {
+                        ti.viewable = true;
+                        break;
+                    }
+                }
+            } else {
+                ti.viewable = true;
+            }
             result.articleTypes.add(ti);
         }
         result.currentUserPermissions = PermissionChecker.getUserPermissions(config, user);
@@ -178,7 +190,6 @@ public class ConfigLoad {
         for (User u : config.getUsers().getUser()) {
             result.allUsers.put(u.getName(), u.getRoles().split(","));
         }
-        result.currentUserRoles = PermissionChecker.getUserRoles(config, user);
 
         return result;
     }
@@ -216,7 +227,7 @@ public class ConfigLoad {
             if (!typeNames.add(t.getName())) {
                 throw new RuntimeException("Duplicate type in config: " + t.getName());
             }
-            if (!states.contains(t.getNewArticleState())) {
+            if (t.getNewArticleState() != null && !states.contains(t.getNewArticleState())) {
                 throw new RuntimeException("There is no specified state: " + t.getNewArticleState());
             }
             for (State st : t.getState()) {

@@ -44,6 +44,10 @@ public abstract class XSNamedControl<T extends JComponent> extends JPanel {
         return this;
     }
 
+    public T getEditor() {
+        return editor;
+    }
+
     public IXSContainer getParentContainer() {
         return parentContainer;
     }

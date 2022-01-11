@@ -23,8 +23,8 @@ public class ImportArticles {
     static final boolean USE_ARTICLE_IDS = false;
 
     public static void main(String[] args) throws Exception {
-        if (args.length != 2) {
-            System.err.println("ImportArticles <dir|zip> <article_type>");
+        if (args.length != 3) {
+            System.err.println("ImportArticles <dir|zip> <article_type> <article_state>");
             System.exit(1);
         }
 
@@ -39,7 +39,7 @@ public class ImportArticles {
             try (ZipInputStream zip = new ZipInputStream(new BufferedInputStream(new FileInputStream(in)))) {
                 for (ZipEntry en = zip.getNextEntry(); en != null; en = zip.getNextEntry()) {
                     if (en.getName().toLowerCase().endsWith(".xml")) {
-                        read(args[1], en.getName().toLowerCase(), IOUtils.toByteArray(zip));
+                        read(args[1], args[2], en.getName().toLowerCase(), IOUtils.toByteArray(zip));
                     }
                     zip.closeEntry();
                 }
@@ -51,7 +51,7 @@ public class ImportArticles {
             }
             for (File f : ls) {
                 if (f.isFile() && f.getName().toLowerCase().endsWith(".xml")) {
-                    read(args[1], f.getName().toLowerCase(), FileUtils.readFileToByteArray(f));
+                    read(args[1], args[2], f.getName().toLowerCase(), FileUtils.readFileToByteArray(f));
                 }
             }
         }
@@ -66,7 +66,7 @@ public class ImportArticles {
 
     static final Pattern RE_FILE = Pattern.compile("(.*)\\-([0-9]+)\\.xml");
 
-    static void read(String articleType, String fn, byte[] xml) throws Exception {
+    static void read(String articleType, String articleState, String fn, byte[] xml) throws Exception {
         RecArticle a = new RecArticle();
 
         if (USE_ARTICLE_IDS) {
@@ -95,7 +95,7 @@ public class ImportArticles {
         a.setArticleType(articleType);
         a.setXml(xml);
         a.setAssignedUsers(new String[0]);
-        a.setState("Неапрацаванае");
+        a.setState(articleState);
         a.setMarkers(new String[0]);
         a.setWatchers(new String[0]);
         a.setLinkedTo(new String[0]);

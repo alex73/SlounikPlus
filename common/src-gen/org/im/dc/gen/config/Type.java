@@ -26,6 +26,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;attribute name="id" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
  *       &lt;attribute name="name" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
  *       &lt;attribute name="new-article-state" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="view-roles" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -49,6 +50,8 @@ public class Type {
     protected String name;
     @XmlAttribute(name = "new-article-state")
     protected String newArticleState;
+    @XmlAttribute(name = "view-roles")
+    protected String viewRoles;
 
     /**
      * Gets the value of the state property.
@@ -178,6 +181,30 @@ public class Type {
      */
     public void setNewArticleState(String value) {
         this.newArticleState = value;
+    }
+
+    /**
+     * Gets the value of the viewRoles property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getViewRoles() {
+        return viewRoles;
+    }
+
+    /**
+     * Sets the value of the viewRoles property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setViewRoles(String value) {
+        this.viewRoles = value;
     }
 
 }

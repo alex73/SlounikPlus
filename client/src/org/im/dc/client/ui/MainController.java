@@ -73,7 +73,9 @@ public class MainController extends BaseController<MainFrame> {
 
     void initDocking() {
         for (InitialData.TypeInfo ti : initialData.articleTypes) {
-            panelArticleTypes.add(new MainControllerArticleType(ti));
+            if (ti.viewable) {
+                panelArticleTypes.add(new MainControllerArticleType(ti));
+            }
         }
         Dockable issues = new Dockable() {
             DockKey key = new DockKey("issuesList", BUNDLE.getString("MainFrame.dock.issuesList"));
