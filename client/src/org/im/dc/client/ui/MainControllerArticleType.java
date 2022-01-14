@@ -7,11 +7,13 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.text.Collator;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.Vector;
 
@@ -307,7 +309,9 @@ public class MainControllerArticleType implements IArticleUpdatedListener {
     }
 
     public class TableArticlesSorter extends TableRowSorter<MainFrameArticlesModel> {
-        private Comparator<String> comparator = MainController.getComparatorForArticleType(typeInfo.typeId);
+        private Comparator<String> comparatorHeader = MainController.getComparatorForArticleType(typeInfo.typeId);
+        private Comparator<Object> comparatorOther = Collator
+                .getInstance(new Locale(MainController.initialData.headerLocale));
 
         public TableArticlesSorter(MainFrameArticlesModel model) {
             super(model);
@@ -316,12 +320,11 @@ public class MainControllerArticleType implements IArticleUpdatedListener {
 
         @Override
         public Comparator<?> getComparator(int column) {
-            return new Comparator<Object>() {
-                @Override
-                public int compare(Object o1, Object o2) {
-                    return comparator.compare(o1.toString(), o2.toString());
-                }
-            };
+            if (column == 0) {
+                return comparatorHeader;
+            } else {
+                return comparatorOther;
+            }
         }
     }
 }
