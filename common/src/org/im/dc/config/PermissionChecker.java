@@ -159,7 +159,7 @@ public class PermissionChecker {
         for (String userRole : getUserRoles(config, user)) {
             Type t = getType(config, articleType);
             for (State st : t.getState()) {
-                if (st.getName().equals(articleState) && st.getEditRoles() != null) {
+                if (st.getName().equals(articleState)) {
                     for (Change ch : st.getChange()) {
                         if (roleInRolesList(config, userRole, ch.getRoles())) {
                             result.add(ch.getTo());
