@@ -43,7 +43,6 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import org.im.dc.server.Db;
 import org.im.dc.server.db.RecArticle;
 import org.im.dc.server.db.RecArticleHistory;
-import org.im.dc.service.dto.ArticlesFilter;
 
 public class ExportToGit {
     static final Collator BE = Collator.getInstance(new Locale("be"));
@@ -325,7 +324,7 @@ public class ExportToGit {
 
         public void setAssignedUsers(String[] users) {
             assignedUsers = new TreeSet<>(BE);
-            assignedUsers.addAll(Arrays.asList(users));
+            assignedUsers.addAll(users != null ? Arrays.asList(users) : Collections.emptyList());
         }
 
         public Path getPath() {
