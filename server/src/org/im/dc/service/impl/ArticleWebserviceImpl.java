@@ -173,6 +173,8 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
             if (batchUpdate) {
                 PermissionChecker.userRequiresTypePermission(Config.getConfig(), header.user, rec.getArticleType(),
                         TypePermission.ADD_ARTICLES);
+            } else if (article.id == 0) { // new article
+                PermissionChecker.userRequiresTypePermission(Config.getConfig(), header.user, rec.getArticleType(), TypePermission.ADD_ARTICLE);
             } else {
                 if (!PermissionChecker.canUserEditArticle(Config.getConfig(), header.user, rec.getArticleType(),
                         rec.getState(), rec.getAssignedUsers())) {
