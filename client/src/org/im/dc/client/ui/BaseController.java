@@ -9,7 +9,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.concurrent.ExecutionException;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
@@ -142,8 +141,11 @@ public abstract class BaseController<T extends Window> {
                 JOptionPane.showMessageDialog(window, "Interrupted: " + ex.getMessage(), "Памылка",
                         JOptionPane.ERROR_MESSAGE);
                 error();
-            } catch (ExecutionException e) {
+            } catch (Exception e) {
                 Throwable ex = e.getCause();
+                if (ex == null) {
+                    ex = e;
+                }
                 if (ex instanceof Error) {
                     ex.printStackTrace();
                     JOptionPane.showMessageDialog(window, "Error " + ex.getClass().getName() + ": " + ex.getMessage(),
