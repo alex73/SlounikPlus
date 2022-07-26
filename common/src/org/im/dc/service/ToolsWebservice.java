@@ -13,6 +13,8 @@ import org.im.dc.service.dto.Related;
 public interface ToolsWebservice {
     InitialData getInitialData(Header header) throws Exception;
 
+    byte[] getFile(String path) throws Exception;
+
     void getStatistics(Header header) throws Exception;
 
     void reassignUsers(Header header, String articleType, int[] articleIds, String[] users) throws Exception;

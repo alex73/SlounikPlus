@@ -1,5 +1,9 @@
 package org.im.dc.service.impl;
 
+import java.io.FileNotFoundException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -7,6 +11,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.jws.WebService;
 import javax.script.ScriptException;
@@ -55,6 +60,29 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
 
         LOG.info("<< getInitialData (" + (System.currentTimeMillis() - startTime) + "ms)");
         return result;
+    }
+
+    @Override
+    public byte[] getFile(String path) throws Exception {
+        LOG.info(">> getFile(" + path + ")");
+        Path dir = Paths.get(Config.getConfigDir());
+        if (path == null) {
+            List<String> result;
+            try (Stream<Path> files = Files.find(dir, Integer.MAX_VALUE, (p, a) -> a.isRegularFile()).sorted()) {
+                result = files.map(p -> p.toString()).collect(Collectors.toList());
+            }
+            return String.join("\n", result).getBytes();
+        } else {
+            Path f = dir.resolve(path);
+            if (!f.toAbsolutePath().toString().startsWith(dir.toAbsolutePath().toString())) {
+                return null;
+            }
+            try {
+                return Files.readAllBytes(f);
+            } catch (FileNotFoundException ex) {
+                return null;
+            }
+        }
     }
 
     @Override
