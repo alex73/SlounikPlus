@@ -3,7 +3,34 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="src-gen"/>
 	<classpathentry kind="src" path="test"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/5"/>
+	<classpathentry exported="true" kind="lib" path="lib-jaxws/FastInfoset.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib-jaxws/gmbal-api-only.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib-jaxws/ha-api.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib-jaxws/jakarta.activation.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib-jaxws/jakarta.annotation-api.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib-jaxws/jakarta.jws-api.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib-jaxws/jakarta.mail.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib-jaxws/jakarta.xml.bind-api.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib-jaxws/jakarta.xml.soap-api.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib-jaxws/jakarta.xml.ws-api.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib-jaxws/jaxb-impl.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib-jaxws/jaxb-jxc.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib-jaxws/jaxb-xjc.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib-jaxws/jaxws-rt.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib-jaxws/jaxws-tools.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib-jaxws/management-api.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib-jaxws/mimepull.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib-jaxws/policy.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib-jaxws/saaj-impl.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib-jaxws/stax2-api.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib-jaxws/stax-ex.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib-jaxws/streambuffer.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib-jaxws/woodstox-core.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

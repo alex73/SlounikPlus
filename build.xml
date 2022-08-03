@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <project name="SlounikPlus" default="all" basedir=".">
-    <property name="ant.build.javac.source" value="1.8"/>
-    <property name="ant.build.javac.target" value="1.8"/>
 
     <target name="client">
         <mkdir dir="client/build" />
         <javac srcdir="client/src:common/src-gen:common/src" includes="**" encoding="utf-8" destdir="client/build"  debug="true" debuglevel="lines,vars,source">
             <classpath>
+                <fileset dir="common/lib-jaxws/" includes="**/*.jar" />
                 <fileset dir="client/lib/" includes="**/*.jar" />
             </classpath>
         </javac>
@@ -17,9 +16,9 @@
         </copy>
 
         <mkdir dir="dist/client/lib/" />
-        <!--signjar jar="dist/client-ital/client-ital.jar" keystore="../My/mykey.keystore" alias="${keyname}" storepass="${keypass}" keypass="${keypass}" /-->
         <copy todir="dist/client/lib/" flatten="true">
             <fileset dir="client/lib/" includes="**/*.jar" />
+            <fileset dir="common/lib-jaxws/" includes="**/*.jar" />
         </copy>
         <manifestclasspath property="manifest_cp" jarfile="dist/client/client.jar">
         	<classpath>
@@ -42,34 +41,38 @@
     </target>
 
     <target name="server">
-        <mkdir dir="server/build" />
-        <javac srcdir="server/src:common/src-gen:common/src" includes="**" encoding="utf-8" destdir="server/build"  debug="true" debuglevel="lines,vars,source">
+        <mkdir dir="server/build/classes" />
+        <javac srcdir="server/src:common/src-gen:common/src" includes="**" encoding="utf-8" destdir="server/build/classes"  debug="true" debuglevel="lines,vars,source">
             <classpath>
+                <fileset dir="common/lib-jaxws/" includes="**/*.jar"/>
                 <fileset dir="server/lib/" includes="**/*.jar"/>
                 <fileset dir="server/lib-compile/" includes="**/*.jar"/>
             </classpath>
         </javac>
-        <copy todir="server/build">
+        <copy todir="server/build/classes">
             <fileset dir="server/src" />
             <fileset dir="common/src" />
             <fileset dir="common/src-gen" />
+        </copy>
+        <copy todir="server/build/lib" flatten="true">
+            <fileset dir="server/lib" includes="**/*.jar" />
         </copy>
 
         <mkdir dir="dist/" />
         <war destfile="dist/server.war" webxml="server/web.xml">
             <webinf file="server/sun-jaxws.xml" />
-            <classes dir="server/build" />
-            <lib dir="server/lib/" includes="**/*.jar" />
+            <classes dir="server/build/classes" />
+            <lib dir="server/build/lib/" />
         </war>
 
         <mkdir dir="dist/utils/" />
-        <jar destfile="dist/utils/server.jar" basedir="server/build"/>
+        <jar destfile="dist/utils/server.jar" basedir="server/build/classes"/>
         <copy todir="dist/utils/lib">
             <fileset dir="server/lib" />
         </copy>
     </target>
 
-    <target name="all" depends="clean, xjc, server, client" />
+    <target name="all" depends="clean, server, client" />
 
     <target name="clean">
         <delete dir="dist" failonerror="false" />
