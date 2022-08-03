@@ -36,6 +36,7 @@ public class XSParticleContainer extends XSBaseContainer<XSParticle> {
     private JPanel panel;
     public int minOccurs, maxOccurs;
     private JButton addButton;
+    private AnnotationInfo childAnn;
 
     public XSParticleContainer(ArticleUIContext context, IXSContainer parentContainer, XSParticle obj) {
         super(context, parentContainer, obj);
@@ -44,7 +45,6 @@ public class XSParticleContainer extends XSBaseContainer<XSParticle> {
         panel.setOpaque(false);
 
         XSTerm term = obj.getTerm();
-        AnnotationInfo childAnn;
         switch (term.getType()) {
         case XSConstants.ELEMENT_DECLARATION:
             childAnn = new AnnotationInfo(((XSElementDeclaration) obj.getTerm()).getAnnotation());
@@ -71,6 +71,9 @@ public class XSParticleContainer extends XSBaseContainer<XSParticle> {
             createAddButton(childAnn);
         } else {
             createAddButton(null);
+        }
+        if (!context.getWritable(this, childAnn)) {
+            addButton.setVisible(false);
         }
         panel.add(addButton);
 
@@ -237,7 +240,7 @@ public class XSParticleContainer extends XSBaseContainer<XSParticle> {
     public void revalidate() {
         addButton.setVisible(isWritable() && children.size() < maxOccurs);
 
-        boolean canCloseSomeone = isWritable() && (children.size() > minOccurs);
+        boolean canCloseSomeone = isWritable() && context.getWritable(this, childAnn) && (children.size() > minOccurs);
         for (ChildInfo ci : children) {
             ci.closeButton.setVisible(canCloseSomeone);
         }
