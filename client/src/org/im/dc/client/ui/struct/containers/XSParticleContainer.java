@@ -72,9 +72,6 @@ public class XSParticleContainer extends XSBaseContainer<XSParticle> {
         } else {
             createAddButton(null);
         }
-        if (!context.getWritable(this, childAnn)) {
-            addButton.setVisible(false);
-        }
         panel.add(addButton);
 
         for (int i = 0; i < minOccurs; i++) {
@@ -238,7 +235,7 @@ public class XSParticleContainer extends XSBaseContainer<XSParticle> {
     }
 
     public void revalidate() {
-        addButton.setVisible(isWritable() && children.size() < maxOccurs);
+        addButton.setVisible(context.getWritable(this, childAnn) && isWritable() && children.size() < maxOccurs);
 
         boolean canCloseSomeone = isWritable() && context.getWritable(this, childAnn) && (children.size() > minOccurs);
         for (ChildInfo ci : children) {
