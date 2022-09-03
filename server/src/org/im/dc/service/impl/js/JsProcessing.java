@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.script.Bindings;
+import javax.script.Compilable;
+import javax.script.CompiledScript;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -27,12 +29,14 @@ public class JsProcessing implements Closeable {
 
     private final ScriptEngine engine;
     private final String script;
+    private final CompiledScript compiledScript;
 
     public JsProcessing(String scriptFile) throws Exception {
         engine = FACTORY.getEngineByName("graal.js");
         script = IOUtils.toString(new File(scriptFile).toURI(), "UTF-8");
         Bindings bindings = engine.getBindings(ScriptContext.ENGINE_SCOPE);
         bindings.put("polyglot.js.allowHostAccess", true);
+        compiledScript = ((Compilable) engine).compile(script);
     }
 
     public void exec(ScriptContext context) throws Exception {
@@ -41,7 +45,7 @@ public class JsProcessing implements Closeable {
                 p.prepare(context);
             }
         }
-        engine.eval(script, context);
+        compiledScript.eval(context);
     }
 
     @Override
