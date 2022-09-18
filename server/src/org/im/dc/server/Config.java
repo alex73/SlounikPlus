@@ -1,7 +1,9 @@
 package org.im.dc.server;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -9,6 +11,7 @@ import javax.xml.validation.Schema;
 
 import org.im.dc.config.ConfigLoad;
 import org.im.dc.service.AppConst;
+import org.im.dc.service.dto.ArticleFullInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,6 +25,7 @@ public class Config {
     static public Map<String, byte[]> schemaSources;
     static public Map<String, Schema> schemas;
     public static Map<String, Comparator<String>> comparators = new TreeMap<>();
+    public static List<OnFillAdditionalArticleInfo> fillAdditionalArticleInfoListeners = new ArrayList<>();
 
     public static synchronized void load(String configDir) throws Exception {
         CONFIG_DIR = configDir;
@@ -49,5 +53,9 @@ public class Config {
 
     public static String getConfigDir() {
         return CONFIG_DIR;
+    }
+
+    public interface OnFillAdditionalArticleInfo {
+        void fill(ArticleFullInfo article);
     }
 }

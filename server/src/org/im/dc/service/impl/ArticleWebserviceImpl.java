@@ -136,6 +136,8 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
             a.linksFrom.add(lf);
         }
 
+        org.im.dc.server.Config.fillAdditionalArticleInfoListeners.forEach(listener -> listener.fill(a));
+
         return a;
     }
 
