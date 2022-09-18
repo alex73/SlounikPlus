@@ -153,6 +153,25 @@ public class PermissionChecker {
 
     public static Set<String> canChangeStateTo(Config config, String user, String articleType, String articleState, String[] assignedUsers) {
         Set<String> result = new TreeSet<>();
+
+        for (String userRole : getUserRoles(config, user)) {
+            // check if common permission allow to force change status
+            for (Role r : config.getRoles().getRole()) {
+                if (r.getName().equals(userRole)) {
+                    for (CommonPermission p : r.getPermission()) {
+                        if (CommonPermission.FORCE_STATE_CHANGE.equals(p)) {
+                            Type t = getType(config, articleType);
+                            for (State st : t.getState()) {
+                                if (!st.getName().equals(articleState)) {
+                                    result.add(st.getName());
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         if (!isUserAssigned(user, assignedUsers)) {
             return result;
         }
