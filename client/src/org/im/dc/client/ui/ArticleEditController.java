@@ -545,7 +545,7 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
         boolean hasIssue = getOpenIssue() != null;
 
         window.lblHasProposedChanges.setIcon(new ImageIcon(ArticleEditController.class
-                .getResource(hasIssue ? "images/proposed-on.png" : "images/proposed-off.png")));
+                .getResource(hasIssue ? "images/proposed-on-animated.gif" : "images/proposed-off.png")));
     }
 
     private Related getOpenIssue() {

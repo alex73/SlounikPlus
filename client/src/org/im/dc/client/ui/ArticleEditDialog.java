@@ -71,7 +71,7 @@ public class ArticleEditDialog extends javax.swing.JDialog {
 
         jPanel5.add(jPanel6, java.awt.BorderLayout.WEST);
 
-        lblHasProposedChanges.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/im/dc/client/ui/images/proposed-off.png"))); // NOI18N
+        lblHasProposedChanges.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/im/dc/client/ui/images/proposed-on-animated.gif"))); // NOI18N
         lblHasProposedChanges.setToolTipText(bundle.getString("ArticleEditDialog.lblHasProposedChanges.toolTipText")); // NOI18N
         jPanel7.add(lblHasProposedChanges);
 
