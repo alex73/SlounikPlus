@@ -128,7 +128,8 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
         }
         Related.sortByTimeDesc(a.related);
 
-        for (RecArticle linked : Db.execAndReturn((api) -> api.getArticleMapper().selectLinkedTo(a.article.header))) {
+        String linkHeader = a.article.header.replace("+", "").replaceAll("/.+", "");
+        for (RecArticle linked : Db.execAndReturn((api) -> api.getArticleMapper().selectLinkedTo(linkHeader))) {
             ArticleFullInfo.LinkFrom lf = new ArticleFullInfo.LinkFrom();
             lf.articleId = linked.getArticleId();
             lf.articleType = linked.getArticleType();

@@ -352,12 +352,18 @@ public class ToolsWebserviceImpl implements ToolsWebservice {
             LOG.info("   validateAll - update each article started");
             for (RecArticle a : todo) {
                 Db.execBatch((api) -> {
-                    List<String> errors = storage.errors.stream().filter(e -> e.articleId == a.getArticleId())
-                            .map(e -> e.error).collect(Collectors.toList());
+                    List<String> errors = storage.errors.stream().filter(e -> e.articleId == a.getArticleId()).map(e -> e.error).collect(Collectors.toList());
                     a.setValidationError(errors.isEmpty() ? null : String.join("\n", errors));
                     a.setHeader(storage.headers.get(a.getArticleId()));
                     String[] linkedTo = storage.linkedTo.get(a.getArticleId());
-                    a.setLinkedTo(linkedTo != null ? linkedTo : new String[0]);
+                    if (linkedTo != null) {
+                        for (int i = 0; i < linkedTo.length; i++) {
+                            linkedTo[i] = linkedTo[i].trim().replace("+", "").replaceAll("/.+", "");
+                        }
+                        a.setLinkedTo(linkedTo);
+                    } else {
+                        a.setLinkedTo(new String[0]);
+                    }
                     a.setTextForSearch(storage.textForSearch.get(a.getArticleId()));
 
                     api.getArticleMapper().updateArticleHeaders(a);

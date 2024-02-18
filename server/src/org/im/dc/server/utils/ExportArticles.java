@@ -86,6 +86,6 @@ public class ExportArticles {
         StreamResult res = new StreamResult(new StringWriter());
         Source sou = new StreamSource(new ByteArrayInputStream(xml));
         transformer.transform(sou, res);
-        return res.getWriter().toString();
+        return res.getWriter().toString().replace('\u0301', '+');
     }
 }
