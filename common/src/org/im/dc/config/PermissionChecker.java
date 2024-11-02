@@ -151,6 +151,22 @@ public class PermissionChecker {
         return false;
     }
 
+    public static boolean canUserProposeChanges(Config config, String user, String articleType) {
+        for (String userRole : getUserRoles(config, user)) {
+            Type type = getType(config, articleType);
+            for (Permissions ps : type.getPermissions()) {
+                if (ps.getRole().equals(userRole)) {
+                    for (TypePermission p : ps.getPermission()) {
+                        if (TypePermission.PROPOSE_CHANGES == p) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
     public static Set<String> canChangeStateTo(Config config, String user, String articleType, String articleState, String[] assignedUsers) {
         Set<String> result = new TreeSet<>();
 

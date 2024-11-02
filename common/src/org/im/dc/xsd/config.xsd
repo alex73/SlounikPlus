@@ -138,6 +138,11 @@
 					<xs:documentation>Ці можа карыстальнік дадаваць адзін артыкул праз рэдагаванне</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
+			<xs:enumeration value="propose_changes">
+				<xs:annotation>
+					<xs:documentation>Ці можа карыстальнік прапаноўваць змены ў артыкуле</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
 			<xs:enumeration value="reassign">
 				<xs:annotation>
 					<xs:documentation>Ці можа карыстальнік пераназначаць словы</xs:documentation>

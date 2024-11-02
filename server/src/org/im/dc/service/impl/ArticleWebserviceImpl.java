@@ -96,6 +96,7 @@ public class ArticleWebserviceImpl implements ArticleWebservice {
 
         a.youCanEdit = PermissionChecker.canUserEditArticle(Config.getConfig(), header.user, rec.getArticleType(),
                 rec.getState(), rec.getAssignedUsers());
+        a.youCanProposeChanges = PermissionChecker.canUserProposeChanges(Config.getConfig(), header.user, rec.getArticleType());
         a.youCanChangeStateTo = PermissionChecker.canChangeStateTo(Config.getConfig(), header.user,
                 rec.getArticleType(), rec.getState(), rec.getAssignedUsers());
         a.youWatched = false;

@@ -20,7 +20,7 @@ import org.im.dc.server.db.RecArticle;
 public class ImportArticles {
     static Date lastUpdated;
     static List<RecArticle> articles;
-    static final boolean USE_ARTICLE_IDS = false;
+    static final boolean USE_ARTICLE_IDS = true;
 
     public static void main(String[] args) throws Exception {
         if (args.length != 3) {

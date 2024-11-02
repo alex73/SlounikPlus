@@ -18,7 +18,7 @@ import org.im.dc.server.Db;
 import org.im.dc.server.db.RecArticle;
 
 public class UpdateArticles {
-    static final Pattern RE_FILE = Pattern.compile("(.+)\\-([0-9]+)\\.xml");
+    static final Pattern RE_FILE = Pattern.compile("(.*)\\-([0-9]+)\\.xml");
 
     public static void main(String[] args) throws Exception {
         if (args.length != 1) {

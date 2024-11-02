@@ -332,7 +332,7 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
 
     void show() {
         window.btnSave.setVisible(article.youCanEdit);
-        window.btnAddIssue.setVisible(!article.youCanEdit);
+        window.btnAddIssue.setVisible(!article.youCanEdit && article.youCanProposeChanges);
         panelNotes.txtNotes.setEditable(article.youCanEdit);
         window.btnChangeState.setVisible(!article.youCanChangeStateTo.isEmpty());
         displayWatch();
@@ -374,6 +374,9 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
         ArticleUIContext editContext = new ArticleUIContext(typeInfo.typeId);
         editContext.userRoles = MainController.initialData.currentUserRoles;
         editContext.articleState = article.article.state;
+        editContext.userCanEdit = article.youCanEdit;
+        editContext.userCanProposeChanges = article.youCanProposeChanges;
+
         resetChanged();
         try {
             editorUI = SchemaLoader.createUI(editContext);
@@ -392,6 +395,7 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
             window.dispose();
             return;
         }
+        editorUI.getUIComponent().setEnabled(article.youCanEdit || article.youCanProposeChanges);
         applyFont(editorUI.getUIComponent());
         panelEdit.panelEditor.setViewportView(editorUI.getUIComponent());
         SwingUtilities.invokeLater(() -> panelEdit.panelEditor.getVerticalScrollBar().setValue(0));

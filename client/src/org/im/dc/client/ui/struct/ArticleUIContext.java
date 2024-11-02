@@ -9,6 +9,7 @@ public class ArticleUIContext {
     public final String articleTypeId;
     public Set<String> userRoles;
     public String articleState;
+    public boolean userCanEdit, userCanProposeChanges;
     public ArticleEditController editController;
 
     public ArticleUIContext(String articleTypeId) {
@@ -16,6 +17,9 @@ public class ArticleUIContext {
     }
 
     public boolean getWritable(IXSContainer parentContainer, AnnotationInfo ann) {
+        if (!userCanEdit && !userCanProposeChanges) {
+            return false;
+        }
         Boolean wr = null;
         for (RORW e : ann.enables) {
             if (e.role.equals("*") || userRoles.contains(e.role)) {

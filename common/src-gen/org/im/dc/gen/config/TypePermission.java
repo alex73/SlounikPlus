@@ -17,6 +17,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;enumeration value="view_output"/>
  *     &lt;enumeration value="add_articles"/>
  *     &lt;enumeration value="add_article"/>
+ *     &lt;enumeration value="propose_changes"/>
  *     &lt;enumeration value="reassign"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
@@ -48,6 +49,13 @@ public enum TypePermission {
      */
     @XmlEnumValue("add_article")
     ADD_ARTICLE("add_article"),
+
+    /**
+     * Ці можа карыстальнік прапаноўваць змены ў артыкуле
+     * 
+     */
+    @XmlEnumValue("propose_changes")
+    PROPOSE_CHANGES("propose_changes"),
 
     /**
      * Ці можа карыстальнік пераназначаць словы
