@@ -177,6 +177,7 @@ public class XSParticleContainer extends XSBaseContainer<XSParticle> {
                 }
             }
         });
+
         return ci.element;
     }
 
@@ -226,8 +227,9 @@ public class XSParticleContainer extends XSBaseContainer<XSParticle> {
         addButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                addElement();
+                IXSContainer el = addElement();
                 udpateAllChildrenPositions();
+                context.editController.applyFont(el.getUIComponent());
                 revalidate();
                 context.fireChanged();
             }

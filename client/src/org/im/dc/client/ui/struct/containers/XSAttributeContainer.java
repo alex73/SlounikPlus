@@ -6,7 +6,6 @@ import java.util.Collection;
 import javax.swing.JComponent;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.apache.xerces.impl.dv.XSSimpleType;
 import org.apache.xerces.xs.XSAttributeDeclaration;
 import org.im.dc.client.ui.struct.AnnotationInfo;
 import org.im.dc.client.ui.struct.ArticleUIContext;

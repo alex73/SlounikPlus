@@ -449,7 +449,7 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
         }
     }
 
-    private void applyFont(JComponent comp) {
+    public void applyFont(JComponent comp) {
         comp.setFont(panelEdit.getFont());
         for (int i = 0; i < comp.getComponentCount(); i++) {
             Component c = comp.getComponent(i);
