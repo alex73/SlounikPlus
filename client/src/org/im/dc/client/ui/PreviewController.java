@@ -1,5 +1,6 @@
 package org.im.dc.client.ui;
 
+import java.awt.Desktop;
 import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.Window;
@@ -9,18 +10,26 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import javax.swing.AbstractAction;
 import javax.swing.JComponent;
 import javax.swing.JEditorPane;
+import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 import javax.swing.RootPaneContainer;
 import javax.swing.SwingUtilities;
 
 public class PreviewController extends BaseController<PreviewDialog> {
+
+    public static String HTML_PREFIX = "<!DOCTYPE html>\n<html><head><meta charset=\"UTF-8\"></head><body>\n";
+    public static String HTML_SUFFIX = "\n</body></html>\n";
     private static Font BASE_FONT;
 
     private Runnable executor;
+    private String html;
 
     public PreviewController(Window parent, boolean modal) {
         super(new PreviewDialog(MainController.instance.window, modal), parent);
@@ -35,6 +44,7 @@ public class PreviewController extends BaseController<PreviewDialog> {
         // window.text.getActionMap().put("copy", clipboardAction);
         // window.text.getActionMap().put("cut", clipboardAction);
         window.btnRefresh.addActionListener(e -> execute());
+        window.btnBrowser.addActionListener(e -> browser());
 
         ((RootPaneContainer) window).getRootPane().registerKeyboardAction(decZoom,
                 KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, InputEvent.CTRL_MASK), JComponent.WHEN_IN_FOCUSED_WINDOW);
@@ -60,6 +70,23 @@ public class PreviewController extends BaseController<PreviewDialog> {
 
     public void execute() {
         executor.run();
+    }
+
+    public void setHtml(String html) {
+        this.html = html;
+        window.text.setText(html);
+        window.text.setCaretPosition(0);
+        window.text.getDocument().putProperty("ZOOM_FACTOR", Double.valueOf(2.5));
+    }
+
+    public void browser() {
+        try {
+            Path f = Path.of("out.html");
+            Files.writeString(f, html);
+            Desktop.getDesktop().browse(f.toUri());
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(window, "Error", ex.getMessage(), JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     ActionListener resetZoom = (e) -> {

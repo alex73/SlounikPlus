@@ -30,6 +30,7 @@ public class PreviewDialog extends javax.swing.JDialog {
 
         jPanel1 = new javax.swing.JPanel();
         panelRefresh = new javax.swing.JPanel();
+        btnBrowser = new javax.swing.JButton();
         btnRefresh = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         text = new javax.swing.JEditorPane();
@@ -38,6 +39,9 @@ public class PreviewDialog extends javax.swing.JDialog {
         setTitle("Перадпрагляд");
 
         panelRefresh.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+
+        btnBrowser.setText("У броўзары");
+        panelRefresh.add(btnBrowser);
 
         btnRefresh.setText("Абнавіць");
         panelRefresh.add(btnRefresh);
@@ -96,6 +100,7 @@ public class PreviewDialog extends javax.swing.JDialog {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    public javax.swing.JButton btnBrowser;
     public javax.swing.JButton btnRefresh;
     public javax.swing.JPanel jPanel1;
     public javax.swing.JScrollPane jScrollPane1;

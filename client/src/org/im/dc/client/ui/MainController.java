@@ -323,9 +323,7 @@ public class MainController extends BaseController<MainFrame> {
 
                 @Override
                 protected void ok() {
-                    previewer.window.text.setText(text);
-                    previewer.window.text.setCaretPosition(0);
-                    previewer.window.text.getDocument().putProperty("ZOOM_FACTOR", new Double(2.5));
+                    previewer.setHtml(text);
                 }
             };
         });
@@ -351,8 +349,7 @@ public class MainController extends BaseController<MainFrame> {
             @Override
             protected void exec() throws Exception {
                 OutputSummaryStorage storage = WS.getToolsWebservice().previewValidateAll(WS.header, articleTypeId);
-                StringBuilder out = new StringBuilder(
-                        "<!DOCTYPE html>\n<html><head><meta charset=\"UTF-8\"></head><body>\n");
+                StringBuilder out = new StringBuilder(PreviewController.HTML_PREFIX);
                 needHr = false;
                 for (String e : storage.summaryErrors) {
                     out.append("<b>АГУЛЬНАЯ ПАМЫЛКА: " + e + "</b><br/>\n");
@@ -371,7 +368,7 @@ public class MainController extends BaseController<MainFrame> {
                     out.append(ao.html);
                     // out.append("<br/>\n");
                 });
-                out.append("</body></html>\n");
+                out.append(PreviewController.HTML_SUFFIX);
 
                 File o = chooser.getSelectedFile();
                 if (!o.getName().endsWith(".html")) {

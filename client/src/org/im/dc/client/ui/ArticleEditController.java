@@ -255,14 +255,12 @@ public class ArticleEditController extends BaseController<ArticleEditDialog> {
                             result.summaryErrors.forEach(e -> text.append("<p>АГУЛЬНАЯ ПАМЫЛКА: " + e + "</p>\n"));
                             result.errors.forEach(e -> text.append("<p>ПАМЫЛКА: " + e.error + "</p>\n"));
                             result.outputs.forEach(o -> text.append("<p>" + o.html + "</p>\n"));
-                            preview = "<!DOCTYPE html>\n<html><head><meta charset=\"UTF-8\"></head><body>\n" + text
-                                    + "\n</body></html>\n";
+                            preview = PreviewController.HTML_PREFIX + text + PreviewController.HTML_SUFFIX;
                         }
 
                         @Override
                         protected void ok() {
-                            previewer.window.text.setText(preview);
-                            previewer.window.text.getDocument().putProperty("ZOOM_FACTOR", new Double(2.5));
+                            previewer.setHtml(preview);
                         }
 
                         @Override

@@ -22,6 +22,9 @@ import org.slf4j.LoggerFactory;
 public class ExportOutput {
     private static final Logger LOG = LoggerFactory.getLogger(ExportOutput.class);
 
+    public static String HTML_PREFIX = "<!DOCTYPE html>\n<html><head><meta charset=\"UTF-8\"></head><body>\n";
+    public static String HTML_SUFFIX = "\n</body></html>\n";
+
     static boolean needHr;
 
     public static void main(String[] args) throws Exception {
@@ -57,8 +60,7 @@ public class ExportOutput {
             LOG.info("   validateAll - summary validation start");
             JsHelper.validateSummary(articleType, storage);
 
-            StringBuilder out = new StringBuilder(
-                    "<!DOCTYPE html>\n<html><head><meta charset=\"UTF-8\"></head><body>\n");
+            StringBuilder out = new StringBuilder(HTML_PREFIX);
             needHr = false;
 
             for (String e : storage.summaryErrors) {
@@ -79,7 +81,7 @@ public class ExportOutput {
                 //out.append("<br/>\n");
             });
 
-            out.append("</body></html>\n");
+            out.append(HTML_SUFFIX);
             Files.write(Paths.get(args[0] + articleType + ".html"), out.toString().getBytes(StandardCharsets.UTF_8));
         }
     }

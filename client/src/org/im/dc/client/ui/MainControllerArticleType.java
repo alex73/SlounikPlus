@@ -183,10 +183,8 @@ public class MainControllerArticleType implements IArticleUpdatedListener {
 
             @Override
             protected void exec() throws Exception {
-                out = new StringBuilder(
-                        "<!DOCTYPE html>\n<html><head><meta charset=\"UTF-8\"></head><body>\n");
-                outClipboard = new StringBuilder(
-                        "<!DOCTYPE html>\n<html><head><meta charset=\"UTF-8\"></head><body>\n");
+                out = new StringBuilder(PreviewController.HTML_PREFIX);
+                outClipboard = new StringBuilder(PreviewController.HTML_PREFIX);
 
                 OutputSummaryStorage articlesPreview = WS.getToolsWebservice().preparePreviews(WS.header,
                         typeInfo.typeId, articleIds);
@@ -212,16 +210,13 @@ public class MainControllerArticleType implements IArticleUpdatedListener {
                     out.append(" <a href='" + ao.articleId + "'>рэдагаваць</a>\n");
                 });
 
-                out.append("\n</body></html>\n");
-                outClipboard.append("\n</body></html>\n");
+                out.append(PreviewController.HTML_SUFFIX);
+                outClipboard.append(PreviewController.HTML_SUFFIX);
             }
 
             @Override
             protected void ok() {
-                previewer.window.text.setText(out.toString());
-                previewer.window.text.setCaretPosition(0);
-                previewer.window.text.getDocument().putProperty("ZOOM_FACTOR", new Double(2.5));
-
+                previewer.setHtml(out.toString());
                 JTextPane o = new JTextPane();
                 o.setContentType("text/html");
                 o.setText(outClipboard.toString());

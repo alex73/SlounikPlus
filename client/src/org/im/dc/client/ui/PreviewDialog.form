@@ -41,6 +41,11 @@
         <Property name="alignment" type="int" value="2"/>
       </Layout>
       <SubComponents>
+        <Component class="javax.swing.JButton" name="btnBrowser">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="&#x423; &#x431;&#x440;&#x43e;&#x45e;&#x437;&#x430;&#x440;&#x44b;"/>
+          </Properties>
+        </Component>
         <Component class="javax.swing.JButton" name="btnRefresh">
           <Properties>
             <Property name="text" type="java.lang.String" value="&#x410;&#x431;&#x43d;&#x430;&#x432;&#x456;&#x446;&#x44c;"/>
