@@ -81,7 +81,7 @@ public class PreviewController extends BaseController<PreviewDialog> {
 
     public void browser() {
         try {
-            Path f = Path.of("out.html");
+            Path f = Files.createTempFile("slounikplus", ".html");
             Files.writeString(f, html);
             Desktop.getDesktop().browse(f.toUri());
         } catch (IOException ex) {
