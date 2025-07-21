@@ -37,6 +37,7 @@ public class MainFramePanelArticles extends javax.swing.JPanel {
         jPanel1 = new javax.swing.JPanel();
         btnAddArticle = new javax.swing.JButton();
         btnReassign = new javax.swing.JButton();
+        btnChangeStates = new javax.swing.JButton();
         btnPreview = new javax.swing.JButton();
 
         setLayout(new java.awt.BorderLayout());
@@ -155,6 +156,9 @@ public class MainFramePanelArticles extends javax.swing.JPanel {
         btnReassign.setText(bundle.getString("MainFramePanelArticles.btnReassign.text")); // NOI18N
         jPanel1.add(btnReassign);
 
+        btnChangeStates.setText(bundle.getString("MainFramePanelArticles.btnChangeStates.text")); // NOI18N
+        jPanel1.add(btnChangeStates);
+
         btnPreview.setText(bundle.getString("MainFramePanelArticles.btnPreview.text")); // NOI18N
         jPanel1.add(btnPreview);
 
@@ -164,6 +168,7 @@ public class MainFramePanelArticles extends javax.swing.JPanel {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public javax.swing.JButton btnAddArticle;
+    public javax.swing.JButton btnChangeStates;
     public javax.swing.JButton btnPreview;
     public javax.swing.JButton btnReassign;
     public javax.swing.JButton btnSearch;

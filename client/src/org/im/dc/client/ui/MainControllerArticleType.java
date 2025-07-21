@@ -106,6 +106,12 @@ public class MainControllerArticleType implements IArticleUpdatedListener {
             panelArticles.btnReassign.setVisible(false);
         }
 
+        if (typeInfo.currentUserTypePermissions.contains(TypePermission.MULTIPLE_CHANGE_STATE.name())) {
+            panelArticles.btnChangeStates.addActionListener(changeStates);
+        } else {
+            panelArticles.btnChangeStates.setVisible(false);
+        }
+
         if (typeInfo.currentUserTypePermissions.contains(TypePermission.VIEW_OUTPUT.name())) {
             panelArticles.btnPreview.addActionListener(preview);
         } else {
@@ -147,6 +153,19 @@ public class MainControllerArticleType implements IArticleUpdatedListener {
             }
 
             new ReassignController(articles, typeInfo.typeId);
+        }
+    };
+    ActionListener changeStates = (e) -> {
+        TableModel m = panelArticles.tableArticles.getModel();
+        if (m instanceof MainFrameArticlesModel) {
+            MainFrameArticlesModel model = (MainFrameArticlesModel) m;
+            List<ArticleShort> articles = new ArrayList<>();
+            // get list of selected articles
+            for (int r : panelArticles.tableArticles.getSelectedRows()) {
+                r = panelArticles.tableArticles.convertRowIndexToModel(r);
+                articles.add(model.articles.get(r));
+            }
+            new ArticleEditNewStateController(MainController.instance, typeInfo, articles);
         }
     };
     ActionListener preview = (e) -> {

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 public class InitialData {
@@ -24,6 +25,7 @@ public class InitialData {
         public String newArticleState;
         public boolean viewable;
         public Set<String> currentUserTypePermissions = new TreeSet<>();
+        public Map<String, String[]> currentUserStateChanges = new TreeMap<>();
     }
 
     public TypeInfo getTypeInfo(String articleTypeId) {

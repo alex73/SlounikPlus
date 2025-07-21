@@ -175,6 +175,17 @@ public class ConfigLoad {
             } else {
                 ti.viewable = true;
             }
+            for (State st : type.getState()) {
+                Set<String> out = new TreeSet<>();
+                for (Change ch : st.getChange()) {
+                    for (String r : ch.getRoles().split(",")) {
+                        if (result.currentUserRoles.contains(r)) {
+                            out.add(ch.getTo());
+                        }
+                    }
+                }
+                ti.currentUserStateChanges.put(st.getName(), out.toArray(new String[0]));
+            }
             result.articleTypes.add(ti);
         }
         result.currentUserPermissions = PermissionChecker.getUserPermissions(config, user);

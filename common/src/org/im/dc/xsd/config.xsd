@@ -148,6 +148,11 @@
 					<xs:documentation>Ці можа карыстальнік пераназначаць словы</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
+			<xs:enumeration value="multiple_change_state">
+				<xs:annotation>
+					<xs:documentation>Ці можа карыстальнік мяняць станы адразу некалькім артыкулам</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
 		</xs:restriction>
 	</xs:simpleType>
 </xs:schema>

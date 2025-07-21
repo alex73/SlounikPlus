@@ -19,6 +19,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;enumeration value="add_article"/>
  *     &lt;enumeration value="propose_changes"/>
  *     &lt;enumeration value="reassign"/>
+ *     &lt;enumeration value="multiple_change_state"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
@@ -62,7 +63,14 @@ public enum TypePermission {
      * 
      */
     @XmlEnumValue("reassign")
-    REASSIGN("reassign");
+    REASSIGN("reassign"),
+
+    /**
+     * Ці можа карыстальнік мяняць станы адразу некалькім артыкулам
+     * 
+     */
+    @XmlEnumValue("multiple_change_state")
+    MULTIPLE_CHANGE_STATE("multiple_change_state");
     private final String value;
 
     TypePermission(String v) {

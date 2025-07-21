@@ -232,6 +232,13 @@
             </Property>
           </Properties>
         </Component>
+        <Component class="javax.swing.JButton" name="btnChangeStates">
+          <Properties>
+            <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+              <ResourceString bundle="org/im/dc/client/ui/Bundle.properties" key="MainFramePanelArticles.btnChangeStates.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+            </Property>
+          </Properties>
+        </Component>
         <Component class="javax.swing.JButton" name="btnPreview">
           <Properties>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
