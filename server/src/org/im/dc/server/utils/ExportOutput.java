@@ -55,7 +55,7 @@ public class ExportOutput {
                 }
                 return r;
             });
-            LOG.info("   validateAll - preview for each article(type:" + articleType + ") started");
+            LOG.info("   validateAll - preview for each article(type:" + articleType + ") started, process " + todo.size() + " articles");
             OutputSummaryStorage storage = JsHelper.previewSomeArticles(articleType, todo);
             LOG.info("   validateAll - summary validation start");
             JsHelper.validateSummary(articleType, storage);

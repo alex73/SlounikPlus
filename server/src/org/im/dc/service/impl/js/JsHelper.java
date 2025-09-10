@@ -15,9 +15,13 @@ import org.im.dc.server.db.RecArticle;
 import org.im.dc.service.OutputSummaryStorage;
 import org.im.dc.service.impl.ValidationHelper;
 import org.im.dc.service.impl.WordSplitter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
 public class JsHelper {
+    private static final Logger LOG = LoggerFactory.getLogger(JsHelper.class);
+
     public static OutputSummaryStorage previewSomeArticles(String articleType, List<RecArticle> articles)
             throws Exception {
         OutputSummaryStorage storage = new OutputSummaryStorage();
@@ -25,7 +29,12 @@ public class JsHelper {
         try (JsProcessing js = new JsProcessing(
                 new File(Config.getConfigDir(), articleType + ".js").getAbsolutePath())) {
             Map<String, Object> contextVar = new TreeMap<>();
+            int idx = 0;
             for (RecArticle a : articles) {
+                idx++;
+                if (idx % 1000 == 0) {
+                    LOG.debug("Convert article " + idx + "/" + articles.size());
+                }
                 ValidationHelper helper = new ValidationHelper(a.getArticleId(), validator, a.getXml(), storage);
                 SimpleScriptContext context = new SimpleScriptContext();
                 context.setAttribute("helper", helper, ScriptContext.ENGINE_SCOPE);
