@@ -5,9 +5,31 @@
 		<setting name="cacheEnabled" value="false" />
 	</settings>
 	<typeAliases>
-		<package name="org.im.dc.server.handlers" />
+		<!-- package name="org.im.dc.server.handlers" />
 		<package name="org.im.dc.server.db" />
-		<package name="org.im.dc.service.dto" />
+		<package name="org.im.dc.service.dto" /-->
+        <typeAlias alias="DoArticle" type="org.im.dc.server.db.DoArticle" />
+        <typeAlias alias="DoArticleHistory" type="org.im.dc.server.db.DoArticleHistory" />
+        <typeAlias alias="DoArticleNote" type="org.im.dc.server.db.DoArticleNote" />
+        <typeAlias alias="DoComment" type="org.im.dc.server.db.DoComment" />
+        <typeAlias alias="DoIssue" type="org.im.dc.server.db.DoIssue" />
+        <typeAlias alias="RecArticle" type="org.im.dc.server.db.RecArticle" />
+        <typeAlias alias="RecArticleHistory" type="org.im.dc.server.db.RecArticleHistory" />
+        <typeAlias alias="RecArticleNote" type="org.im.dc.server.db.RecArticleNote" />
+        <typeAlias alias="RecComment" type="org.im.dc.server.db.RecComment" />
+        <typeAlias alias="RecIssue" type="org.im.dc.server.db.RecIssue" />
+        <typeAlias alias="IntArrayTypeHandler" type="org.im.dc.server.handlers.IntArrayTypeHandler" />
+        <typeAlias alias="StringArrayTypeHandler" type="org.im.dc.server.handlers.StringArrayTypeHandler" />
+        <typeAlias alias="ArticleCommentFull" type="org.im.dc.service.dto.ArticleCommentFull" />
+        <typeAlias alias="ArticleFull" type="org.im.dc.service.dto.ArticleFull" />
+        <typeAlias alias="ArticleFullInfo" type="org.im.dc.service.dto.ArticleFullInfo" />
+        <typeAlias alias="ArticleHistoryFull" type="org.im.dc.service.dto.ArticleHistoryFull" />
+        <typeAlias alias="ArticleIssueFull" type="org.im.dc.service.dto.ArticleIssueFull" />
+        <typeAlias alias="ArticlesFilter" type="org.im.dc.service.dto.ArticlesFilter" />
+        <typeAlias alias="ArticleShort" type="org.im.dc.service.dto.ArticleShort" />
+        <typeAlias alias="Header" type="org.im.dc.service.dto.Header" />
+        <typeAlias alias="InitialData" type="org.im.dc.service.dto.InitialData" />
+        <typeAlias alias="Related" type="org.im.dc.service.dto.Related" />
 	</typeAliases>
 	<environments default="development">
 		<environment id="development">
