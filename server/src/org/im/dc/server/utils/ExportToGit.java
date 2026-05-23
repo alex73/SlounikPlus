@@ -53,6 +53,7 @@ public class ExportToGit {
     static List<GitHistory> gitHistory = new ArrayList<>();
     static Map<Integer, ArticleInfo> articleInfos = new HashMap<>();
     static Map<String, Map<Integer, Set<String>>> assignments = new TreeMap<>(); // <type, <id, <user>>>
+    static Map<String, Map<Integer, String>> states = new TreeMap<>(); // <type, <id, state>>
 
     public static void main(String[] args) throws Exception {
         if (args.length != 1) {
@@ -113,11 +114,12 @@ public class ExportToGit {
             if (h.getNewAssignedUsers() != null) {
                 ai.setAssignedUsers(h.getNewAssignedUsers());
             }
-            Path newFile = ai.getPath();
             applyAssignments(ai);
+            applyStates(ai);
 
-            System.out.println("Export " + count + "/" + history.size() + ": #" + h.getHistoryId() + " from " + h.getChanged());
-            add(h, ai, newFile);
+            System.out.print("Экспарт гісторыі " + count + "/" + history.size() + ": historyId#" + h.getHistoryId() + " from " + h.getChanged() + " articleId# "
+                    + ai.articleId);
+            add(h, ai);
         }
 
         // export current snapshot and assignments
@@ -158,22 +160,23 @@ public class ExportToGit {
         int pos = 0;
         for (int id : articleInfos.keySet().toArray(new Integer[0])) {
             pos++;
-            System.out.print("Check for change " + pos + "/" + articleInfos.size() + ": #" + id);
+            System.out.print("Экспарт бягучага стану артыкула " + pos + "/" + articleInfos.size() + ": articleId#" + id);
             RecArticle a = Db.execAndReturn((api) -> {
                 return api.getArticleMapper().selectArticle(id);
             });
             ArticleInfo ai = new ArticleInfo(a);
             articleInfos.put(id, ai);
             applyAssignments(ai);
+            applyStates(ai);
             Path newFile = ai.getPath();
             byte[] xml = xmlFormat(a.getXml());
             byte[] existXml = Files.exists(newFile) ? Files.readAllBytes(newFile) : new byte[0];
             if (!Arrays.equals(xml, existXml)) {
+                System.out.println(" - змяніўся, дадаем " + newFile);
                 Files.createDirectories(newFile.getParent());
                 Files.write(newFile, xml);
-                System.out.println(" - changed " + newFile);
             } else {
-                System.out.println();
+                System.out.println(" - не змяніўся, прапускаем");
             }
             added.add(newFile);
         }
@@ -184,32 +187,38 @@ public class ExportToGit {
         Set<Path> added = new HashSet<>();
         for (String type : articleInfos.values().stream().map(ai -> ai.type).sorted().distinct().collect(Collectors.toList())) {
             added.add(saveAssignments(type));
+            added.add(saveStates(type));
         }
         return added;
     }
 
     static int count, added;
 
-    static void add(RecArticleHistory h, ArticleInfo ai, Path newFile) {
+    /**
+     * Writes current state of article to the file and commits it to git.
+     */
+    static void add(RecArticleHistory h, ArticleInfo ai) {
         count++;
         try {
             // and then commit the changes
             PersonIdent pi = new PersonIdent(h.getChanger(), "user@localhost", h.getChanged(), TimeZone.getDefault());
-            String message = "#" + h.getHistoryId() + " " + repoPath.relativize(newFile);
+            String message = "historyId#" + h.getHistoryId() + " " + ai.getHeader();
 
             while (!gitHistory.isEmpty()) {
                 GitHistory h0 = gitHistory.remove(0);
-                if (!h0.message.startsWith("#")) {
+                if (!h0.message.startsWith("historyId#")) {
                     continue;
                 }
                 GitHistory c = new GitHistory(pi, message);
                 if (h0.changed == c.changed && h0.changer.equals(c.changer) && h0.message.replaceAll(" .+", "").equals(c.message.replaceAll(" .+", ""))) {
+                    System.out.println(" - ўжо існуе ў git");
                     return;
                 } else {
                     System.err.println("There is wrong history record: " + message);
                     System.exit(1);
                 }
             }
+            System.out.println(" - дадаем у git");
             added++;
 
             RecArticleHistory fullCurrentHistory = Db.execAndReturn((api) -> {
@@ -217,18 +226,19 @@ public class ExportToGit {
             });
 
             for (Path oldFile : getOldFilePaths(h.getArticleId())) {
-                if (!newFile.equals(oldFile)) {
+                if (!ai.getPath().equals(oldFile)) {
                     Files.delete(oldFile);
                     git.rm().addFilepattern(repoPath.relativize(oldFile).toString()).call();
                 }
             }
             if (fullCurrentHistory.getNewXml() != null) {
                 byte[] xml = xmlFormat(fullCurrentHistory.getNewXml());
-                Files.createDirectories(newFile.getParent());
-                Files.write(newFile, xml);
+                Files.createDirectories(ai.getPath().getParent());
+                Files.write(ai.getPath(), xml);
             }
             saveAssignments(ai.type);
-            git.add().setUpdate(false).addFilepattern(repoPath.relativize(newFile).toString()).call();
+            saveStates(ai.type);
+            git.add().setUpdate(false).addFilepattern(repoPath.relativize(ai.getPath()).toString()).call();
 
             CommitCommand cc = git.commit();
             cc.setCommitter(pi).setMessage(message).call();
@@ -248,10 +258,27 @@ public class ExportToGit {
         }
     }
 
+    static void applyStates(ArticleInfo ai) {
+        if (ai.state != null) {
+            Map<Integer, String> t = states.computeIfAbsent(ai.type, k -> new TreeMap<>());
+            t.put(ai.articleId, ai.state);
+        }
+    }
+
     static Path saveAssignments(String type) throws Exception {
         Map<Integer, Set<String>> t = assignments.computeIfAbsent(type, k -> new HashMap<>());
         List<String> lines = t.entrySet().stream().map(en -> en.getKey() + ": " + en.getValue()).collect(Collectors.toList());
         String fn = type + "-assignments.txt";
+        Path r = repoPath.resolve(fn);
+        Files.write(r, lines);
+        git.add().setUpdate(false).addFilepattern(fn).call();
+        return r;
+    }
+
+    static Path saveStates(String type) throws Exception {
+        Map<Integer, String> t = states.computeIfAbsent(type, k -> new HashMap<>());
+        List<String> lines = t.entrySet().stream().map(en -> en.getKey() + ": " + en.getValue()).collect(Collectors.toList());
+        String fn = type + "-states.txt";
         Path r = repoPath.resolve(fn);
         Files.write(r, lines);
         git.add().setUpdate(false).addFilepattern(fn).call();
@@ -328,8 +355,27 @@ public class ExportToGit {
         }
 
         public Path getPath() {
-            return repoPath.resolve((type + '/' + state + '/' + header.replace("<", "").replace(">", "").replace("/", "_") + '-' + articleId + ".xml")
-                    .replaceAll("/{2,}", "/"));
+            String h = header.replace("<", "").replace(">", "").replace("/", "_");
+            char p1 = '_';
+            char p2 = '_';
+            for (int pos = 0; pos < header.length(); pos++) {
+                char c = header.charAt(pos);
+                if (Character.isLetter(c)) {
+                    c = Character.toLowerCase(c);
+                    if (p1 == '_') {
+                        p1 = c;
+                    } else if (p2 == '_') {
+                        p2 = c;
+                    } else {
+                        break;
+                    }
+                }
+            }
+            return repoPath.resolve((type + '/' + p1 + '/' + p2 + '/' + h + '-' + articleId + ".xml").replaceAll("/{2,}", "/"));
+        }
+
+        public String getHeader() {
+            return type + ": " + header + " - articleId#" + articleId;
         }
     }
 }

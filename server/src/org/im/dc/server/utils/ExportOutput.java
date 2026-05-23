@@ -82,7 +82,7 @@ public class ExportOutput {
             });
 
             out.append(HTML_SUFFIX);
-            Files.write(Paths.get(args[0] + articleType + ".html"), out.toString().getBytes(StandardCharsets.UTF_8));
+            Files.write(Paths.get(args[0]).resolve(articleType + ".html"), out.toString().getBytes(StandardCharsets.UTF_8));
         }
     }
 }
