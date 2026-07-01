@@ -129,7 +129,7 @@ public class ExportToGit {
 
         Set<String> forDelete = new HashSet<>();
         Files.find(repoPath, Integer.MAX_VALUE, (p, a) -> a.isRegularFile()).filter(p -> !added.contains(p)).map(p -> repoPath.relativize(p).toString())
-                .filter(n -> !n.startsWith(".git/") && !n.startsWith("_db/")).forEach(n -> forDelete.add(n));
+                .filter(n -> !n.startsWith(".git/") && !n.startsWith("_db/") && !n.endsWith(".html")).forEach(n -> forDelete.add(n));
 
         if (!added.isEmpty()) {
             AddCommand add = git.add();
@@ -210,13 +210,20 @@ public class ExportToGit {
                     continue;
                 }
                 GitHistory c = new GitHistory(pi, message);
-                if (h0.changed == c.changed && h0.changer.equals(c.changer) && h0.message.replaceAll(" .+", "").equals(c.message.replaceAll(" .+", ""))) {
-                    System.out.println(" - ўжо існуе ў git");
-                    return;
-                } else {
-                    System.err.println("There is wrong history record: " + message);
+                if (!h0.message.replaceAll(" .+", "").equals(c.message.replaceAll(" .+", ""))) {
+                    System.err.println("Памылка ў папярэднім запісу: несупадае тэкст:\n" + c.message + "\nvs\n" + h0.message);
                     System.exit(1);
                 }
+                if (!h0.changer.equals(c.changer)) {
+                    System.err.println("Памылка ў папярэднім запісу: несупадае аўтар: " + c.changer + " vs " + h0.changer);
+                    System.exit(1);
+                }
+                if (Math.abs(h0.changed - c.changed) > 24 * 60 * 60) {
+                    System.err.println("Памылка ў папярэднім запісу: адрозніваецца дата на " + (h0.changed - c.changed) + " с");
+                    System.exit(1);
+                }
+                System.out.println(" - ўжо існуе ў git");
+                return;
             }
             System.out.println(" - дадаем у git");
             added++;

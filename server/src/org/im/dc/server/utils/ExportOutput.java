@@ -43,10 +43,21 @@ public class ExportOutput {
                 List<RecArticle> r = new ArrayList<>();
                 List<RecArticle> articles = api.getArticleMapper().getAllArticles(articleType);
                 for (RecArticle a : articles) {
-                    if (a == null) {
+                    /*if (a == null) {
                         // no such article
                         continue;
                     }
+                    switch (a.getState()) {
+                    case "Гатовае":
+                    case "Гатовае (К)":
+                        break;
+                    case "На выдаленне":
+                    case "На разглядзе":
+                    case "Выдаленае":
+                        continue;
+                    default:
+                        throw new Exception(a.getState());
+                    }*/
                     if (!articleType.equals(a.getArticleType())) {
                         LOG.warn("<< preparePreviews: wrong type/id requested");
                         throw new Exception("Запыт няправільнага ID для вызначанага тыпу");
